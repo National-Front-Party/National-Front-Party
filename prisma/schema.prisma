@@ -1,0 +1,293 @@
+// CHECK constraints, triggers, and the convenience view are maintained in the SQL migration.
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model staff_users {
+  id                                                  String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  full_name                                           String
+  email                                               String                          @unique
+  role                                                String
+  is_active                                           Boolean                         @default(true)
+  created_at                                          DateTime                        @default(now()) @db.Timestamptz(6)
+  application_status_history                         application_status_history[]
+  assigned_membership_applications                   membership_applications[]       @relation("membership_applications_assigned_to")
+  reviewed_membership_applications                   membership_applications[]       @relation("membership_applications_reviewed_by")
+  assigned_service_requests                          service_requests[]
+  updated_governorate_secretariats_info              governorate_secretariats_info[]
+  updated_info_items                                 info_items[]
+  updated_leaders                                    leaders[]
+  updated_parliamentary_unit_items                   parliamentary_unit_items[]
+  updated_news_articles                              news_articles[]
+}
+
+model governorates {
+  id                            Int                             @id @default(autoincrement()) @db.SmallInt
+  name_ar                       String
+  code                          String                          @unique
+  sort_order                    Int                             @default(0) @db.SmallInt
+  is_active                     Boolean                         @default(true)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(6)
+  members                       members[]
+  membership_applications       membership_applications[]
+  governorate_secretariats_info governorate_secretariats_info[]
+}
+
+model membership_applications {
+  id                 String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  application_no     BigInt                       @unique @default(autoincrement())
+  full_name          String
+  birth_date         DateTime                     @db.Date
+  gender             String
+  phone              String
+  national_id        String                       @db.Char(14)
+  education_level    String?
+  occupation         String?
+  governorate_id     Int                          @db.SmallInt
+  terms_accepted     Boolean                      @default(false)
+  status             String                       @default("new")
+  assigned_to        String?                      @db.Uuid
+  reviewed_by        String?                      @db.Uuid
+  reviewed_at        DateTime?                    @db.Timestamptz(6)
+  rejection_reason   String?
+  internal_notes     String?
+  source             String?
+  submitted_ip       String?                      @db.Inet
+  created_at         DateTime                     @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime                     @default(now()) @db.Timestamptz(6)
+  application_status_history application_status_history[]
+  members            members?
+  assigned_staff_user staff_users?                @relation("membership_applications_assigned_to", fields: [assigned_to], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  reviewed_staff_user staff_users?                @relation("membership_applications_reviewed_by", fields: [reviewed_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  governorate        governorates                 @relation(fields: [governorate_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([governorate_id], map: "idx_apps_governorate")
+  @@index([assigned_to], map: "idx_apps_assigned_to")
+  @@index([reviewed_by], map: "idx_apps_reviewed_by")
+  @@index([status], map: "idx_apps_status")
+}
+
+model members {
+  id                      String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  application_id          String                  @unique @db.Uuid
+  membership_no           BigInt                  @unique @default(autoincrement())
+  governorate_id          Int                     @db.SmallInt
+  status                  String                  @default("active")
+  joined_at               DateTime                @default(dbgenerated("CURRENT_DATE")) @db.Date
+  membership_application  membership_applications @relation(fields: [application_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  governorate             governorates            @relation(fields: [governorate_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([governorate_id], map: "idx_members_governorate")
+}
+
+model application_status_history {
+  id                      BigInt                  @id @default(autoincrement())
+  application_id          String                  @db.Uuid
+  from_status             String?
+  to_status               String
+  changed_by              String?                 @db.Uuid
+  note                    String?
+  changed_at              DateTime                @default(now()) @db.Timestamptz(6)
+  membership_application  membership_applications @relation(fields: [application_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  changed_by_staff_user   staff_users?            @relation(fields: [changed_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([application_id, changed_at], map: "idx_hist_application")
+  @@index([changed_by], map: "idx_hist_changed_by")
+}
+
+model panels {
+  id              Int          @id @default(autoincrement()) @db.SmallInt
+  slug            String       @unique
+  title           String
+  subtitle        String?
+  icon            String?
+  leaders_heading String?
+  sort_order      Int          @default(0) @db.SmallInt
+  is_published    Boolean      @default(false)
+  leaders         leaders[]
+  info_items      info_items[]
+}
+
+model leaders {
+  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  panel_id          Int          @db.SmallInt
+  full_name         String
+  role_title        String?
+  photo_url         String?
+  badge_label       String?
+  is_head           Boolean      @default(false)
+  sort_order        Int          @default(0) @db.SmallInt
+  is_published      Boolean      @default(false)
+  updated_by        String?      @db.Uuid
+  created_at        DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime     @default(now()) @db.Timestamptz(6)
+  panel             panels       @relation(fields: [panel_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  updated_by_user   staff_users? @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  info_items        info_items[]
+
+  @@index([panel_id], map: "idx_leaders_panel")
+  @@index([updated_by], map: "idx_leaders_updated_by")
+}
+
+model info_items {
+  id               Int                    @id @default(autoincrement()) @db.SmallInt
+  slug             String                 @unique
+  title            String
+  body             String?
+  source_note      String?
+  link_url         String?
+  link_label       String?
+  icon             String?
+  sort_order       Int                    @default(0) @db.SmallInt
+  is_published     Boolean                @default(false)
+  updated_by       String?                @db.Uuid
+  created_at       DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime               @default(now()) @db.Timestamptz(6)
+  kind             String?
+  button_style     String?
+  action_type      String?
+  panel_id         Int?                   @db.SmallInt
+  leader_id        String?                @db.Uuid
+  updated_by_user  staff_users?           @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  panel            panels?                @relation(fields: [panel_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  leader           leaders?               @relation(fields: [leader_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  central_secretariats central_secretariats[]
+
+  @@index([updated_by], map: "idx_info_updated_by")
+  @@index([panel_id], map: "idx_info_panel")
+  @@index([leader_id], map: "idx_info_leader")
+}
+
+model central_secretariats {
+  id           Int        @id @default(autoincrement()) @db.SmallInt
+  info_item_id Int        @db.SmallInt
+  name_ar      String
+  head_name    String?
+  source_note  String?
+  sort_order   Int        @default(0) @db.SmallInt
+  is_published Boolean    @default(false)
+  info_item    info_items @relation(fields: [info_item_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([info_item_id], map: "idx_central_info_item")
+}
+
+model governorate_secretariats_info {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  governorate_id Int          @db.SmallInt
+  full_name      String
+  role_title     String?
+  photo_url      String?
+  sort_order     Int          @default(0) @db.SmallInt
+  is_published   Boolean      @default(false)
+  updated_by     String?      @db.Uuid
+  created_at     DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime     @default(now()) @db.Timestamptz(6)
+  governorate    governorates @relation(fields: [governorate_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  updated_by_user staff_users? @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([governorate_id], map: "idx_govsec_governorate")
+  @@index([updated_by], map: "idx_govsec_updated_by")
+}
+
+model parliamentary_unit_items {
+  id              Int          @id @default(autoincrement()) @db.SmallInt
+  slug            String       @unique
+  title           String
+  subtitle        String?
+  icon            String?
+  head_name       String?
+  head_role       String?
+  body            String?
+  source_note     String?
+  sort_order      Int          @default(0) @db.SmallInt
+  is_published    Boolean      @default(false)
+  updated_by      String?      @db.Uuid
+  created_at      DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime     @default(now()) @db.Timestamptz(6)
+  updated_by_user staff_users? @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([updated_by], map: "idx_parl_updated_by")
+}
+
+model ministries {
+  id               Int                @id @default(autoincrement()) @db.SmallInt
+  slug             String             @unique
+  name_ar          String
+  sort_order       Int                @default(0) @db.SmallInt
+  is_active        Boolean            @default(true)
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  service_requests service_requests[]
+}
+
+model request_sectors {
+  id               Int                @id @default(autoincrement()) @db.SmallInt
+  code             String             @unique
+  name_ar          String
+  sort_order       Int                @default(0) @db.SmallInt
+  is_active        Boolean            @default(true)
+  service_requests service_requests[]
+}
+
+model service_requests {
+  id                  String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  request_no          BigInt          @unique @default(autoincrement())
+  full_name           String
+  phone               String
+  ministry_id         Int             @db.SmallInt
+  sector_id           Int             @db.SmallInt
+  status              String          @default("new")
+  assigned_to         String?         @db.Uuid
+  internal_notes      String?
+  source              String?
+  submitted_ip        String?         @db.Inet
+  created_at          DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime        @default(now()) @db.Timestamptz(6)
+  assigned_staff_user staff_users?    @relation(fields: [assigned_to], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  ministry            ministries      @relation(fields: [ministry_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  request_sector      request_sectors @relation(fields: [sector_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([ministry_id], map: "idx_sr_ministry")
+  @@index([sector_id], map: "idx_sr_sector")
+  @@index([assigned_to], map: "idx_sr_assigned_to")
+  @@index([status], map: "idx_sr_status")
+}
+
+model news_sources {
+  id              Int             @id @default(autoincrement()) @db.SmallInt
+  slug            String          @unique
+  name_ar         String
+  sort_order      Int             @default(0) @db.SmallInt
+  is_active       Boolean         @default(true)
+  created_at      DateTime        @default(now()) @db.Timestamptz(6)
+  news_articles   news_articles[]
+}
+
+model news_articles {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug            String       @unique
+  title           String
+  body            String
+  image_url       String?
+  image_alt       String?
+  source_id       Int          @db.SmallInt
+  source_url      String?
+  published_on    DateTime     @db.Date
+  date_precision  String       @default("day")
+  is_featured     Boolean      @default(false)
+  sort_order      Int          @default(0) @db.SmallInt
+  is_published    Boolean      @default(false)
+  updated_by      String?      @db.Uuid
+  created_at      DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime     @default(now()) @db.Timestamptz(6)
+  source          news_sources @relation(fields: [source_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  updated_by_user staff_users? @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([source_id], map: "idx_news_articles_source_id")
+  @@index([updated_by], map: "idx_news_articles_updated_by")
+  @@index([is_published, published_on(sort: Desc)], map: "idx_news_articles_published_listing")
+}
