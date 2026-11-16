@@ -16,6 +16,16 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Database schema
+
+The PostgreSQL schema is defined in `prisma/schema.prisma` and the additive
+migrations in `prisma/migrations/`. Together, they define 16 ERD tables and 21
+foreign keys, including the News tables added in
+`20261117002105_news/migration.sql`. The migrations also define indexes,
+database-side checks and `updated_at` triggers, plus the members/governorate
+view. Both migrations have been applied to the configured local development
+database.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

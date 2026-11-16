@@ -1,0 +1,120 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Inspect migration working tree",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short",
+				"--untracked-files=all"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Preflight news tables",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"db",
+				"execute",
+				"--file",
+				"prisma/preflight_news_tables.sql"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Validate news schema",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"validate"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Deploy news schema migration",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"migrate",
+				"deploy"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Verify migration status",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"migrate",
+				"status"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Validate final Prisma schema",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"validate"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Check Prisma schema drift",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"migrate",
+				"diff",
+				"--exit-code",
+				"--from-schema",
+				"prisma/schema.prisma",
+				"--to-config-datasource"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Generate updated Prisma client",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"generate"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Verify news migration counts",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"db",
+				"execute",
+				"--file",
+				"prisma/postflight_news_migration.sql"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Review news migration changes",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short",
+				"--untracked-files=all"
+			],
+			"isBackground": false
+		}
+	]
+}
