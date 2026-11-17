@@ -400,14 +400,6 @@ export type GovernoratesScalarRelationFilter = {
   isNot?: Prisma.governoratesWhereInput
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type governoratesCreateNestedOneWithoutMembership_applicationsInput = {
   create?: Prisma.XOR<Prisma.governoratesCreateWithoutMembership_applicationsInput, Prisma.governoratesUncheckedCreateWithoutMembership_applicationsInput>
   connectOrCreate?: Prisma.governoratesCreateOrConnectWithoutMembership_applicationsInput

@@ -91,7 +91,12 @@ export const Staff_usersScalarFieldEnum = {
   email: 'email',
   role: 'role',
   is_active: 'is_active',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  password_hash: 'password_hash',
+  must_change_password: 'must_change_password',
+  last_login_at: 'last_login_at',
+  failed_login_count: 'failed_login_count',
+  locked_until: 'locked_until'
 } as const
 
 export type Staff_usersScalarFieldEnum = (typeof Staff_usersScalarFieldEnum)[keyof typeof Staff_usersScalarFieldEnum]
@@ -122,6 +127,7 @@ export const Membership_applicationsScalarFieldEnum = {
   occupation: 'occupation',
   governorate_id: 'governorate_id',
   terms_accepted: 'terms_accepted',
+  application_type: 'application_type',
   status: 'status',
   assigned_to: 'assigned_to',
   reviewed_by: 'reviewed_by',

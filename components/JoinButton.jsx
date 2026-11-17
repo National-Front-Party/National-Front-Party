@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import JoinModal from "@/components/Home/ui/JoinModal";
-import { governoratesList, membershipTypes } from "@/data/mock/membership";
+import { membershipTypes } from "@/data/mock/membership";
 
 export default function JoinButton({ className, style }) {
   const [open, setOpen] = useState(false);
@@ -26,7 +26,6 @@ export default function JoinButton({ className, style }) {
           open={open}
           onClose={() => setOpen(false)}
           types={membershipTypes}
-          governorates={governoratesList}
         />
       ) : null}
     </>
