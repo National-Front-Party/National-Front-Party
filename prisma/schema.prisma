@@ -8,6 +8,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum application_kind {
+  member
+  volunteer
+  follower
+}
+
 model staff_users {
   id                                                  String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   full_name                                           String
@@ -15,6 +21,11 @@ model staff_users {
   role                                                String
   is_active                                           Boolean                         @default(true)
   created_at                                          DateTime                        @default(now()) @db.Timestamptz(6)
+  password_hash                                       String?
+  must_change_password                                Boolean                         @default(true)
+  last_login_at                                       DateTime?                       @db.Timestamptz(6)
+  failed_login_count                                  Int                             @default(0) @db.SmallInt
+  locked_until                                        DateTime?                       @db.Timestamptz(6)
   application_status_history                         application_status_history[]
   assigned_membership_applications                   membership_applications[]       @relation("membership_applications_assigned_to")
   reviewed_membership_applications                   membership_applications[]       @relation("membership_applications_reviewed_by")
@@ -50,6 +61,7 @@ model membership_applications {
   occupation         String?
   governorate_id     Int                          @db.SmallInt
   terms_accepted     Boolean                      @default(false)
+  application_type   application_kind
   status             String                       @default("new")
   assigned_to        String?                      @db.Uuid
   reviewed_by        String?                      @db.Uuid

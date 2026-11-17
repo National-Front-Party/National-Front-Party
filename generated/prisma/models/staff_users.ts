@@ -20,8 +20,18 @@ export type staff_usersModel = runtime.Types.Result.DefaultSelection<Prisma.$sta
 
 export type AggregateStaff_users = {
   _count: Staff_usersCountAggregateOutputType | null
+  _avg: Staff_usersAvgAggregateOutputType | null
+  _sum: Staff_usersSumAggregateOutputType | null
   _min: Staff_usersMinAggregateOutputType | null
   _max: Staff_usersMaxAggregateOutputType | null
+}
+
+export type Staff_usersAvgAggregateOutputType = {
+  failed_login_count: number | null
+}
+
+export type Staff_usersSumAggregateOutputType = {
+  failed_login_count: number | null
 }
 
 export type Staff_usersMinAggregateOutputType = {
@@ -31,6 +41,11 @@ export type Staff_usersMinAggregateOutputType = {
   role: string | null
   is_active: boolean | null
   created_at: Date | null
+  password_hash: string | null
+  must_change_password: boolean | null
+  last_login_at: Date | null
+  failed_login_count: number | null
+  locked_until: Date | null
 }
 
 export type Staff_usersMaxAggregateOutputType = {
@@ -40,6 +55,11 @@ export type Staff_usersMaxAggregateOutputType = {
   role: string | null
   is_active: boolean | null
   created_at: Date | null
+  password_hash: string | null
+  must_change_password: boolean | null
+  last_login_at: Date | null
+  failed_login_count: number | null
+  locked_until: Date | null
 }
 
 export type Staff_usersCountAggregateOutputType = {
@@ -49,9 +69,22 @@ export type Staff_usersCountAggregateOutputType = {
   role: number
   is_active: number
   created_at: number
+  password_hash: number
+  must_change_password: number
+  last_login_at: number
+  failed_login_count: number
+  locked_until: number
   _all: number
 }
 
+
+export type Staff_usersAvgAggregateInputType = {
+  failed_login_count?: true
+}
+
+export type Staff_usersSumAggregateInputType = {
+  failed_login_count?: true
+}
 
 export type Staff_usersMinAggregateInputType = {
   id?: true
@@ -60,6 +93,11 @@ export type Staff_usersMinAggregateInputType = {
   role?: true
   is_active?: true
   created_at?: true
+  password_hash?: true
+  must_change_password?: true
+  last_login_at?: true
+  failed_login_count?: true
+  locked_until?: true
 }
 
 export type Staff_usersMaxAggregateInputType = {
@@ -69,6 +107,11 @@ export type Staff_usersMaxAggregateInputType = {
   role?: true
   is_active?: true
   created_at?: true
+  password_hash?: true
+  must_change_password?: true
+  last_login_at?: true
+  failed_login_count?: true
+  locked_until?: true
 }
 
 export type Staff_usersCountAggregateInputType = {
@@ -78,6 +121,11 @@ export type Staff_usersCountAggregateInputType = {
   role?: true
   is_active?: true
   created_at?: true
+  password_hash?: true
+  must_change_password?: true
+  last_login_at?: true
+  failed_login_count?: true
+  locked_until?: true
   _all?: true
 }
 
@@ -119,6 +167,18 @@ export type Staff_usersAggregateArgs<ExtArgs extends runtime.Types.Extensions.In
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: Staff_usersAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: Staff_usersSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: Staff_usersMinAggregateInputType
@@ -149,6 +209,8 @@ export type staff_usersGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   _count?: Staff_usersCountAggregateInputType | true
+  _avg?: Staff_usersAvgAggregateInputType
+  _sum?: Staff_usersSumAggregateInputType
   _min?: Staff_usersMinAggregateInputType
   _max?: Staff_usersMaxAggregateInputType
 }
@@ -160,7 +222,14 @@ export type Staff_usersGroupByOutputType = {
   role: string
   is_active: boolean
   created_at: Date
+  password_hash: string | null
+  must_change_password: boolean
+  last_login_at: Date | null
+  failed_login_count: number
+  locked_until: Date | null
   _count: Staff_usersCountAggregateOutputType | null
+  _avg: Staff_usersAvgAggregateOutputType | null
+  _sum: Staff_usersSumAggregateOutputType | null
   _min: Staff_usersMinAggregateOutputType | null
   _max: Staff_usersMaxAggregateOutputType | null
 }
@@ -190,6 +259,11 @@ export type staff_usersWhereInput = {
   role?: Prisma.StringFilter<"staff_users"> | string
   is_active?: Prisma.BoolFilter<"staff_users"> | boolean
   created_at?: Prisma.DateTimeFilter<"staff_users"> | Date | string
+  password_hash?: Prisma.StringNullableFilter<"staff_users"> | string | null
+  must_change_password?: Prisma.BoolFilter<"staff_users"> | boolean
+  last_login_at?: Prisma.DateTimeNullableFilter<"staff_users"> | Date | string | null
+  failed_login_count?: Prisma.IntFilter<"staff_users"> | number
+  locked_until?: Prisma.DateTimeNullableFilter<"staff_users"> | Date | string | null
   application_status_history?: Prisma.Application_status_historyListRelationFilter
   assigned_membership_applications?: Prisma.Membership_applicationsListRelationFilter
   reviewed_membership_applications?: Prisma.Membership_applicationsListRelationFilter
@@ -208,6 +282,11 @@ export type staff_usersOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  password_hash?: Prisma.SortOrderInput | Prisma.SortOrder
+  must_change_password?: Prisma.SortOrder
+  last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  failed_login_count?: Prisma.SortOrder
+  locked_until?: Prisma.SortOrderInput | Prisma.SortOrder
   application_status_history?: Prisma.application_status_historyOrderByRelationAggregateInput
   assigned_membership_applications?: Prisma.membership_applicationsOrderByRelationAggregateInput
   reviewed_membership_applications?: Prisma.membership_applicationsOrderByRelationAggregateInput
@@ -229,6 +308,11 @@ export type staff_usersWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.StringFilter<"staff_users"> | string
   is_active?: Prisma.BoolFilter<"staff_users"> | boolean
   created_at?: Prisma.DateTimeFilter<"staff_users"> | Date | string
+  password_hash?: Prisma.StringNullableFilter<"staff_users"> | string | null
+  must_change_password?: Prisma.BoolFilter<"staff_users"> | boolean
+  last_login_at?: Prisma.DateTimeNullableFilter<"staff_users"> | Date | string | null
+  failed_login_count?: Prisma.IntFilter<"staff_users"> | number
+  locked_until?: Prisma.DateTimeNullableFilter<"staff_users"> | Date | string | null
   application_status_history?: Prisma.Application_status_historyListRelationFilter
   assigned_membership_applications?: Prisma.Membership_applicationsListRelationFilter
   reviewed_membership_applications?: Prisma.Membership_applicationsListRelationFilter
@@ -247,9 +331,16 @@ export type staff_usersOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  password_hash?: Prisma.SortOrderInput | Prisma.SortOrder
+  must_change_password?: Prisma.SortOrder
+  last_login_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  failed_login_count?: Prisma.SortOrder
+  locked_until?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.staff_usersCountOrderByAggregateInput
+  _avg?: Prisma.staff_usersAvgOrderByAggregateInput
   _max?: Prisma.staff_usersMaxOrderByAggregateInput
   _min?: Prisma.staff_usersMinOrderByAggregateInput
+  _sum?: Prisma.staff_usersSumOrderByAggregateInput
 }
 
 export type staff_usersScalarWhereWithAggregatesInput = {
@@ -262,6 +353,11 @@ export type staff_usersScalarWhereWithAggregatesInput = {
   role?: Prisma.StringWithAggregatesFilter<"staff_users"> | string
   is_active?: Prisma.BoolWithAggregatesFilter<"staff_users"> | boolean
   created_at?: Prisma.DateTimeWithAggregatesFilter<"staff_users"> | Date | string
+  password_hash?: Prisma.StringNullableWithAggregatesFilter<"staff_users"> | string | null
+  must_change_password?: Prisma.BoolWithAggregatesFilter<"staff_users"> | boolean
+  last_login_at?: Prisma.DateTimeNullableWithAggregatesFilter<"staff_users"> | Date | string | null
+  failed_login_count?: Prisma.IntWithAggregatesFilter<"staff_users"> | number
+  locked_until?: Prisma.DateTimeNullableWithAggregatesFilter<"staff_users"> | Date | string | null
 }
 
 export type staff_usersCreateInput = {
@@ -271,6 +367,11 @@ export type staff_usersCreateInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
@@ -289,6 +390,11 @@ export type staff_usersUncheckedCreateInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
@@ -307,6 +413,11 @@ export type staff_usersUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
@@ -325,6 +436,11 @@ export type staff_usersUncheckedUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
@@ -343,6 +459,11 @@ export type staff_usersCreateManyInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
 }
 
 export type staff_usersUpdateManyMutationInput = {
@@ -352,6 +473,11 @@ export type staff_usersUpdateManyMutationInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type staff_usersUncheckedUpdateManyInput = {
@@ -361,6 +487,11 @@ export type staff_usersUncheckedUpdateManyInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type staff_usersCountOrderByAggregateInput = {
@@ -370,6 +501,15 @@ export type staff_usersCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  password_hash?: Prisma.SortOrder
+  must_change_password?: Prisma.SortOrder
+  last_login_at?: Prisma.SortOrder
+  failed_login_count?: Prisma.SortOrder
+  locked_until?: Prisma.SortOrder
+}
+
+export type staff_usersAvgOrderByAggregateInput = {
+  failed_login_count?: Prisma.SortOrder
 }
 
 export type staff_usersMaxOrderByAggregateInput = {
@@ -379,6 +519,11 @@ export type staff_usersMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  password_hash?: Prisma.SortOrder
+  must_change_password?: Prisma.SortOrder
+  last_login_at?: Prisma.SortOrder
+  failed_login_count?: Prisma.SortOrder
+  locked_until?: Prisma.SortOrder
 }
 
 export type staff_usersMinOrderByAggregateInput = {
@@ -388,6 +533,15 @@ export type staff_usersMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  password_hash?: Prisma.SortOrder
+  must_change_password?: Prisma.SortOrder
+  last_login_at?: Prisma.SortOrder
+  failed_login_count?: Prisma.SortOrder
+  locked_until?: Prisma.SortOrder
+}
+
+export type staff_usersSumOrderByAggregateInput = {
+  failed_login_count?: Prisma.SortOrder
 }
 
 export type Staff_usersNullableScalarRelationFilter = {
@@ -405,6 +559,22 @@ export type BoolFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type staff_usersCreateNestedOneWithoutAssigned_membership_applicationsInput = {
@@ -558,6 +728,11 @@ export type staff_usersCreateWithoutAssigned_membership_applicationsInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
   assigned_service_requests?: Prisma.service_requestsCreateNestedManyWithoutAssigned_staff_userInput
@@ -575,6 +750,11 @@ export type staff_usersUncheckedCreateWithoutAssigned_membership_applicationsInp
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
   assigned_service_requests?: Prisma.service_requestsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
@@ -597,6 +777,11 @@ export type staff_usersCreateWithoutReviewed_membership_applicationsInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   assigned_service_requests?: Prisma.service_requestsCreateNestedManyWithoutAssigned_staff_userInput
@@ -614,6 +799,11 @@ export type staff_usersUncheckedCreateWithoutReviewed_membership_applicationsInp
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   assigned_service_requests?: Prisma.service_requestsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
@@ -647,6 +837,11 @@ export type staff_usersUpdateWithoutAssigned_membership_applicationsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
   assigned_service_requests?: Prisma.service_requestsUpdateManyWithoutAssigned_staff_userNestedInput
@@ -664,6 +859,11 @@ export type staff_usersUncheckedUpdateWithoutAssigned_membership_applicationsInp
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
   assigned_service_requests?: Prisma.service_requestsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
@@ -692,6 +892,11 @@ export type staff_usersUpdateWithoutReviewed_membership_applicationsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   assigned_service_requests?: Prisma.service_requestsUpdateManyWithoutAssigned_staff_userNestedInput
@@ -709,6 +914,11 @@ export type staff_usersUncheckedUpdateWithoutReviewed_membership_applicationsInp
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   assigned_service_requests?: Prisma.service_requestsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
@@ -726,6 +936,11 @@ export type staff_usersCreateWithoutApplication_status_historyInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
   assigned_service_requests?: Prisma.service_requestsCreateNestedManyWithoutAssigned_staff_userInput
@@ -743,6 +958,11 @@ export type staff_usersUncheckedCreateWithoutApplication_status_historyInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
   assigned_service_requests?: Prisma.service_requestsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
@@ -776,6 +996,11 @@ export type staff_usersUpdateWithoutApplication_status_historyInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
   assigned_service_requests?: Prisma.service_requestsUpdateManyWithoutAssigned_staff_userNestedInput
@@ -793,6 +1018,11 @@ export type staff_usersUncheckedUpdateWithoutApplication_status_historyInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
   assigned_service_requests?: Prisma.service_requestsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
@@ -810,6 +1040,11 @@ export type staff_usersCreateWithoutUpdated_leadersInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
@@ -827,6 +1062,11 @@ export type staff_usersUncheckedCreateWithoutUpdated_leadersInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
@@ -860,6 +1100,11 @@ export type staff_usersUpdateWithoutUpdated_leadersInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
@@ -877,6 +1122,11 @@ export type staff_usersUncheckedUpdateWithoutUpdated_leadersInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
@@ -894,6 +1144,11 @@ export type staff_usersCreateWithoutUpdated_info_itemsInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
@@ -911,6 +1166,11 @@ export type staff_usersUncheckedCreateWithoutUpdated_info_itemsInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
@@ -944,6 +1204,11 @@ export type staff_usersUpdateWithoutUpdated_info_itemsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
@@ -961,6 +1226,11 @@ export type staff_usersUncheckedUpdateWithoutUpdated_info_itemsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
@@ -978,6 +1248,11 @@ export type staff_usersCreateWithoutUpdated_governorate_secretariats_infoInput =
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
@@ -995,6 +1270,11 @@ export type staff_usersUncheckedCreateWithoutUpdated_governorate_secretariats_in
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
@@ -1028,6 +1308,11 @@ export type staff_usersUpdateWithoutUpdated_governorate_secretariats_infoInput =
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
@@ -1045,6 +1330,11 @@ export type staff_usersUncheckedUpdateWithoutUpdated_governorate_secretariats_in
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
@@ -1062,6 +1352,11 @@ export type staff_usersCreateWithoutUpdated_parliamentary_unit_itemsInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
@@ -1079,6 +1374,11 @@ export type staff_usersUncheckedCreateWithoutUpdated_parliamentary_unit_itemsInp
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
@@ -1112,6 +1412,11 @@ export type staff_usersUpdateWithoutUpdated_parliamentary_unit_itemsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
@@ -1129,6 +1434,11 @@ export type staff_usersUncheckedUpdateWithoutUpdated_parliamentary_unit_itemsInp
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
@@ -1146,6 +1456,11 @@ export type staff_usersCreateWithoutAssigned_service_requestsInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
@@ -1163,6 +1478,11 @@ export type staff_usersUncheckedCreateWithoutAssigned_service_requestsInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
@@ -1196,6 +1516,11 @@ export type staff_usersUpdateWithoutAssigned_service_requestsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
@@ -1213,6 +1538,11 @@ export type staff_usersUncheckedUpdateWithoutAssigned_service_requestsInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
@@ -1230,6 +1560,11 @@ export type staff_usersCreateWithoutUpdated_news_articlesInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
@@ -1247,6 +1582,11 @@ export type staff_usersUncheckedCreateWithoutUpdated_news_articlesInput = {
   role: string
   is_active?: boolean
   created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
@@ -1280,6 +1620,11 @@ export type staff_usersUpdateWithoutUpdated_news_articlesInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
@@ -1297,6 +1642,11 @@ export type staff_usersUncheckedUpdateWithoutUpdated_news_articlesInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
   assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
   reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
@@ -1417,6 +1767,11 @@ export type staff_usersSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   role?: boolean
   is_active?: boolean
   created_at?: boolean
+  password_hash?: boolean
+  must_change_password?: boolean
+  last_login_at?: boolean
+  failed_login_count?: boolean
+  locked_until?: boolean
   application_status_history?: boolean | Prisma.staff_users$application_status_historyArgs<ExtArgs>
   assigned_membership_applications?: boolean | Prisma.staff_users$assigned_membership_applicationsArgs<ExtArgs>
   reviewed_membership_applications?: boolean | Prisma.staff_users$reviewed_membership_applicationsArgs<ExtArgs>
@@ -1436,6 +1791,11 @@ export type staff_usersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   role?: boolean
   is_active?: boolean
   created_at?: boolean
+  password_hash?: boolean
+  must_change_password?: boolean
+  last_login_at?: boolean
+  failed_login_count?: boolean
+  locked_until?: boolean
 }, ExtArgs["result"]["staff_users"]>
 
 export type staff_usersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1445,6 +1805,11 @@ export type staff_usersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   role?: boolean
   is_active?: boolean
   created_at?: boolean
+  password_hash?: boolean
+  must_change_password?: boolean
+  last_login_at?: boolean
+  failed_login_count?: boolean
+  locked_until?: boolean
 }, ExtArgs["result"]["staff_users"]>
 
 export type staff_usersSelectScalar = {
@@ -1454,9 +1819,14 @@ export type staff_usersSelectScalar = {
   role?: boolean
   is_active?: boolean
   created_at?: boolean
+  password_hash?: boolean
+  must_change_password?: boolean
+  last_login_at?: boolean
+  failed_login_count?: boolean
+  locked_until?: boolean
 }
 
-export type staff_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "full_name" | "email" | "role" | "is_active" | "created_at", ExtArgs["result"]["staff_users"]>
+export type staff_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "full_name" | "email" | "role" | "is_active" | "created_at" | "password_hash" | "must_change_password" | "last_login_at" | "failed_login_count" | "locked_until", ExtArgs["result"]["staff_users"]>
 export type staff_usersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   application_status_history?: boolean | Prisma.staff_users$application_status_historyArgs<ExtArgs>
   assigned_membership_applications?: boolean | Prisma.staff_users$assigned_membership_applicationsArgs<ExtArgs>
@@ -1492,6 +1862,11 @@ export type $staff_usersPayload<ExtArgs extends runtime.Types.Extensions.Interna
     role: string
     is_active: boolean
     created_at: Date
+    password_hash: string | null
+    must_change_password: boolean
+    last_login_at: Date | null
+    failed_login_count: number
+    locked_until: Date | null
   }, ExtArgs["result"]["staff_users"]>
   composites: {}
 }
@@ -1930,6 +2305,11 @@ export interface staff_usersFieldRefs {
   readonly role: Prisma.FieldRef<"staff_users", 'String'>
   readonly is_active: Prisma.FieldRef<"staff_users", 'Boolean'>
   readonly created_at: Prisma.FieldRef<"staff_users", 'DateTime'>
+  readonly password_hash: Prisma.FieldRef<"staff_users", 'String'>
+  readonly must_change_password: Prisma.FieldRef<"staff_users", 'Boolean'>
+  readonly last_login_at: Prisma.FieldRef<"staff_users", 'DateTime'>
+  readonly failed_login_count: Prisma.FieldRef<"staff_users", 'Int'>
+  readonly locked_until: Prisma.FieldRef<"staff_users", 'DateTime'>
 }
     
 

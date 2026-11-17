@@ -1,0 +1,62 @@
+# سجل تقدم الباك إند
+
+هذا الملف هو المرجع الوحيد لأي agent يستكمل العمل على الباك إند. يجب قراءته قبل البدء وتحديث سجل التقدم بعد كل Phase.
+
+## 1. نظرة عامة
+
+المشروع Next.js باستخدام JavaScript، مع Prisma 7 وPostgreSQL، لموقع حزب الجبهة الوطنية. قاعدة البيانات كانت موجودة قبل المشروع ومصممة بناءً على ERD؛ لا تُنشأ أو تُعاد تهيئتها.
+
+المهمة الحالية هي بناء باك إند فورم طلب الانضمام اعتمادًا على جدول `membership_applications`، مع توفير المحافظات للفورم. نطاق العمل الحالي Backend فقط.
+
+## 2. قواعد ثابتة (لا تُكسر)
+
+- ممنوع تغيير الـschema إلا بتغيير إضافي (additive) وبعد موافقة صريحة من المستخدم.
+- ممنوع تشغيل:
+  - `prisma migrate reset`
+  - `prisma db push --force-reset`
+  - `prisma db push --accept-data-loss`
+  - `npm audit fix --force`
+- المشروع JavaScript وليس TypeScript، واتصال قاعدة البيانات في `lib/db.js`.
+- كل التحقق من البيانات يتم على الخادم، ومنطق الأعمال في طبقة `services` وليس داخل route handlers.
+- ممنوع تسجيل الرقم القومي أو رقم الموبايل في logs.
+- ممنوع لمس الفرونت (الصفحات، المكونات، layouts، styles أو سلوكها) إلا بطلب صريح من المستخدم.
+- حافظ على البيانات الموجودة. اعرض SQL وأثره على البيانات قبل أي migration، ولا تنفذه دون موافقة صريحة.
+
+## 3. قرارات متفق عليها
+
+- `application_type` نوعه enum باسم `application_kind` وقيمه `member`, `volunteer`, `follower`؛ الحقل `NOT NULL` ومن دون default. التغيير مطبق في قاعدة البيانات.
+- أُضيفت أعمدة دخول الموظفين إلى قاعدة البيانات: `password_hash`, `must_change_password`, `last_login_at`, `failed_login_count`, `locked_until`. لم يُبنَ منطق تسجيل الدخول أو الصلاحيات عليها بعد.
+- حالة الطلب الأولى `new`، ومسار الحالات: `new` ← `under_review` ← `accepted` أو `rejected`.
+- إعادة التقديم مسموحة فقط إذا كان الطلب السابق للشخص نفسه `rejected`؛ وجود طلب سابق بحالة أخرى يعني أن التقديم مكرر. يُستخدم الرقم القومي للمطابقة ولا يُسجل في logs.
+- `gender` المخزن هو `male` أو `female`.
+- تاريخ الميلاد والنوع يُستخرجان من الرقم القومي، بعد التحقق من صحته.
+- `source` للطلبات القادمة من الموقع هو `website`.
+
+## 4. جدول المراحل
+
+| Phase | العمل | الحالة |
+|---|---|---|
+| 1 | إنشاء/تهيئة المشروع | مكتمل |
+| 2 | اتصال Prisma بقاعدة البيانات (`lib/db.js`) | مكتمل |
+| 3 | التأكد من `application_type` في `prisma/schema.prisma` | لسه — التعريف موجود حاليًا؛ التحقق المخصص للفورم لم يُغلق بعد |
+| 4 | التحقق من البيانات (Zod + الرقم القومي) | مكتمل |
+| 5 | دالة الحفظ في service | لسه |
+| 6 | API: `POST /api/applications` و`GET /api/governorates` | لسه |
+| 7 | الحماية (rate limit, honeypot, Turnstile) | لسه |
+| 8 | ربط الفورم الحالي بالـAPI | لسه — ممنوع لمس الفرونت حتى يطلب المستخدم ذلك صراحةً |
+
+## 5. سجل التحديثات
+
+| التاريخ | Phase | اللي اتعمل | الملفات اللي اتعدلت | ملاحظات |
+|---|---|---|---|---|
+| 2026-11-17 | 1 | مراجعة ERD v9 وقاعدة البيانات القائمة؛ توحيد `application_type` في Prisma، واستعادة ملف migration المطبق، وإضافة أعمدة staff auth إلى schema وmigration إضافي ثم تطبيقه بعد موافقة المستخدم. | `prisma/schema.prisma`؛ `prisma/migrations/20261117084049_add_application_type/migration.sql`؛ `prisma/migrations/20261117091714_add_staff_auth_fields/migration.sql` | لم يُنفذ reset أو إعادة إنشاء للقاعدة. migration الخاصة بـstaff auth أضافت أعمدة فقط. |
+| 2026-11-17 | 2 | إعداد Prisma 7 باستخدام PostgreSQL adapter `@prisma/adapter-pg` و`pg`؛ نقل `@prisma/client` إلى `dependencies`؛ إنشاء singleton و`connectToDatabase()` في `lib/db.js`؛ توليد Prisma Client والتحقق من اتصال حي عبر `SELECT 1`. | `lib/db.js`؛ `package.json`؛ `package-lock.json`؛ `generated/prisma/**`؛ `AGENTS.md` | Route الاختبار المؤقت حُذف بعد نجاحه. `next dev` أضاف block مُدارًا تلقائيًا إلى `AGENTS.md`. تحذير Prisma عن whitespace في الملفات المولّدة متوقع ويُتجاهل. أبلغ `npm install` عن 7 vulnerabilities متوسطة ولم تُعالج. |
+| 2026-11-17 | 4 | تثبيت Zod فقط؛ إضافة تطبيع الأرقام العربية وتحليل الرقم القومي كتاريخ UTC ونوع؛ إضافة `applicationSchema` برسائل التحقق المطلوبة ورفض الحقول الزائدة؛ إضافة اختبارات `node:test` (11 ناجحة). | `package.json`؛ `package-lock.json`؛ `lib/national-id.js`؛ `lib/national-id.test.js`؛ `lib/validation/application.js`؛ `lib/validation/application.test.js` | التحقق نقي ولا يتصل بقاعدة البيانات. Node 24 يعرض تحذير `MODULE_TYPELESS_PACKAGE_JSON` بسبب عدم تحديد نوع module على مستوى الحزمة؛ الاختبارات ناجحة ولم يتغير إعداد module العام. |
+
+## 6. نقاط مفتوحة
+
+- تحديد ما إذا كان مطلوبًا التحقق من رمز المحافظة أو رقم التحقق بالرقم القومي، وأي قيود عمرية للانضمام؛ التحقق الحالي يفحص الصيغة والتاريخ وعدم وقوعه في المستقبل.
+- تحديد شكل استجابة `POST /api/applications`، مثل إرجاع رقم الطلب أو رسالة قبول عامة.
+- توفير إعدادات Turnstile لاحقًا عبر environment variables، من دون وضع أسرار في الكود أو المستودع.
+- ERD v9 لا يحدد nullability/defaults لأعمدة دخول الموظفين. `password_hash` اختياري حاليًا لتجنب اختلاق بيانات اعتماد للحسابات الموجودة؛ يجب حسم سياسة تهيئة الحسابات قبل تنفيذ كود المصادقة.
+- Phase 8 متوقفة حتى يطلب المستخدم صراحةً تعديل الفرونت.
