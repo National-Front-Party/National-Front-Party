@@ -26,3 +26,15 @@ export const article_status = {
 } as const
 
 export type article_status = (typeof article_status)[keyof typeof article_status]
+
+
+export const staff_audit_action = {
+  staff_created: 'staff_created',
+  staff_profile_updated: 'staff_profile_updated',
+  staff_role_changed: 'staff_role_changed',
+  staff_activated: 'staff_activated',
+  staff_deactivated: 'staff_deactivated',
+  staff_password_reset: 'staff_password_reset'
+} as const
+
+export type staff_audit_action = (typeof staff_audit_action)[keyof typeof staff_audit_action]

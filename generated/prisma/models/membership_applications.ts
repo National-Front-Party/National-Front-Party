@@ -890,14 +890,6 @@ export type membership_applicationsUncheckedUpdateManyWithoutGovernorateNestedIn
   deleteMany?: Prisma.membership_applicationsScalarWhereInput | Prisma.membership_applicationsScalarWhereInput[]
 }
 
-export type BigIntFieldUpdateOperationsInput = {
-  set?: bigint | number
-  increment?: bigint | number
-  decrement?: bigint | number
-  multiply?: bigint | number
-  divide?: bigint | number
-}
-
 export type Enumapplication_kindFieldUpdateOperationsInput = {
   set?: $Enums.application_kind
 }

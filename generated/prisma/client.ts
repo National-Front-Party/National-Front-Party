@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type staff_users = Prisma.staff_usersModel
 /**
+ * Model staff_audit_log
+ * 
+ */
+export type staff_audit_log = Prisma.staff_audit_logModel
+/**
  * Model governorates
  * 
  */

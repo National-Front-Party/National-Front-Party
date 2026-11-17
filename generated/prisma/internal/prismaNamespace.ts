@@ -398,6 +398,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   staff_users: 'staff_users',
+  staff_audit_log: 'staff_audit_log',
   governorates: 'governorates',
   membership_applications: 'membership_applications',
   members: 'members',
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "staff_users" | "governorates" | "membership_applications" | "members" | "application_status_history" | "panels" | "leaders" | "info_items" | "central_secretariats" | "governorate_secretariats_info" | "parliamentary_unit_items" | "ministries" | "request_sectors" | "service_requests" | "news_sources" | "news_articles"
+    modelProps: "staff_users" | "staff_audit_log" | "governorates" | "membership_applications" | "members" | "application_status_history" | "panels" | "leaders" | "info_items" | "central_secretariats" | "governorate_secretariats_info" | "parliamentary_unit_items" | "ministries" | "request_sectors" | "service_requests" | "news_sources" | "news_articles"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -503,6 +504,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.staff_usersCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.Staff_usersCountAggregateOutputType> | number
+        }
+      }
+    }
+    staff_audit_log: {
+      payload: Prisma.$staff_audit_logPayload<ExtArgs>
+      fields: Prisma.staff_audit_logFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.staff_audit_logFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.staff_audit_logFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>
+        }
+        findFirst: {
+          args: Prisma.staff_audit_logFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.staff_audit_logFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>
+        }
+        findMany: {
+          args: Prisma.staff_audit_logFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>[]
+        }
+        create: {
+          args: Prisma.staff_audit_logCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>
+        }
+        createMany: {
+          args: Prisma.staff_audit_logCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.staff_audit_logCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>[]
+        }
+        delete: {
+          args: Prisma.staff_audit_logDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>
+        }
+        update: {
+          args: Prisma.staff_audit_logUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>
+        }
+        deleteMany: {
+          args: Prisma.staff_audit_logDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.staff_audit_logUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.staff_audit_logUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>[]
+        }
+        upsert: {
+          args: Prisma.staff_audit_logUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$staff_audit_logPayload>
+        }
+        aggregate: {
+          args: Prisma.Staff_audit_logAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaff_audit_log>
+        }
+        groupBy: {
+          args: Prisma.staff_audit_logGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Staff_audit_logGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.staff_audit_logCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Staff_audit_logCountAggregateOutputType> | number
         }
       }
     }
@@ -1672,6 +1747,24 @@ export const Staff_usersScalarFieldEnum = {
 export type Staff_usersScalarFieldEnum = (typeof Staff_usersScalarFieldEnum)[keyof typeof Staff_usersScalarFieldEnum]
 
 
+export const Staff_audit_logScalarFieldEnum = {
+  id: 'id',
+  actor_id: 'actor_id',
+  actor_name: 'actor_name',
+  actor_email: 'actor_email',
+  actor_staff_user_id: 'actor_staff_user_id',
+  target_id: 'target_id',
+  target_name: 'target_name',
+  target_email: 'target_email',
+  target_staff_user_id: 'target_staff_user_id',
+  action_type: 'action_type',
+  details: 'details',
+  occurred_at: 'occurred_at'
+} as const
+
+export type Staff_audit_logScalarFieldEnum = (typeof Staff_audit_logScalarFieldEnum)[keyof typeof Staff_audit_logScalarFieldEnum]
+
+
 export const GovernoratesScalarFieldEnum = {
   id: 'id',
   name_ar: 'name_ar',
@@ -1931,6 +2024,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -1945,6 +2046,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -2013,6 +2123,34 @@ export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'BigInt[]'
  */
 export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+/**
+ * Reference to a field of type 'staff_audit_action'
+ */
+export type Enumstaff_audit_actionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'staff_audit_action'>
+    
+
+
+/**
+ * Reference to a field of type 'staff_audit_action[]'
+ */
+export type ListEnumstaff_audit_actionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'staff_audit_action[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -2209,6 +2347,7 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
   staff_users?: Prisma.staff_usersOmit
+  staff_audit_log?: Prisma.staff_audit_logOmit
   governorates?: Prisma.governoratesOmit
   membership_applications?: Prisma.membership_applicationsOmit
   members?: Prisma.membersOmit
