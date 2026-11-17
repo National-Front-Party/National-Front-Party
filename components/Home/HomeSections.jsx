@@ -16,23 +16,23 @@ import {
   mainLinks,
   ministries,
   parliamentaryItems,
-  programCard,
+  partyProgram,
 } from "@/data/mock/home";
 
 export default function HomeSections() {
   return (
     <section
       aria-label="أقسام الصفحة الرئيسية"
-      className="flex min-h-0 flex-none flex-col bg-page py-4 md:py-6 xl:flex-1"
+      className="flex min-h-0 flex-none flex-col overflow-x-clip bg-page py-4 md:py-6 xl:flex-1"
     >
       <div className="mx-auto w-full max-w-[1320px] px-5">
         <div
           dir="rtl"
-          className="grid min-w-0 grid-cols-1 items-stretch gap-4 md:grid-cols-3 lg:grid-cols-[repeat(5,minmax(0,1fr))] xl:h-full xl:min-h-0 xl:flex-1 xl:grid-rows-1"
+          className="grid min-w-0 grid-cols-1 items-stretch gap-4 overflow-visible md:grid-cols-3 lg:grid-cols-[repeat(5,minmax(0,1fr))] xl:h-full xl:min-h-0 xl:flex-1 xl:grid-rows-1"
         >
           <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
             <MainSection data={mainLinks} />
-            <ProgramCard data={programCard} />
+            <ProgramCard data={partyProgram} />
           </div>
 
           <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">

@@ -1,3 +1,4 @@
+// first section data (main)
 export const mainLinks = [
   {
     id: "about",
@@ -51,8 +52,11 @@ export const mainLinks = [
   },
 ];
 
-export const programCard = {
+// section2 data ( program card )
+export const partyProgram = {
   title: "برنامج الحزب",
+  paragraphs: ["نص برنامج الحزب ومحاوره يضاف هنا بعد اعتماده."],
+  source: "الموقع الرسمي للحزب",
 };
 
 export const centralLeaders = {
