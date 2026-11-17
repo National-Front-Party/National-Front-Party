@@ -1,3 +1,6 @@
+export const sectionCardHoverClassName =
+  "group relative border border-transparent transition-all duration-500 ease-out motion-reduce:transition-none motion-reduce:transform-none hover:border-gold hover:-translate-y-1 hover:shadow-[0_12px_40px_color-mix(in_srgb,var(--color-gold)_35%,transparent)]";
+
 export function SectionCardHeader({
   title,
   variant = "light",
@@ -16,7 +19,7 @@ export function SectionCardHeader({
       {showUnderline ? (
         <div
           aria-hidden="true"
-          className="mx-auto mt-2 h-1 w-12 rounded-full bg-gold-gradient"
+          className="mx-auto mt-2 h-1 w-10 rounded-full bg-gold-gradient transition-all duration-500 group-hover:w-20 motion-reduce:transition-none"
         />
       ) : null}
     </header>
@@ -39,7 +42,7 @@ export default function SectionCard({
   return (
     <section
       aria-label={title}
-      className={`flex h-auto min-h-fit min-w-0 flex-1 flex-col overflow-hidden rounded-3xl shadow-card xl:h-full ${
+      className={`flex h-auto min-h-fit min-w-0 flex-1 flex-col overflow-hidden rounded-3xl shadow-card xl:h-full ${sectionCardHoverClassName} ${
         isDark ? "bg-ink text-white" : "bg-white text-ink"
       } ${scroll ? "xl:min-h-0" : ""} ${className}`}
     >

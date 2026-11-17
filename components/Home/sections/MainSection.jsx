@@ -21,7 +21,7 @@ export default function MainSection({ data }) {
       <SectionCard
         title="الرئيسية"
         scroll={false}
-        className="group h-auto min-h-fit flex-none border border-transparent transition-all duration-500 ease-out hover:-translate-y-1 hover:border-gold hover:shadow-[0_12px_40px_rgba(201,162,74,0.35)] motion-reduce:transition-none motion-reduce:transform-none xl:h-full xl:flex-[3]"
+        className="h-auto min-h-fit flex-none xl:h-full xl:flex-1"
         headerClassName="bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-light),var(--color-gold))] bg-[length:200%_200%] bg-[position:0%_50%] py-6 transition-[background-position] duration-700 ease-out group-hover:bg-[position:100%_50%] motion-reduce:transition-none"
         showUnderline={false}
       >
