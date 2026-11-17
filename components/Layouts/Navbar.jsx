@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import JoinButton from "@/components/JoinButton";
 
 const links = [
     { label: "الرئيسية", href: "/" },
@@ -182,12 +183,9 @@ function NavbarContent({ pathname }) {
 
                 <div className="hidden shrink-0 items-center gap-2 min-[992px]:flex">
                     <FacebookLink />
-                    <button
-                        type="button"
+                    <JoinButton
                         className="min-h-12 rounded-btn bg-ink px-5 font-extrabold text-white shadow-btn transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-gold-dark hover:shadow-card active:translate-y-0 active:scale-[0.99] active:shadow-btn motion-reduce:transition-none sm:px-7"
-                    >
-                        انضم للحزب
-                    </button>
+                    />
                 </div>
             </div>
 
@@ -222,18 +220,14 @@ function NavbarContent({ pathname }) {
                             />
                         </div>
                         <div className="flex justify-center border-t border-line px-5 py-4">
-                            <button
-                                type="button"
-                                onClick={() => setIsMenuOpen(false)}
+                            <JoinButton
                                 className="min-h-12 w-full max-w-[420px] rounded-btn bg-ink px-7 font-extrabold text-white shadow-btn transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-gold-dark hover:shadow-card active:translate-y-0 active:scale-[0.99] active:shadow-btn motion-reduce:transition-none"
                                 style={{
                                     opacity: isMenuOpen ? 1 : 0,
                                     transform: `translateX(${isMenuOpen ? 0 : 30}px)`,
                                     transitionDelay: isMenuOpen ? `${links.length * 25}ms` : "0ms",
                                 }}
-                            >
-                                انضم للحزب
-                            </button>
+                            />
                         </div>
                     </nav>
                 </div>
