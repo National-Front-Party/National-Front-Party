@@ -98,6 +98,8 @@
 | 10.1 | تطبيق Migration سجل التدقيق والتحضير لإدارة الموظفين | مكتمل — migration مطبقة |
 | 10.2 | إنشاء أول `super_admin` (Bootstrap) | مكتمل بعد موافقة المستخدم؛ مستثنى من حدث `staff_created` |
 | 10.3 | Staff Management APIs (Backend فقط) | مكتمل — لا توجد واجهة أمامية ضمن المرحلة |
+| 11.0 | استكشاف إدارة طلبات الانضمام | مكتمل — قراءة فقط |
+| 11.1 | APIs قراءة طلبات الانضمام | مكتمل — قائمة وتفاصيل فقط؛ لا تعديل أو تصدير |
 
 ## 5. سجل التحديثات
 
@@ -127,6 +129,8 @@
 | 2026-11-17 | 10.1 | تطبيق migration سجل تدقيق الموظفين بعد موافقة المستخدم باستخدام `prisma migrate deploy`. | `docs/BACKEND_PROGRESS.md` | قبل التطبيق كانت migration الوحيدة المعلقة `20261117170000_add_staff_audit_log`؛ بعده `prisma migrate status` أكد أن schema محدثة. تحقق قراءة فقط من الجدول والـenum والقيم والقيود والفهارس. لم تُطبق migrations أخرى ولم تُنشأ أو تُعدل بيانات موظفين. إنشاء أول Super Admin ينتظر موافقة منفصلة. |
 | 2026-11-17 | 10.2 | إنشاء أول حساب `super_admin` بعد موافقة المستخدم باستخدام السكريبت المعتمد. | `scripts/create-super-admin.js`؛ `docs/BACKEND_PROGRESS.md` | انتهى السكريبت بنجاح. طُبق استثناء Bootstrap؛ لم يُسجل حدث `staff_created`. لم تُطبع كلمة المرور أو الـhash. |
 | 2026-11-17 | 10.3 | إضافة APIs لإدارة الموظفين، والتحقق من المدخلات، وخدمات المعاملات وسجل التدقيق، وPagination لقراءة سجل التدقيق، وحماية ذرية لآخر `super_admin` نشط. | `lib/validation/staff.js`؛ `lib/validation/staff.test.js`؛ `lib/services/staff.js`؛ `lib/services/staff.test.js`؛ `lib/staff/handlers.js`؛ `lib/staff/handlers.test.js`؛ `app/api/admin/staff/**`؛ `docs/BACKEND_PROGRESS.md` | أضيفت مسارات القائمة والتفاصيل والإنشاء والتعديل والتفعيل/الإيقاف وإعادة تعيين كلمة المرور وقراءة سجل التدقيق. جميع التغييرات وسجلاتها تُنفذ داخل Transaction؛ حماية المدير الأخير تستخدم PostgreSQL transaction-level advisory lock موحدًا لكل تغييرات الدور/الحالة وإنشاء مدير جديد. `npm test`: 92 ناجحًا؛ `npm run lint` ناجح؛ `git diff --check` ناجح. اختبار التزامن محاكاة وحدية ولا يثبت سلوك PostgreSQL الفعلي؛ لم يُتصل بقاعدة البيانات ولم تُجرَ كتابة عليها. لا تغييرات Schema أو Migrations أو Frontend أو Packages. |
+| 2026-11-17 | 11.0 | مراجعة Read Only لجداول طلبات الانضمام وسجل الحالات والمسارات العامة والخدمات والتحقق والصلاحيات والاختبارات. | لا توجد تعديلات ملفات ضمن الاستكشاف. | لا توجد APIs إدارية للطلبات قبل Phase 11.1؛ `acceptApplication` خدمة فقط. لم يتم الاتصال بقاعدة البيانات أو تعديل ملفات. |
+| 2026-11-17 | 11.1 | إضافة `GET /api/admin/applications` للقائمة والبحث والفلترة وPagination، و`GET /api/admin/applications/[id]` للتفاصيل وسجل الحالات. | `app/api/admin/applications/route.js`؛ `app/api/admin/applications/[id]/route.js`؛ `lib/applications/read-handlers.js`؛ `lib/applications/read-handlers.test.js`؛ `lib/services/application-queries.js`؛ `lib/services/application-queries.test.js`؛ `lib/validation/application-query.js`؛ `lib/validation/application-query.test.js`؛ `docs/BACKEND_PROGRESS.md` | تستخدم المسارات `requireStaff` بصلاحية `applications:read`. تدعم الفلاتر الاسم والهاتف الجزئيين والرقم القومي ورقم الطلب المطابقين تمامًا، النوع والحالة والمحافظة والمسؤول ونطاق الإنشاء. القائمة تستبعد الهاتف والرقم القومي والملاحظات وIP؛ التفاصيل تعرض البيانات اللازمة للمستخدم المخول وسجل الحالات. الترتيب الأحدث أولًا مع `application_no` ككاسر تعادل. `npm test`: 102 ناجحًا؛ `npm run lint` و`git diff --check` ناجحان. الاختبارات تستخدم mocks؛ لم يتم الاتصال بقاعدة البيانات أو تنفيذ كتابة. لا تغييرات Schema أو Migrations أو Packages. |
 
 ## 6. نقاط مفتوحة
 
