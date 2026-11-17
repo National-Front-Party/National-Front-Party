@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -5,7 +6,6 @@ import { ArrowLeft, Check, CheckCircle2, Loader2 } from "lucide-react";
 import ModalShell from "@/components/Home/ui/ModalShell";
 import CustomSelect, {
   inputBase,
-  inputError,
 } from "@/components/Home/ui/CustomSelect";
 import { parseNationalId } from "@/lib/national-id";
 import { mapApplicationResponse } from "@/components/Home/ui/application-response";
@@ -27,6 +27,8 @@ const fieldOrder = [
   "termsAccepted",
 ];
 
+const fieldInputClass = `${inputBase} focus:!shadow-[0_2px_3px_rgba(201,162,74,0.45)]`;
+
 function toEnglishDigits(value) {
   return value.replace(/[٠-٩۰-۹]/g, (digit) =>
     String(digit.charCodeAt(0) - (digit >= "۰" ? 0x06f0 : 0x0660)),
@@ -41,34 +43,34 @@ function validateMembership(values, governorates) {
   const nationalId = toEnglishDigits(values.nationalId ?? "");
 
   if (
-    fullName.length < 8 ||
-    fullName.length > 120 ||
-    fullName.split(/\s+/).filter(Boolean).length < 4
-  ) {
-    errors.fullName = "الاسم لازم يكون رباعي";
-  }
+  fullName.length < 8 ||
+  fullName.length > 120 ||
+  fullName.split(/\s+/).filter(Boolean).length < 4
+) {
+  errors.fullName = "يرجى إدخال الاسم الرباعي كاملًا";
+}
 
-  if (!/^01[0125]\d{8}$/.test(phone)) {
-    errors.phone = "رقم الموبايل غير صحيح";
-  }
+if (!/^01[0125]\d{8}$/.test(phone)) {
+  errors.phone = "يرجى إدخال رقم هاتف محمول مصري صحيح";
+}
 
-  if (!/^[23]\d{13}$/.test(nationalId) || !parseNationalId(nationalId)) {
-    errors.nationalId = "الرقم القومي غير صحيح";
-  }
+if (!/^[23]\d{13}$/.test(nationalId) || !parseNationalId(nationalId)) {
+  errors.nationalId = "يرجى إدخال رقم قومي صحيح مكوّن من 14 رقمًا";
+}
 
-  if (
-    !governorates.some(
-      (governorate) => governorate.value === values.governorateId,
-    )
-  ) {
-    errors.governorate = "من فضلك اختر المحافظة";
-  }
+if (
+  !governorates.some(
+    (governorate) => governorate.value === values.governorateId,
+  )
+) {
+  errors.governorate = "يرجى اختيار المحافظة";
+}
 
-  if (values.termsAccepted !== true) {
-    errors.termsAccepted = "لازم توافق على الشروط";
-  }
+if (values.termsAccepted !== true) {
+  errors.termsAccepted = "يرجى الموافقة على الشروط والأحكام للمتابعة";
+}
 
-  return errors;
+return errors;
 }
 
 function RequiredMark() {
@@ -77,7 +79,7 @@ function RequiredMark() {
 
 function FieldError({ id, children }) {
   return children ? (
-    <p id={id} className="mt-1 text-sm text-red-600">
+    <p id={id} className="mt-1 text-xs text-red-600">
       {children}
     </p>
   ) : null;
@@ -95,6 +97,7 @@ export default function JoinModal({ open, onClose, types }) {
   const [isLoadingGovernorates, setIsLoadingGovernorates] = useState(true);
   const [governoratesLoadError, setGovernoratesLoadError] = useState(false);
   const [governoratesRetry, setGovernoratesRetry] = useState(0);
+
   const requestIdRef = useRef(0);
   const submittingRef = useRef(false);
   const fullNameRef = useRef(null);
@@ -102,6 +105,7 @@ export default function JoinModal({ open, onClose, types }) {
   const nationalIdRef = useRef(null);
   const governorateRef = useRef(null);
   const termsAcceptedRef = useRef(null);
+
   const fieldRefs = {
     fullName: fullNameRef,
     phone: phoneRef,
@@ -129,11 +133,13 @@ export default function JoinModal({ open, onClose, types }) {
         const response = await fetch("/api/governorates", {
           signal: controller.signal,
         });
+
         if (!response.ok) {
           throw new Error("Governorates request failed.");
         }
 
         const body = await response.json();
+
         if (
           !Array.isArray(body.governorates) ||
           !body.governorates.every(
@@ -163,6 +169,7 @@ export default function JoinModal({ open, onClose, types }) {
     }
 
     loadGovernorates();
+
     return () => {
       active = false;
       controller.abort();
@@ -178,12 +185,15 @@ export default function JoinModal({ open, onClose, types }) {
 
   function updateField(name, value) {
     setValues((current) => ({ ...current, [name]: value }));
+
     setErrors((current) => {
       if (!current[name]) return current;
+
       const next = { ...current };
       delete next[name];
       return next;
     });
+
     setSubmitError("");
   }
 
@@ -194,23 +204,31 @@ export default function JoinModal({ open, onClose, types }) {
 
   function handleBlur(name) {
     const validation = validateMembership(values, governorates);
+
     setErrors((current) => {
       const next = { ...current };
+
       if (validation[name]) next[name] = validation[name];
       else delete next[name];
+
       return next;
     });
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
+
     if (submittingRef.current) return;
 
     const validation = validateMembership(values, governorates);
+
     setErrors(validation);
     setSubmitError("");
 
-    const firstInvalidField = fieldOrder.find((field) => validation[field]);
+    const firstInvalidField = fieldOrder.find(
+      (field) => validation[field],
+    );
+
     if (firstInvalidField) {
       fieldRefs[firstInvalidField].current?.focus();
       return;
@@ -218,6 +236,7 @@ export default function JoinModal({ open, onClose, types }) {
 
     submittingRef.current = true;
     setIsSubmitting(true);
+
     const requestId = ++requestIdRef.current;
 
     const payload = {
@@ -236,7 +255,9 @@ export default function JoinModal({ open, onClose, types }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       const body = await response.json();
+
       const result = mapApplicationResponse({
         status: response.status,
         body,
@@ -252,11 +273,14 @@ export default function JoinModal({ open, onClose, types }) {
         setIsSuccess(true);
       } else {
         const nextErrors = result.errors ?? {};
+
         setErrors(nextErrors);
         setSubmitError(result.message ?? "");
+
         const firstInvalidField = fieldOrder.find(
           (field) => nextErrors[field],
         );
+
         if (firstInvalidField) {
           fieldRefs[firstInvalidField].current?.focus();
         }
@@ -289,16 +313,22 @@ export default function JoinModal({ open, onClose, types }) {
             aria-hidden="true"
             size={64}
             className={`text-gold transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
-              successIconEntered ? "scale-100 opacity-100" : "scale-50 opacity-0"
+              successIconEntered
+                ? "scale-100 opacity-100"
+                : "scale-50 opacity-0"
             }`}
           />
+
           <h3 className="text-2xl font-extrabold text-ink">
             تم استلام طلبك بنجاح
           </h3>
+
           <p className="font-bold text-ink">
             تم استلام طلبك برقم {applicationNumber}
           </p>
+
           <p className="text-muted">سيتم التواصل معك قريبًا</p>
+
           <button
             type="button"
             onClick={onClose}
@@ -312,7 +342,7 @@ export default function JoinModal({ open, onClose, types }) {
           onSubmit={handleSubmit}
           noValidate
           autoComplete="off"
-          className="mt-6 space-y-5"
+          className="-mx-2 mt-3 space-y-3 px-2 pb-2"
         >
           {submitError ? (
             <p
@@ -322,17 +352,13 @@ export default function JoinModal({ open, onClose, types }) {
               {submitError}
             </p>
           ) : null}
-          <div
-            className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
-            aria-hidden="true"
-          >
-            <label
-              htmlFor="membership-website"
-              className="sr-only"
-              aria-hidden="true"
-            >
+
+          {/* Honeypot field (anti-bot). */}
+          <div className="sr-only" aria-hidden="true">
+            <label htmlFor="membership-website" aria-hidden="true">
               Website
             </label>
+
             <input
               id="membership-website"
               name="website"
@@ -346,26 +372,27 @@ export default function JoinModal({ open, onClose, types }) {
           </div>
 
           <fieldset disabled={isSubmitting} className="min-w-0">
-            <legend className="mb-3 text-sm font-bold text-ink">
+            <legend className="mb-2 text-sm font-bold text-ink">
               نوع الانضمام
             </legend>
+
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {types.map((type) => (
-                <label
-                  key={type.value}
-                  className="block"
-                >
+                <label key={type.value} className="block">
                   <input
                     type="radio"
                     name="membershipType"
                     value={type.value}
                     checked={values.membershipType === type.value}
-                    onChange={() => handleMembershipTypeChange(type.value)}
+                    onChange={() =>
+                      handleMembershipTypeChange(type.value)
+                    }
                     disabled={isSubmitting}
                     className="peer sr-only"
                   />
+
                   <span
-                    className={`relative block rounded-2xl border-2 p-4 text-right transition-all duration-300 hover:-translate-y-1 hover:border-gold/70 hover:shadow-[0_12px_28px_-8px_rgba(201,162,74,0.4)] active:scale-[0.98] peer-focus-visible:ring-2 peer-focus-visible:ring-gold peer-focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none ${
+                    className={`relative block rounded-2xl border-2 px-4 py-3 text-right transition-all duration-300 hover:-translate-y-1 hover:border-gold/70 hover:shadow-[0_12px_28px_-8px_rgba(201,162,74,0.4)] active:scale-[0.98] peer-focus-visible:ring-2 peer-focus-visible:ring-gold peer-focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none ${
                       values.membershipType === type.value
                         ? "border-gold bg-gold-tint shadow-[0_12px_28px_-8px_rgba(201,162,74,0.45)]"
                         : "border-border bg-white"
@@ -385,9 +412,11 @@ export default function JoinModal({ open, onClose, types }) {
                     >
                       <Check size={14} strokeWidth={3} />
                     </span>
-                    <span className="block text-xl font-extrabold text-ink">
+
+                    <span className="block text-lg font-extrabold text-ink">
                       {type.title}
                     </span>
+
                     <span className="mt-1 block text-sm text-muted">
                       {type.subtitle}
                     </span>
@@ -397,7 +426,8 @@ export default function JoinModal({ open, onClose, types }) {
             </div>
           </fieldset>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-2">
+            {/* Full Name */}
             <div>
               <label
                 htmlFor="membership-full-name"
@@ -405,6 +435,7 @@ export default function JoinModal({ open, onClose, types }) {
               >
                 الاسم رباعي <RequiredMark />
               </label>
+
               <input
                 ref={fullNameRef}
                 id="membership-full-name"
@@ -413,19 +444,27 @@ export default function JoinModal({ open, onClose, types }) {
                 autoComplete="name"
                 placeholder="مثال: أحمد محمد علي حسن"
                 value={values.fullName}
-                onChange={(event) => updateField("fullName", event.target.value)}
+                onChange={(event) =>
+                  updateField("fullName", event.target.value)
+                }
                 onBlur={() => handleBlur("fullName")}
                 aria-required="true"
                 aria-invalid={Boolean(errors.fullName)}
-                aria-describedby={errors.fullName ? "membership-full-name-error" : undefined}
+                aria-describedby={
+                  errors.fullName
+                    ? "membership-full-name-error"
+                    : undefined
+                }
                 disabled={isSubmitting}
-                className={`${inputBase} ${errors.fullName ? inputError : ""} motion-reduce:transition-none`}
+                className={fieldInputClass}
               />
+
               <FieldError id="membership-full-name-error">
                 {errors.fullName}
               </FieldError>
             </div>
 
+            {/* Phone */}
             <div>
               <label
                 htmlFor="membership-phone"
@@ -433,6 +472,7 @@ export default function JoinModal({ open, onClose, types }) {
               >
                 الهاتف المحمول <RequiredMark />
               </label>
+
               <input
                 ref={phoneRef}
                 id="membership-phone"
@@ -453,13 +493,21 @@ export default function JoinModal({ open, onClose, types }) {
                 onBlur={() => handleBlur("phone")}
                 aria-required="true"
                 aria-invalid={Boolean(errors.phone)}
-                aria-describedby={errors.phone ? "membership-phone-error" : undefined}
+                aria-describedby={
+                  errors.phone
+                    ? "membership-phone-error"
+                    : undefined
+                }
                 disabled={isSubmitting}
-                className={`${inputBase} ${errors.phone ? inputError : ""} placeholder:text-muted motion-reduce:transition-none`}
+                className={fieldInputClass}
               />
-              <FieldError id="membership-phone-error">{errors.phone}</FieldError>
+
+              <FieldError id="membership-phone-error">
+                {errors.phone}
+              </FieldError>
             </div>
 
+            {/* National ID */}
             <div>
               <label
                 htmlFor="membership-national-id"
@@ -467,6 +515,7 @@ export default function JoinModal({ open, onClose, types }) {
               >
                 الرقم القومي <RequiredMark />
               </label>
+
               <input
                 ref={nationalIdRef}
                 id="membership-national-id"
@@ -486,16 +535,20 @@ export default function JoinModal({ open, onClose, types }) {
                 aria-required="true"
                 aria-invalid={Boolean(errors.nationalId)}
                 aria-describedby={
-                  errors.nationalId ? "membership-national-id-error" : undefined
+                  errors.nationalId
+                    ? "membership-national-id-error"
+                    : undefined
                 }
                 disabled={isSubmitting}
-                className={`${inputBase} ${errors.nationalId ? inputError : ""} motion-reduce:transition-none`}
+                className={fieldInputClass}
               />
+
               <FieldError id="membership-national-id-error">
                 {errors.nationalId}
               </FieldError>
             </div>
 
+            {/* Governorate */}
             <div>
               <CustomSelect
                 ref={governorateRef}
@@ -504,29 +557,36 @@ export default function JoinModal({ open, onClose, types }) {
                 placeholder="اختر المحافظة"
                 options={governorates}
                 value={values.governorateId}
-                onChange={(value) => updateField("governorateId", value)}
+                onChange={(value) =>
+                  updateField("governorateId", value)
+                }
                 onBlur={() => handleBlur("governorate")}
-                error={errors.governorate}
                 disabled={isSubmitting}
                 required
               />
+
               <FieldError id="membership-governorate-error">
                 {errors.governorate}
               </FieldError>
+
               {isLoadingGovernorates ? (
-                <p role="status" className="mt-1 text-sm text-muted">
+                <p role="status" className="mt-1 text-xs text-muted">
                   جارٍ تحميل المحافظات...
                 </p>
               ) : null}
+
               {governoratesLoadError ? (
-                <div className="mt-2 flex items-center justify-between gap-3">
-                  <p role="alert" className="text-sm text-red-600">
+                <div className="mt-1 flex items-center justify-between gap-3">
+                  <p role="alert" className="text-xs text-red-600">
                     تعذر تحميل المحافظات
                   </p>
+
                   <button
                     type="button"
-                    onClick={() => setGovernoratesRetry((count) => count + 1)}
-                    className="rounded-lg px-2 py-1 text-sm font-bold text-ink underline decoration-gold underline-offset-4 hover:text-gold"
+                    onClick={() =>
+                      setGovernoratesRetry((count) => count + 1)
+                    }
+                    className="rounded-lg px-2 py-1 text-xs font-bold text-ink underline decoration-gold underline-offset-4 hover:text-gold"
                   >
                     إعادة المحاولة
                   </button>
@@ -535,10 +595,15 @@ export default function JoinModal({ open, onClose, types }) {
             </div>
           </div>
 
+          {/* Terms */}
           <div>
             <label
               htmlFor="membership-terms-accepted"
-              className="flex items-start gap-3 text-sm font-medium text-ink"
+              className={`flex cursor-pointer items-center gap-3 text-sm font-medium text-ink ${
+                isSubmitting
+                  ? "cursor-not-allowed opacity-60"
+                  : ""
+              }`}
             >
               <input
                 ref={termsAcceptedRef}
@@ -558,31 +623,39 @@ export default function JoinModal({ open, onClose, types }) {
                     : undefined
                 }
                 disabled={isSubmitting}
-                className="mt-0.5 size-5 shrink-0 rounded border-border accent-gold focus-visible:ring-2 focus-visible:ring-gold"
+                className="size-5 shrink-0 cursor-pointer accent-gold"
               />
+
               <span>
                 أقر بصحة بياناتي وأوافق على شروط الانضمام
                 <RequiredMark />
               </span>
             </label>
+
             <FieldError id="membership-terms-accepted-error">
               {errors.termsAccepted}
             </FieldError>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="group flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-ink px-6 font-bold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:brightness-125 hover:shadow-[0_12px_28px_-8px_rgba(22,22,26,0.55)] active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-80 disabled:hover:translate-y-0 disabled:hover:brightness-100 disabled:hover:shadow-none motion-reduce:transition-none motion-reduce:transform-none"
+            className="group flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-ink px-6 font-bold text-white transition-all duration-300 ease-out hover:-translate-y-0.5 hover:brightness-125 hover:shadow-[0_12px_28px_-8px_rgba(22,22,26,0.55)] active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-80 disabled:hover:translate-y-0 disabled:hover:brightness-100 disabled:hover:shadow-none motion-reduce:transition-none motion-reduce:transform-none"
           >
             {isSubmitting ? (
               <>
-                <Loader2 aria-hidden="true" size={20} className="animate-spin" />
+                <Loader2
+                  aria-hidden="true"
+                  size={20}
+                  className="animate-spin"
+                />
                 <span>جاري الإرسال...</span>
               </>
             ) : (
               <>
                 <span>إرسال الطلب</span>
+
                 <ArrowLeft
                   aria-hidden="true"
                   size={18}

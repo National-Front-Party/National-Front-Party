@@ -1,16 +1,139 @@
+
+"use client";
+
+import { useState } from "react";
+import { Church, House, Landmark } from "lucide-react";
 import NextArrowFooter from "@/components/Home/ui/NextArrowFooter";
+import ParliamentIllustration from "@/components/Home/ui/ParliamentIllustration";
+import ParliamentaryModal from "@/components/Home/ui/ParliamentaryModal";
 import SectionCard from "@/components/Home/ui/SectionCard";
 
+const iconMap = {
+  landmark: Landmark,
+  church: Church,
+  house: House,
+};
+
 export default function ParliamentaryUnit({ data }) {
+  const [active, setActive] = useState(null);
+  const activeItem = data.find((item) => item.id === active);
+
   return (
-    <SectionCard
-      title={data.title}
-      scroll
-      footer={<NextArrowFooter href="/parliamentary-unit" />}
-    >
-      <div className="min-h-80">
-        {/* TODO: Add the parliamentary timeline and illustration. */}
-      </div>
-    </SectionCard>
+    <>
+      <SectionCard
+        title="الوحدة البرلمانية"
+        scroll
+        footer={<NextArrowFooter href="/parliamentary-unit" />}
+      >
+        <div className="flex h-full min-h-[420px] flex-col">
+          <ol className="shrink-0 pt-3">
+            {data.map((item) => {
+              const Icon = iconMap[item.icon] ?? Landmark;
+
+              return (
+                <li key={item.id} className="relative pb-11">
+                  {/* Animated Dashed Line */}
+                  <div
+                    aria-hidden="true"
+                    className="
+                      pointer-events-none absolute
+                      right-[32px] top-[30px]
+                      z-0 h-[76px] w-[2px]
+                      -translate-x-1/2 translate-x-[1px]
+                      motion-reduce:hidden
+                    "
+                    style={{
+                      backgroundImage:
+                        "repeating-linear-gradient(to bottom, var(--color-gold) 0 6px, transparent 6px 12px)",
+                      backgroundSize: "2px 12px",
+                      animation: "dash-rain 0.5s linear infinite",
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    aria-label={`${item.title}، ${item.subtitle}`}
+                    aria-haspopup="dialog"
+                    onClick={() => setActive(item.id)}
+                    className="
+                      group/item relative z-10 flex w-full items-center gap-3
+                      rounded-2xl border border-transparent
+                      px-2 py-1.5 text-right
+                      cursor-pointer
+                      transition-all duration-300 ease-out
+                      hover:-translate-x-1
+                      hover:border-gold/70
+                      focus-visible:outline-none
+                      focus-visible:ring-2
+                      focus-visible:ring-gold/60
+                      focus-visible:ring-offset-2
+                      active:scale-[0.99]
+                      motion-reduce:transition-none
+                      motion-reduce:transform-none
+                    "
+                  >
+                    {/* Icon Circle */}
+                    <span
+                      className="
+                        relative z-10 flex size-12 shrink-0
+                        items-center justify-center
+                        rounded-full border border-gold/70
+                        bg-white text-gold
+                        shadow-sm
+                        outline outline-[5px] outline-white
+                        transition-all duration-300 ease-out
+                        group-hover/item:border-gold
+                        group-hover/item:bg-gold-gradient
+                        group-hover/item:text-white
+                        group-hover/item:shadow-md
+                      "
+                    >
+                      <Icon
+                        aria-hidden="true"
+                        size={22}
+                        strokeWidth={1.9}
+                      />
+                    </span>
+
+                    {/* Text */}
+                    <span className="min-w-0 flex-1">
+                      <span
+                        className="
+                          block text-lg font-extrabold text-ink
+                          transition-colors duration-300
+                          group-hover/item:text-gold-dark
+                        "
+                      >
+                        {item.title}
+                      </span>
+
+                      <span className="block text-xs text-muted">
+                        {item.subtitle}
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+
+          {/* Illustration */}
+          <div className="flex min-h-0 flex-1 items-end justify-center pt-2">
+            <ParliamentIllustration />
+          </div>
+        </div>
+      </SectionCard>
+
+      {/* Modal */}
+      <ParliamentaryModal
+        open={Boolean(activeItem)}
+        onClose={() => setActive(null)}
+        title={activeItem?.modal.title ?? ""}
+        personName={activeItem?.modal.personName ?? null}
+        personRole={activeItem?.modal.personRole ?? null}
+        paragraphs={activeItem?.modal.paragraphs ?? []}
+        source={activeItem?.modal.source ?? null}
+      />
+    </>
   );
 }
