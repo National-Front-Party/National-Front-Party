@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -13,10 +14,7 @@ import { createPortal } from "react-dom";
 import { Check, ChevronDown } from "lucide-react";
 
 export const inputBase =
-  "h-14 w-full rounded-2xl border border-border bg-white px-4 text-right text-ink shadow-none transition-all duration-300 ease-out hover:border-gold/60 hover:shadow-[0_8px_20px_-6px_rgba(201,162,74,0.35)] focus:outline-none focus:border-gold focus:-translate-y-0.5 focus:shadow-[0_10px_25px_-6px_rgba(201,162,74,0.45)] focus:ring-2 focus:ring-gold/25 disabled:opacity-60 disabled:shadow-none disabled:cursor-not-allowed";
-
-export const inputError =
-  "border-red-500 shadow-[0_8px_20px_-6px_rgba(239,68,68,0.35)] hover:border-red-500 hover:shadow-[0_8px_20px_-6px_rgba(239,68,68,0.35)] focus:border-red-500 focus:shadow-[0_8px_20px_-6px_rgba(239,68,68,0.35)] focus:ring-red-500/25 disabled:shadow-none";
+  "h-14 w-full rounded-2xl border border-border bg-white px-4 text-right text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] disabled:opacity-60 disabled:shadow-none disabled:cursor-not-allowed";
 
 const PANEL_MAX_HEIGHT = 256;
 
@@ -54,9 +52,13 @@ const CustomSelect = forwardRef(function CustomSelect(
   const labelId = `${id}-label`;
   const errorId = `${id}-error`;
 
-  useImperativeHandle(forwardedRef, () => ({
-    focus: () => triggerRef.current?.focus(),
-  }), []);
+  useImperativeHandle(
+    forwardedRef,
+    () => ({
+      focus: () => triggerRef.current?.focus(),
+    }),
+    [],
+  );
 
   const normalizedSearch = search.trim().normalize("NFKC").toLocaleLowerCase("ar");
   const filteredOptions = options.filter((option) =>
@@ -92,8 +94,11 @@ const CustomSelect = forwardRef(function CustomSelect(
       openRef.current = false;
       setOpen(false);
       setSearch("");
+
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+
       closeTimerRef.current = setTimeout(() => setPanelMounted(false), 200);
+
       if (restoreFocus) triggerRef.current?.focus();
     },
     [],
@@ -101,13 +106,19 @@ const CustomSelect = forwardRef(function CustomSelect(
 
   const openDropdown = useCallback(() => {
     if (disabled) return;
+
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
 
     openRef.current = true;
-    const selectedIndex = options.findIndex((option) => option.value === value);
+
+    const selectedIndex = options.findIndex(
+      (option) => option.value === value,
+    );
+
     setPosition(calculatePosition());
     setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0);
     setPanelMounted(true);
+
     openFrameRef.current = requestAnimationFrame(() => {
       openFrameRef.current = null;
       setOpen(true);
@@ -126,9 +137,12 @@ const CustomSelect = forwardRef(function CustomSelect(
   const moveHighlight = useCallback(
     (nextIndex) => {
       if (!filteredOptions.length) return;
+
       const index =
         (nextIndex + filteredOptions.length) % filteredOptions.length;
+
       setHighlightedIndex(index);
+
       requestAnimationFrame(() => {
         optionRefs.current
           .get(filteredOptions[index].value)
@@ -143,10 +157,12 @@ const CustomSelect = forwardRef(function CustomSelect(
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
+
       if (!dropdownOpen) openDropdown();
       else moveHighlight(highlightedIndex + 1);
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
+
       if (!dropdownOpen) openDropdown();
       else moveHighlight(highlightedIndex - 1);
     } else if (event.key === "Home" && dropdownOpen) {
@@ -155,12 +171,21 @@ const CustomSelect = forwardRef(function CustomSelect(
     } else if (event.key === "End" && dropdownOpen) {
       event.preventDefault();
       moveHighlight(filteredOptions.length - 1);
-    } else if ((event.key === "Enter" || event.key === " ") && !dropdownOpen) {
+    } else if (
+      (event.key === "Enter" || event.key === " ") &&
+      !dropdownOpen
+    ) {
       event.preventDefault();
       openDropdown();
-    } else if ((event.key === "Enter" || event.key === " ") && dropdownOpen) {
+    } else if (
+      (event.key === "Enter" || event.key === " ") &&
+      dropdownOpen
+    ) {
       event.preventDefault();
-      const option = filteredOptions[highlightedIndex] ?? filteredOptions[0];
+
+      const option =
+        filteredOptions[highlightedIndex] ?? filteredOptions[0];
+
       if (option) selectOption(option);
     } else if (event.key === "Escape" && dropdownOpen) {
       event.preventDefault();
@@ -177,21 +202,33 @@ const CustomSelect = forwardRef(function CustomSelect(
       const nextSearch = `${typeaheadRef.current}${event.key}`
         .normalize("NFKC")
         .toLocaleLowerCase("ar");
+
       typeaheadRef.current = nextSearch;
-      if (typeaheadTimerRef.current) clearTimeout(typeaheadTimerRef.current);
+
+      if (typeaheadTimerRef.current) {
+        clearTimeout(typeaheadTimerRef.current);
+      }
+
       typeaheadTimerRef.current = setTimeout(() => {
         typeaheadRef.current = "";
       }, 500);
 
       const startIndex = Math.max(highlightedIndex, 0);
+
       const matchOffset = filteredOptions
         .slice(startIndex)
         .concat(filteredOptions.slice(0, startIndex))
         .findIndex((option) =>
-          option.label.normalize("NFKC").toLocaleLowerCase("ar").startsWith(nextSearch),
+          option.label
+            .normalize("NFKC")
+            .toLocaleLowerCase("ar")
+            .startsWith(nextSearch),
         );
+
       if (matchOffset >= 0) {
-        moveHighlight((startIndex + matchOffset) % filteredOptions.length);
+        moveHighlight(
+          (startIndex + matchOffset) % filteredOptions.length,
+        );
       }
     }
   }
@@ -200,22 +237,38 @@ const CustomSelect = forwardRef(function CustomSelect(
     if (!open) return;
 
     let frame;
+
     const schedulePositionUpdate = () => {
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => setPosition(calculatePosition()));
+
+      frame = requestAnimationFrame(() =>
+        setPosition(calculatePosition()),
+      );
     };
 
     window.addEventListener("resize", schedulePositionUpdate);
     window.addEventListener("scroll", schedulePositionUpdate, true);
-    window.visualViewport?.addEventListener("resize", schedulePositionUpdate);
-    window.visualViewport?.addEventListener("scroll", schedulePositionUpdate);
+    window.visualViewport?.addEventListener(
+      "resize",
+      schedulePositionUpdate,
+    );
+    window.visualViewport?.addEventListener(
+      "scroll",
+      schedulePositionUpdate,
+    );
 
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", schedulePositionUpdate);
       window.removeEventListener("scroll", schedulePositionUpdate, true);
-      window.visualViewport?.removeEventListener("resize", schedulePositionUpdate);
-      window.visualViewport?.removeEventListener("scroll", schedulePositionUpdate);
+      window.visualViewport?.removeEventListener(
+        "resize",
+        schedulePositionUpdate,
+      );
+      window.visualViewport?.removeEventListener(
+        "scroll",
+        schedulePositionUpdate,
+      );
     };
   }, [calculatePosition, open]);
 
@@ -229,12 +282,22 @@ const CustomSelect = forwardRef(function CustomSelect(
       ) {
         return;
       }
+
       closeDropdown();
     }
 
-    document.addEventListener("pointerdown", handleOutsidePointerDown, true);
+    document.addEventListener(
+      "pointerdown",
+      handleOutsidePointerDown,
+      true,
+    );
+
     return () =>
-      document.removeEventListener("pointerdown", handleOutsidePointerDown, true);
+      document.removeEventListener(
+        "pointerdown",
+        handleOutsidePointerDown,
+        true,
+      );
   }, [closeDropdown, open]);
 
   useEffect(() => {
@@ -247,20 +310,32 @@ const CustomSelect = forwardRef(function CustomSelect(
         closeDropdown({ restoreFocus: true });
       } else if (event.key === "Tab") {
         closeDropdown();
-        if (event.target === searchRef.current) triggerRef.current?.focus();
+
+        if (event.target === searchRef.current) {
+          triggerRef.current?.focus();
+        }
       }
     }
 
     document.addEventListener("keydown", handleCaptureKeyDown, true);
+
     return () =>
-      document.removeEventListener("keydown", handleCaptureKeyDown, true);
+      document.removeEventListener(
+        "keydown",
+        handleCaptureKeyDown,
+        true,
+      );
   }, [closeDropdown, open]);
 
   useEffect(
     () => () => {
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
-      if (typeaheadTimerRef.current) clearTimeout(typeaheadTimerRef.current);
-      if (openFrameRef.current) cancelAnimationFrame(openFrameRef.current);
+      if (typeaheadTimerRef.current) {
+        clearTimeout(typeaheadTimerRef.current);
+      }
+      if (openFrameRef.current) {
+        cancelAnimationFrame(openFrameRef.current);
+      }
     },
     [],
   );
@@ -272,6 +347,7 @@ const CustomSelect = forwardRef(function CustomSelect(
     ) {
       return;
     }
+
     onBlur?.(event);
   }
 
@@ -310,9 +386,10 @@ const CustomSelect = forwardRef(function CustomSelect(
                 }}
                 onKeyDown={handleMenuKeyDown}
                 onBlur={handleBlur}
-                className="sticky top-0 z-10 mb-2 h-10 w-full rounded-xl border border-border bg-white px-3 text-right text-ink outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/25 motion-reduce:transition-none"
+                className="sticky top-0 z-10 mb-2 h-10 w-full rounded-xl border border-border bg-white px-3 text-right text-ink outline-none transition focus:border-transparent focus:shadow-[0_2px_5px_rgba(201,162,74,0.35)] motion-reduce:transition-none"
               />
             ) : null}
+
             <ul
               id={listboxId}
               role="listbox"
@@ -328,8 +405,11 @@ const CustomSelect = forwardRef(function CustomSelect(
                     <li
                       key={option.value}
                       ref={(node) => {
-                        if (node) optionRefs.current.set(option.value, node);
-                        else optionRefs.current.delete(option.value);
+                        if (node) {
+                          optionRefs.current.set(option.value, node);
+                        } else {
+                          optionRefs.current.delete(option.value);
+                        }
                       }}
                       id={`${listboxId}-option-${index}`}
                       role="option"
@@ -346,14 +426,22 @@ const CustomSelect = forwardRef(function CustomSelect(
                       }`}
                     >
                       <span>{option.label}</span>
+
                       {isSelected ? (
-                        <Check aria-hidden="true" size={18} className="shrink-0 text-gold" />
+                        <Check
+                          aria-hidden="true"
+                          size={18}
+                          className="shrink-0 text-gold"
+                        />
                       ) : null}
                     </li>
                   );
                 })
               ) : (
-                <li role="presentation" className="px-4 py-6 text-center text-sm text-muted">
+                <li
+                  role="presentation"
+                  className="px-4 py-6 text-center text-sm text-muted"
+                >
                   لا توجد نتائج
                 </li>
               )}
@@ -363,10 +451,9 @@ const CustomSelect = forwardRef(function CustomSelect(
         )
       : null;
 
-  const openClassName =
-    open && !error
-      ? "border-gold -translate-y-0.5 shadow-[0_10px_25px_-6px_rgba(201,162,74,0.45)] ring-2 ring-gold/25"
-      : "";
+  const openClassName = open
+    ? "border-transparent shadow-[0_2px_5px_rgba(201,162,74,0.35)]"
+    : "";
 
   return (
     <div ref={rootRef} dir="rtl">
@@ -376,12 +463,14 @@ const CustomSelect = forwardRef(function CustomSelect(
         className="mb-2 block text-sm font-bold text-ink"
       >
         {label}
+
         {required ? (
           <span aria-hidden="true" className="mr-1 text-gold">
             *
           </span>
         ) : null}
       </label>
+
       <button
         ref={triggerRef}
         id={`${id}-trigger`}
@@ -399,14 +488,17 @@ const CustomSelect = forwardRef(function CustomSelect(
         aria-describedby={error ? errorId : undefined}
         aria-required={required}
         disabled={disabled}
-        onClick={() => (openRef.current ? closeDropdown() : openDropdown())}
+        onClick={() =>
+          openRef.current ? closeDropdown() : openDropdown()
+        }
         onKeyDown={handleMenuKeyDown}
         onBlur={handleBlur}
-        className={`${inputBase} ${error ? inputError : ""} ${openClassName} flex items-center justify-between gap-3 disabled:hover:translate-y-0 disabled:hover:shadow-none motion-reduce:transition-none motion-reduce:transform-none`}
+        className={`${inputBase} ${openClassName} flex items-center justify-between gap-3 disabled:hover:shadow-none motion-reduce:transition-none`}
       >
         <span className={selectedOption ? "text-ink" : "text-muted"}>
           {selectedOption?.label ?? placeholder}
         </span>
+
         <ChevronDown
           aria-hidden="true"
           size={20}
@@ -415,6 +507,7 @@ const CustomSelect = forwardRef(function CustomSelect(
           } motion-reduce:transition-none`}
         />
       </button>
+
       {panel}
     </div>
   );
