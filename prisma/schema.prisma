@@ -14,6 +14,22 @@ enum application_kind {
   follower
 }
 
+enum article_status {
+  draft
+  pending_review
+  changes_requested
+  published
+}
+
+enum staff_audit_action {
+  staff_created
+  staff_profile_updated
+  staff_role_changed
+  staff_activated
+  staff_deactivated
+  staff_password_reset
+}
+
 model staff_users {
   id                                                  String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   full_name                                           String
@@ -35,6 +51,34 @@ model staff_users {
   updated_leaders                                    leaders[]
   updated_parliamentary_unit_items                   parliamentary_unit_items[]
   updated_news_articles                              news_articles[]
+  created_news_articles                              news_articles[]       @relation("news_articles_created_by")
+  reviewed_news_articles                             news_articles[]       @relation("news_articles_reviewed_by")
+  audit_events_as_actor                              staff_audit_log[]     @relation("staff_audit_actor")
+  audit_events_as_target                             staff_audit_log[]     @relation("staff_audit_target")
+}
+
+model staff_audit_log {
+  id                   BigInt             @id @default(autoincrement())
+  actor_id             String             @db.Uuid
+  actor_name           String
+  actor_email          String
+  actor_staff_user_id  String?            @db.Uuid
+  target_id            String             @db.Uuid
+  target_name          String
+  target_email         String
+  target_staff_user_id String?            @db.Uuid
+  action_type          staff_audit_action
+  details              Json?              @db.JsonB
+  occurred_at          DateTime           @default(now()) @db.Timestamptz(6)
+
+  actor_staff_user  staff_users? @relation("staff_audit_actor", fields: [actor_staff_user_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  target_staff_user staff_users? @relation("staff_audit_target", fields: [target_staff_user_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([target_id, occurred_at(sort: Desc)], map: "idx_staff_audit_target_time")
+  @@index([actor_id, occurred_at(sort: Desc)], map: "idx_staff_audit_actor_time")
+  @@index([occurred_at(sort: Desc)], map: "idx_staff_audit_time")
+  @@index([actor_staff_user_id], map: "idx_staff_audit_actor_fk")
+  @@index([target_staff_user_id], map: "idx_staff_audit_target_fk")
 }
 
 model governorates {
@@ -62,7 +106,6 @@ model membership_applications {
   occupation         String?
   governorate_id     Int                          @db.SmallInt
   terms_accepted     Boolean                      @default(false)
-  application_type   application_kind
   status             String                       @default("new")
   assigned_to        String?                      @db.Uuid
   reviewed_by        String?                      @db.Uuid
@@ -294,11 +337,18 @@ model news_articles {
   is_featured     Boolean      @default(false)
   sort_order      Int          @default(0) @db.SmallInt
   is_published    Boolean      @default(false)
+  status          article_status
+  created_by      String?        @db.Uuid
+  reviewed_by     String?        @db.Uuid
+  reviewed_at     DateTime?      @db.Timestamp(6)
+  review_note     String?
   updated_by      String?      @db.Uuid
   created_at      DateTime     @default(now()) @db.Timestamptz(6)
   updated_at      DateTime     @default(now()) @db.Timestamptz(6)
   source          news_sources @relation(fields: [source_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   updated_by_user staff_users? @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  created_by_user staff_users? @relation("news_articles_created_by", fields: [created_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  reviewed_by_user staff_users? @relation("news_articles_reviewed_by", fields: [reviewed_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@index([source_id], map: "idx_news_articles_source_id")
   @@index([updated_by], map: "idx_news_articles_updated_by")

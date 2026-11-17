@@ -16,3 +16,25 @@ export const application_kind = {
 } as const
 
 export type application_kind = (typeof application_kind)[keyof typeof application_kind]
+
+
+export const article_status = {
+  draft: 'draft',
+  pending_review: 'pending_review',
+  changes_requested: 'changes_requested',
+  published: 'published'
+} as const
+
+export type article_status = (typeof article_status)[keyof typeof article_status]
+
+
+export const staff_audit_action = {
+  staff_created: 'staff_created',
+  staff_profile_updated: 'staff_profile_updated',
+  staff_role_changed: 'staff_role_changed',
+  staff_activated: 'staff_activated',
+  staff_deactivated: 'staff_deactivated',
+  staff_password_reset: 'staff_password_reset'
+} as const
+
+export type staff_audit_action = (typeof staff_audit_action)[keyof typeof staff_audit_action]

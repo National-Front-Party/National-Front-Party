@@ -49,7 +49,6 @@ export type Membership_applicationsMinAggregateOutputType = {
   occupation: string | null
   governorate_id: number | null
   terms_accepted: boolean | null
-  application_type: $Enums.application_kind | null
   status: string | null
   assigned_to: string | null
   reviewed_by: string | null
@@ -75,7 +74,6 @@ export type Membership_applicationsMaxAggregateOutputType = {
   occupation: string | null
   governorate_id: number | null
   terms_accepted: boolean | null
-  application_type: $Enums.application_kind | null
   status: string | null
   assigned_to: string | null
   reviewed_by: string | null
@@ -101,7 +99,6 @@ export type Membership_applicationsCountAggregateOutputType = {
   occupation: number
   governorate_id: number
   terms_accepted: number
-  application_type: number
   status: number
   assigned_to: number
   reviewed_by: number
@@ -139,7 +136,6 @@ export type Membership_applicationsMinAggregateInputType = {
   occupation?: true
   governorate_id?: true
   terms_accepted?: true
-  application_type?: true
   status?: true
   assigned_to?: true
   reviewed_by?: true
@@ -165,7 +161,6 @@ export type Membership_applicationsMaxAggregateInputType = {
   occupation?: true
   governorate_id?: true
   terms_accepted?: true
-  application_type?: true
   status?: true
   assigned_to?: true
   reviewed_by?: true
@@ -191,7 +186,6 @@ export type Membership_applicationsCountAggregateInputType = {
   occupation?: true
   governorate_id?: true
   terms_accepted?: true
-  application_type?: true
   status?: true
   assigned_to?: true
   reviewed_by?: true
@@ -304,7 +298,6 @@ export type Membership_applicationsGroupByOutputType = {
   occupation: string | null
   governorate_id: number
   terms_accepted: boolean
-  application_type: $Enums.application_kind
   status: string
   assigned_to: string | null
   reviewed_by: string | null
@@ -353,7 +346,6 @@ export type membership_applicationsWhereInput = {
   occupation?: Prisma.StringNullableFilter<"membership_applications"> | string | null
   governorate_id?: Prisma.IntFilter<"membership_applications"> | number
   terms_accepted?: Prisma.BoolFilter<"membership_applications"> | boolean
-  application_type?: Prisma.Enumapplication_kindFilter<"membership_applications"> | $Enums.application_kind
   status?: Prisma.StringFilter<"membership_applications"> | string
   assigned_to?: Prisma.UuidNullableFilter<"membership_applications"> | string | null
   reviewed_by?: Prisma.UuidNullableFilter<"membership_applications"> | string | null
@@ -384,7 +376,6 @@ export type membership_applicationsOrderByWithRelationInput = {
   occupation?: Prisma.SortOrderInput | Prisma.SortOrder
   governorate_id?: Prisma.SortOrder
   terms_accepted?: Prisma.SortOrder
-  application_type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   assigned_to?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewed_by?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -418,7 +409,6 @@ export type membership_applicationsWhereUniqueInput = Prisma.AtLeast<{
   occupation?: Prisma.StringNullableFilter<"membership_applications"> | string | null
   governorate_id?: Prisma.IntFilter<"membership_applications"> | number
   terms_accepted?: Prisma.BoolFilter<"membership_applications"> | boolean
-  application_type?: Prisma.Enumapplication_kindFilter<"membership_applications"> | $Enums.application_kind
   status?: Prisma.StringFilter<"membership_applications"> | string
   assigned_to?: Prisma.UuidNullableFilter<"membership_applications"> | string | null
   reviewed_by?: Prisma.UuidNullableFilter<"membership_applications"> | string | null
@@ -449,7 +439,6 @@ export type membership_applicationsOrderByWithAggregationInput = {
   occupation?: Prisma.SortOrderInput | Prisma.SortOrder
   governorate_id?: Prisma.SortOrder
   terms_accepted?: Prisma.SortOrder
-  application_type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   assigned_to?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewed_by?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -483,7 +472,6 @@ export type membership_applicationsScalarWhereWithAggregatesInput = {
   occupation?: Prisma.StringNullableWithAggregatesFilter<"membership_applications"> | string | null
   governorate_id?: Prisma.IntWithAggregatesFilter<"membership_applications"> | number
   terms_accepted?: Prisma.BoolWithAggregatesFilter<"membership_applications"> | boolean
-  application_type?: Prisma.Enumapplication_kindWithAggregatesFilter<"membership_applications"> | $Enums.application_kind
   status?: Prisma.StringWithAggregatesFilter<"membership_applications"> | string
   assigned_to?: Prisma.UuidNullableWithAggregatesFilter<"membership_applications"> | string | null
   reviewed_by?: Prisma.UuidNullableWithAggregatesFilter<"membership_applications"> | string | null
@@ -508,7 +496,6 @@ export type membership_applicationsCreateInput = {
   education_level?: string | null
   occupation?: string | null
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   reviewed_at?: Date | string | null
   rejection_reason?: string | null
@@ -537,7 +524,6 @@ export type membership_applicationsUncheckedCreateInput = {
   occupation?: string | null
   governorate_id: number
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   assigned_to?: string | null
   reviewed_by?: string | null
@@ -564,7 +550,6 @@ export type membership_applicationsUpdateInput = {
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejection_reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -593,7 +578,6 @@ export type membership_applicationsUncheckedUpdateInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   assigned_to?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -621,7 +605,6 @@ export type membership_applicationsCreateManyInput = {
   occupation?: string | null
   governorate_id: number
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   assigned_to?: string | null
   reviewed_by?: string | null
@@ -646,7 +629,6 @@ export type membership_applicationsUpdateManyMutationInput = {
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejection_reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -670,7 +652,6 @@ export type membership_applicationsUncheckedUpdateManyInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   assigned_to?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -706,7 +687,6 @@ export type membership_applicationsCountOrderByAggregateInput = {
   occupation?: Prisma.SortOrder
   governorate_id?: Prisma.SortOrder
   terms_accepted?: Prisma.SortOrder
-  application_type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   assigned_to?: Prisma.SortOrder
   reviewed_by?: Prisma.SortOrder
@@ -737,7 +717,6 @@ export type membership_applicationsMaxOrderByAggregateInput = {
   occupation?: Prisma.SortOrder
   governorate_id?: Prisma.SortOrder
   terms_accepted?: Prisma.SortOrder
-  application_type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   assigned_to?: Prisma.SortOrder
   reviewed_by?: Prisma.SortOrder
@@ -763,7 +742,6 @@ export type membership_applicationsMinOrderByAggregateInput = {
   occupation?: Prisma.SortOrder
   governorate_id?: Prisma.SortOrder
   terms_accepted?: Prisma.SortOrder
-  application_type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   assigned_to?: Prisma.SortOrder
   reviewed_by?: Prisma.SortOrder
@@ -912,14 +890,6 @@ export type membership_applicationsUncheckedUpdateManyWithoutGovernorateNestedIn
   deleteMany?: Prisma.membership_applicationsScalarWhereInput | Prisma.membership_applicationsScalarWhereInput[]
 }
 
-export type BigIntFieldUpdateOperationsInput = {
-  set?: bigint | number
-  increment?: bigint | number
-  decrement?: bigint | number
-  multiply?: bigint | number
-  divide?: bigint | number
-}
-
 export type Enumapplication_kindFieldUpdateOperationsInput = {
   set?: $Enums.application_kind
 }
@@ -964,7 +934,6 @@ export type membership_applicationsCreateWithoutAssigned_staff_userInput = {
   education_level?: string | null
   occupation?: string | null
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   reviewed_at?: Date | string | null
   rejection_reason?: string | null
@@ -992,7 +961,6 @@ export type membership_applicationsUncheckedCreateWithoutAssigned_staff_userInpu
   occupation?: string | null
   governorate_id: number
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   reviewed_by?: string | null
   reviewed_at?: Date | string | null
@@ -1028,7 +996,6 @@ export type membership_applicationsCreateWithoutReviewed_staff_userInput = {
   education_level?: string | null
   occupation?: string | null
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   reviewed_at?: Date | string | null
   rejection_reason?: string | null
@@ -1056,7 +1023,6 @@ export type membership_applicationsUncheckedCreateWithoutReviewed_staff_userInpu
   occupation?: string | null
   governorate_id: number
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   assigned_to?: string | null
   reviewed_at?: Date | string | null
@@ -1112,7 +1078,6 @@ export type membership_applicationsScalarWhereInput = {
   occupation?: Prisma.StringNullableFilter<"membership_applications"> | string | null
   governorate_id?: Prisma.IntFilter<"membership_applications"> | number
   terms_accepted?: Prisma.BoolFilter<"membership_applications"> | boolean
-  application_type?: Prisma.Enumapplication_kindFilter<"membership_applications"> | $Enums.application_kind
   status?: Prisma.StringFilter<"membership_applications"> | string
   assigned_to?: Prisma.UuidNullableFilter<"membership_applications"> | string | null
   reviewed_by?: Prisma.UuidNullableFilter<"membership_applications"> | string | null
@@ -1153,7 +1118,6 @@ export type membership_applicationsCreateWithoutGovernorateInput = {
   education_level?: string | null
   occupation?: string | null
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   reviewed_at?: Date | string | null
   rejection_reason?: string | null
@@ -1180,7 +1144,6 @@ export type membership_applicationsUncheckedCreateWithoutGovernorateInput = {
   education_level?: string | null
   occupation?: string | null
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   assigned_to?: string | null
   reviewed_by?: string | null
@@ -1233,7 +1196,6 @@ export type membership_applicationsCreateWithoutMembersInput = {
   education_level?: string | null
   occupation?: string | null
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   reviewed_at?: Date | string | null
   rejection_reason?: string | null
@@ -1261,7 +1223,6 @@ export type membership_applicationsUncheckedCreateWithoutMembersInput = {
   occupation?: string | null
   governorate_id: number
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   assigned_to?: string | null
   reviewed_by?: string | null
@@ -1303,7 +1264,6 @@ export type membership_applicationsUpdateWithoutMembersInput = {
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejection_reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1331,7 +1291,6 @@ export type membership_applicationsUncheckedUpdateWithoutMembersInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   assigned_to?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1357,7 +1316,6 @@ export type membership_applicationsCreateWithoutApplication_status_historyInput 
   education_level?: string | null
   occupation?: string | null
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   reviewed_at?: Date | string | null
   rejection_reason?: string | null
@@ -1385,7 +1343,6 @@ export type membership_applicationsUncheckedCreateWithoutApplication_status_hist
   occupation?: string | null
   governorate_id: number
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   assigned_to?: string | null
   reviewed_by?: string | null
@@ -1427,7 +1384,6 @@ export type membership_applicationsUpdateWithoutApplication_status_historyInput 
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejection_reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1455,7 +1411,6 @@ export type membership_applicationsUncheckedUpdateWithoutApplication_status_hist
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   assigned_to?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1482,7 +1437,6 @@ export type membership_applicationsCreateManyAssigned_staff_userInput = {
   occupation?: string | null
   governorate_id: number
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   reviewed_by?: string | null
   reviewed_at?: Date | string | null
@@ -1507,7 +1461,6 @@ export type membership_applicationsCreateManyReviewed_staff_userInput = {
   occupation?: string | null
   governorate_id: number
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   assigned_to?: string | null
   reviewed_at?: Date | string | null
@@ -1531,7 +1484,6 @@ export type membership_applicationsUpdateWithoutAssigned_staff_userInput = {
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejection_reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1559,7 +1511,6 @@ export type membership_applicationsUncheckedUpdateWithoutAssigned_staff_userInpu
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1586,7 +1537,6 @@ export type membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_user
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1610,7 +1560,6 @@ export type membership_applicationsUpdateWithoutReviewed_staff_userInput = {
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejection_reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1638,7 +1587,6 @@ export type membership_applicationsUncheckedUpdateWithoutReviewed_staff_userInpu
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   assigned_to?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1665,7 +1613,6 @@ export type membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_user
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   assigned_to?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1689,7 +1636,6 @@ export type membership_applicationsCreateManyGovernorateInput = {
   education_level?: string | null
   occupation?: string | null
   terms_accepted?: boolean
-  application_type: $Enums.application_kind
   status?: string
   assigned_to?: string | null
   reviewed_by?: string | null
@@ -1714,7 +1660,6 @@ export type membership_applicationsUpdateWithoutGovernorateInput = {
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejection_reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1741,7 +1686,6 @@ export type membership_applicationsUncheckedUpdateWithoutGovernorateInput = {
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   assigned_to?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1768,7 +1712,6 @@ export type membership_applicationsUncheckedUpdateManyWithoutGovernorateInput = 
   education_level?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terms_accepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   status?: Prisma.StringFieldUpdateOperationsInput | string
   assigned_to?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1825,7 +1768,6 @@ export type membership_applicationsSelect<ExtArgs extends runtime.Types.Extensio
   occupation?: boolean
   governorate_id?: boolean
   terms_accepted?: boolean
-  application_type?: boolean
   status?: boolean
   assigned_to?: boolean
   reviewed_by?: boolean
@@ -1857,7 +1799,6 @@ export type membership_applicationsSelectCreateManyAndReturn<ExtArgs extends run
   occupation?: boolean
   governorate_id?: boolean
   terms_accepted?: boolean
-  application_type?: boolean
   status?: boolean
   assigned_to?: boolean
   reviewed_by?: boolean
@@ -1886,7 +1827,6 @@ export type membership_applicationsSelectUpdateManyAndReturn<ExtArgs extends run
   occupation?: boolean
   governorate_id?: boolean
   terms_accepted?: boolean
-  application_type?: boolean
   status?: boolean
   assigned_to?: boolean
   reviewed_by?: boolean
@@ -1915,7 +1855,6 @@ export type membership_applicationsSelectScalar = {
   occupation?: boolean
   governorate_id?: boolean
   terms_accepted?: boolean
-  application_type?: boolean
   status?: boolean
   assigned_to?: boolean
   reviewed_by?: boolean
@@ -1928,11 +1867,7 @@ export type membership_applicationsSelectScalar = {
   updated_at?: boolean
 }
 
-<<<<<<< HEAD
-export type membership_applicationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "application_no" | "full_name" | "birth_date" | "gender" | "phone" | "national_id" | "education_level" | "occupation" | "governorate_id" | "terms_accepted" | "application_type" | "status" | "assigned_to" | "reviewed_by" | "reviewed_at" | "rejection_reason" | "internal_notes" | "source" | "submitted_ip" | "created_at" | "updated_at", ExtArgs["result"]["membership_applications"]>
-=======
 export type membership_applicationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "application_no" | "application_type" | "full_name" | "birth_date" | "gender" | "phone" | "national_id" | "education_level" | "occupation" | "governorate_id" | "terms_accepted" | "status" | "assigned_to" | "reviewed_by" | "reviewed_at" | "rejection_reason" | "internal_notes" | "source" | "submitted_ip" | "created_at" | "updated_at", ExtArgs["result"]["membership_applications"]>
->>>>>>> 0ba9494114943e2775741314805196805db21713
 export type membership_applicationsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   application_status_history?: boolean | Prisma.membership_applications$application_status_historyArgs<ExtArgs>
   members?: boolean | Prisma.membership_applications$membersArgs<ExtArgs>
@@ -1974,7 +1909,6 @@ export type $membership_applicationsPayload<ExtArgs extends runtime.Types.Extens
     occupation: string | null
     governorate_id: number
     terms_accepted: boolean
-    application_type: $Enums.application_kind
     status: string
     assigned_to: string | null
     reviewed_by: string | null
@@ -2425,7 +2359,6 @@ export interface membership_applicationsFieldRefs {
   readonly occupation: Prisma.FieldRef<"membership_applications", 'String'>
   readonly governorate_id: Prisma.FieldRef<"membership_applications", 'Int'>
   readonly terms_accepted: Prisma.FieldRef<"membership_applications", 'Boolean'>
-  readonly application_type: Prisma.FieldRef<"membership_applications", 'application_kind'>
   readonly status: Prisma.FieldRef<"membership_applications", 'String'>
   readonly assigned_to: Prisma.FieldRef<"membership_applications", 'String'>
   readonly reviewed_by: Prisma.FieldRef<"membership_applications", 'String'>

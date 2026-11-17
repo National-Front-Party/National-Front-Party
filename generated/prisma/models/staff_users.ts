@@ -273,6 +273,10 @@ export type staff_usersWhereInput = {
   updated_leaders?: Prisma.LeadersListRelationFilter
   updated_parliamentary_unit_items?: Prisma.Parliamentary_unit_itemsListRelationFilter
   updated_news_articles?: Prisma.News_articlesListRelationFilter
+  created_news_articles?: Prisma.News_articlesListRelationFilter
+  reviewed_news_articles?: Prisma.News_articlesListRelationFilter
+  audit_events_as_actor?: Prisma.Staff_audit_logListRelationFilter
+  audit_events_as_target?: Prisma.Staff_audit_logListRelationFilter
 }
 
 export type staff_usersOrderByWithRelationInput = {
@@ -296,6 +300,10 @@ export type staff_usersOrderByWithRelationInput = {
   updated_leaders?: Prisma.leadersOrderByRelationAggregateInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsOrderByRelationAggregateInput
   updated_news_articles?: Prisma.news_articlesOrderByRelationAggregateInput
+  created_news_articles?: Prisma.news_articlesOrderByRelationAggregateInput
+  reviewed_news_articles?: Prisma.news_articlesOrderByRelationAggregateInput
+  audit_events_as_actor?: Prisma.staff_audit_logOrderByRelationAggregateInput
+  audit_events_as_target?: Prisma.staff_audit_logOrderByRelationAggregateInput
 }
 
 export type staff_usersWhereUniqueInput = Prisma.AtLeast<{
@@ -322,6 +330,10 @@ export type staff_usersWhereUniqueInput = Prisma.AtLeast<{
   updated_leaders?: Prisma.LeadersListRelationFilter
   updated_parliamentary_unit_items?: Prisma.Parliamentary_unit_itemsListRelationFilter
   updated_news_articles?: Prisma.News_articlesListRelationFilter
+  created_news_articles?: Prisma.News_articlesListRelationFilter
+  reviewed_news_articles?: Prisma.News_articlesListRelationFilter
+  audit_events_as_actor?: Prisma.Staff_audit_logListRelationFilter
+  audit_events_as_target?: Prisma.Staff_audit_logListRelationFilter
 }, "id" | "email">
 
 export type staff_usersOrderByWithAggregationInput = {
@@ -381,6 +393,10 @@ export type staff_usersCreateInput = {
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateInput = {
@@ -404,6 +420,10 @@ export type staff_usersUncheckedCreateInput = {
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUpdateInput = {
@@ -427,6 +447,10 @@ export type staff_usersUpdateInput = {
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateInput = {
@@ -450,6 +474,10 @@ export type staff_usersUncheckedUpdateInput = {
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersCreateManyInput = {
@@ -575,6 +603,38 @@ export type IntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type staff_usersCreateNestedOneWithoutAudit_events_as_actorInput = {
+  create?: Prisma.XOR<Prisma.staff_usersCreateWithoutAudit_events_as_actorInput, Prisma.staff_usersUncheckedCreateWithoutAudit_events_as_actorInput>
+  connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutAudit_events_as_actorInput
+  connect?: Prisma.staff_usersWhereUniqueInput
+}
+
+export type staff_usersCreateNestedOneWithoutAudit_events_as_targetInput = {
+  create?: Prisma.XOR<Prisma.staff_usersCreateWithoutAudit_events_as_targetInput, Prisma.staff_usersUncheckedCreateWithoutAudit_events_as_targetInput>
+  connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutAudit_events_as_targetInput
+  connect?: Prisma.staff_usersWhereUniqueInput
+}
+
+export type staff_usersUpdateOneWithoutAudit_events_as_actorNestedInput = {
+  create?: Prisma.XOR<Prisma.staff_usersCreateWithoutAudit_events_as_actorInput, Prisma.staff_usersUncheckedCreateWithoutAudit_events_as_actorInput>
+  connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutAudit_events_as_actorInput
+  upsert?: Prisma.staff_usersUpsertWithoutAudit_events_as_actorInput
+  disconnect?: Prisma.staff_usersWhereInput | boolean
+  delete?: Prisma.staff_usersWhereInput | boolean
+  connect?: Prisma.staff_usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.staff_usersUpdateToOneWithWhereWithoutAudit_events_as_actorInput, Prisma.staff_usersUpdateWithoutAudit_events_as_actorInput>, Prisma.staff_usersUncheckedUpdateWithoutAudit_events_as_actorInput>
+}
+
+export type staff_usersUpdateOneWithoutAudit_events_as_targetNestedInput = {
+  create?: Prisma.XOR<Prisma.staff_usersCreateWithoutAudit_events_as_targetInput, Prisma.staff_usersUncheckedCreateWithoutAudit_events_as_targetInput>
+  connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutAudit_events_as_targetInput
+  upsert?: Prisma.staff_usersUpsertWithoutAudit_events_as_targetInput
+  disconnect?: Prisma.staff_usersWhereInput | boolean
+  delete?: Prisma.staff_usersWhereInput | boolean
+  connect?: Prisma.staff_usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.staff_usersUpdateToOneWithWhereWithoutAudit_events_as_targetInput, Prisma.staff_usersUpdateWithoutAudit_events_as_targetInput>, Prisma.staff_usersUncheckedUpdateWithoutAudit_events_as_targetInput>
 }
 
 export type staff_usersCreateNestedOneWithoutAssigned_membership_applicationsInput = {
@@ -711,6 +771,18 @@ export type staff_usersCreateNestedOneWithoutUpdated_news_articlesInput = {
   connect?: Prisma.staff_usersWhereUniqueInput
 }
 
+export type staff_usersCreateNestedOneWithoutCreated_news_articlesInput = {
+  create?: Prisma.XOR<Prisma.staff_usersCreateWithoutCreated_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutCreated_news_articlesInput>
+  connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutCreated_news_articlesInput
+  connect?: Prisma.staff_usersWhereUniqueInput
+}
+
+export type staff_usersCreateNestedOneWithoutReviewed_news_articlesInput = {
+  create?: Prisma.XOR<Prisma.staff_usersCreateWithoutReviewed_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutReviewed_news_articlesInput>
+  connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutReviewed_news_articlesInput
+  connect?: Prisma.staff_usersWhereUniqueInput
+}
+
 export type staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput = {
   create?: Prisma.XOR<Prisma.staff_usersCreateWithoutUpdated_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutUpdated_news_articlesInput>
   connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutUpdated_news_articlesInput
@@ -719,6 +791,266 @@ export type staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput = {
   delete?: Prisma.staff_usersWhereInput | boolean
   connect?: Prisma.staff_usersWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.staff_usersUpdateToOneWithWhereWithoutUpdated_news_articlesInput, Prisma.staff_usersUpdateWithoutUpdated_news_articlesInput>, Prisma.staff_usersUncheckedUpdateWithoutUpdated_news_articlesInput>
+}
+
+export type staff_usersUpdateOneWithoutCreated_news_articlesNestedInput = {
+  create?: Prisma.XOR<Prisma.staff_usersCreateWithoutCreated_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutCreated_news_articlesInput>
+  connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutCreated_news_articlesInput
+  upsert?: Prisma.staff_usersUpsertWithoutCreated_news_articlesInput
+  disconnect?: Prisma.staff_usersWhereInput | boolean
+  delete?: Prisma.staff_usersWhereInput | boolean
+  connect?: Prisma.staff_usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.staff_usersUpdateToOneWithWhereWithoutCreated_news_articlesInput, Prisma.staff_usersUpdateWithoutCreated_news_articlesInput>, Prisma.staff_usersUncheckedUpdateWithoutCreated_news_articlesInput>
+}
+
+export type staff_usersUpdateOneWithoutReviewed_news_articlesNestedInput = {
+  create?: Prisma.XOR<Prisma.staff_usersCreateWithoutReviewed_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutReviewed_news_articlesInput>
+  connectOrCreate?: Prisma.staff_usersCreateOrConnectWithoutReviewed_news_articlesInput
+  upsert?: Prisma.staff_usersUpsertWithoutReviewed_news_articlesInput
+  disconnect?: Prisma.staff_usersWhereInput | boolean
+  delete?: Prisma.staff_usersWhereInput | boolean
+  connect?: Prisma.staff_usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.staff_usersUpdateToOneWithWhereWithoutReviewed_news_articlesInput, Prisma.staff_usersUpdateWithoutReviewed_news_articlesInput>, Prisma.staff_usersUncheckedUpdateWithoutReviewed_news_articlesInput>
+}
+
+export type staff_usersCreateWithoutAudit_events_as_actorInput = {
+  id?: string
+  full_name: string
+  email: string
+  role: string
+  is_active?: boolean
+  created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
+  application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
+  assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
+  reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
+  assigned_service_requests?: Prisma.service_requestsCreateNestedManyWithoutAssigned_staff_userInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoCreateNestedManyWithoutUpdated_by_userInput
+  updated_info_items?: Prisma.info_itemsCreateNestedManyWithoutUpdated_by_userInput
+  updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
+  updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
+}
+
+export type staff_usersUncheckedCreateWithoutAudit_events_as_actorInput = {
+  id?: string
+  full_name: string
+  email: string
+  role: string
+  is_active?: boolean
+  created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
+  application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
+  assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
+  assigned_service_requests?: Prisma.service_requestsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_info_items?: Prisma.info_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
+}
+
+export type staff_usersCreateOrConnectWithoutAudit_events_as_actorInput = {
+  where: Prisma.staff_usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.staff_usersCreateWithoutAudit_events_as_actorInput, Prisma.staff_usersUncheckedCreateWithoutAudit_events_as_actorInput>
+}
+
+export type staff_usersCreateWithoutAudit_events_as_targetInput = {
+  id?: string
+  full_name: string
+  email: string
+  role: string
+  is_active?: boolean
+  created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
+  application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
+  assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
+  reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
+  assigned_service_requests?: Prisma.service_requestsCreateNestedManyWithoutAssigned_staff_userInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoCreateNestedManyWithoutUpdated_by_userInput
+  updated_info_items?: Prisma.info_itemsCreateNestedManyWithoutUpdated_by_userInput
+  updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
+  updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+}
+
+export type staff_usersUncheckedCreateWithoutAudit_events_as_targetInput = {
+  id?: string
+  full_name: string
+  email: string
+  role: string
+  is_active?: boolean
+  created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
+  application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
+  assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
+  assigned_service_requests?: Prisma.service_requestsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_info_items?: Prisma.info_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+}
+
+export type staff_usersCreateOrConnectWithoutAudit_events_as_targetInput = {
+  where: Prisma.staff_usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.staff_usersCreateWithoutAudit_events_as_targetInput, Prisma.staff_usersUncheckedCreateWithoutAudit_events_as_targetInput>
+}
+
+export type staff_usersUpsertWithoutAudit_events_as_actorInput = {
+  update: Prisma.XOR<Prisma.staff_usersUpdateWithoutAudit_events_as_actorInput, Prisma.staff_usersUncheckedUpdateWithoutAudit_events_as_actorInput>
+  create: Prisma.XOR<Prisma.staff_usersCreateWithoutAudit_events_as_actorInput, Prisma.staff_usersUncheckedCreateWithoutAudit_events_as_actorInput>
+  where?: Prisma.staff_usersWhereInput
+}
+
+export type staff_usersUpdateToOneWithWhereWithoutAudit_events_as_actorInput = {
+  where?: Prisma.staff_usersWhereInput
+  data: Prisma.XOR<Prisma.staff_usersUpdateWithoutAudit_events_as_actorInput, Prisma.staff_usersUncheckedUpdateWithoutAudit_events_as_actorInput>
+}
+
+export type staff_usersUpdateWithoutAudit_events_as_actorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
+  assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
+  assigned_service_requests?: Prisma.service_requestsUpdateManyWithoutAssigned_staff_userNestedInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUpdateManyWithoutUpdated_by_userNestedInput
+  updated_info_items?: Prisma.info_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
+}
+
+export type staff_usersUncheckedUpdateWithoutAudit_events_as_actorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
+  assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
+  assigned_service_requests?: Prisma.service_requestsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_info_items?: Prisma.info_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
+}
+
+export type staff_usersUpsertWithoutAudit_events_as_targetInput = {
+  update: Prisma.XOR<Prisma.staff_usersUpdateWithoutAudit_events_as_targetInput, Prisma.staff_usersUncheckedUpdateWithoutAudit_events_as_targetInput>
+  create: Prisma.XOR<Prisma.staff_usersCreateWithoutAudit_events_as_targetInput, Prisma.staff_usersUncheckedCreateWithoutAudit_events_as_targetInput>
+  where?: Prisma.staff_usersWhereInput
+}
+
+export type staff_usersUpdateToOneWithWhereWithoutAudit_events_as_targetInput = {
+  where?: Prisma.staff_usersWhereInput
+  data: Prisma.XOR<Prisma.staff_usersUpdateWithoutAudit_events_as_targetInput, Prisma.staff_usersUncheckedUpdateWithoutAudit_events_as_targetInput>
+}
+
+export type staff_usersUpdateWithoutAudit_events_as_targetInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
+  assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
+  assigned_service_requests?: Prisma.service_requestsUpdateManyWithoutAssigned_staff_userNestedInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUpdateManyWithoutUpdated_by_userNestedInput
+  updated_info_items?: Prisma.info_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+}
+
+export type staff_usersUncheckedUpdateWithoutAudit_events_as_targetInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
+  assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
+  assigned_service_requests?: Prisma.service_requestsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_info_items?: Prisma.info_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
 }
 
 export type staff_usersCreateWithoutAssigned_membership_applicationsInput = {
@@ -741,6 +1073,10 @@ export type staff_usersCreateWithoutAssigned_membership_applicationsInput = {
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutAssigned_membership_applicationsInput = {
@@ -763,6 +1099,10 @@ export type staff_usersUncheckedCreateWithoutAssigned_membership_applicationsInp
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutAssigned_membership_applicationsInput = {
@@ -790,6 +1130,10 @@ export type staff_usersCreateWithoutReviewed_membership_applicationsInput = {
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutReviewed_membership_applicationsInput = {
@@ -812,6 +1156,10 @@ export type staff_usersUncheckedCreateWithoutReviewed_membership_applicationsInp
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutReviewed_membership_applicationsInput = {
@@ -850,6 +1198,10 @@ export type staff_usersUpdateWithoutAssigned_membership_applicationsInput = {
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutAssigned_membership_applicationsInput = {
@@ -872,6 +1224,10 @@ export type staff_usersUncheckedUpdateWithoutAssigned_membership_applicationsInp
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUpsertWithoutReviewed_membership_applicationsInput = {
@@ -905,6 +1261,10 @@ export type staff_usersUpdateWithoutReviewed_membership_applicationsInput = {
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutReviewed_membership_applicationsInput = {
@@ -927,6 +1287,10 @@ export type staff_usersUncheckedUpdateWithoutReviewed_membership_applicationsInp
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersCreateWithoutApplication_status_historyInput = {
@@ -949,6 +1313,10 @@ export type staff_usersCreateWithoutApplication_status_historyInput = {
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutApplication_status_historyInput = {
@@ -971,6 +1339,10 @@ export type staff_usersUncheckedCreateWithoutApplication_status_historyInput = {
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutApplication_status_historyInput = {
@@ -1009,6 +1381,10 @@ export type staff_usersUpdateWithoutApplication_status_historyInput = {
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutApplication_status_historyInput = {
@@ -1031,6 +1407,10 @@ export type staff_usersUncheckedUpdateWithoutApplication_status_historyInput = {
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersCreateWithoutUpdated_leadersInput = {
@@ -1053,6 +1433,10 @@ export type staff_usersCreateWithoutUpdated_leadersInput = {
   updated_info_items?: Prisma.info_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutUpdated_leadersInput = {
@@ -1075,6 +1459,10 @@ export type staff_usersUncheckedCreateWithoutUpdated_leadersInput = {
   updated_info_items?: Prisma.info_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutUpdated_leadersInput = {
@@ -1113,6 +1501,10 @@ export type staff_usersUpdateWithoutUpdated_leadersInput = {
   updated_info_items?: Prisma.info_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutUpdated_leadersInput = {
@@ -1135,6 +1527,10 @@ export type staff_usersUncheckedUpdateWithoutUpdated_leadersInput = {
   updated_info_items?: Prisma.info_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersCreateWithoutUpdated_info_itemsInput = {
@@ -1157,6 +1553,10 @@ export type staff_usersCreateWithoutUpdated_info_itemsInput = {
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutUpdated_info_itemsInput = {
@@ -1179,6 +1579,10 @@ export type staff_usersUncheckedCreateWithoutUpdated_info_itemsInput = {
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutUpdated_info_itemsInput = {
@@ -1217,6 +1621,10 @@ export type staff_usersUpdateWithoutUpdated_info_itemsInput = {
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutUpdated_info_itemsInput = {
@@ -1239,6 +1647,10 @@ export type staff_usersUncheckedUpdateWithoutUpdated_info_itemsInput = {
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersCreateWithoutUpdated_governorate_secretariats_infoInput = {
@@ -1261,6 +1673,10 @@ export type staff_usersCreateWithoutUpdated_governorate_secretariats_infoInput =
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutUpdated_governorate_secretariats_infoInput = {
@@ -1283,6 +1699,10 @@ export type staff_usersUncheckedCreateWithoutUpdated_governorate_secretariats_in
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutUpdated_governorate_secretariats_infoInput = {
@@ -1321,6 +1741,10 @@ export type staff_usersUpdateWithoutUpdated_governorate_secretariats_infoInput =
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutUpdated_governorate_secretariats_infoInput = {
@@ -1343,6 +1767,10 @@ export type staff_usersUncheckedUpdateWithoutUpdated_governorate_secretariats_in
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersCreateWithoutUpdated_parliamentary_unit_itemsInput = {
@@ -1365,6 +1793,10 @@ export type staff_usersCreateWithoutUpdated_parliamentary_unit_itemsInput = {
   updated_info_items?: Prisma.info_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutUpdated_parliamentary_unit_itemsInput = {
@@ -1387,6 +1819,10 @@ export type staff_usersUncheckedCreateWithoutUpdated_parliamentary_unit_itemsInp
   updated_info_items?: Prisma.info_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutUpdated_parliamentary_unit_itemsInput = {
@@ -1425,6 +1861,10 @@ export type staff_usersUpdateWithoutUpdated_parliamentary_unit_itemsInput = {
   updated_info_items?: Prisma.info_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutUpdated_parliamentary_unit_itemsInput = {
@@ -1447,6 +1887,10 @@ export type staff_usersUncheckedUpdateWithoutUpdated_parliamentary_unit_itemsInp
   updated_info_items?: Prisma.info_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersCreateWithoutAssigned_service_requestsInput = {
@@ -1469,6 +1913,10 @@ export type staff_usersCreateWithoutAssigned_service_requestsInput = {
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutAssigned_service_requestsInput = {
@@ -1491,6 +1939,10 @@ export type staff_usersUncheckedCreateWithoutAssigned_service_requestsInput = {
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutAssigned_service_requestsInput = {
@@ -1529,6 +1981,10 @@ export type staff_usersUpdateWithoutAssigned_service_requestsInput = {
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutAssigned_service_requestsInput = {
@@ -1551,6 +2007,10 @@ export type staff_usersUncheckedUpdateWithoutAssigned_service_requestsInput = {
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersCreateWithoutUpdated_news_articlesInput = {
@@ -1573,6 +2033,10 @@ export type staff_usersCreateWithoutUpdated_news_articlesInput = {
   updated_info_items?: Prisma.info_itemsCreateNestedManyWithoutUpdated_by_userInput
   updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersUncheckedCreateWithoutUpdated_news_articlesInput = {
@@ -1595,11 +2059,129 @@ export type staff_usersUncheckedCreateWithoutUpdated_news_articlesInput = {
   updated_info_items?: Prisma.info_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
 }
 
 export type staff_usersCreateOrConnectWithoutUpdated_news_articlesInput = {
   where: Prisma.staff_usersWhereUniqueInput
   create: Prisma.XOR<Prisma.staff_usersCreateWithoutUpdated_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutUpdated_news_articlesInput>
+}
+
+export type staff_usersCreateWithoutCreated_news_articlesInput = {
+  id?: string
+  full_name: string
+  email: string
+  role: string
+  is_active?: boolean
+  created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
+  application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
+  assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
+  reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
+  assigned_service_requests?: Prisma.service_requestsCreateNestedManyWithoutAssigned_staff_userInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoCreateNestedManyWithoutUpdated_by_userInput
+  updated_info_items?: Prisma.info_itemsCreateNestedManyWithoutUpdated_by_userInput
+  updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
+  updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
+}
+
+export type staff_usersUncheckedCreateWithoutCreated_news_articlesInput = {
+  id?: string
+  full_name: string
+  email: string
+  role: string
+  is_active?: boolean
+  created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
+  application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
+  assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
+  assigned_service_requests?: Prisma.service_requestsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_info_items?: Prisma.info_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
+}
+
+export type staff_usersCreateOrConnectWithoutCreated_news_articlesInput = {
+  where: Prisma.staff_usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.staff_usersCreateWithoutCreated_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutCreated_news_articlesInput>
+}
+
+export type staff_usersCreateWithoutReviewed_news_articlesInput = {
+  id?: string
+  full_name: string
+  email: string
+  role: string
+  is_active?: boolean
+  created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
+  application_status_history?: Prisma.application_status_historyCreateNestedManyWithoutChanged_by_staff_userInput
+  assigned_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutAssigned_staff_userInput
+  reviewed_membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutReviewed_staff_userInput
+  assigned_service_requests?: Prisma.service_requestsCreateNestedManyWithoutAssigned_staff_userInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoCreateNestedManyWithoutUpdated_by_userInput
+  updated_info_items?: Prisma.info_itemsCreateNestedManyWithoutUpdated_by_userInput
+  updated_leaders?: Prisma.leadersCreateNestedManyWithoutUpdated_by_userInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsCreateNestedManyWithoutUpdated_by_userInput
+  updated_news_articles?: Prisma.news_articlesCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesCreateNestedManyWithoutCreated_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logCreateNestedManyWithoutTarget_staff_userInput
+}
+
+export type staff_usersUncheckedCreateWithoutReviewed_news_articlesInput = {
+  id?: string
+  full_name: string
+  email: string
+  role: string
+  is_active?: boolean
+  created_at?: Date | string
+  password_hash?: string | null
+  must_change_password?: boolean
+  last_login_at?: Date | string | null
+  failed_login_count?: number
+  locked_until?: Date | string | null
+  application_status_history?: Prisma.application_status_historyUncheckedCreateNestedManyWithoutChanged_by_staff_userInput
+  assigned_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutReviewed_staff_userInput
+  assigned_service_requests?: Prisma.service_requestsUncheckedCreateNestedManyWithoutAssigned_staff_userInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_info_items?: Prisma.info_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_leaders?: Prisma.leadersUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  updated_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput
+  created_news_articles?: Prisma.news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutActor_staff_userInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedCreateNestedManyWithoutTarget_staff_userInput
+}
+
+export type staff_usersCreateOrConnectWithoutReviewed_news_articlesInput = {
+  where: Prisma.staff_usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.staff_usersCreateWithoutReviewed_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutReviewed_news_articlesInput>
 }
 
 export type staff_usersUpsertWithoutUpdated_news_articlesInput = {
@@ -1633,6 +2215,10 @@ export type staff_usersUpdateWithoutUpdated_news_articlesInput = {
   updated_info_items?: Prisma.info_itemsUpdateManyWithoutUpdated_by_userNestedInput
   updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 export type staff_usersUncheckedUpdateWithoutUpdated_news_articlesInput = {
@@ -1655,6 +2241,136 @@ export type staff_usersUncheckedUpdateWithoutUpdated_news_articlesInput = {
   updated_info_items?: Prisma.info_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
   updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
+}
+
+export type staff_usersUpsertWithoutCreated_news_articlesInput = {
+  update: Prisma.XOR<Prisma.staff_usersUpdateWithoutCreated_news_articlesInput, Prisma.staff_usersUncheckedUpdateWithoutCreated_news_articlesInput>
+  create: Prisma.XOR<Prisma.staff_usersCreateWithoutCreated_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutCreated_news_articlesInput>
+  where?: Prisma.staff_usersWhereInput
+}
+
+export type staff_usersUpdateToOneWithWhereWithoutCreated_news_articlesInput = {
+  where?: Prisma.staff_usersWhereInput
+  data: Prisma.XOR<Prisma.staff_usersUpdateWithoutCreated_news_articlesInput, Prisma.staff_usersUncheckedUpdateWithoutCreated_news_articlesInput>
+}
+
+export type staff_usersUpdateWithoutCreated_news_articlesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
+  assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
+  assigned_service_requests?: Prisma.service_requestsUpdateManyWithoutAssigned_staff_userNestedInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUpdateManyWithoutUpdated_by_userNestedInput
+  updated_info_items?: Prisma.info_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
+}
+
+export type staff_usersUncheckedUpdateWithoutCreated_news_articlesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
+  assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
+  assigned_service_requests?: Prisma.service_requestsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_info_items?: Prisma.info_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  reviewed_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
+}
+
+export type staff_usersUpsertWithoutReviewed_news_articlesInput = {
+  update: Prisma.XOR<Prisma.staff_usersUpdateWithoutReviewed_news_articlesInput, Prisma.staff_usersUncheckedUpdateWithoutReviewed_news_articlesInput>
+  create: Prisma.XOR<Prisma.staff_usersCreateWithoutReviewed_news_articlesInput, Prisma.staff_usersUncheckedCreateWithoutReviewed_news_articlesInput>
+  where?: Prisma.staff_usersWhereInput
+}
+
+export type staff_usersUpdateToOneWithWhereWithoutReviewed_news_articlesInput = {
+  where?: Prisma.staff_usersWhereInput
+  data: Prisma.XOR<Prisma.staff_usersUpdateWithoutReviewed_news_articlesInput, Prisma.staff_usersUncheckedUpdateWithoutReviewed_news_articlesInput>
+}
+
+export type staff_usersUpdateWithoutReviewed_news_articlesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  application_status_history?: Prisma.application_status_historyUpdateManyWithoutChanged_by_staff_userNestedInput
+  assigned_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutAssigned_staff_userNestedInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUpdateManyWithoutReviewed_staff_userNestedInput
+  assigned_service_requests?: Prisma.service_requestsUpdateManyWithoutAssigned_staff_userNestedInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUpdateManyWithoutUpdated_by_userNestedInput
+  updated_info_items?: Prisma.info_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  updated_leaders?: Prisma.leadersUpdateManyWithoutUpdated_by_userNestedInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUpdateManyWithoutUpdated_by_userNestedInput
+  updated_news_articles?: Prisma.news_articlesUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUpdateManyWithoutCreated_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUpdateManyWithoutTarget_staff_userNestedInput
+}
+
+export type staff_usersUncheckedUpdateWithoutReviewed_news_articlesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  full_name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  password_hash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  must_change_password?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_login_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failed_login_count?: Prisma.IntFieldUpdateOperationsInput | number
+  locked_until?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  application_status_history?: Prisma.application_status_historyUncheckedUpdateManyWithoutChanged_by_staff_userNestedInput
+  assigned_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
+  reviewed_membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userNestedInput
+  assigned_service_requests?: Prisma.service_requestsUncheckedUpdateManyWithoutAssigned_staff_userNestedInput
+  updated_governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_info_items?: Prisma.info_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_leaders?: Prisma.leadersUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_parliamentary_unit_items?: Prisma.parliamentary_unit_itemsUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  updated_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput
+  created_news_articles?: Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput
+  audit_events_as_actor?: Prisma.staff_audit_logUncheckedUpdateManyWithoutActor_staff_userNestedInput
+  audit_events_as_target?: Prisma.staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userNestedInput
 }
 
 
@@ -1672,6 +2388,10 @@ export type Staff_usersCountOutputType = {
   updated_leaders: number
   updated_parliamentary_unit_items: number
   updated_news_articles: number
+  created_news_articles: number
+  reviewed_news_articles: number
+  audit_events_as_actor: number
+  audit_events_as_target: number
 }
 
 export type Staff_usersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1684,6 +2404,10 @@ export type Staff_usersCountOutputTypeSelect<ExtArgs extends runtime.Types.Exten
   updated_leaders?: boolean | Staff_usersCountOutputTypeCountUpdated_leadersArgs
   updated_parliamentary_unit_items?: boolean | Staff_usersCountOutputTypeCountUpdated_parliamentary_unit_itemsArgs
   updated_news_articles?: boolean | Staff_usersCountOutputTypeCountUpdated_news_articlesArgs
+  created_news_articles?: boolean | Staff_usersCountOutputTypeCountCreated_news_articlesArgs
+  reviewed_news_articles?: boolean | Staff_usersCountOutputTypeCountReviewed_news_articlesArgs
+  audit_events_as_actor?: boolean | Staff_usersCountOutputTypeCountAudit_events_as_actorArgs
+  audit_events_as_target?: boolean | Staff_usersCountOutputTypeCountAudit_events_as_targetArgs
 }
 
 /**
@@ -1759,6 +2483,34 @@ export type Staff_usersCountOutputTypeCountUpdated_news_articlesArgs<ExtArgs ext
   where?: Prisma.news_articlesWhereInput
 }
 
+/**
+ * Staff_usersCountOutputType without action
+ */
+export type Staff_usersCountOutputTypeCountCreated_news_articlesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.news_articlesWhereInput
+}
+
+/**
+ * Staff_usersCountOutputType without action
+ */
+export type Staff_usersCountOutputTypeCountReviewed_news_articlesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.news_articlesWhereInput
+}
+
+/**
+ * Staff_usersCountOutputType without action
+ */
+export type Staff_usersCountOutputTypeCountAudit_events_as_actorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.staff_audit_logWhereInput
+}
+
+/**
+ * Staff_usersCountOutputType without action
+ */
+export type Staff_usersCountOutputTypeCountAudit_events_as_targetArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.staff_audit_logWhereInput
+}
+
 
 export type staff_usersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1781,6 +2533,10 @@ export type staff_usersSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   updated_leaders?: boolean | Prisma.staff_users$updated_leadersArgs<ExtArgs>
   updated_parliamentary_unit_items?: boolean | Prisma.staff_users$updated_parliamentary_unit_itemsArgs<ExtArgs>
   updated_news_articles?: boolean | Prisma.staff_users$updated_news_articlesArgs<ExtArgs>
+  created_news_articles?: boolean | Prisma.staff_users$created_news_articlesArgs<ExtArgs>
+  reviewed_news_articles?: boolean | Prisma.staff_users$reviewed_news_articlesArgs<ExtArgs>
+  audit_events_as_actor?: boolean | Prisma.staff_users$audit_events_as_actorArgs<ExtArgs>
+  audit_events_as_target?: boolean | Prisma.staff_users$audit_events_as_targetArgs<ExtArgs>
   _count?: boolean | Prisma.Staff_usersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staff_users"]>
 
@@ -1837,6 +2593,10 @@ export type staff_usersInclude<ExtArgs extends runtime.Types.Extensions.Internal
   updated_leaders?: boolean | Prisma.staff_users$updated_leadersArgs<ExtArgs>
   updated_parliamentary_unit_items?: boolean | Prisma.staff_users$updated_parliamentary_unit_itemsArgs<ExtArgs>
   updated_news_articles?: boolean | Prisma.staff_users$updated_news_articlesArgs<ExtArgs>
+  created_news_articles?: boolean | Prisma.staff_users$created_news_articlesArgs<ExtArgs>
+  reviewed_news_articles?: boolean | Prisma.staff_users$reviewed_news_articlesArgs<ExtArgs>
+  audit_events_as_actor?: boolean | Prisma.staff_users$audit_events_as_actorArgs<ExtArgs>
+  audit_events_as_target?: boolean | Prisma.staff_users$audit_events_as_targetArgs<ExtArgs>
   _count?: boolean | Prisma.Staff_usersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type staff_usersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1854,6 +2614,10 @@ export type $staff_usersPayload<ExtArgs extends runtime.Types.Extensions.Interna
     updated_leaders: Prisma.$leadersPayload<ExtArgs>[]
     updated_parliamentary_unit_items: Prisma.$parliamentary_unit_itemsPayload<ExtArgs>[]
     updated_news_articles: Prisma.$news_articlesPayload<ExtArgs>[]
+    created_news_articles: Prisma.$news_articlesPayload<ExtArgs>[]
+    reviewed_news_articles: Prisma.$news_articlesPayload<ExtArgs>[]
+    audit_events_as_actor: Prisma.$staff_audit_logPayload<ExtArgs>[]
+    audit_events_as_target: Prisma.$staff_audit_logPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2270,6 +3034,10 @@ export interface Prisma__staff_usersClient<T, Null = never, ExtArgs extends runt
   updated_leaders<T extends Prisma.staff_users$updated_leadersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.staff_users$updated_leadersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$leadersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   updated_parliamentary_unit_items<T extends Prisma.staff_users$updated_parliamentary_unit_itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.staff_users$updated_parliamentary_unit_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$parliamentary_unit_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   updated_news_articles<T extends Prisma.staff_users$updated_news_articlesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.staff_users$updated_news_articlesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$news_articlesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  created_news_articles<T extends Prisma.staff_users$created_news_articlesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.staff_users$created_news_articlesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$news_articlesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reviewed_news_articles<T extends Prisma.staff_users$reviewed_news_articlesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.staff_users$reviewed_news_articlesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$news_articlesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  audit_events_as_actor<T extends Prisma.staff_users$audit_events_as_actorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.staff_users$audit_events_as_actorArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$staff_audit_logPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  audit_events_as_target<T extends Prisma.staff_users$audit_events_as_targetArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.staff_users$audit_events_as_targetArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$staff_audit_logPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2916,6 +3684,102 @@ export type staff_users$updated_news_articlesArgs<ExtArgs extends runtime.Types.
   take?: number
   skip?: number
   distinct?: Prisma.News_articlesScalarFieldEnum | Prisma.News_articlesScalarFieldEnum[]
+}
+
+/**
+ * staff_users.created_news_articles
+ */
+export type staff_users$created_news_articlesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the news_articles
+   */
+  select?: Prisma.news_articlesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the news_articles
+   */
+  omit?: Prisma.news_articlesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.news_articlesInclude<ExtArgs> | null
+  where?: Prisma.news_articlesWhereInput
+  orderBy?: Prisma.news_articlesOrderByWithRelationInput | Prisma.news_articlesOrderByWithRelationInput[]
+  cursor?: Prisma.news_articlesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.News_articlesScalarFieldEnum | Prisma.News_articlesScalarFieldEnum[]
+}
+
+/**
+ * staff_users.reviewed_news_articles
+ */
+export type staff_users$reviewed_news_articlesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the news_articles
+   */
+  select?: Prisma.news_articlesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the news_articles
+   */
+  omit?: Prisma.news_articlesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.news_articlesInclude<ExtArgs> | null
+  where?: Prisma.news_articlesWhereInput
+  orderBy?: Prisma.news_articlesOrderByWithRelationInput | Prisma.news_articlesOrderByWithRelationInput[]
+  cursor?: Prisma.news_articlesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.News_articlesScalarFieldEnum | Prisma.News_articlesScalarFieldEnum[]
+}
+
+/**
+ * staff_users.audit_events_as_actor
+ */
+export type staff_users$audit_events_as_actorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the staff_audit_log
+   */
+  select?: Prisma.staff_audit_logSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the staff_audit_log
+   */
+  omit?: Prisma.staff_audit_logOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.staff_audit_logInclude<ExtArgs> | null
+  where?: Prisma.staff_audit_logWhereInput
+  orderBy?: Prisma.staff_audit_logOrderByWithRelationInput | Prisma.staff_audit_logOrderByWithRelationInput[]
+  cursor?: Prisma.staff_audit_logWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Staff_audit_logScalarFieldEnum | Prisma.Staff_audit_logScalarFieldEnum[]
+}
+
+/**
+ * staff_users.audit_events_as_target
+ */
+export type staff_users$audit_events_as_targetArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the staff_audit_log
+   */
+  select?: Prisma.staff_audit_logSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the staff_audit_log
+   */
+  omit?: Prisma.staff_audit_logOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.staff_audit_logInclude<ExtArgs> | null
+  where?: Prisma.staff_audit_logWhereInput
+  orderBy?: Prisma.staff_audit_logOrderByWithRelationInput | Prisma.staff_audit_logOrderByWithRelationInput[]
+  cursor?: Prisma.staff_audit_logWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Staff_audit_logScalarFieldEnum | Prisma.Staff_audit_logScalarFieldEnum[]
 }
 
 /**

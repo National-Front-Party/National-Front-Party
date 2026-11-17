@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   staff_users: 'staff_users',
+  staff_audit_log: 'staff_audit_log',
   governorates: 'governorates',
   membership_applications: 'membership_applications',
   members: 'members',
@@ -102,6 +103,24 @@ export const Staff_usersScalarFieldEnum = {
 export type Staff_usersScalarFieldEnum = (typeof Staff_usersScalarFieldEnum)[keyof typeof Staff_usersScalarFieldEnum]
 
 
+export const Staff_audit_logScalarFieldEnum = {
+  id: 'id',
+  actor_id: 'actor_id',
+  actor_name: 'actor_name',
+  actor_email: 'actor_email',
+  actor_staff_user_id: 'actor_staff_user_id',
+  target_id: 'target_id',
+  target_name: 'target_name',
+  target_email: 'target_email',
+  target_staff_user_id: 'target_staff_user_id',
+  action_type: 'action_type',
+  details: 'details',
+  occurred_at: 'occurred_at'
+} as const
+
+export type Staff_audit_logScalarFieldEnum = (typeof Staff_audit_logScalarFieldEnum)[keyof typeof Staff_audit_logScalarFieldEnum]
+
+
 export const GovernoratesScalarFieldEnum = {
   id: 'id',
   name_ar: 'name_ar',
@@ -127,7 +146,6 @@ export const Membership_applicationsScalarFieldEnum = {
   occupation: 'occupation',
   governorate_id: 'governorate_id',
   terms_accepted: 'terms_accepted',
-  application_type: 'application_type',
   status: 'status',
   assigned_to: 'assigned_to',
   reviewed_by: 'reviewed_by',
@@ -341,6 +359,11 @@ export const News_articlesScalarFieldEnum = {
   is_featured: 'is_featured',
   sort_order: 'sort_order',
   is_published: 'is_published',
+  status: 'status',
+  created_by: 'created_by',
+  reviewed_by: 'reviewed_by',
+  reviewed_at: 'reviewed_at',
+  review_note: 'review_note',
   updated_by: 'updated_by',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -357,6 +380,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -371,4 +402,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

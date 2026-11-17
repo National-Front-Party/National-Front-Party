@@ -50,6 +50,11 @@ export type News_articlesMinAggregateOutputType = {
   is_featured: boolean | null
   sort_order: number | null
   is_published: boolean | null
+  status: $Enums.article_status | null
+  created_by: string | null
+  reviewed_by: string | null
+  reviewed_at: Date | null
+  review_note: string | null
   updated_by: string | null
   created_at: Date | null
   updated_at: Date | null
@@ -69,6 +74,11 @@ export type News_articlesMaxAggregateOutputType = {
   is_featured: boolean | null
   sort_order: number | null
   is_published: boolean | null
+  status: $Enums.article_status | null
+  created_by: string | null
+  reviewed_by: string | null
+  reviewed_at: Date | null
+  review_note: string | null
   updated_by: string | null
   created_at: Date | null
   updated_at: Date | null
@@ -88,6 +98,11 @@ export type News_articlesCountAggregateOutputType = {
   is_featured: number
   sort_order: number
   is_published: number
+  status: number
+  created_by: number
+  reviewed_by: number
+  reviewed_at: number
+  review_note: number
   updated_by: number
   created_at: number
   updated_at: number
@@ -119,6 +134,11 @@ export type News_articlesMinAggregateInputType = {
   is_featured?: true
   sort_order?: true
   is_published?: true
+  status?: true
+  created_by?: true
+  reviewed_by?: true
+  reviewed_at?: true
+  review_note?: true
   updated_by?: true
   created_at?: true
   updated_at?: true
@@ -138,6 +158,11 @@ export type News_articlesMaxAggregateInputType = {
   is_featured?: true
   sort_order?: true
   is_published?: true
+  status?: true
+  created_by?: true
+  reviewed_by?: true
+  reviewed_at?: true
+  review_note?: true
   updated_by?: true
   created_at?: true
   updated_at?: true
@@ -157,6 +182,11 @@ export type News_articlesCountAggregateInputType = {
   is_featured?: true
   sort_order?: true
   is_published?: true
+  status?: true
+  created_by?: true
+  reviewed_by?: true
+  reviewed_at?: true
+  review_note?: true
   updated_by?: true
   created_at?: true
   updated_at?: true
@@ -263,6 +293,11 @@ export type News_articlesGroupByOutputType = {
   is_featured: boolean
   sort_order: number
   is_published: boolean
+  status: $Enums.article_status
+  created_by: string | null
+  reviewed_by: string | null
+  reviewed_at: Date | null
+  review_note: string | null
   updated_by: string | null
   created_at: Date
   updated_at: Date
@@ -305,11 +340,18 @@ export type news_articlesWhereInput = {
   is_featured?: Prisma.BoolFilter<"news_articles"> | boolean
   sort_order?: Prisma.IntFilter<"news_articles"> | number
   is_published?: Prisma.BoolFilter<"news_articles"> | boolean
+  status?: Prisma.Enumarticle_statusFilter<"news_articles"> | $Enums.article_status
+  created_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
+  reviewed_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
+  reviewed_at?: Prisma.DateTimeNullableFilter<"news_articles"> | Date | string | null
+  review_note?: Prisma.StringNullableFilter<"news_articles"> | string | null
   updated_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
   created_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   source?: Prisma.XOR<Prisma.News_sourcesScalarRelationFilter, Prisma.news_sourcesWhereInput>
   updated_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
+  created_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
+  reviewed_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
 }
 
 export type news_articlesOrderByWithRelationInput = {
@@ -326,11 +368,18 @@ export type news_articlesOrderByWithRelationInput = {
   is_featured?: Prisma.SortOrder
   sort_order?: Prisma.SortOrder
   is_published?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  review_note?: Prisma.SortOrderInput | Prisma.SortOrder
   updated_by?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   source?: Prisma.news_sourcesOrderByWithRelationInput
   updated_by_user?: Prisma.staff_usersOrderByWithRelationInput
+  created_by_user?: Prisma.staff_usersOrderByWithRelationInput
+  reviewed_by_user?: Prisma.staff_usersOrderByWithRelationInput
 }
 
 export type news_articlesWhereUniqueInput = Prisma.AtLeast<{
@@ -350,11 +399,18 @@ export type news_articlesWhereUniqueInput = Prisma.AtLeast<{
   is_featured?: Prisma.BoolFilter<"news_articles"> | boolean
   sort_order?: Prisma.IntFilter<"news_articles"> | number
   is_published?: Prisma.BoolFilter<"news_articles"> | boolean
+  status?: Prisma.Enumarticle_statusFilter<"news_articles"> | $Enums.article_status
+  created_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
+  reviewed_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
+  reviewed_at?: Prisma.DateTimeNullableFilter<"news_articles"> | Date | string | null
+  review_note?: Prisma.StringNullableFilter<"news_articles"> | string | null
   updated_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
   created_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   source?: Prisma.XOR<Prisma.News_sourcesScalarRelationFilter, Prisma.news_sourcesWhereInput>
   updated_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
+  created_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
+  reviewed_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
 }, "id" | "slug">
 
 export type news_articlesOrderByWithAggregationInput = {
@@ -371,6 +427,11 @@ export type news_articlesOrderByWithAggregationInput = {
   is_featured?: Prisma.SortOrder
   sort_order?: Prisma.SortOrder
   is_published?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  review_note?: Prisma.SortOrderInput | Prisma.SortOrder
   updated_by?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -398,6 +459,11 @@ export type news_articlesScalarWhereWithAggregatesInput = {
   is_featured?: Prisma.BoolWithAggregatesFilter<"news_articles"> | boolean
   sort_order?: Prisma.IntWithAggregatesFilter<"news_articles"> | number
   is_published?: Prisma.BoolWithAggregatesFilter<"news_articles"> | boolean
+  status?: Prisma.Enumarticle_statusWithAggregatesFilter<"news_articles"> | $Enums.article_status
+  created_by?: Prisma.UuidNullableWithAggregatesFilter<"news_articles"> | string | null
+  reviewed_by?: Prisma.UuidNullableWithAggregatesFilter<"news_articles"> | string | null
+  reviewed_at?: Prisma.DateTimeNullableWithAggregatesFilter<"news_articles"> | Date | string | null
+  review_note?: Prisma.StringNullableWithAggregatesFilter<"news_articles"> | string | null
   updated_by?: Prisma.UuidNullableWithAggregatesFilter<"news_articles"> | string | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"news_articles"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"news_articles"> | Date | string
@@ -416,10 +482,15 @@ export type news_articlesCreateInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  reviewed_at?: Date | string | null
+  review_note?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   source: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_news_articlesInput
+  created_by_user?: Prisma.staff_usersCreateNestedOneWithoutCreated_news_articlesInput
+  reviewed_by_user?: Prisma.staff_usersCreateNestedOneWithoutReviewed_news_articlesInput
 }
 
 export type news_articlesUncheckedCreateInput = {
@@ -436,6 +507,11 @@ export type news_articlesUncheckedCreateInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  created_by?: string | null
+  reviewed_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
   updated_by?: string | null
   created_at?: Date | string
   updated_at?: Date | string
@@ -454,10 +530,15 @@ export type news_articlesUpdateInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   source?: Prisma.news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput
+  created_by_user?: Prisma.staff_usersUpdateOneWithoutCreated_news_articlesNestedInput
+  reviewed_by_user?: Prisma.staff_usersUpdateOneWithoutReviewed_news_articlesNestedInput
 }
 
 export type news_articlesUncheckedUpdateInput = {
@@ -474,6 +555,11 @@ export type news_articlesUncheckedUpdateInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updated_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -493,6 +579,11 @@ export type news_articlesCreateManyInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  created_by?: string | null
+  reviewed_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
   updated_by?: string | null
   created_at?: Date | string
   updated_at?: Date | string
@@ -511,6 +602,9 @@ export type news_articlesUpdateManyMutationInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -529,6 +623,11 @@ export type news_articlesUncheckedUpdateManyInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updated_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -558,6 +657,11 @@ export type news_articlesCountOrderByAggregateInput = {
   is_featured?: Prisma.SortOrder
   sort_order?: Prisma.SortOrder
   is_published?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrder
+  review_note?: Prisma.SortOrder
   updated_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -582,6 +686,11 @@ export type news_articlesMaxOrderByAggregateInput = {
   is_featured?: Prisma.SortOrder
   sort_order?: Prisma.SortOrder
   is_published?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrder
+  review_note?: Prisma.SortOrder
   updated_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -601,6 +710,11 @@ export type news_articlesMinOrderByAggregateInput = {
   is_featured?: Prisma.SortOrder
   sort_order?: Prisma.SortOrder
   is_published?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  created_by?: Prisma.SortOrder
+  reviewed_by?: Prisma.SortOrder
+  reviewed_at?: Prisma.SortOrder
+  review_note?: Prisma.SortOrder
   updated_by?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -618,10 +732,38 @@ export type news_articlesCreateNestedManyWithoutUpdated_by_userInput = {
   connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
 }
 
+export type news_articlesCreateNestedManyWithoutCreated_by_userInput = {
+  create?: Prisma.XOR<Prisma.news_articlesCreateWithoutCreated_by_userInput, Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput> | Prisma.news_articlesCreateWithoutCreated_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput[]
+  connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutCreated_by_userInput | Prisma.news_articlesCreateOrConnectWithoutCreated_by_userInput[]
+  createMany?: Prisma.news_articlesCreateManyCreated_by_userInputEnvelope
+  connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+}
+
+export type news_articlesCreateNestedManyWithoutReviewed_by_userInput = {
+  create?: Prisma.XOR<Prisma.news_articlesCreateWithoutReviewed_by_userInput, Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput> | Prisma.news_articlesCreateWithoutReviewed_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput[]
+  connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutReviewed_by_userInput | Prisma.news_articlesCreateOrConnectWithoutReviewed_by_userInput[]
+  createMany?: Prisma.news_articlesCreateManyReviewed_by_userInputEnvelope
+  connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+}
+
 export type news_articlesUncheckedCreateNestedManyWithoutUpdated_by_userInput = {
   create?: Prisma.XOR<Prisma.news_articlesCreateWithoutUpdated_by_userInput, Prisma.news_articlesUncheckedCreateWithoutUpdated_by_userInput> | Prisma.news_articlesCreateWithoutUpdated_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutUpdated_by_userInput[]
   connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutUpdated_by_userInput | Prisma.news_articlesCreateOrConnectWithoutUpdated_by_userInput[]
   createMany?: Prisma.news_articlesCreateManyUpdated_by_userInputEnvelope
+  connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+}
+
+export type news_articlesUncheckedCreateNestedManyWithoutCreated_by_userInput = {
+  create?: Prisma.XOR<Prisma.news_articlesCreateWithoutCreated_by_userInput, Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput> | Prisma.news_articlesCreateWithoutCreated_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput[]
+  connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutCreated_by_userInput | Prisma.news_articlesCreateOrConnectWithoutCreated_by_userInput[]
+  createMany?: Prisma.news_articlesCreateManyCreated_by_userInputEnvelope
+  connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+}
+
+export type news_articlesUncheckedCreateNestedManyWithoutReviewed_by_userInput = {
+  create?: Prisma.XOR<Prisma.news_articlesCreateWithoutReviewed_by_userInput, Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput> | Prisma.news_articlesCreateWithoutReviewed_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput[]
+  connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutReviewed_by_userInput | Prisma.news_articlesCreateOrConnectWithoutReviewed_by_userInput[]
+  createMany?: Prisma.news_articlesCreateManyReviewed_by_userInputEnvelope
   connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
 }
 
@@ -639,6 +781,34 @@ export type news_articlesUpdateManyWithoutUpdated_by_userNestedInput = {
   deleteMany?: Prisma.news_articlesScalarWhereInput | Prisma.news_articlesScalarWhereInput[]
 }
 
+export type news_articlesUpdateManyWithoutCreated_by_userNestedInput = {
+  create?: Prisma.XOR<Prisma.news_articlesCreateWithoutCreated_by_userInput, Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput> | Prisma.news_articlesCreateWithoutCreated_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput[]
+  connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutCreated_by_userInput | Prisma.news_articlesCreateOrConnectWithoutCreated_by_userInput[]
+  upsert?: Prisma.news_articlesUpsertWithWhereUniqueWithoutCreated_by_userInput | Prisma.news_articlesUpsertWithWhereUniqueWithoutCreated_by_userInput[]
+  createMany?: Prisma.news_articlesCreateManyCreated_by_userInputEnvelope
+  set?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  disconnect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  delete?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  update?: Prisma.news_articlesUpdateWithWhereUniqueWithoutCreated_by_userInput | Prisma.news_articlesUpdateWithWhereUniqueWithoutCreated_by_userInput[]
+  updateMany?: Prisma.news_articlesUpdateManyWithWhereWithoutCreated_by_userInput | Prisma.news_articlesUpdateManyWithWhereWithoutCreated_by_userInput[]
+  deleteMany?: Prisma.news_articlesScalarWhereInput | Prisma.news_articlesScalarWhereInput[]
+}
+
+export type news_articlesUpdateManyWithoutReviewed_by_userNestedInput = {
+  create?: Prisma.XOR<Prisma.news_articlesCreateWithoutReviewed_by_userInput, Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput> | Prisma.news_articlesCreateWithoutReviewed_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput[]
+  connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutReviewed_by_userInput | Prisma.news_articlesCreateOrConnectWithoutReviewed_by_userInput[]
+  upsert?: Prisma.news_articlesUpsertWithWhereUniqueWithoutReviewed_by_userInput | Prisma.news_articlesUpsertWithWhereUniqueWithoutReviewed_by_userInput[]
+  createMany?: Prisma.news_articlesCreateManyReviewed_by_userInputEnvelope
+  set?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  disconnect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  delete?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  update?: Prisma.news_articlesUpdateWithWhereUniqueWithoutReviewed_by_userInput | Prisma.news_articlesUpdateWithWhereUniqueWithoutReviewed_by_userInput[]
+  updateMany?: Prisma.news_articlesUpdateManyWithWhereWithoutReviewed_by_userInput | Prisma.news_articlesUpdateManyWithWhereWithoutReviewed_by_userInput[]
+  deleteMany?: Prisma.news_articlesScalarWhereInput | Prisma.news_articlesScalarWhereInput[]
+}
+
 export type news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput = {
   create?: Prisma.XOR<Prisma.news_articlesCreateWithoutUpdated_by_userInput, Prisma.news_articlesUncheckedCreateWithoutUpdated_by_userInput> | Prisma.news_articlesCreateWithoutUpdated_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutUpdated_by_userInput[]
   connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutUpdated_by_userInput | Prisma.news_articlesCreateOrConnectWithoutUpdated_by_userInput[]
@@ -650,6 +820,34 @@ export type news_articlesUncheckedUpdateManyWithoutUpdated_by_userNestedInput = 
   connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
   update?: Prisma.news_articlesUpdateWithWhereUniqueWithoutUpdated_by_userInput | Prisma.news_articlesUpdateWithWhereUniqueWithoutUpdated_by_userInput[]
   updateMany?: Prisma.news_articlesUpdateManyWithWhereWithoutUpdated_by_userInput | Prisma.news_articlesUpdateManyWithWhereWithoutUpdated_by_userInput[]
+  deleteMany?: Prisma.news_articlesScalarWhereInput | Prisma.news_articlesScalarWhereInput[]
+}
+
+export type news_articlesUncheckedUpdateManyWithoutCreated_by_userNestedInput = {
+  create?: Prisma.XOR<Prisma.news_articlesCreateWithoutCreated_by_userInput, Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput> | Prisma.news_articlesCreateWithoutCreated_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput[]
+  connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutCreated_by_userInput | Prisma.news_articlesCreateOrConnectWithoutCreated_by_userInput[]
+  upsert?: Prisma.news_articlesUpsertWithWhereUniqueWithoutCreated_by_userInput | Prisma.news_articlesUpsertWithWhereUniqueWithoutCreated_by_userInput[]
+  createMany?: Prisma.news_articlesCreateManyCreated_by_userInputEnvelope
+  set?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  disconnect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  delete?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  update?: Prisma.news_articlesUpdateWithWhereUniqueWithoutCreated_by_userInput | Prisma.news_articlesUpdateWithWhereUniqueWithoutCreated_by_userInput[]
+  updateMany?: Prisma.news_articlesUpdateManyWithWhereWithoutCreated_by_userInput | Prisma.news_articlesUpdateManyWithWhereWithoutCreated_by_userInput[]
+  deleteMany?: Prisma.news_articlesScalarWhereInput | Prisma.news_articlesScalarWhereInput[]
+}
+
+export type news_articlesUncheckedUpdateManyWithoutReviewed_by_userNestedInput = {
+  create?: Prisma.XOR<Prisma.news_articlesCreateWithoutReviewed_by_userInput, Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput> | Prisma.news_articlesCreateWithoutReviewed_by_userInput[] | Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput[]
+  connectOrCreate?: Prisma.news_articlesCreateOrConnectWithoutReviewed_by_userInput | Prisma.news_articlesCreateOrConnectWithoutReviewed_by_userInput[]
+  upsert?: Prisma.news_articlesUpsertWithWhereUniqueWithoutReviewed_by_userInput | Prisma.news_articlesUpsertWithWhereUniqueWithoutReviewed_by_userInput[]
+  createMany?: Prisma.news_articlesCreateManyReviewed_by_userInputEnvelope
+  set?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  disconnect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  delete?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  connect?: Prisma.news_articlesWhereUniqueInput | Prisma.news_articlesWhereUniqueInput[]
+  update?: Prisma.news_articlesUpdateWithWhereUniqueWithoutReviewed_by_userInput | Prisma.news_articlesUpdateWithWhereUniqueWithoutReviewed_by_userInput[]
+  updateMany?: Prisma.news_articlesUpdateManyWithWhereWithoutReviewed_by_userInput | Prisma.news_articlesUpdateManyWithWhereWithoutReviewed_by_userInput[]
   deleteMany?: Prisma.news_articlesScalarWhereInput | Prisma.news_articlesScalarWhereInput[]
 }
 
@@ -695,6 +893,10 @@ export type news_articlesUncheckedUpdateManyWithoutSourceNestedInput = {
   deleteMany?: Prisma.news_articlesScalarWhereInput | Prisma.news_articlesScalarWhereInput[]
 }
 
+export type Enumarticle_statusFieldUpdateOperationsInput = {
+  set?: $Enums.article_status
+}
+
 export type news_articlesCreateWithoutUpdated_by_userInput = {
   id?: string
   slug: string
@@ -708,9 +910,14 @@ export type news_articlesCreateWithoutUpdated_by_userInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  reviewed_at?: Date | string | null
+  review_note?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   source: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
+  created_by_user?: Prisma.staff_usersCreateNestedOneWithoutCreated_news_articlesInput
+  reviewed_by_user?: Prisma.staff_usersCreateNestedOneWithoutReviewed_news_articlesInput
 }
 
 export type news_articlesUncheckedCreateWithoutUpdated_by_userInput = {
@@ -727,6 +934,11 @@ export type news_articlesUncheckedCreateWithoutUpdated_by_userInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  created_by?: string | null
+  reviewed_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -738,6 +950,118 @@ export type news_articlesCreateOrConnectWithoutUpdated_by_userInput = {
 
 export type news_articlesCreateManyUpdated_by_userInputEnvelope = {
   data: Prisma.news_articlesCreateManyUpdated_by_userInput | Prisma.news_articlesCreateManyUpdated_by_userInput[]
+  skipDuplicates?: boolean
+}
+
+export type news_articlesCreateWithoutCreated_by_userInput = {
+  id?: string
+  slug: string
+  title: string
+  body: string
+  image_url?: string | null
+  image_alt?: string | null
+  source_url?: string | null
+  published_on: Date | string
+  date_precision?: string
+  is_featured?: boolean
+  sort_order?: number
+  is_published?: boolean
+  status: $Enums.article_status
+  reviewed_at?: Date | string | null
+  review_note?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  source: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
+  updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_news_articlesInput
+  reviewed_by_user?: Prisma.staff_usersCreateNestedOneWithoutReviewed_news_articlesInput
+}
+
+export type news_articlesUncheckedCreateWithoutCreated_by_userInput = {
+  id?: string
+  slug: string
+  title: string
+  body: string
+  image_url?: string | null
+  image_alt?: string | null
+  source_id: number
+  source_url?: string | null
+  published_on: Date | string
+  date_precision?: string
+  is_featured?: boolean
+  sort_order?: number
+  is_published?: boolean
+  status: $Enums.article_status
+  reviewed_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
+  updated_by?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+}
+
+export type news_articlesCreateOrConnectWithoutCreated_by_userInput = {
+  where: Prisma.news_articlesWhereUniqueInput
+  create: Prisma.XOR<Prisma.news_articlesCreateWithoutCreated_by_userInput, Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput>
+}
+
+export type news_articlesCreateManyCreated_by_userInputEnvelope = {
+  data: Prisma.news_articlesCreateManyCreated_by_userInput | Prisma.news_articlesCreateManyCreated_by_userInput[]
+  skipDuplicates?: boolean
+}
+
+export type news_articlesCreateWithoutReviewed_by_userInput = {
+  id?: string
+  slug: string
+  title: string
+  body: string
+  image_url?: string | null
+  image_alt?: string | null
+  source_url?: string | null
+  published_on: Date | string
+  date_precision?: string
+  is_featured?: boolean
+  sort_order?: number
+  is_published?: boolean
+  status: $Enums.article_status
+  reviewed_at?: Date | string | null
+  review_note?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  source: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
+  updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_news_articlesInput
+  created_by_user?: Prisma.staff_usersCreateNestedOneWithoutCreated_news_articlesInput
+}
+
+export type news_articlesUncheckedCreateWithoutReviewed_by_userInput = {
+  id?: string
+  slug: string
+  title: string
+  body: string
+  image_url?: string | null
+  image_alt?: string | null
+  source_id: number
+  source_url?: string | null
+  published_on: Date | string
+  date_precision?: string
+  is_featured?: boolean
+  sort_order?: number
+  is_published?: boolean
+  status: $Enums.article_status
+  created_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
+  updated_by?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+}
+
+export type news_articlesCreateOrConnectWithoutReviewed_by_userInput = {
+  where: Prisma.news_articlesWhereUniqueInput
+  create: Prisma.XOR<Prisma.news_articlesCreateWithoutReviewed_by_userInput, Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput>
+}
+
+export type news_articlesCreateManyReviewed_by_userInputEnvelope = {
+  data: Prisma.news_articlesCreateManyReviewed_by_userInput | Prisma.news_articlesCreateManyReviewed_by_userInput[]
   skipDuplicates?: boolean
 }
 
@@ -774,9 +1098,46 @@ export type news_articlesScalarWhereInput = {
   is_featured?: Prisma.BoolFilter<"news_articles"> | boolean
   sort_order?: Prisma.IntFilter<"news_articles"> | number
   is_published?: Prisma.BoolFilter<"news_articles"> | boolean
+  status?: Prisma.Enumarticle_statusFilter<"news_articles"> | $Enums.article_status
+  created_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
+  reviewed_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
+  reviewed_at?: Prisma.DateTimeNullableFilter<"news_articles"> | Date | string | null
+  review_note?: Prisma.StringNullableFilter<"news_articles"> | string | null
   updated_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
   created_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
+}
+
+export type news_articlesUpsertWithWhereUniqueWithoutCreated_by_userInput = {
+  where: Prisma.news_articlesWhereUniqueInput
+  update: Prisma.XOR<Prisma.news_articlesUpdateWithoutCreated_by_userInput, Prisma.news_articlesUncheckedUpdateWithoutCreated_by_userInput>
+  create: Prisma.XOR<Prisma.news_articlesCreateWithoutCreated_by_userInput, Prisma.news_articlesUncheckedCreateWithoutCreated_by_userInput>
+}
+
+export type news_articlesUpdateWithWhereUniqueWithoutCreated_by_userInput = {
+  where: Prisma.news_articlesWhereUniqueInput
+  data: Prisma.XOR<Prisma.news_articlesUpdateWithoutCreated_by_userInput, Prisma.news_articlesUncheckedUpdateWithoutCreated_by_userInput>
+}
+
+export type news_articlesUpdateManyWithWhereWithoutCreated_by_userInput = {
+  where: Prisma.news_articlesScalarWhereInput
+  data: Prisma.XOR<Prisma.news_articlesUpdateManyMutationInput, Prisma.news_articlesUncheckedUpdateManyWithoutCreated_by_userInput>
+}
+
+export type news_articlesUpsertWithWhereUniqueWithoutReviewed_by_userInput = {
+  where: Prisma.news_articlesWhereUniqueInput
+  update: Prisma.XOR<Prisma.news_articlesUpdateWithoutReviewed_by_userInput, Prisma.news_articlesUncheckedUpdateWithoutReviewed_by_userInput>
+  create: Prisma.XOR<Prisma.news_articlesCreateWithoutReviewed_by_userInput, Prisma.news_articlesUncheckedCreateWithoutReviewed_by_userInput>
+}
+
+export type news_articlesUpdateWithWhereUniqueWithoutReviewed_by_userInput = {
+  where: Prisma.news_articlesWhereUniqueInput
+  data: Prisma.XOR<Prisma.news_articlesUpdateWithoutReviewed_by_userInput, Prisma.news_articlesUncheckedUpdateWithoutReviewed_by_userInput>
+}
+
+export type news_articlesUpdateManyWithWhereWithoutReviewed_by_userInput = {
+  where: Prisma.news_articlesScalarWhereInput
+  data: Prisma.XOR<Prisma.news_articlesUpdateManyMutationInput, Prisma.news_articlesUncheckedUpdateManyWithoutReviewed_by_userInput>
 }
 
 export type news_articlesCreateWithoutSourceInput = {
@@ -792,9 +1153,14 @@ export type news_articlesCreateWithoutSourceInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  reviewed_at?: Date | string | null
+  review_note?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_news_articlesInput
+  created_by_user?: Prisma.staff_usersCreateNestedOneWithoutCreated_news_articlesInput
+  reviewed_by_user?: Prisma.staff_usersCreateNestedOneWithoutReviewed_news_articlesInput
 }
 
 export type news_articlesUncheckedCreateWithoutSourceInput = {
@@ -810,6 +1176,11 @@ export type news_articlesUncheckedCreateWithoutSourceInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  created_by?: string | null
+  reviewed_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
   updated_by?: string | null
   created_at?: Date | string
   updated_at?: Date | string
@@ -855,6 +1226,57 @@ export type news_articlesCreateManyUpdated_by_userInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  created_by?: string | null
+  reviewed_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+}
+
+export type news_articlesCreateManyCreated_by_userInput = {
+  id?: string
+  slug: string
+  title: string
+  body: string
+  image_url?: string | null
+  image_alt?: string | null
+  source_id: number
+  source_url?: string | null
+  published_on: Date | string
+  date_precision?: string
+  is_featured?: boolean
+  sort_order?: number
+  is_published?: boolean
+  status: $Enums.article_status
+  reviewed_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
+  updated_by?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+}
+
+export type news_articlesCreateManyReviewed_by_userInput = {
+  id?: string
+  slug: string
+  title: string
+  body: string
+  image_url?: string | null
+  image_alt?: string | null
+  source_id: number
+  source_url?: string | null
+  published_on: Date | string
+  date_precision?: string
+  is_featured?: boolean
+  sort_order?: number
+  is_published?: boolean
+  status: $Enums.article_status
+  created_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
+  updated_by?: string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -872,9 +1294,14 @@ export type news_articlesUpdateWithoutUpdated_by_userInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   source?: Prisma.news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput
+  created_by_user?: Prisma.staff_usersUpdateOneWithoutCreated_news_articlesNestedInput
+  reviewed_by_user?: Prisma.staff_usersUpdateOneWithoutReviewed_news_articlesNestedInput
 }
 
 export type news_articlesUncheckedUpdateWithoutUpdated_by_userInput = {
@@ -891,6 +1318,11 @@ export type news_articlesUncheckedUpdateWithoutUpdated_by_userInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -909,6 +1341,149 @@ export type news_articlesUncheckedUpdateManyWithoutUpdated_by_userInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type news_articlesUpdateWithoutCreated_by_userInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  date_precision?: Prisma.StringFieldUpdateOperationsInput | string
+  is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput
+  updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput
+  reviewed_by_user?: Prisma.staff_usersUpdateOneWithoutReviewed_news_articlesNestedInput
+}
+
+export type news_articlesUncheckedUpdateWithoutCreated_by_userInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  date_precision?: Prisma.StringFieldUpdateOperationsInput | string
+  is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updated_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type news_articlesUncheckedUpdateManyWithoutCreated_by_userInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  date_precision?: Prisma.StringFieldUpdateOperationsInput | string
+  is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updated_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type news_articlesUpdateWithoutReviewed_by_userInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  date_precision?: Prisma.StringFieldUpdateOperationsInput | string
+  is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput
+  updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput
+  created_by_user?: Prisma.staff_usersUpdateOneWithoutCreated_news_articlesNestedInput
+}
+
+export type news_articlesUncheckedUpdateWithoutReviewed_by_userInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  date_precision?: Prisma.StringFieldUpdateOperationsInput | string
+  is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updated_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type news_articlesUncheckedUpdateManyWithoutReviewed_by_userInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  date_precision?: Prisma.StringFieldUpdateOperationsInput | string
+  is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updated_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -926,6 +1501,11 @@ export type news_articlesCreateManySourceInput = {
   is_featured?: boolean
   sort_order?: number
   is_published?: boolean
+  status: $Enums.article_status
+  created_by?: string | null
+  reviewed_by?: string | null
+  reviewed_at?: Date | string | null
+  review_note?: string | null
   updated_by?: string | null
   created_at?: Date | string
   updated_at?: Date | string
@@ -944,9 +1524,14 @@ export type news_articlesUpdateWithoutSourceInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput
+  created_by_user?: Prisma.staff_usersUpdateOneWithoutCreated_news_articlesNestedInput
+  reviewed_by_user?: Prisma.staff_usersUpdateOneWithoutReviewed_news_articlesNestedInput
 }
 
 export type news_articlesUncheckedUpdateWithoutSourceInput = {
@@ -962,6 +1547,11 @@ export type news_articlesUncheckedUpdateWithoutSourceInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updated_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -980,6 +1570,11 @@ export type news_articlesUncheckedUpdateManyWithoutSourceInput = {
   is_featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.Enumarticle_statusFieldUpdateOperationsInput | $Enums.article_status
+  created_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updated_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1001,11 +1596,18 @@ export type news_articlesSelect<ExtArgs extends runtime.Types.Extensions.Interna
   is_featured?: boolean
   sort_order?: boolean
   is_published?: boolean
+  status?: boolean
+  created_by?: boolean
+  reviewed_by?: boolean
+  reviewed_at?: boolean
+  review_note?: boolean
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
   source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
+  created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
+  reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
 }, ExtArgs["result"]["news_articles"]>
 
 export type news_articlesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1022,11 +1624,18 @@ export type news_articlesSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   is_featured?: boolean
   sort_order?: boolean
   is_published?: boolean
+  status?: boolean
+  created_by?: boolean
+  reviewed_by?: boolean
+  reviewed_at?: boolean
+  review_note?: boolean
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
   source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
+  created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
+  reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
 }, ExtArgs["result"]["news_articles"]>
 
 export type news_articlesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1043,11 +1652,18 @@ export type news_articlesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   is_featured?: boolean
   sort_order?: boolean
   is_published?: boolean
+  status?: boolean
+  created_by?: boolean
+  reviewed_by?: boolean
+  reviewed_at?: boolean
+  review_note?: boolean
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
   source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
+  created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
+  reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
 }, ExtArgs["result"]["news_articles"]>
 
 export type news_articlesSelectScalar = {
@@ -1064,23 +1680,34 @@ export type news_articlesSelectScalar = {
   is_featured?: boolean
   sort_order?: boolean
   is_published?: boolean
+  status?: boolean
+  created_by?: boolean
+  reviewed_by?: boolean
+  reviewed_at?: boolean
+  review_note?: boolean
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type news_articlesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "body" | "image_url" | "image_alt" | "source_id" | "source_url" | "published_on" | "date_precision" | "is_featured" | "sort_order" | "is_published" | "updated_by" | "created_at" | "updated_at", ExtArgs["result"]["news_articles"]>
+export type news_articlesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "body" | "image_url" | "image_alt" | "source_id" | "source_url" | "published_on" | "date_precision" | "is_featured" | "sort_order" | "is_published" | "status" | "created_by" | "reviewed_by" | "reviewed_at" | "review_note" | "updated_by" | "created_at" | "updated_at", ExtArgs["result"]["news_articles"]>
 export type news_articlesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
+  created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
+  reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
 }
 export type news_articlesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
+  created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
+  reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
 }
 export type news_articlesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
+  created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
+  reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
 }
 
 export type $news_articlesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1088,6 +1715,8 @@ export type $news_articlesPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     source: Prisma.$news_sourcesPayload<ExtArgs>
     updated_by_user: Prisma.$staff_usersPayload<ExtArgs> | null
+    created_by_user: Prisma.$staff_usersPayload<ExtArgs> | null
+    reviewed_by_user: Prisma.$staff_usersPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1103,6 +1732,11 @@ export type $news_articlesPayload<ExtArgs extends runtime.Types.Extensions.Inter
     is_featured: boolean
     sort_order: number
     is_published: boolean
+    status: $Enums.article_status
+    created_by: string | null
+    reviewed_by: string | null
+    reviewed_at: Date | null
+    review_note: string | null
     updated_by: string | null
     created_at: Date
     updated_at: Date
@@ -1502,6 +2136,8 @@ export interface Prisma__news_articlesClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   source<T extends Prisma.news_sourcesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_sourcesDefaultArgs<ExtArgs>>): Prisma.Prisma__news_sourcesClient<runtime.Types.Result.GetResult<Prisma.$news_sourcesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   updated_by_user<T extends Prisma.news_articles$updated_by_userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_articles$updated_by_userArgs<ExtArgs>>): Prisma.Prisma__staff_usersClient<runtime.Types.Result.GetResult<Prisma.$staff_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  created_by_user<T extends Prisma.news_articles$created_by_userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_articles$created_by_userArgs<ExtArgs>>): Prisma.Prisma__staff_usersClient<runtime.Types.Result.GetResult<Prisma.$staff_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  reviewed_by_user<T extends Prisma.news_articles$reviewed_by_userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_articles$reviewed_by_userArgs<ExtArgs>>): Prisma.Prisma__staff_usersClient<runtime.Types.Result.GetResult<Prisma.$staff_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1544,6 +2180,11 @@ export interface news_articlesFieldRefs {
   readonly is_featured: Prisma.FieldRef<"news_articles", 'Boolean'>
   readonly sort_order: Prisma.FieldRef<"news_articles", 'Int'>
   readonly is_published: Prisma.FieldRef<"news_articles", 'Boolean'>
+  readonly status: Prisma.FieldRef<"news_articles", 'article_status'>
+  readonly created_by: Prisma.FieldRef<"news_articles", 'String'>
+  readonly reviewed_by: Prisma.FieldRef<"news_articles", 'String'>
+  readonly reviewed_at: Prisma.FieldRef<"news_articles", 'DateTime'>
+  readonly review_note: Prisma.FieldRef<"news_articles", 'String'>
   readonly updated_by: Prisma.FieldRef<"news_articles", 'String'>
   readonly created_at: Prisma.FieldRef<"news_articles", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"news_articles", 'DateTime'>
@@ -1951,6 +2592,44 @@ export type news_articlesDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
  * news_articles.updated_by_user
  */
 export type news_articles$updated_by_userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the staff_users
+   */
+  select?: Prisma.staff_usersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the staff_users
+   */
+  omit?: Prisma.staff_usersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.staff_usersInclude<ExtArgs> | null
+  where?: Prisma.staff_usersWhereInput
+}
+
+/**
+ * news_articles.created_by_user
+ */
+export type news_articles$created_by_userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the staff_users
+   */
+  select?: Prisma.staff_usersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the staff_users
+   */
+  omit?: Prisma.staff_usersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.staff_usersInclude<ExtArgs> | null
+  where?: Prisma.staff_usersWhereInput
+}
+
+/**
+ * news_articles.reviewed_by_user
+ */
+export type news_articles$reviewed_by_userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the staff_users
    */
