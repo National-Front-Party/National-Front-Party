@@ -27,6 +27,7 @@ export default function ModalShell({
   onClose,
   title,
   maxWidth = "max-w-[800px]",
+  hideScrollbar = true,
   children,
 }) {
   const portalRoot = useSyncExternalStore(
@@ -123,7 +124,11 @@ export default function ModalShell({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`relative z-10 max-h-[90vh] w-[92%] ${maxWidth} animate-modal-shell-enter overflow-y-auto rounded-3xl border-t-[6px] border-gold bg-white shadow-card motion-reduce:animate-none`}
+        className={`relative z-10 max-h-[90vh] w-[92%] ${maxWidth} animate-modal-shell-enter overflow-x-hidden overflow-y-auto rounded-3xl border-t-[6px] border-gold bg-white shadow-card motion-reduce:animate-none ${
+          hideScrollbar
+            ? "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            : ""
+        }`}
       >
         <div className="p-6 md:p-8">
           <div className="flex items-center justify-between gap-4 text-right">

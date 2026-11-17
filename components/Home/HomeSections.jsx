@@ -10,7 +10,6 @@ import SectionCard, {
   SectionCardHeader,
 } from "@/components/Home/ui/SectionCard";
 import {
-  centralLeaders,
   formSectors,
   governorates,
   mainLinks,
@@ -18,6 +17,7 @@ import {
   parliamentaryItems,
   partyProgram,
 } from "@/data/mock/home";
+import { centralSecretariats } from "@/data/mock/central-secretariats";
 
 export default function HomeSections() {
   return (
@@ -36,7 +36,7 @@ export default function HomeSections() {
           </div>
 
           <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
-            <CentralSecretariats data={centralLeaders} />
+            <CentralSecretariats data={centralSecretariats} />
           </div>
 
           <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
