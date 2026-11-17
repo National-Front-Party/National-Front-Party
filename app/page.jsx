@@ -1,12 +1,13 @@
-import Link from "next/link";
+import IntroHeading from "@/components/Home/IntroHeading";
+import HomeSections from "@/components/Home/HomeSections";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
-      {/* <h1 className="text-3xl font-semibold">Welcome to My Project</h1>
-      <Link className="underline" href="/dashboard">
-        Open dashboard
-      </Link> */}
-    </main>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="shrink-0">
+        <IntroHeading />
+      </div>
+      <HomeSections />
+    </div>
   );
 }

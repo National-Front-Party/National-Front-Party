@@ -18,9 +18,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" className={plex.variable}>
-      <body className="font-sans min-h-screen flex flex-col">
+      <body className="font-sans flex min-h-dvh flex-col [&>header]:shrink-0 [&>footer]:shrink-0">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
         <Footer />
       </body>
     </html>
