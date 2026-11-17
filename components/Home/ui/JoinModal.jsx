@@ -7,16 +7,25 @@ import CustomSelect, {
   inputBase,
   inputError,
 } from "@/components/Home/ui/CustomSelect";
+import { parseNationalId } from "@/lib/national-id";
+import { mapApplicationResponse } from "@/components/Home/ui/application-response";
 
 const initialValues = {
   membershipType: "member",
   fullName: "",
   phone: "",
   nationalId: "",
-  governorate: "",
+  governorateId: "",
+  termsAccepted: false,
 };
 
-const fieldOrder = ["fullName", "phone", "nationalId", "governorate"];
+const fieldOrder = [
+  "fullName",
+  "phone",
+  "nationalId",
+  "governorate",
+  "termsAccepted",
+];
 
 function toEnglishDigits(value) {
   return value.replace(/[٠-٩۰-۹]/g, (digit) =>
@@ -25,38 +34,41 @@ function toEnglishDigits(value) {
 }
 
 // Client validation is for UX only; the backend must revalidate and store national IDs securely.
-function validateMembership(values) {
+function validateMembership(values, governorates) {
   const errors = {};
   const fullName = (values.fullName ?? "").trim();
   const phone = toEnglishDigits(values.phone ?? "");
   const nationalId = toEnglishDigits(values.nationalId ?? "");
 
-  if (fullName.split(/\s+/).filter(Boolean).length < 4) {
-    errors.fullName = "من فضلك اكتب الاسم رباعي (أربعة أسماء على الأقل)";
+  if (
+    fullName.length < 8 ||
+    fullName.length > 120 ||
+    fullName.split(/\s+/).filter(Boolean).length < 4
+  ) {
+    errors.fullName = "الاسم لازم يكون رباعي";
   }
 
-  if (!/^01[0125][0-9]{8}$/.test(phone)) {
-    errors.phone = "رقم الهاتف غير صحيح";
+  if (!/^01[0125]\d{8}$/.test(phone)) {
+    errors.phone = "رقم الموبايل غير صحيح";
+  }
+
+  if (!/^[23]\d{13}$/.test(nationalId) || !parseNationalId(nationalId)) {
+    errors.nationalId = "الرقم القومي غير صحيح";
   }
 
   if (
-    (values.membershipType === "member" || nationalId) &&
-    !/^[23][0-9]{13}$/.test(nationalId)
+    !governorates.some(
+      (governorate) => governorate.value === values.governorateId,
+    )
   ) {
-    errors.nationalId = "الرقم القومي يجب أن يتكون من 14 رقمًا";
-  }
-
-  if (!values.governorate) {
     errors.governorate = "من فضلك اختر المحافظة";
   }
 
-  return errors;
-}
+  if (values.termsAccepted !== true) {
+    errors.termsAccepted = "لازم توافق على الشروط";
+  }
 
-// Local mock only; no membership data is persisted.
-async function submitMembership(payload) {
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-  return { success: Boolean(payload) };
+  return errors;
 }
 
 function RequiredMark() {
@@ -71,24 +83,31 @@ function FieldError({ id, children }) {
   ) : null;
 }
 
-export default function JoinModal({ open, onClose, types, governorates }) {
+export default function JoinModal({ open, onClose, types }) {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSubmitError, setHasSubmitError] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+  const [applicationNumber, setApplicationNumber] = useState("");
   const [successIconEntered, setSuccessIconEntered] = useState(false);
+  const [governorates, setGovernorates] = useState([]);
+  const [isLoadingGovernorates, setIsLoadingGovernorates] = useState(true);
+  const [governoratesLoadError, setGovernoratesLoadError] = useState(false);
+  const [governoratesRetry, setGovernoratesRetry] = useState(0);
   const requestIdRef = useRef(0);
   const submittingRef = useRef(false);
   const fullNameRef = useRef(null);
   const phoneRef = useRef(null);
   const nationalIdRef = useRef(null);
   const governorateRef = useRef(null);
+  const termsAcceptedRef = useRef(null);
   const fieldRefs = {
     fullName: fullNameRef,
     phone: phoneRef,
     nationalId: nationalIdRef,
     governorate: governorateRef,
+    termsAccepted: termsAcceptedRef,
   };
 
   useEffect(
@@ -97,6 +116,58 @@ export default function JoinModal({ open, onClose, types, governorates }) {
     },
     [],
   );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+
+    async function loadGovernorates() {
+      setIsLoadingGovernorates(true);
+      setGovernoratesLoadError(false);
+
+      try {
+        const response = await fetch("/api/governorates", {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error("Governorates request failed.");
+        }
+
+        const body = await response.json();
+        if (
+          !Array.isArray(body.governorates) ||
+          !body.governorates.every(
+            (item) =>
+              Number.isInteger(item.id) && typeof item.name_ar === "string",
+          )
+        ) {
+          throw new Error("Governorates response was invalid.");
+        }
+
+        if (active) {
+          setGovernorates(
+            body.governorates.map(({ id, name_ar }) => ({
+              value: id,
+              label: name_ar,
+            })),
+          );
+        }
+      } catch {
+        if (active && !controller.signal.aborted) {
+          setGovernorates([]);
+          setGovernoratesLoadError(true);
+        }
+      } finally {
+        if (active) setIsLoadingGovernorates(false);
+      }
+    }
+
+    loadGovernorates();
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [governoratesRetry]);
 
   useEffect(() => {
     if (!isSuccess) return;
@@ -113,25 +184,16 @@ export default function JoinModal({ open, onClose, types, governorates }) {
       delete next[name];
       return next;
     });
-    setHasSubmitError(false);
+    setSubmitError("");
   }
 
   function handleMembershipTypeChange(membershipType) {
-    const nextValues = { ...values, membershipType };
-    const nationalIdError = validateMembership(nextValues).nationalId;
-    setValues(nextValues);
-    setErrors((current) => {
-      if (!Object.prototype.hasOwnProperty.call(current, "nationalId")) return current;
-      const next = { ...current };
-      if (nationalIdError) next.nationalId = nationalIdError;
-      else delete next.nationalId;
-      return next;
-    });
-    setHasSubmitError(false);
+    setValues((current) => ({ ...current, membershipType }));
+    setSubmitError("");
   }
 
   function handleBlur(name) {
-    const validation = validateMembership(values);
+    const validation = validateMembership(values, governorates);
     setErrors((current) => {
       const next = { ...current };
       if (validation[name]) next[name] = validation[name];
@@ -144,9 +206,9 @@ export default function JoinModal({ open, onClose, types, governorates }) {
     event.preventDefault();
     if (submittingRef.current) return;
 
-    const validation = validateMembership(values);
+    const validation = validateMembership(values, governorates);
     setErrors(validation);
-    setHasSubmitError(false);
+    setSubmitError("");
 
     const firstInvalidField = fieldOrder.find((field) => validation[field]);
     if (firstInvalidField) {
@@ -159,18 +221,50 @@ export default function JoinModal({ open, onClose, types, governorates }) {
     const requestId = ++requestIdRef.current;
 
     const payload = {
-      membershipType: values.membershipType,
-      fullName: values.fullName.trim(),
-      phone: toEnglishDigits(values.phone).replace(/\D/g, ""),
-      nationalId: toEnglishDigits(values.nationalId).replace(/\D/g, ""),
-      governorate: values.governorate,
+      type: values.membershipType,
+      full_name: values.fullName.trim(),
+      phone: toEnglishDigits(values.phone),
+      national_id: toEnglishDigits(values.nationalId),
+      governorate_id: Number(values.governorateId),
+      terms_accepted: values.termsAccepted,
+      website: "",
     };
 
     try {
-      await submitMembership(payload);
-      if (requestId === requestIdRef.current) setIsSuccess(true);
+      const response = await fetch("/api/applications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const body = await response.json();
+      const result = mapApplicationResponse({
+        status: response.status,
+        body,
+        retryAfter: response.headers.get("Retry-After"),
+      });
+
+      if (requestId !== requestIdRef.current) return;
+
+      if (result.kind === "success") {
+        setValues(initialValues);
+        setErrors({});
+        setApplicationNumber(result.applicationNo);
+        setIsSuccess(true);
+      } else {
+        const nextErrors = result.errors ?? {};
+        setErrors(nextErrors);
+        setSubmitError(result.message ?? "");
+        const firstInvalidField = fieldOrder.find(
+          (field) => nextErrors[field],
+        );
+        if (firstInvalidField) {
+          fieldRefs[firstInvalidField].current?.focus();
+        }
+      }
     } catch {
-      if (requestId === requestIdRef.current) setHasSubmitError(true);
+      if (requestId === requestIdRef.current) {
+        setSubmitError("حدث خطأ، حاول مرة أخرى لاحقا");
+      }
     } finally {
       if (requestId === requestIdRef.current) {
         submittingRef.current = false;
@@ -201,6 +295,9 @@ export default function JoinModal({ open, onClose, types, governorates }) {
           <h3 className="text-2xl font-extrabold text-ink">
             تم استلام طلبك بنجاح
           </h3>
+          <p className="font-bold text-ink">
+            تم استلام طلبك برقم {applicationNumber}
+          </p>
           <p className="text-muted">سيتم التواصل معك قريبًا</p>
           <button
             type="button"
@@ -211,15 +308,42 @@ export default function JoinModal({ open, onClose, types, governorates }) {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-5">
-          {hasSubmitError ? (
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          autoComplete="off"
+          className="mt-6 space-y-5"
+        >
+          {submitError ? (
             <p
               role="alert"
               className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
             >
-              حدث خطأ أثناء الإرسال، حاول مرة أخرى
+              {submitError}
             </p>
           ) : null}
+          <div
+            className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
+            aria-hidden="true"
+          >
+            <label
+              htmlFor="membership-website"
+              className="sr-only"
+              aria-hidden="true"
+            >
+              Website
+            </label>
+            <input
+              id="membership-website"
+              name="website"
+              type="text"
+              value=""
+              readOnly
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
+          </div>
 
           <fieldset disabled={isSubmitting} className="min-w-0">
             <legend className="mb-3 text-sm font-bold text-ink">
@@ -323,7 +447,7 @@ export default function JoinModal({ open, onClose, types, governorates }) {
                 onChange={(event) =>
                   updateField(
                     "phone",
-                    toEnglishDigits(event.target.value).replace(/\D/g, "").slice(0, 11),
+                    toEnglishDigits(event.target.value).slice(0, 11),
                   )
                 }
                 onBlur={() => handleBlur("phone")}
@@ -341,8 +465,7 @@ export default function JoinModal({ open, onClose, types, governorates }) {
                 htmlFor="membership-national-id"
                 className="mb-2 block text-sm font-bold text-ink"
               >
-                الرقم القومي
-                {values.membershipType === "member" ? <RequiredMark /> : null}
+                الرقم القومي <RequiredMark />
               </label>
               <input
                 ref={nationalIdRef}
@@ -356,11 +479,11 @@ export default function JoinModal({ open, onClose, types, governorates }) {
                 onChange={(event) =>
                   updateField(
                     "nationalId",
-                    toEnglishDigits(event.target.value).replace(/\D/g, "").slice(0, 14),
+                    toEnglishDigits(event.target.value).slice(0, 14),
                   )
                 }
                 onBlur={() => handleBlur("nationalId")}
-                aria-required={values.membershipType === "member"}
+                aria-required="true"
                 aria-invalid={Boolean(errors.nationalId)}
                 aria-describedby={
                   errors.nationalId ? "membership-national-id-error" : undefined
@@ -380,8 +503,8 @@ export default function JoinModal({ open, onClose, types, governorates }) {
                 label="المحافظة"
                 placeholder="اختر المحافظة"
                 options={governorates}
-                value={values.governorate}
-                onChange={(value) => updateField("governorate", value)}
+                value={values.governorateId}
+                onChange={(value) => updateField("governorateId", value)}
                 onBlur={() => handleBlur("governorate")}
                 error={errors.governorate}
                 disabled={isSubmitting}
@@ -390,7 +513,61 @@ export default function JoinModal({ open, onClose, types, governorates }) {
               <FieldError id="membership-governorate-error">
                 {errors.governorate}
               </FieldError>
+              {isLoadingGovernorates ? (
+                <p role="status" className="mt-1 text-sm text-muted">
+                  جارٍ تحميل المحافظات...
+                </p>
+              ) : null}
+              {governoratesLoadError ? (
+                <div className="mt-2 flex items-center justify-between gap-3">
+                  <p role="alert" className="text-sm text-red-600">
+                    تعذر تحميل المحافظات
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setGovernoratesRetry((count) => count + 1)}
+                    className="rounded-lg px-2 py-1 text-sm font-bold text-ink underline decoration-gold underline-offset-4 hover:text-gold"
+                  >
+                    إعادة المحاولة
+                  </button>
+                </div>
+              ) : null}
             </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="membership-terms-accepted"
+              className="flex items-start gap-3 text-sm font-medium text-ink"
+            >
+              <input
+                ref={termsAcceptedRef}
+                id="membership-terms-accepted"
+                name="terms_accepted"
+                type="checkbox"
+                checked={values.termsAccepted}
+                onChange={(event) =>
+                  updateField("termsAccepted", event.target.checked)
+                }
+                onBlur={() => handleBlur("termsAccepted")}
+                aria-required="true"
+                aria-invalid={Boolean(errors.termsAccepted)}
+                aria-describedby={
+                  errors.termsAccepted
+                    ? "membership-terms-accepted-error"
+                    : undefined
+                }
+                disabled={isSubmitting}
+                className="mt-0.5 size-5 shrink-0 rounded border-border accent-gold focus-visible:ring-2 focus-visible:ring-gold"
+              />
+              <span>
+                أقر بصحة بياناتي وأوافق على شروط الانضمام
+                <RequiredMark />
+              </span>
+            </label>
+            <FieldError id="membership-terms-accepted-error">
+              {errors.termsAccepted}
+            </FieldError>
           </div>
 
           <button
@@ -401,7 +578,7 @@ export default function JoinModal({ open, onClose, types, governorates }) {
             {isSubmitting ? (
               <>
                 <Loader2 aria-hidden="true" size={20} className="animate-spin" />
-                <span>جارٍ الإرسال...</span>
+                <span>جاري الإرسال...</span>
               </>
             ) : (
               <>
