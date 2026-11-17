@@ -1697,7 +1697,6 @@ export const Membership_applicationsScalarFieldEnum = {
   occupation: 'occupation',
   governorate_id: 'governorate_id',
   terms_accepted: 'terms_accepted',
-  application_type: 'application_type',
   status: 'status',
   assigned_to: 'assigned_to',
   reviewed_by: 'reviewed_by',
@@ -1911,6 +1910,11 @@ export const News_articlesScalarFieldEnum = {
   is_featured: 'is_featured',
   sort_order: 'sort_order',
   is_published: 'is_published',
+  status: 'status',
+  created_by: 'created_by',
+  reviewed_by: 'reviewed_by',
+  reviewed_at: 'reviewed_at',
+  review_note: 'review_note',
   updated_by: 'updated_by',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -2023,6 +2027,20 @@ export type Enumapplication_kindFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'application_kind[]'
  */
 export type ListEnumapplication_kindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'application_kind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'article_status'
+ */
+export type Enumarticle_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'article_status'>
+    
+
+
+/**
+ * Reference to a field of type 'article_status[]'
+ */
+export type ListEnumarticle_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'article_status[]'>
     
 
 

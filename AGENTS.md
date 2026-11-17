@@ -1,4 +1,5 @@
 اقرأ docs/BACKEND_PROGRESS.md أولا قبل أي شغل، وحدّثه بعد كل فيز.
+- أي كود يعرّف أو يفرض صلاحيات الموظفين يجب أن يتبع المرجع الثابت `docs/ROLES.md`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

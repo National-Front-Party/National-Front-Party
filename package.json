@@ -8,11 +8,13 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --test",
-    "seed:governorates": "node scripts/seed-governorates.js"
+    "seed:governorates": "node scripts/seed-governorates.js",
+    "create:super-admin": "node scripts/create-super-admin.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
+    "jose": "^6.2.17",
     "next": "16.4.6",
     "pg": "^8.23.1",
     "react": "19.3.0",

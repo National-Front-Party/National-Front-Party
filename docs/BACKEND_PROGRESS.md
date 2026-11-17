@@ -25,7 +25,7 @@
 ## 3. قرارات متفق عليها
 
 - `application_type` نوعه enum باسم `application_kind` وقيمه `member`, `volunteer`, `follower`؛ الحقل `NOT NULL` ومن دون default. التغيير مطبق في قاعدة البيانات.
-- أُضيفت أعمدة دخول الموظفين إلى قاعدة البيانات: `password_hash`, `must_change_password`, `last_login_at`, `failed_login_count`, `locked_until`. لم يُبنَ منطق تسجيل الدخول أو الصلاحيات عليها بعد.
+- أُضيفت أعمدة دخول الموظفين إلى قاعدة البيانات: `password_hash`, `must_change_password`, `last_login_at`, `failed_login_count`, `locked_until`. منطق مصادقة الموظفين عبر API موثق في Phase 9-Auth، وأُصلحت ذرية قفل الدخول في Phase 9.1.
 - حالة الطلب الأولى `new`، ومسار الحالات: `new` ← `under_review` ← `accepted` أو `rejected`.
 - إعادة التقديم مسموحة فقط إذا كان الطلب السابق للشخص نفسه `rejected`؛ وجود طلب سابق بحالة أخرى يعني أن التقديم مكرر. يُستخدم الرقم القومي للمطابقة ولا يُسجل في logs.
 - `gender` المخزن هو `male` أو `female`.
@@ -68,6 +68,17 @@
 - Turnstile اختياري: عند ضبط `TURNSTILE_SECRET_KEY` يصبح `turnstileToken` مطلوبًا؛ غيابه يرجع `400 CAPTCHA_REQUIRED` وفشل التحقق يرجع `400 CAPTCHA_FAILED`. دون المفتاح يُتخطى التحقق. المفتاح غير موجود في المستودع، و`.env.example` يحتوي مدخلًا فارغًا اختياريًا.
 - مخزن rate limit داخل الذاكرة؛ لا يضمن حدًا موحدًا عبر أكثر من instance أو serverless worker، ويمكن استبداله بـRedis/Upstash مع الحفاظ على الواجهة.
 
+## 3.2 قرارات مصادقة الموظفين (Phase 9)
+
+- الجلسة JWT موقعة بـHS256، تحمل `staffId` في `sub` فقط، وتنتهي بعد 8 ساعات. سر `SESSION_SECRET` لا يقل عن 32 بايت. كوكي الجلسة `staff_session`: `HttpOnly` و`SameSite=Lax` و`Path=/` و`Secure` في الإنتاج.
+- كلمات المرور تُخزن بـ`scrypt` مع salt عشوائي ومعاملات الخوارزمية داخل قيمة hash؛ الطول 10–128 حرفًا مع حرف ورقم. كلمة المرور المؤقتة تُجبر على التغيير بعد الدخول الأول.
+- خمس محاولات فاشلة تقفل الحساب 15 دقيقة. حد الدخول 10 محاولات لكل IP و5 لكل بريد خلال 15 دقيقة باستخدام limiter الموجود في الذاكرة؛ لا يضمن حدًا مشتركًا بين workers أو instances.
+- زيادة `failed_login_count` وتفعيل `locked_until` يجريان في تحديث PostgreSQL ذري واحد؛ شرط التحديث لا يطابق حسابًا غير نشط أو مقفولًا أو بلغ الحد. تحديث الدخول الناجح مشروط بحساب نشط، وعدّاد أقل من 5، وقفل منتهٍ أو غير موجود، ولا يصدر JWT إلا إذا أثّر التحديث على صف واحد.
+- أولوية الدخول ثابتة: استهلاك/فحص محددي IP والبريد يسبق قرار الخطأ؛ إذا تجاوز أي منهما الحد فالرد `429 RATE_LIMITED`. وإلا فالحساب المقفول لا يرجع `423 ACCOUNT_LOCKED` إلا بعد تطابق كلمة المرور. كلمة المرور الخاطئة، بما فيها المحاولة الخامسة التي تفعّل القفل، والحساب غير الموجود أو غير المؤهل، ترجع جميعًا `INVALID_CREDENTIALS` لتجنب كشف وجود الحساب. المحاولات اللاحقة قد ترجع `429` إذا كان محدد البريد أو IP قد بلغ حده.
+- اختبارات التزامن في Phase 9.1 محاكاة وحدية فقط؛ لم يُنفذ اختبار PostgreSQL concurrency فعلي.
+- الـguard يتحقق من JWT ثم يعيد قراءة `is_active` والدور من قاعدة البيانات في كل طلب، ويرفض الحساب الموقوف أو الدور غير المعروف، ويتحقق من الصلاحية وOrigin للطلبات المعدِّلة. `proxy.js` بوابة أولية بوجود الكوكي فقط، وليس بديلًا عن guard.
+- ينشأ أول `super_admin` يدويًا بأمر `npm run create:super-admin -- <email> "<full name>"`، مع `CREATE_ADMIN_PASSWORD` في البيئة فقط؛ تُحذف قيمة كلمة المرور المؤقتة من البيئة بعد الإنشاء ويُغيّرها الموظف عند أول دخول. لم يُشغّل الأمر ولم يُكتب في قاعدة البيانات ضمن هذه المرحلة.
+
 ## 4. جدول المراحل
 
 | Phase | العمل | الحالة |
@@ -82,6 +93,7 @@
 | 7 | الحماية (rate limit, honeypot, Turnstile) | مكتمل |
 | 8 | ربط الفورم الحالي بالـAPI | مكتمل |
 | 9 | قبول طلب العضوية وإنشاء سجل `members` | مكتمل — service فقط |
+| 9-Auth | تسجيل دخول الموظفين ومصادقتهم عبر API فقط (دون واجهة) | مكتمل — لم يُنشأ حساب موظف في قاعدة البيانات؛ إصلاح السباق في Phase 9.1 |
 
 ## 5. سجل التحديثات
 
@@ -98,12 +110,22 @@
 | 2026-11-17 | 8 | ربط نافذة الانضمام بـ`GET /api/governorates` و`POST /api/applications`؛ إضافة تحميل المحافظات مع إعادة المحاولة، التحقق المحلي، موافقة الشروط وhoneypot، وعرض رسائل API والرقم عند النجاح؛ إزالة قائمة المحافظات الوهمية التي لم يكن لها مستهلك آخر؛ إضافة اختبارات تحويل ردود API. | `components/Home/ui/JoinModal.jsx`؛ `components/Home/ui/application-response.js`؛ `components/Home/ui/application-response.test.js`؛ `components/JoinButton.jsx`؛ `data/mock/membership.js`؛ `docs/BACKEND_PROGRESS.md` | `npm test`: 41 ناجحًا؛ ESLint و`git diff --check` ناجحان. في المتصفح: GET الحقيقي حمّل 27 محافظة مرتبة؛ فشل التحميل المعترض أظهر إعادة المحاولة ثم حمّل القائمة بعد نجاح المحاولة؛ إرسال النموذج الناقص أظهر أخطاء الحقول وركّز الاسم ومنع POST؛ POST المعترض أرسل الحقول المطلوبة، `governorate_id` كرقم و`website` فارغًا بلا `turnstileToken`، وعرض خطأ الحقل. حقل honeypot خارج الشاشة، `display` ليس `none`، قيمته بقيت فارغة ولم يظهر autofill. بعد موافقة منفصلة، POST حقيقي أعاد 201 ورقم الطلب `3`؛ تم التحقق من صف الطلب وسجل الحالة ثم حُذفا بعد موافقة منفصلة، وعادت الأعداد إلى 0 طلبات و0 سجلات و27 محافظة. لم تتغير schema أو API routes. استُعيدت حزم موجودة في lockfile ومستخدمة بالمشروع من `node_modules` دون تعديل manifests. |
 | 2026-11-17 | 9 | إضافة `acceptApplication` بمعاملة واحدة: يقبل الطلب من `under_review` فقط، يحدّث مراجع وتاريخ المراجعة، وينشئ سجل `members` عند `application_type = member`، ثم يسجل انتقال الحالة؛ الأنواع الأخرى تُقبل دون إنشاء عضو. | `lib/services/applications.js`؛ `lib/services/applications.test.js`؛ `docs/BACKEND_PROGRESS.md` | `npm test`: 48 ناجحًا؛ ESLint و`git diff --check` ناجحان. أضيفت اختبارات للحالة المقبولة، الأنواع غير العضوية، الطلب المفقود، الحالة غير المسموحة، تعارض التحديث المتزامن، وغياب المراجع وفشل إنشاء العضو. لم تُعدّل schema أو قاعدة البيانات أو migrations أو الواجهة. لا يوجد endpoint قبول لأن مصادقة الموظفين وإدارة الطلبات لم تُنفّذ بعد؛ يجب استدعاء الخدمة من endpoint محمي عند تنفيذ تلك المرحلة. |
 
+| 2026-11-17 | إصلاح schema | إزالة التكرار الثاني للحقل `application_type` من `membership_applications` بعد التحقق من تطابق التعريفين مع العمود الفعلي في PostgreSQL. أظهر `git blame` أن Commit `edfdf61` أضاف التكرار خلال تغييرات phase-3/4؛ لم يظهر سبب مقصود له. | `prisma/schema.prisma`؛ `generated/prisma/**`؛ `docs/BACKEND_PROGRESS.md` | `prisma validate` و`prisma generate` نجحا؛ `migrate diff` فارغ؛ `npm test`: 48 ناجحًا. لم تُنفذ أي كتابة على قاعدة البيانات. |
+
+| 2026-11-17 | news review workflow | أضيف enum `article_status` وحقول المراجعة وعلاقتا الموظفين إلى `news_articles`، وأُنشئ migration بـ`--create-only` ثم طُبق بعد موافقة المستخدم. | `prisma/schema.prisma`؛ `prisma/migrations/20261117145339_add_news_review_workflow/migration.sql`؛ `docs/BACKEND_PROGRESS.md` | الجدول كان فارغًا. SQL يضيف enum وأعمدة وقيود FK فقط؛ طُبق بنجاح؛ تحقق قراءة فقط من الأعمدة وقيود FK وقيم enum، وبقي عدد الصفوف 0. المسار: `draft` ← `pending_review` ← `published` أو `changes_requested` (ترجع للمحرر وتُرسل للمراجعة مجددًا). الموقع العام يقرأ `is_published = true` فقط، ويجب أن يتطابق مع `status = 'published'`. |
+
+| 2026-11-17 | مرجع الأدوار والصلاحيات | إنشاء مرجع ثابت لأدوار الموظفين والصلاحيات وقواعد التحقق، وإضافة إحالة إليه في تعليمات الوكلاء. | `docs/ROLES.md`؛ `AGENTS.md`؛ `docs/BACKEND_PROGRESS.md` | توثيق فقط؛ لم يتغير أي كود. |
+
+| 2026-11-17 | 9-Auth | إضافة دخول الموظفين بـAPI: `scrypt` وتحقق قوة كلمة المرور، JWT cookie لمدة 8 ساعات، قفل بعد 5 محاولات لمدة 15 دقيقة، rate limit بحسب IP والبريد، صلاحيات من `docs/ROLES.md`، guard يعيد التحقق من الموظف النشط والصلاحية وOrigin، وProxy أولي، ونقاط login/logout/change-password/me، وأمر إنشاء أول super admin. | `lib/auth/**`؛ `lib/services/auth.js`؛ `lib/validation/auth.js`؛ `app/api/admin/auth/**`؛ `proxy.js`؛ `scripts/create-super-admin.js`؛ `.env.example`؛ `package.json`؛ `package-lock.json`؛ `docs/BACKEND_PROGRESS.md` | `npm test`: 74 ناجحًا؛ `npm run lint` ناجح؛ `npm run build` ناجح. ظهر أثناء توليد الصفحات سطرا خطأ عام مصدرهما logger الموجود في `app/api/governorates/route.js`؛ لم يتغير ذلك المسار. عدد `staff_users` قبل وبعد الفحوص 0؛ لا اختبار كتابة حي ولا إنشاء حساب ضمن هذه المرحلة. |
+| 2026-11-17 | 9-Auth | إضافة دخول الموظفين بـAPI: `scrypt` وتحقق قوة كلمة المرور، JWT cookie لمدة 8 ساعات، قفل بعد 5 محاولات لمدة 15 دقيقة، rate limit بحسب IP والبريد، صلاحيات من `docs/ROLES.md`، guard يعيد التحقق من الموظف النشط والصلاحية وOrigin، وProxy أولي، ونقاط login/logout/change-password/me، وأمر إنشاء أول super admin. | `lib/auth/**`؛ `lib/services/auth.js`؛ `lib/validation/auth.js`؛ `app/api/admin/auth/**`؛ `proxy.js`؛ `scripts/create-super-admin.js`؛ `.env.example`؛ `package.json`؛ `package-lock.json`؛ `docs/BACKEND_PROGRESS.md` | `npm test`: 74 ناجحًا؛ `npm run lint` ناجح؛ `npm run build` ناجح. ظهر أثناء توليد الصفحات سطرا خطأ عام مصدرهما logger الموجود في `app/api/governorates/route.js`؛ لم يتغير ذلك المسار. عدد `staff_users` قبل وبعد الفحوص 0؛ لا اختبار كتابة حي ولا إنشاء حساب ضمن هذه المرحلة. |
+| 2026-11-17 | 9.1 | جعل تحديث المحاولات الفاشلة وتفعيل القفل تحديث PostgreSQL ذريًا واحدًا، وتقييد تصفير القفل عند الدخول الناجح، وتوحيد أولوية rate limit وأخطاء القفل، وإضافة محاكاة وحدية للتزامن. | `lib/services/auth.js`؛ `lib/services/auth.test.js`؛ `docs/BACKEND_PROGRESS.md` | `npm test`: 78 ناجحًا؛ `npm run lint` و`npm run build` ناجحان. اختبارات المحاكاة لا تثبت التزامن الفعلي في PostgreSQL؛ لم يُتصل بقاعدة بيانات المشروع أو يُكتب فيها، ولم يُنفذ اختبار PostgreSQL concurrency. استُخدم عنوان PostgreSQL محلي غير قابل للاتصال أثناء build لمنع استخدام إعداد `.env`؛ ظهرت رسالتا الخطأ العام المعروفتان من governorates أثناء prerender. |
+
 ## 6. نقاط مفتوحة
 
 - تحديد ما إذا كان مطلوبًا التحقق من رمز المحافظة أو رقم التحقق بالرقم القومي، وأي قيود عمرية للانضمام؛ التحقق الحالي يفحص الصيغة والتاريخ وعدم وقوعه في المستقبل.
 - منع التكرار حاليًا فحص داخل transaction فقط، ومن دون unique index حسب القرار؛ قد تتسابق طلبات متزامنة قبل أن ترى إحداها الأخرى.
 - إذا تقرر تفعيل Turnstile في بيئة نشر، أضف `TURNSTILE_SECRET_KEY` هناك؛ لا تضع السر في المستودع.
 - الفورم لا يرسل `turnstileToken` حسب القرار الحالي؛ إذا تم ضبط `TURNSTILE_SECRET_KEY` قبل إضافة Turnstile إلى الواجهة فسترفض الـAPI الطلب الحقيقي بـ`CAPTCHA_REQUIRED`.
-- ERD v9 لا يحدد nullability/defaults لأعمدة دخول الموظفين. `password_hash` اختياري حاليًا لتجنب اختلاق بيانات اعتماد للحسابات الموجودة؛ يجب حسم سياسة تهيئة الحسابات قبل تنفيذ كود المصادقة.
+- ERD v9 لا يحدد nullability/defaults لأعمدة دخول الموظفين. `password_hash` اختياري حاليًا لتجنب اختلاق بيانات اعتماد للحسابات الموجودة؛ تظل سياسة تهيئة حسابات الموظفين قرارًا تشغيليًا مفتوحًا.
 - تم حذف صف الاختبار الحي رقم `3` وسجل حالته بعد موافقة المستخدم؛ آخر تحقق للأعداد: 0 طلبات، 0 سجلات حالات، 27 محافظة.
-- خدمة قبول الطلب متاحة في `lib/services/applications.js` فقط: يجب أن يكون الطلب `under_review`، ويُنشأ سجل `members` لطلبات `member` وحدها. لا يوجد حتى الآن endpoint إداري محمي لتشغيلها، لأن مصادقة الموظفين لم تُنفّذ.
+- خدمة قبول الطلب متاحة في `lib/services/applications.js` فقط: يجب أن يكون الطلب `under_review`، ويُنشأ سجل `members` لطلبات `member` وحدها. لا يوجد حتى الآن endpoint إداري محمي لتشغيلها؛ واجهات إدارة الطلبات خارج نطاق Phase 9-Auth.

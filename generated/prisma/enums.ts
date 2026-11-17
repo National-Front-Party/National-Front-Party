@@ -16,3 +16,13 @@ export const application_kind = {
 } as const
 
 export type application_kind = (typeof application_kind)[keyof typeof application_kind]
+
+
+export const article_status = {
+  draft: 'draft',
+  pending_review: 'pending_review',
+  changes_requested: 'changes_requested',
+  published: 'published'
+} as const
+
+export type article_status = (typeof article_status)[keyof typeof article_status]
