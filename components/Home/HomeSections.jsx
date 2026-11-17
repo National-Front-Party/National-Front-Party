@@ -1,19 +1,14 @@
 import CentralSecretariats from "@/components/Home/sections/CentralSecretariats";
-import GovernmentMinistries from "@/components/Home/sections/GovernmentMinistries";
+import GovernmentMinistriesColumn from "@/components/Home/sections/GovernmentMinistriesColumn";
 import GovernoratesSecretariats from "@/components/Home/sections/GovernoratesSecretariats";
 import MainSection from "@/components/Home/sections/MainSection";
 import ParliamentaryUnit from "@/components/Home/sections/ParliamentaryUnit";
 import ProgramCard from "@/components/Home/sections/ProgramCard";
-import RequestForm from "@/components/Home/sections/RequestForm";
 import NextArrowFooter from "@/components/Home/ui/NextArrowFooter";
-import SectionCard, {
-  SectionCardHeader,
-} from "@/components/Home/ui/SectionCard";
+import SectionCard from "@/components/Home/ui/SectionCard";
 import {
-  formSectors,
   governorates,
   mainLinks,
-  ministries,
   partyProgram,
 } from "@/data/mock/home";
 import { centralSecretariats } from "@/data/mock/central-secretariats";
@@ -53,18 +48,7 @@ export default function HomeSections() {
             <ParliamentaryUnit data={parliamentaryItems} />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
-            <GovernmentMinistries data={ministries} />
-            <RequestForm
-              data={formSectors}
-              header={
-                <SectionCardHeader
-                  title={formSectors.title}
-                  variant="dark"
-                />
-              }
-            />
-          </div>
+          <GovernmentMinistriesColumn />
         </div>
       </div>
     </section>
