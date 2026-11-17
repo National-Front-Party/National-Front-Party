@@ -32,7 +32,7 @@
 
 /* الجرادينت الذهبي: استخدميه بالكلاس bg-gold-gradient */
 @utility bg-gold-gradient {
-  background-image: linear-gradient(135deg, #be953a, #e6cc85 50%, #be953a);
+  background-image: linear-gradient(90deg, #be953a, #e6cc85 50%, #be953a);
 }
 
 html {
@@ -150,3 +150,24 @@ h3 {
   }
 }
 
+@keyframes request-error-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.request-error-enter {
+  animation: request-error-enter 150ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .request-error-enter {
+    animation: none;
+  }
+}
