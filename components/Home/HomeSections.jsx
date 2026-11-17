@@ -14,10 +14,10 @@ import {
   governorates,
   mainLinks,
   ministries,
-  parliamentaryItems,
   partyProgram,
 } from "@/data/mock/home";
 import { centralSecretariats } from "@/data/mock/central-secretariats";
+import { parliamentaryItems } from "@/data/mock/parliamentary";
 
 export default function HomeSections() {
   return (
