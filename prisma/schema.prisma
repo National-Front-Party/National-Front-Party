@@ -8,6 +8,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum application_kind {
+  member
+  volunteer
+  follower
+}
+
 model staff_users {
   id                                                  String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   full_name                                           String
@@ -41,6 +47,7 @@ model governorates {
 model membership_applications {
   id                 String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   application_no     BigInt                       @unique @default(autoincrement())
+  application_type   application_kind
   full_name          String
   birth_date         DateTime                     @db.Date
   gender             String

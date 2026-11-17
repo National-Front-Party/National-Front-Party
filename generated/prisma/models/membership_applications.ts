@@ -39,6 +39,7 @@ export type Membership_applicationsSumAggregateOutputType = {
 export type Membership_applicationsMinAggregateOutputType = {
   id: string | null
   application_no: bigint | null
+  application_type: $Enums.application_kind | null
   full_name: string | null
   birth_date: Date | null
   gender: string | null
@@ -63,6 +64,7 @@ export type Membership_applicationsMinAggregateOutputType = {
 export type Membership_applicationsMaxAggregateOutputType = {
   id: string | null
   application_no: bigint | null
+  application_type: $Enums.application_kind | null
   full_name: string | null
   birth_date: Date | null
   gender: string | null
@@ -87,6 +89,7 @@ export type Membership_applicationsMaxAggregateOutputType = {
 export type Membership_applicationsCountAggregateOutputType = {
   id: number
   application_no: number
+  application_type: number
   full_name: number
   birth_date: number
   gender: number
@@ -123,6 +126,7 @@ export type Membership_applicationsSumAggregateInputType = {
 export type Membership_applicationsMinAggregateInputType = {
   id?: true
   application_no?: true
+  application_type?: true
   full_name?: true
   birth_date?: true
   gender?: true
@@ -147,6 +151,7 @@ export type Membership_applicationsMinAggregateInputType = {
 export type Membership_applicationsMaxAggregateInputType = {
   id?: true
   application_no?: true
+  application_type?: true
   full_name?: true
   birth_date?: true
   gender?: true
@@ -171,6 +176,7 @@ export type Membership_applicationsMaxAggregateInputType = {
 export type Membership_applicationsCountAggregateInputType = {
   id?: true
   application_no?: true
+  application_type?: true
   full_name?: true
   birth_date?: true
   gender?: true
@@ -282,6 +288,7 @@ export type membership_applicationsGroupByArgs<ExtArgs extends runtime.Types.Ext
 export type Membership_applicationsGroupByOutputType = {
   id: string
   application_no: bigint
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date
   gender: string
@@ -329,6 +336,7 @@ export type membership_applicationsWhereInput = {
   NOT?: Prisma.membership_applicationsWhereInput | Prisma.membership_applicationsWhereInput[]
   id?: Prisma.UuidFilter<"membership_applications"> | string
   application_no?: Prisma.BigIntFilter<"membership_applications"> | bigint | number
+  application_type?: Prisma.Enumapplication_kindFilter<"membership_applications"> | $Enums.application_kind
   full_name?: Prisma.StringFilter<"membership_applications"> | string
   birth_date?: Prisma.DateTimeFilter<"membership_applications"> | Date | string
   gender?: Prisma.StringFilter<"membership_applications"> | string
@@ -358,6 +366,7 @@ export type membership_applicationsWhereInput = {
 export type membership_applicationsOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   application_no?: Prisma.SortOrder
+  application_type?: Prisma.SortOrder
   full_name?: Prisma.SortOrder
   birth_date?: Prisma.SortOrder
   gender?: Prisma.SortOrder
@@ -390,6 +399,7 @@ export type membership_applicationsWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.membership_applicationsWhereInput | Prisma.membership_applicationsWhereInput[]
   OR?: Prisma.membership_applicationsWhereInput[]
   NOT?: Prisma.membership_applicationsWhereInput | Prisma.membership_applicationsWhereInput[]
+  application_type?: Prisma.Enumapplication_kindFilter<"membership_applications"> | $Enums.application_kind
   full_name?: Prisma.StringFilter<"membership_applications"> | string
   birth_date?: Prisma.DateTimeFilter<"membership_applications"> | Date | string
   gender?: Prisma.StringFilter<"membership_applications"> | string
@@ -419,6 +429,7 @@ export type membership_applicationsWhereUniqueInput = Prisma.AtLeast<{
 export type membership_applicationsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   application_no?: Prisma.SortOrder
+  application_type?: Prisma.SortOrder
   full_name?: Prisma.SortOrder
   birth_date?: Prisma.SortOrder
   gender?: Prisma.SortOrder
@@ -451,6 +462,7 @@ export type membership_applicationsScalarWhereWithAggregatesInput = {
   NOT?: Prisma.membership_applicationsScalarWhereWithAggregatesInput | Prisma.membership_applicationsScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"membership_applications"> | string
   application_no?: Prisma.BigIntWithAggregatesFilter<"membership_applications"> | bigint | number
+  application_type?: Prisma.Enumapplication_kindWithAggregatesFilter<"membership_applications"> | $Enums.application_kind
   full_name?: Prisma.StringWithAggregatesFilter<"membership_applications"> | string
   birth_date?: Prisma.DateTimeWithAggregatesFilter<"membership_applications"> | Date | string
   gender?: Prisma.StringWithAggregatesFilter<"membership_applications"> | string
@@ -475,6 +487,7 @@ export type membership_applicationsScalarWhereWithAggregatesInput = {
 export type membership_applicationsCreateInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -501,6 +514,7 @@ export type membership_applicationsCreateInput = {
 export type membership_applicationsUncheckedCreateInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -527,6 +541,7 @@ export type membership_applicationsUncheckedCreateInput = {
 export type membership_applicationsUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -553,6 +568,7 @@ export type membership_applicationsUpdateInput = {
 export type membership_applicationsUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -579,6 +595,7 @@ export type membership_applicationsUncheckedUpdateInput = {
 export type membership_applicationsCreateManyInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -603,6 +620,7 @@ export type membership_applicationsCreateManyInput = {
 export type membership_applicationsUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -624,6 +642,7 @@ export type membership_applicationsUpdateManyMutationInput = {
 export type membership_applicationsUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -658,6 +677,7 @@ export type membership_applicationsOrderByRelationAggregateInput = {
 export type membership_applicationsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   application_no?: Prisma.SortOrder
+  application_type?: Prisma.SortOrder
   full_name?: Prisma.SortOrder
   birth_date?: Prisma.SortOrder
   gender?: Prisma.SortOrder
@@ -687,6 +707,7 @@ export type membership_applicationsAvgOrderByAggregateInput = {
 export type membership_applicationsMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   application_no?: Prisma.SortOrder
+  application_type?: Prisma.SortOrder
   full_name?: Prisma.SortOrder
   birth_date?: Prisma.SortOrder
   gender?: Prisma.SortOrder
@@ -711,6 +732,7 @@ export type membership_applicationsMaxOrderByAggregateInput = {
 export type membership_applicationsMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   application_no?: Prisma.SortOrder
+  application_type?: Prisma.SortOrder
   full_name?: Prisma.SortOrder
   birth_date?: Prisma.SortOrder
   gender?: Prisma.SortOrder
@@ -876,6 +898,10 @@ export type BigIntFieldUpdateOperationsInput = {
   divide?: bigint | number
 }
 
+export type Enumapplication_kindFieldUpdateOperationsInput = {
+  set?: $Enums.application_kind
+}
+
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
@@ -915,6 +941,7 @@ export type membership_applicationsUpdateOneRequiredWithoutApplication_status_hi
 export type membership_applicationsCreateWithoutAssigned_staff_userInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -940,6 +967,7 @@ export type membership_applicationsCreateWithoutAssigned_staff_userInput = {
 export type membership_applicationsUncheckedCreateWithoutAssigned_staff_userInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -975,6 +1003,7 @@ export type membership_applicationsCreateManyAssigned_staff_userInputEnvelope = 
 export type membership_applicationsCreateWithoutReviewed_staff_userInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1000,6 +1029,7 @@ export type membership_applicationsCreateWithoutReviewed_staff_userInput = {
 export type membership_applicationsUncheckedCreateWithoutReviewed_staff_userInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1054,6 +1084,7 @@ export type membership_applicationsScalarWhereInput = {
   NOT?: Prisma.membership_applicationsScalarWhereInput | Prisma.membership_applicationsScalarWhereInput[]
   id?: Prisma.UuidFilter<"membership_applications"> | string
   application_no?: Prisma.BigIntFilter<"membership_applications"> | bigint | number
+  application_type?: Prisma.Enumapplication_kindFilter<"membership_applications"> | $Enums.application_kind
   full_name?: Prisma.StringFilter<"membership_applications"> | string
   birth_date?: Prisma.DateTimeFilter<"membership_applications"> | Date | string
   gender?: Prisma.StringFilter<"membership_applications"> | string
@@ -1094,6 +1125,7 @@ export type membership_applicationsUpdateManyWithWhereWithoutReviewed_staff_user
 export type membership_applicationsCreateWithoutGovernorateInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1119,6 +1151,7 @@ export type membership_applicationsCreateWithoutGovernorateInput = {
 export type membership_applicationsUncheckedCreateWithoutGovernorateInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1170,6 +1203,7 @@ export type membership_applicationsUpdateManyWithWhereWithoutGovernorateInput = 
 export type membership_applicationsCreateWithoutMembersInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1195,6 +1229,7 @@ export type membership_applicationsCreateWithoutMembersInput = {
 export type membership_applicationsUncheckedCreateWithoutMembersInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1236,6 +1271,7 @@ export type membership_applicationsUpdateToOneWithWhereWithoutMembersInput = {
 export type membership_applicationsUpdateWithoutMembersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1261,6 +1297,7 @@ export type membership_applicationsUpdateWithoutMembersInput = {
 export type membership_applicationsUncheckedUpdateWithoutMembersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1286,6 +1323,7 @@ export type membership_applicationsUncheckedUpdateWithoutMembersInput = {
 export type membership_applicationsCreateWithoutApplication_status_historyInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1311,6 +1349,7 @@ export type membership_applicationsCreateWithoutApplication_status_historyInput 
 export type membership_applicationsUncheckedCreateWithoutApplication_status_historyInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1352,6 +1391,7 @@ export type membership_applicationsUpdateToOneWithWhereWithoutApplication_status
 export type membership_applicationsUpdateWithoutApplication_status_historyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1377,6 +1417,7 @@ export type membership_applicationsUpdateWithoutApplication_status_historyInput 
 export type membership_applicationsUncheckedUpdateWithoutApplication_status_historyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1402,6 +1443,7 @@ export type membership_applicationsUncheckedUpdateWithoutApplication_status_hist
 export type membership_applicationsCreateManyAssigned_staff_userInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1425,6 +1467,7 @@ export type membership_applicationsCreateManyAssigned_staff_userInput = {
 export type membership_applicationsCreateManyReviewed_staff_userInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1448,6 +1491,7 @@ export type membership_applicationsCreateManyReviewed_staff_userInput = {
 export type membership_applicationsUpdateWithoutAssigned_staff_userInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1473,6 +1517,7 @@ export type membership_applicationsUpdateWithoutAssigned_staff_userInput = {
 export type membership_applicationsUncheckedUpdateWithoutAssigned_staff_userInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1498,6 +1543,7 @@ export type membership_applicationsUncheckedUpdateWithoutAssigned_staff_userInpu
 export type membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_userInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1521,6 +1567,7 @@ export type membership_applicationsUncheckedUpdateManyWithoutAssigned_staff_user
 export type membership_applicationsUpdateWithoutReviewed_staff_userInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1546,6 +1593,7 @@ export type membership_applicationsUpdateWithoutReviewed_staff_userInput = {
 export type membership_applicationsUncheckedUpdateWithoutReviewed_staff_userInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1571,6 +1619,7 @@ export type membership_applicationsUncheckedUpdateWithoutReviewed_staff_userInpu
 export type membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_userInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1594,6 +1643,7 @@ export type membership_applicationsUncheckedUpdateManyWithoutReviewed_staff_user
 export type membership_applicationsCreateManyGovernorateInput = {
   id?: string
   application_no?: bigint | number
+  application_type: $Enums.application_kind
   full_name: string
   birth_date: Date | string
   gender: string
@@ -1617,6 +1667,7 @@ export type membership_applicationsCreateManyGovernorateInput = {
 export type membership_applicationsUpdateWithoutGovernorateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1642,6 +1693,7 @@ export type membership_applicationsUpdateWithoutGovernorateInput = {
 export type membership_applicationsUncheckedUpdateWithoutGovernorateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1667,6 +1719,7 @@ export type membership_applicationsUncheckedUpdateWithoutGovernorateInput = {
 export type membership_applicationsUncheckedUpdateManyWithoutGovernorateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   application_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  application_type?: Prisma.Enumapplication_kindFieldUpdateOperationsInput | $Enums.application_kind
   full_name?: Prisma.StringFieldUpdateOperationsInput | string
   birth_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   gender?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1721,6 +1774,7 @@ export type Membership_applicationsCountOutputTypeCountApplication_status_histor
 export type membership_applicationsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   application_no?: boolean
+  application_type?: boolean
   full_name?: boolean
   birth_date?: boolean
   gender?: boolean
@@ -1751,6 +1805,7 @@ export type membership_applicationsSelect<ExtArgs extends runtime.Types.Extensio
 export type membership_applicationsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   application_no?: boolean
+  application_type?: boolean
   full_name?: boolean
   birth_date?: boolean
   gender?: boolean
@@ -1778,6 +1833,7 @@ export type membership_applicationsSelectCreateManyAndReturn<ExtArgs extends run
 export type membership_applicationsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   application_no?: boolean
+  application_type?: boolean
   full_name?: boolean
   birth_date?: boolean
   gender?: boolean
@@ -1805,6 +1861,7 @@ export type membership_applicationsSelectUpdateManyAndReturn<ExtArgs extends run
 export type membership_applicationsSelectScalar = {
   id?: boolean
   application_no?: boolean
+  application_type?: boolean
   full_name?: boolean
   birth_date?: boolean
   gender?: boolean
@@ -1826,7 +1883,7 @@ export type membership_applicationsSelectScalar = {
   updated_at?: boolean
 }
 
-export type membership_applicationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "application_no" | "full_name" | "birth_date" | "gender" | "phone" | "national_id" | "education_level" | "occupation" | "governorate_id" | "terms_accepted" | "status" | "assigned_to" | "reviewed_by" | "reviewed_at" | "rejection_reason" | "internal_notes" | "source" | "submitted_ip" | "created_at" | "updated_at", ExtArgs["result"]["membership_applications"]>
+export type membership_applicationsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "application_no" | "application_type" | "full_name" | "birth_date" | "gender" | "phone" | "national_id" | "education_level" | "occupation" | "governorate_id" | "terms_accepted" | "status" | "assigned_to" | "reviewed_by" | "reviewed_at" | "rejection_reason" | "internal_notes" | "source" | "submitted_ip" | "created_at" | "updated_at", ExtArgs["result"]["membership_applications"]>
 export type membership_applicationsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   application_status_history?: boolean | Prisma.membership_applications$application_status_historyArgs<ExtArgs>
   members?: boolean | Prisma.membership_applications$membersArgs<ExtArgs>
@@ -1858,6 +1915,7 @@ export type $membership_applicationsPayload<ExtArgs extends runtime.Types.Extens
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     application_no: bigint
+    application_type: $Enums.application_kind
     full_name: string
     birth_date: Date
     gender: string
@@ -2307,6 +2365,7 @@ export interface Prisma__membership_applicationsClient<T, Null = never, ExtArgs 
 export interface membership_applicationsFieldRefs {
   readonly id: Prisma.FieldRef<"membership_applications", 'String'>
   readonly application_no: Prisma.FieldRef<"membership_applications", 'BigInt'>
+  readonly application_type: Prisma.FieldRef<"membership_applications", 'application_kind'>
   readonly full_name: Prisma.FieldRef<"membership_applications", 'String'>
   readonly birth_date: Prisma.FieldRef<"membership_applications", 'DateTime'>
   readonly gender: Prisma.FieldRef<"membership_applications", 'String'>
