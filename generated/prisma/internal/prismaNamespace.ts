@@ -1682,6 +1682,7 @@ export type GovernoratesScalarFieldEnum = (typeof GovernoratesScalarFieldEnum)[k
 export const Membership_applicationsScalarFieldEnum = {
   id: 'id',
   application_no: 'application_no',
+  application_type: 'application_type',
   full_name: 'full_name',
   birth_date: 'birth_date',
   gender: 'gender',
@@ -2003,6 +2004,20 @@ export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  */
 export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
     
+
+
+/**
+ * Reference to a field of type 'application_kind'
+ */
+export type Enumapplication_kindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'application_kind'>
+
+
+
+/**
+ * Reference to a field of type 'application_kind[]'
+ */
+export type ListEnumapplication_kindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'application_kind[]'>
+
 
 
 /**

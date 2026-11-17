@@ -9,7 +9,10 @@
 * 🟢 You can import this file directly.
 */
 
+export const application_kind = {
+  member: 'member',
+  volunteer: 'volunteer',
+  follower: 'follower'
+} as const
 
-
-// This file is empty because there are no enums in the schema.
-export {}
+export type application_kind = (typeof application_kind)[keyof typeof application_kind]
