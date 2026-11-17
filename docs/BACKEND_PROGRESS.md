@@ -141,3 +141,8 @@
 - ERD v9 لا يحدد nullability/defaults لأعمدة دخول الموظفين. `password_hash` اختياري حاليًا لتجنب اختلاق بيانات اعتماد للحسابات الموجودة؛ تظل سياسة تهيئة حسابات الموظفين قرارًا تشغيليًا مفتوحًا.
 - تم حذف صف الاختبار الحي رقم `3` وسجل حالته بعد موافقة المستخدم؛ آخر تحقق للأعداد: 0 طلبات، 0 سجلات حالات، 27 محافظة.
 - خدمة قبول الطلب متاحة في `lib/services/applications.js` فقط: يجب أن يكون الطلب `under_review`، ويُنشأ سجل `members` لطلبات `member` وحدها. لا يوجد حتى الآن endpoint إداري محمي لتشغيلها؛ واجهات إدارة الطلبات خارج نطاق Phase 9-Auth.
+## Phase 11.2 — Application Management Actions
+
+Implemented backend-only application actions using the existing schema: transition to review, accept, reject with a required reason, append internal notes, assign or unassign an eligible active staff member. Status changes and their history entries (including member creation on member acceptance) run in one transaction; conditional status updates prevent duplicate transitions. Note appends serialize with a row lock. All action routes require applications:update and validate inputs; no history entry is added for notes or assignment. Added validation, service, and handler tests.
+
+npm test: 128 passed; npm run lint and git diff --check passed. Tests use mocks and do not prove PostgreSQL concurrency behavior. No schema, migration, package, frontend, or database changes were made.
