@@ -103,6 +103,7 @@
 | 13 | إدارة المحتوى التنظيمي (Popups, القيادة, الأمانات المركزية/المحافظات, الأمانة البرلمانية) | منفّذ كـBackend/Schema/Tests — Migration وSeed منشآن ولم يُطبّقا/يُنفذا |
 | 14.1 | الأخبار والمقالات: طبقة التحقق والخدمات الأساسية (Validation + Services) | مكتمل — خدمات وتحقق واختبارات فقط؛ لا مسارات API أو واجهة أمامية |
 | 14.2 | الأخبار والمقالات: مسارات الإدارة (News Admin APIs) | مكتمل — 14 مسارًا إداريًا للمقالات والمصادر ومصانع Handlers واختبارات كاملة |
+| 14.3 | الأخبار والمقالات: مسارات العرض العامة (News Public APIs) | مكتمل — مسارا القائمة والتفاصيل بالـ slug، وتنسيق التواريخ والفقرات، وتحديد المعدل والكاش، واختبارات كاملة |
 
 ## 5. سجل التحديثات
 
@@ -139,6 +140,7 @@
 | 2026-11-18 | 13 | تنفيذ Backend/Validation/Services/Handlers/Routes للمحتوى التنظيمي (Popups، القيادة Panels/Leaders/Contents، الأمانات المركزية/المحافظات، الأمانة البرلمانية)، مع تدقيق داخل نفس المعاملة، وإنشاء migration وseed popups (دون تطبيق/تشغيل)، وتوليد Prisma Client، وإجراء الإصلاحات المستهدفة بعد المراجعة المستقلة (F-01 إلى F-05 وFINDING-02 قفل الأمانة الأب FOR UPDATE لمنع تضارب التزامن عند الحذف)، وإضافة اختبارات شاملة. | `prisma/schema.prisma`؛ `prisma/migrations/20261118000000_phase13_organizational_content/migration.sql`؛ `scripts/seed-popups.js`؛ `lib/content/**`؛ `lib/validation/content/**`؛ `lib/services/content-*.js`؛ `lib/services/content-phase13.test.js`؛ `app/api/admin/content/**`؛ `app/api/content/**`؛ `lib/validation/staff.js`؛ `generated/prisma/**`؛ `docs/BACKEND_PROGRESS.md` | تم إصلاح CHECK Constraint في الـ Migration بإزالة الـ Subquery وإضافة حقول حذف الـ Cascade (F-01, F-05)، وربط بارامترات الأمانة والشخص في المسارات المتداخلة لمنع التعديل المتبادل (F-02)، ومعالجة خطأ P2003 كـ 400 INVALID_REFERENCE (F-03)، والتحقق من صحة التقويم لـ decision_date (F-04)، وقفل صف الأمانة الأب عبر `SELECT ... FOR UPDATE` قبل عد الأشخاص عند الحذف (FINDING-02). لا تزال Migration و`seed-popups.js` بانتظار موافقة صريحة. Phase 13 tests: 27/27؛ `npm test`: 211/211؛ `npm run lint`: ناجح. لا تغييرات Frontend أو DB writes حقيقية أو commit. |
 | 2026-11-18 | 14.1 | تنفيذ طبقة التحقق والخدمات لمنظومة الأخبار والمصادر (`lib/validation/news.js`, `lib/services/news-articles.js`, `lib/services/news-sources.js`) مع اختبارات شاملة وإصلاحات المراجعة المستقلة (F-01 إلى F-07). | `lib/validation/news.js`؛ `lib/validation/news.test.js`؛ `lib/services/news-sources.js`؛ `lib/services/news-sources.test.js`؛ `lib/services/news-articles.js`؛ `lib/services/news-articles.test.js`؛ `docs/BACKEND_PROGRESS.md` | شمل التنفيذ: التحقق الصارم من مدخلات المقالات والمصادر وتوافقها مع schema (`published_on`, `source_id`, إلخ دون حقول وهمية) وتقويم التواريخ؛ دعم العناوين العربية في الـ slug وتفادي التصادم؛ حصر إدارة المصادر بـ `super_admin`؛ تقييد قراءة المقالات الإدارية على أدوار الأخبار المعتمدة ورفض الأدوار غير المصرح لها؛ منع النشر الذاتي للمراجعين والسماح به للـ super_admin؛ حصر الحذف بالـ super_admin؛ قفل صف المصدر بـ `FOR SHARE` أثناء إنشاء المقال وقفل صف المقال بـ `FOR UPDATE`؛ الاحتفاظ بملاحظة المراجعة داخلياً؛ تنفيذ المعاملات مع سجل التدقيق في نفس المعاملة؛ `npm test` بلغ 232/232 ناجحاً، و`npm run lint` ناجح و`prisma validate` ناجح. لم يتم إنشاء مسارات API أو لمس الفرونت أو إجراء أي كتابة على قاعدة البيانات. |
 | 2026-11-18 | 14.2 | تنفيذ مسارات الإدارة لمنظومة الأخبار والمصادر (14 Admin Endpoints)، ومصانع Handlers المعتمدة على الحقن، ومساعدات التحقق والتفويض، واختبارات شاملة. | `lib/news/http.js`؛ `lib/news/handlers/articles.js`؛ `lib/news/handlers/sources.js`؛ `lib/news/handlers.test.js`؛ `app/api/admin/news/**`؛ `docs/BACKEND_PROGRESS.md` | شمل التنفيذ: 14 مسارًا إداريًا بالكامل (9 للمقالات وسير العمل والحذف، و5 للمصادر) كـ Thin Wrappers؛ Handler Factories مع Dependency Injection؛ فرض نموذج الأدوار الصارم (`news_editor` للإنشاء والتعديل والإرسال لمقالاته وقراءة مقالاته، و`news_reviewer` للقراءة والمراجعة والنشر وإلغاء النشر دون تأليف أو تعديل محتوى أو نشر ذاتي، و`super_admin` للإدارة الكاملة والحذف والمصادر)؛ دعم حجم جسم حتى 256KB للمقالات و10KB للإجراءات والمصادر؛ اشتراط `{ confirm: true }` للحذف النهائي؛ معالجة P2002 كـ 409 DUPLICATE_SLUG وتحويل سائر أخطاء الخدمات والـ Prisma إلى Status Codes دقيقة؛ اجتياز جميع الاختبارات: `npm test` بلغ 251/251 ناجحاً، و`npm run lint` 0 أخطاء و0 تحذيرات، و`prisma validate` ناجح. لا تغييرات Schema أو Migrations أو Frontend أو DB Writes أو Git Commits. |
+| 2026-11-18 | 14.3 | تنفيذ مسارات العرض العامة للأخبار والمقالات (`GET /api/content/news` و`GET /api/content/news/[slug]`)، وتنسيق التواريخ العربية الذكي، وتفكيك الفقرات، وقائمة الحقول المسموحة، وتحديد معدل الطلبات، وترويسات الكاش، واختبارات شاملة وإغلاق فجوات التغطية. | `lib/news/formatting.js`؛ `lib/validation/news.js`؛ `lib/services/news-articles.js`؛ `lib/news/handlers/public.js`؛ `app/api/content/news/**`؛ `lib/news/public.test.js`؛ `docs/BACKEND_PROGRESS.md` | شمل التنفيذ: جلب الأخبار المنشورة فقط (`status = 'published'` و`is_published = true`)؛ عدم تأثر ظهور المقالات بتعطيل المصدر؛ حجب كافة الحقول الإدارية وسجلات المراجعة والملاحظات الداخلية تمامًا؛ إرجاع `body` وتفكيك `paragraphs`؛ تنسيق التواريخ بالعربية بدون سنة لدقة اليوم ومع السنة لدقة الشهر وإلحاق اسم المصدر؛ دعم الفلترة والصفحات وترتيب المميز ثم الأحدث؛ دعم الـ slug العربي واللاتيني في التفاصيل؛ كاش `s-maxage=120, stale-while-revalidate=300` للنجاح و`no-store` للأخطاء والـ 404؛ محدد معدل 120 طلبًا في الدقيقة لكل IP؛ اجتياز جميع الاختبارات: `npm test` بلغ 266/266 ناجحاً، و`npm run lint` 0 أخطاء و0 تحذيرات، و`prisma validate` ناجح. لا تغييرات Schema أو Migrations أو Frontend أو DB Writes أو Git Commits. |
 
 ## 6. نقاط مفتوحة
 
@@ -322,6 +324,47 @@ Implemented backend administration APIs for News Articles and News Sources (14 e
 ### Verification & Tests
 - Added 19 test cases in `lib/news/handlers.test.js` covering all 14 endpoints, authentication and authorization across roles, reviewer authoring/editing restrictions, editor publishing restrictions, body size limits (256KB vs 10KB), validation edge cases, status transitions, conflict mappings, and Next.js route file export verification.
 - Test suite: **251/251 tests passing** (`cmd /c "npm test"`).
+- Lint: **0 errors, 0 warnings** (`cmd /c "npm run lint"`).
+- Prisma: `node ./node_modules/prisma/build/index.js validate` succeeded.
+- Zero database writes, zero schema/migration changes, zero frontend changes, zero git commits.
+
+## Phase 14.3 — News Public APIs
+
+Implemented public-facing read-only APIs for News Articles (`GET /api/content/news` and `GET /api/content/news/[slug]`), deterministic Arabic date formatting, paragraph extraction, strict public field allowlisting, rate limiting (120 req/min per IP), HTTP caching headers (`s-maxage=120, stale-while-revalidate=300`), and a comprehensive test suite. No database writes, schema/migration changes, frontend modifications, or git commits.
+
+### Key Implementation Details
+- **Architecture & Layering**:
+  - `lib/news/formatting.js`: Pure helpers for deterministic Arabic date formatting (`formatArabicDateWithPrecision`), metadata synthesis (`formatArticlePublicMeta`), paragraph splitting (`splitArticleParagraphs`), and public payload mappers (`mapArticleToPublicItem`, `mapArticleToPublicDetail`).
+  - `lib/validation/news.js`: Added and exported `articlePublicQuerySchema` (page min 1, page_size 1-50 default 12, featured boolean, source slug).
+  - `lib/services/news-articles.js`: Added and exported `articlePublicListSelect`, `articlePublicDetailSelect`, `listArticlesPublic`, and `getArticlePublicBySlug`.
+  - `lib/news/handlers/public.js`: Handler factory `createPublicNewsHandlers` wrapping `list` and `get` with rate limiting, input parsing, error translation, and cache header management.
+  - `app/api/content/news/route.js`: Thin Next.js Route export `GET = handlers.list`.
+  - `app/api/content/news/[slug]/route.js`: Thin Next.js Route export `GET = handlers.get`.
+  - `lib/news/public.test.js`: Comprehensive test suite (13 tests) verifying formatting, services, handlers, rate limiting, cache headers, error codes, and route exports.
+
+- **Endpoints Implemented (2 endpoints)**:
+  1. `GET /api/content/news`: Paginated public listing of published articles (`page`, `page_size`, `featured`, `source`).
+  2. `GET /api/content/news/[slug]`: Single published article detail by slug.
+
+- **Public Visibility & Isolation**:
+  - Strictly filters by both `status = 'published'` and `is_published = true`.
+  - Deactivated sources (`source.is_active = false`) do not prevent previously published articles from being displayed.
+  - Public allowlist excludes all internal editorial/staff data (`created_by`, `reviewed_by`, `reviewed_at`, `review_note`, `updated_by`, internal status).
+
+- **Arabic Date & Paragraph Formatting**:
+  - Day precision (`day`): `7 نوفمبر · اليوم السابع` (omits year).
+  - Month precision (`month`): `نوفمبر 2026 · اليوم السابع` (includes year).
+  - Deterministic Arabic month lookup table avoiding server ICU locale discrepancies.
+  - Both original `body` and `paragraphs: string[]` returned in detail response without mutating database content.
+
+- **Caching & Rate Limiting**:
+  - Rate limiter: 120 requests/minute per client IP (in-memory sliding window).
+  - Cache headers on 200 OK: `Cache-Control: public, s-maxage=120, stale-while-revalidate=300`.
+  - Cache headers on 404 / 4xx / 5xx: `Cache-Control: no-store`.
+
+### Verification & Tests
+- Added 15 test cases in `lib/news/public.test.js`.
+- Test suite: **266/266 tests passing** (`cmd /c "npm test"`).
 - Lint: **0 errors, 0 warnings** (`cmd /c "npm run lint"`).
 - Prisma: `node ./node_modules/prisma/build/index.js validate` succeeded.
 - Zero database writes, zero schema/migration changes, zero frontend changes, zero git commits.
