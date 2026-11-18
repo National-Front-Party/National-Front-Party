@@ -6,6 +6,7 @@ import ParliamentaryUnit from "@/components/Home/sections/ParliamentaryUnit";
 import ProgramCard from "@/components/Home/sections/ProgramCard";
 import NewsSection from "@/components/Home/sections/NewsSection";
 import GeographicSearch from "@/components/Home/sections/GeographicSearch";
+import Vision2030 from "@/components/Home/sections/Vision2030";
 import {
   mainLinks,
   partyProgram,
@@ -46,6 +47,7 @@ export default function HomeSections() {
       </div>
       <NewsSection />
       <GeographicSearch />
+      <Vision2030 />
     </section>
   );
 }
