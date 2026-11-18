@@ -407,6 +407,7 @@ export const ModelName = {
   leaders: 'leaders',
   info_items: 'info_items',
   central_secretariats: 'central_secretariats',
+  central_secretariat_people: 'central_secretariat_people',
   governorate_secretariats_info: 'governorate_secretariats_info',
   parliamentary_unit_items: 'parliamentary_unit_items',
   ministries: 'ministries',
@@ -429,7 +430,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "staff_users" | "staff_audit_log" | "governorates" | "membership_applications" | "members" | "application_status_history" | "panels" | "leaders" | "info_items" | "central_secretariats" | "governorate_secretariats_info" | "parliamentary_unit_items" | "ministries" | "request_sectors" | "service_requests" | "news_sources" | "news_articles"
+    modelProps: "staff_users" | "staff_audit_log" | "governorates" | "membership_applications" | "members" | "application_status_history" | "panels" | "leaders" | "info_items" | "central_secretariats" | "central_secretariat_people" | "governorate_secretariats_info" | "parliamentary_unit_items" | "ministries" | "request_sectors" | "service_requests" | "news_sources" | "news_articles"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1173,6 +1174,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    central_secretariat_people: {
+      payload: Prisma.$central_secretariat_peoplePayload<ExtArgs>
+      fields: Prisma.central_secretariat_peopleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.central_secretariat_peopleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.central_secretariat_peopleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>
+        }
+        findFirst: {
+          args: Prisma.central_secretariat_peopleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.central_secretariat_peopleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>
+        }
+        findMany: {
+          args: Prisma.central_secretariat_peopleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>[]
+        }
+        create: {
+          args: Prisma.central_secretariat_peopleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>
+        }
+        createMany: {
+          args: Prisma.central_secretariat_peopleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.central_secretariat_peopleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>[]
+        }
+        delete: {
+          args: Prisma.central_secretariat_peopleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>
+        }
+        update: {
+          args: Prisma.central_secretariat_peopleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>
+        }
+        deleteMany: {
+          args: Prisma.central_secretariat_peopleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.central_secretariat_peopleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.central_secretariat_peopleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>[]
+        }
+        upsert: {
+          args: Prisma.central_secretariat_peopleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$central_secretariat_peoplePayload>
+        }
+        aggregate: {
+          args: Prisma.Central_secretariat_peopleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCentral_secretariat_people>
+        }
+        groupBy: {
+          args: Prisma.central_secretariat_peopleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Central_secretariat_peopleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.central_secretariat_peopleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Central_secretariat_peopleCountAggregateOutputType> | number
+        }
+      }
+    }
     governorate_secretariats_info: {
       payload: Prisma.$governorate_secretariats_infoPayload<ExtArgs>
       fields: Prisma.governorate_secretariats_infoFieldRefs
@@ -1880,7 +1955,12 @@ export const Info_itemsScalarFieldEnum = {
   button_style: 'button_style',
   action_type: 'action_type',
   panel_id: 'panel_id',
-  leader_id: 'leader_id'
+  leader_id: 'leader_id',
+  button_label: 'button_label',
+  person_name: 'person_name',
+  person_role_title: 'person_role_title',
+  decision_number: 'decision_number',
+  decision_date: 'decision_date'
 } as const
 
 export type Info_itemsScalarFieldEnum = (typeof Info_itemsScalarFieldEnum)[keyof typeof Info_itemsScalarFieldEnum]
@@ -1897,6 +1977,23 @@ export const Central_secretariatsScalarFieldEnum = {
 } as const
 
 export type Central_secretariatsScalarFieldEnum = (typeof Central_secretariatsScalarFieldEnum)[keyof typeof Central_secretariatsScalarFieldEnum]
+
+
+export const Central_secretariat_peopleScalarFieldEnum = {
+  id: 'id',
+  secretariat_id: 'secretariat_id',
+  full_name: 'full_name',
+  position_title: 'position_title',
+  image_url: 'image_url',
+  details: 'details',
+  sort_order: 'sort_order',
+  is_published: 'is_published',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Central_secretariat_peopleScalarFieldEnum = (typeof Central_secretariat_peopleScalarFieldEnum)[keyof typeof Central_secretariat_peopleScalarFieldEnum]
 
 
 export const Governorate_secretariats_infoScalarFieldEnum = {
@@ -2356,6 +2453,7 @@ export type GlobalOmitConfig = {
   leaders?: Prisma.leadersOmit
   info_items?: Prisma.info_itemsOmit
   central_secretariats?: Prisma.central_secretariatsOmit
+  central_secretariat_people?: Prisma.central_secretariat_peopleOmit
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoOmit
   parliamentary_unit_items?: Prisma.parliamentary_unit_itemsOmit
   ministries?: Prisma.ministriesOmit

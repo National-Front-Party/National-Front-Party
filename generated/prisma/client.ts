@@ -92,6 +92,11 @@ export type info_items = Prisma.info_itemsModel
  */
 export type central_secretariats = Prisma.central_secretariatsModel
 /**
+ * Model central_secretariat_people
+ * 
+ */
+export type central_secretariat_people = Prisma.central_secretariat_peopleModel
+/**
  * Model governorate_secretariats_info
  * 
  */

@@ -57,6 +57,11 @@ export type Info_itemsMinAggregateOutputType = {
   action_type: string | null
   panel_id: number | null
   leader_id: string | null
+  button_label: string | null
+  person_name: string | null
+  person_role_title: string | null
+  decision_number: string | null
+  decision_date: Date | null
 }
 
 export type Info_itemsMaxAggregateOutputType = {
@@ -78,6 +83,11 @@ export type Info_itemsMaxAggregateOutputType = {
   action_type: string | null
   panel_id: number | null
   leader_id: string | null
+  button_label: string | null
+  person_name: string | null
+  person_role_title: string | null
+  decision_number: string | null
+  decision_date: Date | null
 }
 
 export type Info_itemsCountAggregateOutputType = {
@@ -99,6 +109,11 @@ export type Info_itemsCountAggregateOutputType = {
   action_type: number
   panel_id: number
   leader_id: number
+  button_label: number
+  person_name: number
+  person_role_title: number
+  decision_number: number
+  decision_date: number
   _all: number
 }
 
@@ -134,6 +149,11 @@ export type Info_itemsMinAggregateInputType = {
   action_type?: true
   panel_id?: true
   leader_id?: true
+  button_label?: true
+  person_name?: true
+  person_role_title?: true
+  decision_number?: true
+  decision_date?: true
 }
 
 export type Info_itemsMaxAggregateInputType = {
@@ -155,6 +175,11 @@ export type Info_itemsMaxAggregateInputType = {
   action_type?: true
   panel_id?: true
   leader_id?: true
+  button_label?: true
+  person_name?: true
+  person_role_title?: true
+  decision_number?: true
+  decision_date?: true
 }
 
 export type Info_itemsCountAggregateInputType = {
@@ -176,6 +201,11 @@ export type Info_itemsCountAggregateInputType = {
   action_type?: true
   panel_id?: true
   leader_id?: true
+  button_label?: true
+  person_name?: true
+  person_role_title?: true
+  decision_number?: true
+  decision_date?: true
   _all?: true
 }
 
@@ -284,6 +314,11 @@ export type Info_itemsGroupByOutputType = {
   action_type: string | null
   panel_id: number | null
   leader_id: string | null
+  button_label: string | null
+  person_name: string | null
+  person_role_title: string | null
+  decision_number: string | null
+  decision_date: Date | null
   _count: Info_itemsCountAggregateOutputType | null
   _avg: Info_itemsAvgAggregateOutputType | null
   _sum: Info_itemsSumAggregateOutputType | null
@@ -328,6 +363,11 @@ export type info_itemsWhereInput = {
   action_type?: Prisma.StringNullableFilter<"info_items"> | string | null
   panel_id?: Prisma.IntNullableFilter<"info_items"> | number | null
   leader_id?: Prisma.UuidNullableFilter<"info_items"> | string | null
+  button_label?: Prisma.StringNullableFilter<"info_items"> | string | null
+  person_name?: Prisma.StringNullableFilter<"info_items"> | string | null
+  person_role_title?: Prisma.StringNullableFilter<"info_items"> | string | null
+  decision_number?: Prisma.StringNullableFilter<"info_items"> | string | null
+  decision_date?: Prisma.DateTimeNullableFilter<"info_items"> | Date | string | null
   updated_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
   panel?: Prisma.XOR<Prisma.PanelsNullableScalarRelationFilter, Prisma.panelsWhereInput> | null
   leader?: Prisma.XOR<Prisma.LeadersNullableScalarRelationFilter, Prisma.leadersWhereInput> | null
@@ -353,6 +393,11 @@ export type info_itemsOrderByWithRelationInput = {
   action_type?: Prisma.SortOrderInput | Prisma.SortOrder
   panel_id?: Prisma.SortOrderInput | Prisma.SortOrder
   leader_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  button_label?: Prisma.SortOrderInput | Prisma.SortOrder
+  person_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  person_role_title?: Prisma.SortOrderInput | Prisma.SortOrder
+  decision_number?: Prisma.SortOrderInput | Prisma.SortOrder
+  decision_date?: Prisma.SortOrderInput | Prisma.SortOrder
   updated_by_user?: Prisma.staff_usersOrderByWithRelationInput
   panel?: Prisma.panelsOrderByWithRelationInput
   leader?: Prisma.leadersOrderByWithRelationInput
@@ -381,6 +426,11 @@ export type info_itemsWhereUniqueInput = Prisma.AtLeast<{
   action_type?: Prisma.StringNullableFilter<"info_items"> | string | null
   panel_id?: Prisma.IntNullableFilter<"info_items"> | number | null
   leader_id?: Prisma.UuidNullableFilter<"info_items"> | string | null
+  button_label?: Prisma.StringNullableFilter<"info_items"> | string | null
+  person_name?: Prisma.StringNullableFilter<"info_items"> | string | null
+  person_role_title?: Prisma.StringNullableFilter<"info_items"> | string | null
+  decision_number?: Prisma.StringNullableFilter<"info_items"> | string | null
+  decision_date?: Prisma.DateTimeNullableFilter<"info_items"> | Date | string | null
   updated_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
   panel?: Prisma.XOR<Prisma.PanelsNullableScalarRelationFilter, Prisma.panelsWhereInput> | null
   leader?: Prisma.XOR<Prisma.LeadersNullableScalarRelationFilter, Prisma.leadersWhereInput> | null
@@ -406,6 +456,11 @@ export type info_itemsOrderByWithAggregationInput = {
   action_type?: Prisma.SortOrderInput | Prisma.SortOrder
   panel_id?: Prisma.SortOrderInput | Prisma.SortOrder
   leader_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  button_label?: Prisma.SortOrderInput | Prisma.SortOrder
+  person_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  person_role_title?: Prisma.SortOrderInput | Prisma.SortOrder
+  decision_number?: Prisma.SortOrderInput | Prisma.SortOrder
+  decision_date?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.info_itemsCountOrderByAggregateInput
   _avg?: Prisma.info_itemsAvgOrderByAggregateInput
   _max?: Prisma.info_itemsMaxOrderByAggregateInput
@@ -435,6 +490,11 @@ export type info_itemsScalarWhereWithAggregatesInput = {
   action_type?: Prisma.StringNullableWithAggregatesFilter<"info_items"> | string | null
   panel_id?: Prisma.IntNullableWithAggregatesFilter<"info_items"> | number | null
   leader_id?: Prisma.UuidNullableWithAggregatesFilter<"info_items"> | string | null
+  button_label?: Prisma.StringNullableWithAggregatesFilter<"info_items"> | string | null
+  person_name?: Prisma.StringNullableWithAggregatesFilter<"info_items"> | string | null
+  person_role_title?: Prisma.StringNullableWithAggregatesFilter<"info_items"> | string | null
+  decision_number?: Prisma.StringNullableWithAggregatesFilter<"info_items"> | string | null
+  decision_date?: Prisma.DateTimeNullableWithAggregatesFilter<"info_items"> | Date | string | null
 }
 
 export type info_itemsCreateInput = {
@@ -452,6 +512,11 @@ export type info_itemsCreateInput = {
   kind?: string | null
   button_style?: string | null
   action_type?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_info_itemsInput
   panel?: Prisma.panelsCreateNestedOneWithoutInfo_itemsInput
   leader?: Prisma.leadersCreateNestedOneWithoutInfo_itemsInput
@@ -477,6 +542,11 @@ export type info_itemsUncheckedCreateInput = {
   action_type?: string | null
   panel_id?: number | null
   leader_id?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   central_secretariats?: Prisma.central_secretariatsUncheckedCreateNestedManyWithoutInfo_itemInput
 }
 
@@ -495,6 +565,11 @@ export type info_itemsUpdateInput = {
   kind?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_info_itemsNestedInput
   panel?: Prisma.panelsUpdateOneWithoutInfo_itemsNestedInput
   leader?: Prisma.leadersUpdateOneWithoutInfo_itemsNestedInput
@@ -520,6 +595,11 @@ export type info_itemsUncheckedUpdateInput = {
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panel_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   central_secretariats?: Prisma.central_secretariatsUncheckedUpdateManyWithoutInfo_itemNestedInput
 }
 
@@ -542,6 +622,11 @@ export type info_itemsCreateManyInput = {
   action_type?: string | null
   panel_id?: number | null
   leader_id?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
 }
 
 export type info_itemsUpdateManyMutationInput = {
@@ -559,6 +644,11 @@ export type info_itemsUpdateManyMutationInput = {
   kind?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type info_itemsUncheckedUpdateManyInput = {
@@ -580,6 +670,11 @@ export type info_itemsUncheckedUpdateManyInput = {
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panel_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type Info_itemsListRelationFilter = {
@@ -611,6 +706,11 @@ export type info_itemsCountOrderByAggregateInput = {
   action_type?: Prisma.SortOrder
   panel_id?: Prisma.SortOrder
   leader_id?: Prisma.SortOrder
+  button_label?: Prisma.SortOrder
+  person_name?: Prisma.SortOrder
+  person_role_title?: Prisma.SortOrder
+  decision_number?: Prisma.SortOrder
+  decision_date?: Prisma.SortOrder
 }
 
 export type info_itemsAvgOrderByAggregateInput = {
@@ -638,6 +738,11 @@ export type info_itemsMaxOrderByAggregateInput = {
   action_type?: Prisma.SortOrder
   panel_id?: Prisma.SortOrder
   leader_id?: Prisma.SortOrder
+  button_label?: Prisma.SortOrder
+  person_name?: Prisma.SortOrder
+  person_role_title?: Prisma.SortOrder
+  decision_number?: Prisma.SortOrder
+  decision_date?: Prisma.SortOrder
 }
 
 export type info_itemsMinOrderByAggregateInput = {
@@ -659,6 +764,11 @@ export type info_itemsMinOrderByAggregateInput = {
   action_type?: Prisma.SortOrder
   panel_id?: Prisma.SortOrder
   leader_id?: Prisma.SortOrder
+  button_label?: Prisma.SortOrder
+  person_name?: Prisma.SortOrder
+  person_role_title?: Prisma.SortOrder
+  decision_number?: Prisma.SortOrder
+  decision_date?: Prisma.SortOrder
 }
 
 export type info_itemsSumOrderByAggregateInput = {
@@ -835,6 +945,11 @@ export type info_itemsCreateWithoutUpdated_by_userInput = {
   kind?: string | null
   button_style?: string | null
   action_type?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   panel?: Prisma.panelsCreateNestedOneWithoutInfo_itemsInput
   leader?: Prisma.leadersCreateNestedOneWithoutInfo_itemsInput
   central_secretariats?: Prisma.central_secretariatsCreateNestedManyWithoutInfo_itemInput
@@ -858,6 +973,11 @@ export type info_itemsUncheckedCreateWithoutUpdated_by_userInput = {
   action_type?: string | null
   panel_id?: number | null
   leader_id?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   central_secretariats?: Prisma.central_secretariatsUncheckedCreateNestedManyWithoutInfo_itemInput
 }
 
@@ -909,6 +1029,11 @@ export type info_itemsScalarWhereInput = {
   action_type?: Prisma.StringNullableFilter<"info_items"> | string | null
   panel_id?: Prisma.IntNullableFilter<"info_items"> | number | null
   leader_id?: Prisma.UuidNullableFilter<"info_items"> | string | null
+  button_label?: Prisma.StringNullableFilter<"info_items"> | string | null
+  person_name?: Prisma.StringNullableFilter<"info_items"> | string | null
+  person_role_title?: Prisma.StringNullableFilter<"info_items"> | string | null
+  decision_number?: Prisma.StringNullableFilter<"info_items"> | string | null
+  decision_date?: Prisma.DateTimeNullableFilter<"info_items"> | Date | string | null
 }
 
 export type info_itemsCreateWithoutPanelInput = {
@@ -926,6 +1051,11 @@ export type info_itemsCreateWithoutPanelInput = {
   kind?: string | null
   button_style?: string | null
   action_type?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_info_itemsInput
   leader?: Prisma.leadersCreateNestedOneWithoutInfo_itemsInput
   central_secretariats?: Prisma.central_secretariatsCreateNestedManyWithoutInfo_itemInput
@@ -949,6 +1079,11 @@ export type info_itemsUncheckedCreateWithoutPanelInput = {
   button_style?: string | null
   action_type?: string | null
   leader_id?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   central_secretariats?: Prisma.central_secretariatsUncheckedCreateNestedManyWithoutInfo_itemInput
 }
 
@@ -993,6 +1128,11 @@ export type info_itemsCreateWithoutLeaderInput = {
   kind?: string | null
   button_style?: string | null
   action_type?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_info_itemsInput
   panel?: Prisma.panelsCreateNestedOneWithoutInfo_itemsInput
   central_secretariats?: Prisma.central_secretariatsCreateNestedManyWithoutInfo_itemInput
@@ -1016,6 +1156,11 @@ export type info_itemsUncheckedCreateWithoutLeaderInput = {
   button_style?: string | null
   action_type?: string | null
   panel_id?: number | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   central_secretariats?: Prisma.central_secretariatsUncheckedCreateNestedManyWithoutInfo_itemInput
 }
 
@@ -1060,6 +1205,11 @@ export type info_itemsCreateWithoutCentral_secretariatsInput = {
   kind?: string | null
   button_style?: string | null
   action_type?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_info_itemsInput
   panel?: Prisma.panelsCreateNestedOneWithoutInfo_itemsInput
   leader?: Prisma.leadersCreateNestedOneWithoutInfo_itemsInput
@@ -1084,6 +1234,11 @@ export type info_itemsUncheckedCreateWithoutCentral_secretariatsInput = {
   action_type?: string | null
   panel_id?: number | null
   leader_id?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
 }
 
 export type info_itemsCreateOrConnectWithoutCentral_secretariatsInput = {
@@ -1117,6 +1272,11 @@ export type info_itemsUpdateWithoutCentral_secretariatsInput = {
   kind?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_info_itemsNestedInput
   panel?: Prisma.panelsUpdateOneWithoutInfo_itemsNestedInput
   leader?: Prisma.leadersUpdateOneWithoutInfo_itemsNestedInput
@@ -1141,6 +1301,11 @@ export type info_itemsUncheckedUpdateWithoutCentral_secretariatsInput = {
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panel_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type info_itemsCreateManyUpdated_by_userInput = {
@@ -1161,6 +1326,11 @@ export type info_itemsCreateManyUpdated_by_userInput = {
   action_type?: string | null
   panel_id?: number | null
   leader_id?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
 }
 
 export type info_itemsUpdateWithoutUpdated_by_userInput = {
@@ -1178,6 +1348,11 @@ export type info_itemsUpdateWithoutUpdated_by_userInput = {
   kind?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   panel?: Prisma.panelsUpdateOneWithoutInfo_itemsNestedInput
   leader?: Prisma.leadersUpdateOneWithoutInfo_itemsNestedInput
   central_secretariats?: Prisma.central_secretariatsUpdateManyWithoutInfo_itemNestedInput
@@ -1201,6 +1376,11 @@ export type info_itemsUncheckedUpdateWithoutUpdated_by_userInput = {
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panel_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   central_secretariats?: Prisma.central_secretariatsUncheckedUpdateManyWithoutInfo_itemNestedInput
 }
 
@@ -1222,6 +1402,11 @@ export type info_itemsUncheckedUpdateManyWithoutUpdated_by_userInput = {
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panel_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type info_itemsCreateManyPanelInput = {
@@ -1242,6 +1427,11 @@ export type info_itemsCreateManyPanelInput = {
   button_style?: string | null
   action_type?: string | null
   leader_id?: string | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
 }
 
 export type info_itemsUpdateWithoutPanelInput = {
@@ -1259,6 +1449,11 @@ export type info_itemsUpdateWithoutPanelInput = {
   kind?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_info_itemsNestedInput
   leader?: Prisma.leadersUpdateOneWithoutInfo_itemsNestedInput
   central_secretariats?: Prisma.central_secretariatsUpdateManyWithoutInfo_itemNestedInput
@@ -1282,6 +1477,11 @@ export type info_itemsUncheckedUpdateWithoutPanelInput = {
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   central_secretariats?: Prisma.central_secretariatsUncheckedUpdateManyWithoutInfo_itemNestedInput
 }
 
@@ -1303,6 +1503,11 @@ export type info_itemsUncheckedUpdateManyWithoutPanelInput = {
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   leader_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type info_itemsCreateManyLeaderInput = {
@@ -1323,6 +1528,11 @@ export type info_itemsCreateManyLeaderInput = {
   button_style?: string | null
   action_type?: string | null
   panel_id?: number | null
+  button_label?: string | null
+  person_name?: string | null
+  person_role_title?: string | null
+  decision_number?: string | null
+  decision_date?: Date | string | null
 }
 
 export type info_itemsUpdateWithoutLeaderInput = {
@@ -1340,6 +1550,11 @@ export type info_itemsUpdateWithoutLeaderInput = {
   kind?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_info_itemsNestedInput
   panel?: Prisma.panelsUpdateOneWithoutInfo_itemsNestedInput
   central_secretariats?: Prisma.central_secretariatsUpdateManyWithoutInfo_itemNestedInput
@@ -1363,6 +1578,11 @@ export type info_itemsUncheckedUpdateWithoutLeaderInput = {
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panel_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   central_secretariats?: Prisma.central_secretariatsUncheckedUpdateManyWithoutInfo_itemNestedInput
 }
 
@@ -1384,6 +1604,11 @@ export type info_itemsUncheckedUpdateManyWithoutLeaderInput = {
   button_style?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   panel_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  button_label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_role_title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decision_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -1436,6 +1661,11 @@ export type info_itemsSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   action_type?: boolean
   panel_id?: boolean
   leader_id?: boolean
+  button_label?: boolean
+  person_name?: boolean
+  person_role_title?: boolean
+  decision_number?: boolean
+  decision_date?: boolean
   updated_by_user?: boolean | Prisma.info_items$updated_by_userArgs<ExtArgs>
   panel?: boolean | Prisma.info_items$panelArgs<ExtArgs>
   leader?: boolean | Prisma.info_items$leaderArgs<ExtArgs>
@@ -1462,6 +1692,11 @@ export type info_itemsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   action_type?: boolean
   panel_id?: boolean
   leader_id?: boolean
+  button_label?: boolean
+  person_name?: boolean
+  person_role_title?: boolean
+  decision_number?: boolean
+  decision_date?: boolean
   updated_by_user?: boolean | Prisma.info_items$updated_by_userArgs<ExtArgs>
   panel?: boolean | Prisma.info_items$panelArgs<ExtArgs>
   leader?: boolean | Prisma.info_items$leaderArgs<ExtArgs>
@@ -1486,6 +1721,11 @@ export type info_itemsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   action_type?: boolean
   panel_id?: boolean
   leader_id?: boolean
+  button_label?: boolean
+  person_name?: boolean
+  person_role_title?: boolean
+  decision_number?: boolean
+  decision_date?: boolean
   updated_by_user?: boolean | Prisma.info_items$updated_by_userArgs<ExtArgs>
   panel?: boolean | Prisma.info_items$panelArgs<ExtArgs>
   leader?: boolean | Prisma.info_items$leaderArgs<ExtArgs>
@@ -1510,9 +1750,14 @@ export type info_itemsSelectScalar = {
   action_type?: boolean
   panel_id?: boolean
   leader_id?: boolean
+  button_label?: boolean
+  person_name?: boolean
+  person_role_title?: boolean
+  decision_number?: boolean
+  decision_date?: boolean
 }
 
-export type info_itemsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "body" | "source_note" | "link_url" | "link_label" | "icon" | "sort_order" | "is_published" | "updated_by" | "created_at" | "updated_at" | "kind" | "button_style" | "action_type" | "panel_id" | "leader_id", ExtArgs["result"]["info_items"]>
+export type info_itemsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "body" | "source_note" | "link_url" | "link_label" | "icon" | "sort_order" | "is_published" | "updated_by" | "created_at" | "updated_at" | "kind" | "button_style" | "action_type" | "panel_id" | "leader_id" | "button_label" | "person_name" | "person_role_title" | "decision_number" | "decision_date", ExtArgs["result"]["info_items"]>
 export type info_itemsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   updated_by_user?: boolean | Prisma.info_items$updated_by_userArgs<ExtArgs>
   panel?: boolean | Prisma.info_items$panelArgs<ExtArgs>
@@ -1558,6 +1803,11 @@ export type $info_itemsPayload<ExtArgs extends runtime.Types.Extensions.Internal
     action_type: string | null
     panel_id: number | null
     leader_id: string | null
+    button_label: string | null
+    person_name: string | null
+    person_role_title: string | null
+    decision_number: string | null
+    decision_date: Date | null
   }, ExtArgs["result"]["info_items"]>
   composites: {}
 }
@@ -2003,6 +2253,11 @@ export interface info_itemsFieldRefs {
   readonly action_type: Prisma.FieldRef<"info_items", 'String'>
   readonly panel_id: Prisma.FieldRef<"info_items", 'Int'>
   readonly leader_id: Prisma.FieldRef<"info_items", 'String'>
+  readonly button_label: Prisma.FieldRef<"info_items", 'String'>
+  readonly person_name: Prisma.FieldRef<"info_items", 'String'>
+  readonly person_role_title: Prisma.FieldRef<"info_items", 'String'>
+  readonly decision_number: Prisma.FieldRef<"info_items", 'String'>
+  readonly decision_date: Prisma.FieldRef<"info_items", 'DateTime'>
 }
     
 
