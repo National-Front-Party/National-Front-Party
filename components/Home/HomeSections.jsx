@@ -4,6 +4,8 @@ import GovernoratesSecretariats from "@/components/Home/sections/GovernoratesSec
 import MainSection from "@/components/Home/sections/MainSection";
 import ParliamentaryUnit from "@/components/Home/sections/ParliamentaryUnit";
 import ProgramCard from "@/components/Home/sections/ProgramCard";
+import NewsSection from "@/components/Home/sections/NewsSection";
+import GeographicSearch from "@/components/Home/sections/GeographicSearch";
 import {
   mainLinks,
   partyProgram,
@@ -42,6 +44,8 @@ export default function HomeSections() {
           <GovernmentMinistriesColumn />
         </div>
       </div>
+      <NewsSection />
+      <GeographicSearch />
     </section>
   );
 }
