@@ -7,6 +7,7 @@ import ProgramCard from "@/components/Home/sections/ProgramCard";
 import NewsSection from "@/components/Home/sections/NewsSection";
 import GeographicSearch from "@/components/Home/sections/GeographicSearch";
 import Vision2030 from "@/components/Home/sections/Vision2030";
+import PartyStats from "@/components/Home/sections/PartyStats";
 import {
   mainLinks,
   partyProgram,
@@ -48,6 +49,7 @@ export default function HomeSections() {
       <NewsSection />
       <GeographicSearch />
       <Vision2030 />
+      <PartyStats />
     </section>
   );
 }
