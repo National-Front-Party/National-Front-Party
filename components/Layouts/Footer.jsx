@@ -1,23 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useSyncExternalStore } from "react";
+import { CONTACT, FOOTER_LINKS, SOCIAL_LINKS } from "@/data/mock/linksMock";
 
 const subscribeToYear = () => () => { };
 const getCurrentYear = () => String(new Date().getFullYear());
 const getServerYear = () => "";
-
-const quickLinks = [
-    { label: "الرئيسية", href: "/" },
-    { label: "الأمانات المركزية", href: "/central-secretariats" },
-    { label: "أمانات المحافظات", href: "/governorates" },
-    { label: "الوحدة البرلمانية", href: "/parliamentary-unit" },
-    { label: "مع الحكومة والوزارات", href: "/government" },
-    { label: "رؤية مصر 2030", href: "/vision-2030" },
-    { label: "القرية", href: "/village" },
-    { label: "العزبة", href: "/ezba" },
-];
 
 function LocationIcon() {
     return (
@@ -99,45 +88,14 @@ function TikTokIcon() {
     );
 }
 
-const contact = {
-    location: {
-        text: "[عنوان المقر الرئيسي]",
-        Icon: LocationIcon,
-    },
-    phone: {
-        text: "[رقم الهاتف]",
-        href: "tel:...",
-        Icon: PhoneIcon,
-    },
-    email: {
-        text: "[البريد الإلكتروني]",
-        href: "mailto:...",
-        Icon: MailIcon,
-    },
+const socialIcons = {
+    facebook: FacebookIcon,
+    x: XIcon,
+    instagram: InstagramIcon,
+    tiktok: TikTokIcon,
 };
 
-const socials = [
-    {
-        label: "فيسبوك",
-        href: "https://www.facebook.com/ElgabhaElwatanya/",
-        Icon: FacebookIcon,
-    },
-    {
-        label: "إكس",
-        href: "https://x.com/gabhaElwatanya",
-        Icon: XIcon,
-    },
-    {
-        label: "انستجرام",
-        href: "https://www.instagram.com/elgabhaelwatanya",
-        Icon: InstagramIcon,
-    },
-    {
-        label: "تيك توك",
-        href: "https://www.tiktok.com/@elgabhaelwatanya",
-        Icon: TikTokIcon,
-    },
-];
+const isPlaceholder = (val) => !val || val.trim().startsWith("[");
 
 function SectionHeading({ children }) {
     return (
@@ -164,6 +122,74 @@ function Footer() {
         getServerYear,
     );
 
+    const handleAnchorClick = (e, link) => {
+        if (link.href.startsWith("#")) {
+            e.preventDefault();
+            const id = link.href.slice(1);
+            const target = document.getElementById(id);
+            const focusElement = link.focus ? document.getElementById(link.focus) : null;
+
+            const prefersReduced =
+                typeof window !== "undefined" &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+            let isAlreadyAtTarget = false;
+            if (target) {
+                const rect = target.getBoundingClientRect();
+                const readingLine = window.innerHeight * 0.3;
+                if (rect.top <= readingLine && rect.bottom >= readingLine) {
+                    isAlreadyAtTarget = true;
+                }
+            }
+
+            const focusTarget = () => {
+                if (focusElement) {
+                    focusElement.focus({ preventScroll: true });
+                } else if (target) {
+                    target.focus({ preventScroll: true });
+                }
+            };
+
+            window.history.replaceState(null, "", link.href);
+
+            if (isAlreadyAtTarget) {
+                focusTarget();
+                return;
+            }
+
+            if (prefersReduced) {
+                if (target) {
+                    target.scrollIntoView({ behavior: "auto", block: "start" });
+                }
+                focusTarget();
+                return;
+            }
+
+            if (target) {
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+                let focused = false;
+                const safeFocus = () => {
+                    if (!focused) {
+                        focused = true;
+                        focusTarget();
+                    }
+                };
+
+                if ("onscrollend" in window) {
+                    const handleScrollEnd = () => {
+                        window.removeEventListener("scrollend", handleScrollEnd);
+                        safeFocus();
+                    };
+                    window.addEventListener("scrollend", handleScrollEnd, { once: true });
+                    setTimeout(safeFocus, 800);
+                } else {
+                    setTimeout(safeFocus, 700);
+                }
+            }
+        }
+    };
+
     return (
         <footer dir="rtl" className="bg-ink text-on-dark">
             <div aria-hidden="true" className="h-[3px] bg-gold-gradient" />
@@ -189,15 +215,16 @@ function Footer() {
                 <nav aria-label="روابط التذييل">
                     <SectionHeading>روابط سريعة</SectionHeading>
                     <ul className="space-y-2">
-                        {quickLinks.map(({ label, href }) => (
-                            <li key={href}>
-                                <Link
-                                    href={href}
+                        {FOOTER_LINKS.map((link) => (
+                            <li key={link.label}>
+                                <a
+                                    href={link.href}
+                                    onClick={(e) => handleAnchorClick(e, link)}
                                     className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
                                 >
-                                    {label}
+                                    {link.label}
                                     <LinkUnderline />
-                                </Link>
+                                </a>
                             </li>
                         ))}
                     </ul>
@@ -208,35 +235,47 @@ function Footer() {
                     <ul className="space-y-4">
                         <li className="flex items-start gap-3 text-sm leading-7 text-on-dark/80">
                             <span className="mt-1 shrink-0 text-gold">
-                                <contact.location.Icon />
+                                <LocationIcon />
                             </span>
-                            <span>{contact.location.text}</span>
+                            <span>{CONTACT.address}</span>
                         </li>
                         <li className="flex items-start gap-3">
                             <span className="mt-1 shrink-0 text-gold">
-                                <contact.phone.Icon />
+                                <PhoneIcon />
                             </span>
-                            <a
-                                href={contact.phone.href}
-                                dir="ltr"
-                                className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
-                            >
-                                {contact.phone.text}
-                                <LinkUnderline />
-                            </a>
+                            {isPlaceholder(CONTACT.phone) ? (
+                                <span dir="ltr" className="py-1 text-on-dark/80">
+                                    {CONTACT.phone}
+                                </span>
+                            ) : (
+                                <a
+                                    href={`tel:${CONTACT.phone.replace(/[^\d+]/g, "")}`}
+                                    dir="ltr"
+                                    className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
+                                >
+                                    {CONTACT.phone}
+                                    <LinkUnderline />
+                                </a>
+                            )}
                         </li>
                         <li className="flex items-start gap-3">
                             <span className="mt-1 shrink-0 text-gold">
-                                <contact.email.Icon />
+                                <MailIcon />
                             </span>
-                            <a
-                                href={contact.email.href}
-                                dir="ltr"
-                                className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
-                            >
-                                {contact.email.text}
-                                <LinkUnderline />
-                            </a>
+                            {isPlaceholder(CONTACT.email) ? (
+                                <span dir="ltr" className="py-1 text-on-dark/80">
+                                    {CONTACT.email}
+                                </span>
+                            ) : (
+                                <a
+                                    href={`mailto:${CONTACT.email.trim()}`}
+                                    dir="ltr"
+                                    className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
+                                >
+                                    {CONTACT.email}
+                                    <LinkUnderline />
+                                </a>
+                            )}
                         </li>
                     </ul>
                 </section>
@@ -244,18 +283,21 @@ function Footer() {
                 <section>
                     <SectionHeading>تابعنا</SectionHeading>
                     <div className="flex flex-wrap gap-3">
-                        {socials.map(({ label, href, Icon }) => (
-                            <a
-                                key={href}
-                                href={href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label={label}
-                                className="flex h-11 w-11 items-center justify-center rounded-full border border-line-dark text-white transition-all duration-300 hover:-translate-y-1 hover:border-gold hover:bg-gold hover:text-ink motion-reduce:transition-none"
-                            >
-                                <Icon />
-                            </a>
-                        ))}
+                        {SOCIAL_LINKS.map(({ id, label, href }) => {
+                            const Icon = socialIcons[id] || FacebookIcon;
+                            return (
+                                <a
+                                    key={id}
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={label}
+                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-line-dark text-white transition-all duration-300 hover:-translate-y-1 hover:border-gold hover:bg-gold hover:text-ink motion-reduce:transition-none"
+                                >
+                                    <Icon />
+                                </a>
+                            );
+                        })}
                     </div>
                 </section>
             </div>

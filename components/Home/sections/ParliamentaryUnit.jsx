@@ -22,10 +22,14 @@ export default function ParliamentaryUnit({ data }) {
     <>
       <SectionCard
         title="الوحدة البرلمانية"
-        scroll
-        footer={<NextArrowFooter href="/parliamentary-unit" />}
+        footer={
+          <NextArrowFooter
+            onClick={() => setActive("senate")}
+            ariaLabel="عرض الهيئة البرلمانية بمجلس الشيوخ"
+          />
+        }
       >
-        <div className="flex h-full min-h-[420px] flex-col">
+        <div className="flex h-full flex-1 flex-col">
           <ol className="shrink-0 pt-3">
             {data.map((item) => {
               const Icon = iconMap[item.icon] ?? Landmark;
@@ -118,7 +122,7 @@ export default function ParliamentaryUnit({ data }) {
           </ol>
 
           {/* Illustration */}
-          <div className="flex min-h-0 flex-1 items-end justify-center pt-2">
+          <div className="mt-auto flex min-h-0 flex-1 items-end justify-center pt-2">
             <ParliamentIllustration />
           </div>
         </div>

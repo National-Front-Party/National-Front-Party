@@ -13,7 +13,7 @@ export default function GovernmentMinistriesColumn() {
     <div
       dir="rtl"
       lang="ar"
-      className="flex h-auto min-w-0 w-full flex-col gap-4 self-start"
+      className="flex h-full min-h-0 w-full flex-1 flex-col gap-4"
     >
       <GovernmentMinistries
         data={requestsMock}

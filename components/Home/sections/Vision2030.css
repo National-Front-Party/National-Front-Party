@@ -1,86 +1,10 @@
-.vision2030-section {
-  width: 100%;
-  max-width: 1320px;
-  margin: 28px auto 0;
-  padding: 0 20px;
-}
-
-.vision2030-card {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px 40px;
-  border-radius: 28px;
-  padding: 30px 28px;
-  background: #15171c;
-  color: #fff;
-  box-shadow:
-    0 1px 2px rgba(21, 23, 28, 0.04),
-    0 18px 44px rgba(21, 23, 28, 0.08);
-}
-
-.vision2030-text {
-  display: flex;
-  flex: 999 1 380px;
-  min-width: 0;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.vision2030-eyebrow {
-  margin: 0;
-  color: #e6cc85;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.vision2030-title {
-  margin: 0;
-  font-size: clamp(24px, 5vw, 32px);
-  font-weight: 900;
-  line-height: 1.35;
-}
-
-.vision2030-intro {
-  max-width: 560px;
-  margin: 0;
-  color: #d9dce3;
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-.vision2030-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
 .vision2030-chip {
-  border: 1px solid #c9a24b;
-  border-radius: 999px;
-  padding: 3px 12px;
-  color: #e6cc85;
-  font-size: 13px;
-  font-weight: 700;
   transition:
     background 250ms ease,
     color 250ms ease;
 }
 
 .vision2030-details-button {
-  position: relative;
-  align-self: flex-start;
-  min-height: 46px;
-  overflow: hidden;
-  margin-top: 4px;
-  border: 1px solid #c9a24b;
-  border-radius: 12px;
-  padding: 0 22px;
-  background: transparent;
-  color: #e6cc85;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
   transition:
     transform 300ms ease,
     background 300ms ease,
@@ -113,27 +37,7 @@
   transform: scale(0.97);
 }
 
-.vision2030-stats {
-  display: grid;
-  flex: 1 1 300px;
-  min-width: 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
 .vision2030-stat {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 18px;
-  padding: 18px 8px;
-  background: #22252c;
-  color: #d9dce3;
-  text-align: center;
   opacity: 0;
   transform: scale(0.9);
   transition:
@@ -165,20 +69,10 @@
 }
 
 .vision2030-number {
-  color: #e6cc85;
-  font-family: "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
-  font-size: 44px;
-  font-weight: 900;
-  line-height: 1.1;
   transition: transform 300ms ease;
 }
 
 .vision2030-label {
-  margin-top: 4px;
-  color: #d9dce3;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.4;
   transition: color 300ms ease;
 }
 
@@ -260,27 +154,6 @@
 
   .vision2030-stat:hover::before {
     animation: vision2030-shine 500ms linear 1;
-  }
-}
-
-@media (max-width: 759px) {
-  .vision2030-card {
-    align-items: stretch;
-  }
-
-  .vision2030-text,
-  .vision2030-stats {
-    flex-basis: 100%;
-  }
-}
-
-@media (max-width: 399px) {
-  .vision2030-card {
-    padding: 24px 16px;
-  }
-
-  .vision2030-number {
-    font-size: 36px;
   }
 }
 

@@ -20,8 +20,7 @@ export default function MainSection({ data }) {
     <>
       <SectionCard
         title="الرئيسية"
-        scroll={false}
-        className="h-auto min-h-fit flex-none xl:h-full xl:flex-1"
+        className="h-full flex-1 min-h-0"
         headerClassName="bg-[linear-gradient(135deg,var(--color-gold),var(--color-gold-light),var(--color-gold))] bg-[length:200%_200%] bg-[position:0%_50%] py-6 transition-[background-position] duration-700 ease-out group-hover:bg-[position:100%_50%] motion-reduce:transition-none"
         showUnderline={false}
       >

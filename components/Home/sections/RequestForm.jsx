@@ -177,13 +177,13 @@ export default function RequestForm({ data, header, selected, onSelect }) {
         aria-label={data.requestTitle}
         dir="rtl"
         lang="ar"
-        className={`flex h-auto min-w-0 w-full flex-none flex-col overflow-hidden rounded-3xl bg-white shadow-card ${sectionCardHoverClassName}`}
+        className={`flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl bg-white shadow-card ${sectionCardHoverClassName}`}
       >
         {header}
-        <div className="p-4 [&_input]:transition [&_input:focus]:border-gold [&_input:focus]:ring-2 [&_input:focus]:ring-gold/30">
+        <div className="p-4 flex-1 flex flex-col min-h-0 [&_input]:transition [&_input:focus]:border-gold [&_input:focus]:ring-2 [&_input:focus]:ring-gold/30">
           <form
             autoComplete="off"
-            className="space-y-2.5"
+            className="space-y-2.5 flex-1 flex flex-col justify-between"
             onSubmit={handleSubmit}
           >
             <div>
@@ -286,7 +286,7 @@ export default function RequestForm({ data, header, selected, onSelect }) {
 
             <button
               type="submit"
-              className="flex h-12 w-full items-center justify-center rounded-2xl bg-gold-gradient px-6 font-bold text-ink transition-all duration-300 ease-out hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none"
+              className="flex h-12 w-full items-center justify-center rounded-2xl bg-gold-gradient px-6 font-bold text-ink transition-all duration-300 ease-out hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none mt-auto"
             >
               {data.fields.submit}
             </button>
