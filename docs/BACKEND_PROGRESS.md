@@ -101,6 +101,7 @@
 | 11.0 | استكشاف إدارة طلبات الانضمام | مكتمل — قراءة فقط |
 | 11.1 | APIs قراءة طلبات الانضمام | مكتمل — قائمة وتفاصيل فقط؛ لا تعديل أو تصدير |
 | 13 | إدارة المحتوى التنظيمي (Popups, القيادة, الأمانات المركزية/المحافظات, الأمانة البرلمانية) | منفّذ كـBackend/Schema/Tests — Migration وSeed منشآن ولم يُطبّقا/يُنفذا |
+| 14.1 | الأخبار والمقالات: طبقة التحقق والخدمات الأساسية (Validation + Services) | مكتمل — خدمات وتحقق واختبارات فقط؛ لا مسارات API أو واجهة أمامية |
 
 ## 5. سجل التحديثات
 
@@ -135,6 +136,7 @@
 | 2026-11-17 | 11.0 | مراجعة Read Only لجداول طلبات الانضمام وسجل الحالات والمسارات العامة والخدمات والتحقق والصلاحيات والاختبارات. | لا توجد تعديلات ملفات ضمن الاستكشاف. | لا توجد APIs إدارية للطلبات قبل Phase 11.1؛ `acceptApplication` خدمة فقط. لم يتم الاتصال بقاعدة البيانات أو تعديل ملفات. |
 | 2026-11-17 | 11.1 | إضافة `GET /api/admin/applications` للقائمة والبحث والفلترة وPagination، و`GET /api/admin/applications/[id]` للتفاصيل وسجل الحالات. | `app/api/admin/applications/route.js`؛ `app/api/admin/applications/[id]/route.js`؛ `lib/applications/read-handlers.js`؛ `lib/applications/read-handlers.test.js`؛ `lib/services/application-queries.js`؛ `lib/services/application-queries.test.js`؛ `lib/validation/application-query.js`؛ `lib/validation/application-query.test.js`؛ `docs/BACKEND_PROGRESS.md` | تستخدم المسارات `requireStaff` بصلاحية `applications:read`. تدعم الفلاتر الاسم والهاتف الجزئيين والرقم القومي ورقم الطلب المطابقين تمامًا، النوع والحالة والمحافظة والمسؤول ونطاق الإنشاء. القائمة تستبعد الهاتف والرقم القومي والملاحظات وIP؛ التفاصيل تعرض البيانات اللازمة للمستخدم المخول وسجل الحالات. الترتيب الأحدث أولًا مع `application_no` ككاسر تعادل. `npm test`: 102 ناجحًا؛ `npm run lint` و`git diff --check` ناجحان. الاختبارات تستخدم mocks؛ لم يتم الاتصال بقاعدة البيانات أو تنفيذ كتابة. لا تغييرات Schema أو Migrations أو Packages. |
 | 2026-11-18 | 13 | تنفيذ Backend/Validation/Services/Handlers/Routes للمحتوى التنظيمي (Popups، القيادة Panels/Leaders/Contents، الأمانات المركزية/المحافظات، الأمانة البرلمانية)، مع تدقيق داخل نفس المعاملة، وإنشاء migration وseed popups (دون تطبيق/تشغيل)، وتوليد Prisma Client، وإجراء الإصلاحات المستهدفة بعد المراجعة المستقلة (F-01 إلى F-05 وFINDING-02 قفل الأمانة الأب FOR UPDATE لمنع تضارب التزامن عند الحذف)، وإضافة اختبارات شاملة. | `prisma/schema.prisma`؛ `prisma/migrations/20261118000000_phase13_organizational_content/migration.sql`؛ `scripts/seed-popups.js`؛ `lib/content/**`؛ `lib/validation/content/**`؛ `lib/services/content-*.js`؛ `lib/services/content-phase13.test.js`؛ `app/api/admin/content/**`؛ `app/api/content/**`؛ `lib/validation/staff.js`؛ `generated/prisma/**`؛ `docs/BACKEND_PROGRESS.md` | تم إصلاح CHECK Constraint في الـ Migration بإزالة الـ Subquery وإضافة حقول حذف الـ Cascade (F-01, F-05)، وربط بارامترات الأمانة والشخص في المسارات المتداخلة لمنع التعديل المتبادل (F-02)، ومعالجة خطأ P2003 كـ 400 INVALID_REFERENCE (F-03)، والتحقق من صحة التقويم لـ decision_date (F-04)، وقفل صف الأمانة الأب عبر `SELECT ... FOR UPDATE` قبل عد الأشخاص عند الحذف (FINDING-02). لا تزال Migration و`seed-popups.js` بانتظار موافقة صريحة. Phase 13 tests: 27/27؛ `npm test`: 211/211؛ `npm run lint`: ناجح. لا تغييرات Frontend أو DB writes حقيقية أو commit. |
+| 2026-11-18 | 14.1 | تنفيذ طبقة التحقق والخدمات لمنظومة الأخبار والمصادر (`lib/validation/news.js`, `lib/services/news-articles.js`, `lib/services/news-sources.js`) مع اختبارات شاملة وإصلاحات المراجعة المستقلة (F-01 إلى F-07). | `lib/validation/news.js`؛ `lib/validation/news.test.js`؛ `lib/services/news-sources.js`؛ `lib/services/news-sources.test.js`؛ `lib/services/news-articles.js`؛ `lib/services/news-articles.test.js`؛ `docs/BACKEND_PROGRESS.md` | شمل التنفيذ: التحقق الصارم من مدخلات المقالات والمصادر وتوافقها مع schema (`published_on`, `source_id`, إلخ دون حقول وهمية) وتقويم التواريخ؛ دعم العناوين العربية في الـ slug وتفادي التصادم؛ حصر إدارة المصادر بـ `super_admin`؛ تقييد قراءة المقالات الإدارية على أدوار الأخبار المعتمدة ورفض الأدوار غير المصرح لها؛ منع النشر الذاتي للمراجعين والسماح به للـ super_admin؛ حصر الحذف بالـ super_admin؛ قفل صف المصدر بـ `FOR SHARE` أثناء إنشاء المقال وقفل صف المقال بـ `FOR UPDATE`؛ الاحتفاظ بملاحظة المراجعة داخلياً؛ تنفيذ المعاملات مع سجل التدقيق في نفس المعاملة؛ `npm test` بلغ 232/232 ناجحاً، و`npm run lint` ناجح و`prisma validate` ناجح. لم يتم إنشاء مسارات API أو لمس الفرونت أو إجراء أي كتابة على قاعدة البيانات. |
 
 ## 6. نقاط مفتوحة
 
@@ -217,3 +219,48 @@ Implemented backend-only organizational content management for Popups, Leadershi
 - No real database/integration or PostgreSQL concurrency verification performed.
 - Public content routes do not currently enforce rate limiting or edge cache headers.
 - Public/admin behavior depends on actual deployed DB state matching the generated client/migration; do not claim production readiness until migration/seed (if desired) are approved and verified.
+
+## Phase 14.1 — News & Articles Core (Validation + Services Layer)
+
+Implemented backend-only validation schemas and core business logic services for News Articles and News Sources, including targeted fixes following independent code review (F-01 through F-07). No API routes, HTTP handlers, frontend integration, schema changes, migrations, seed runs, or database writes were performed.
+
+### Key Implementation Details
+- **Validation Layer (`lib/validation/news.js`)**:
+  - `articleCreateSchema`: Strict validation matching actual database fields: `title` (3-300 chars), `body` (min 50 chars), `source_id` (required positive smallint), `published_on` (valid calendar date YYYY-MM-DD), `source_url`, `image_url`, `image_alt`, `date_precision` (`day` or `month`), `is_featured`, `sort_order`, `slug` (`articleSlugSchema`). Rejects nonexistent fields (`summary`, `category`).
+  - `articleSlugSchema` & `normalizeTitleToSlug`: Full support for Arabic characters, Latin lowercase, numbers, and hyphens without consecutive or trailing hyphens. Auto-normalizes Arabic titles, strips tashkeel/tatweel, and guarantees valid slug format.
+  - `articleUpdateSchema`: Enforces non-empty updates; rejects protected fields (`status`, `is_published`, `reviewed_by`, `reviewed_at`, `review_note`, `created_by`, `id`, `created_at`, `updated_at`).
+  - `requestChangesSchema`: Enforces non-empty string for `review_note` (1-2000 chars).
+  - `articleQuerySchema`: Validates and bounds pagination (`page` 1-10000, `page_size` 1-100), filter criteria (`status`, `source_id`, `is_featured`, `is_published`, `author_id`, `search`, `sort_by`, `sort_dir`).
+  - `newsSourceCreateSchema`, `newsSourceUpdateSchema`, `newsSourceStatusSchema`, `newsSourceQuerySchema`: Full validation for source names, unique slug (`slugSchema`), sort order, and activation toggling.
+  - Strict Gregorian calendar validation (`isValidCalendarDate`, `isValidPublicationDate`) rejecting impossible dates (`2026-02-31`, `2026-13-01`, non-leap Feb 29) for years 1900-2100.
+
+- **News Sources Service (`lib/services/news-sources.js`)**:
+  - Service-level authorization: `createNewsSource`, `updateNewsSource`, `setNewsSourceActive`, `getNewsSource`, and `listNewsSourcesAdmin` strictly require `actor.role === "super_admin"`. All other roles receive `UNAUTHORIZED`.
+  - `lockNewsSource`: Mutating operations lock source rows with `SELECT ... FOR UPDATE` inside the transaction.
+  - `createNewsSource`: Validates slug uniqueness, creates source, writes `content_created` audit log inside transaction.
+  - `updateNewsSource`: Checks existence, ensures new slug uniqueness, writes `content_updated` audit log with `changed_fields`.
+  - `setNewsSourceActive`: Toggles active flag, records `content_updated` audit.
+  - `listActiveNewsSources`: Safe read of active sources (`is_active: true`) for article authoring and public display.
+
+- **News Articles Service (`lib/services/news-articles.js`)**:
+  - `createArticle`: Creates draft article with `status="draft"`, `is_published=false`, `created_by=actor.id`. Locks source with `SELECT ... FOR SHARE` to serialize with concurrent deactivations. Auto-generates clean Arabic/Latin slugs with collision resolution (`-2`, `-3`), while rejecting duplicate explicitly provided slugs. Restricted to `super_admin` and `news_editor`.
+  - `updateArticle`: Enforces author ownership (`news_editor` can only edit their own articles; cannot edit in `pending_review` or `published` status). Disallows reviewers from updating article content (`REVIEWERS_CANNOT_EDIT_CONTENT`). Super admin can edit any draft/changes_requested article. Locks source with `FOR SHARE` if `source_id` is changed. Writes `content_updated` audit log.
+  - `submitArticleForReview`: Allows author (`news_editor` or `super_admin`) to submit article from `draft` or `changes_requested` to `pending_review`.
+  - `publishArticle`: Transitions `pending_review` to `published` with `is_published=true`. Restricts self-publishing for reviewers (`SELF_PUBLISHING_PROHIBITED`), while explicitly allowing self-publishing for `super_admin`. Applies row lock `SELECT ... FOR UPDATE` to serialize publishing. Retains `review_note` internally for editorial history (public APIs must never select or expose it). Writes `content_published` audit log.
+  - `requestArticleChanges`: Allows reviewers/super_admin to move `pending_review` to `changes_requested` with mandatory `review_note`.
+  - `unpublishArticle`: Moves `published` article back to `draft` with `is_published=false`.
+  - `deleteArticle`: Restricted strictly to `super_admin`. Verifies existence and deletes article + records `content_deleted` audit log inside transaction.
+  - `getArticle` & `listArticlesAdmin`: Explicitly authorizes only `news_editor`, `news_reviewer`, and `super_admin`. All other roles receive `UNAUTHORIZED`. Scopes `news_editor` strictly to their own articles (`where.created_by = actor.id`).
+
+- **Atomic Transactions & Audit Logs**:
+  - Every create/update/status transition/delete operation runs inside a Prisma `$transaction` alongside an entry in `staff_audit_log` (`content_created`, `content_updated`, `content_published`, `content_unpublished`, `content_deleted`). If the audit log fails, the entire transaction rolls back.
+
+### Verification & Tests
+- Added 21 tests across 3 test files:
+  - `lib/validation/news.test.js`: 7 tests covering date validation, schemas, Arabic/Latin slug normalization, and query bounding.
+  - `lib/services/news-sources.test.js`: 5 tests covering source creation, slug uniqueness, activation, rollback, and rejection of all unauthorized roles without writes or audits.
+  - `lib/services/news-articles.test.js`: 9 tests covering article creation, author scoping, self-publishing restriction/exception, reviewer content editing disallowance, lifecycle state machine, deletion, rollback, Arabic slug generation & collision handling, source `FOR SHARE` locking, and article read authorization.
+- Test suite: **232/232 tests passing** (`cmd /c "npm test"`).
+- Lint: **0 errors, 0 warnings** (`cmd /c "npm run lint"`).
+- Prisma: `node ./node_modules/prisma/build/index.js validate` succeeded.
+- Zero database writes, zero schema/migration changes, zero frontend changes, zero git commits.
