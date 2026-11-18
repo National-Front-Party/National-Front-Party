@@ -61,6 +61,7 @@ export const ModelName = {
   leaders: 'leaders',
   info_items: 'info_items',
   central_secretariats: 'central_secretariats',
+  central_secretariat_people: 'central_secretariat_people',
   governorate_secretariats_info: 'governorate_secretariats_info',
   parliamentary_unit_items: 'parliamentary_unit_items',
   ministries: 'ministries',
@@ -236,7 +237,12 @@ export const Info_itemsScalarFieldEnum = {
   button_style: 'button_style',
   action_type: 'action_type',
   panel_id: 'panel_id',
-  leader_id: 'leader_id'
+  leader_id: 'leader_id',
+  button_label: 'button_label',
+  person_name: 'person_name',
+  person_role_title: 'person_role_title',
+  decision_number: 'decision_number',
+  decision_date: 'decision_date'
 } as const
 
 export type Info_itemsScalarFieldEnum = (typeof Info_itemsScalarFieldEnum)[keyof typeof Info_itemsScalarFieldEnum]
@@ -253,6 +259,23 @@ export const Central_secretariatsScalarFieldEnum = {
 } as const
 
 export type Central_secretariatsScalarFieldEnum = (typeof Central_secretariatsScalarFieldEnum)[keyof typeof Central_secretariatsScalarFieldEnum]
+
+
+export const Central_secretariat_peopleScalarFieldEnum = {
+  id: 'id',
+  secretariat_id: 'secretariat_id',
+  full_name: 'full_name',
+  position_title: 'position_title',
+  image_url: 'image_url',
+  details: 'details',
+  sort_order: 'sort_order',
+  is_published: 'is_published',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Central_secretariat_peopleScalarFieldEnum = (typeof Central_secretariat_peopleScalarFieldEnum)[keyof typeof Central_secretariat_peopleScalarFieldEnum]
 
 
 export const Governorate_secretariats_infoScalarFieldEnum = {

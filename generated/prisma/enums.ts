@@ -34,7 +34,12 @@ export const staff_audit_action = {
   staff_role_changed: 'staff_role_changed',
   staff_activated: 'staff_activated',
   staff_deactivated: 'staff_deactivated',
-  staff_password_reset: 'staff_password_reset'
+  staff_password_reset: 'staff_password_reset',
+  content_created: 'content_created',
+  content_updated: 'content_updated',
+  content_published: 'content_published',
+  content_unpublished: 'content_unpublished',
+  content_deleted: 'content_deleted'
 } as const
 
 export type staff_audit_action = (typeof staff_audit_action)[keyof typeof staff_audit_action]

@@ -241,6 +241,7 @@ export type central_secretariatsWhereInput = {
   sort_order?: Prisma.IntFilter<"central_secretariats"> | number
   is_published?: Prisma.BoolFilter<"central_secretariats"> | boolean
   info_item?: Prisma.XOR<Prisma.Info_itemsScalarRelationFilter, Prisma.info_itemsWhereInput>
+  people?: Prisma.Central_secretariat_peopleListRelationFilter
 }
 
 export type central_secretariatsOrderByWithRelationInput = {
@@ -252,6 +253,7 @@ export type central_secretariatsOrderByWithRelationInput = {
   sort_order?: Prisma.SortOrder
   is_published?: Prisma.SortOrder
   info_item?: Prisma.info_itemsOrderByWithRelationInput
+  people?: Prisma.central_secretariat_peopleOrderByRelationAggregateInput
 }
 
 export type central_secretariatsWhereUniqueInput = Prisma.AtLeast<{
@@ -266,6 +268,7 @@ export type central_secretariatsWhereUniqueInput = Prisma.AtLeast<{
   sort_order?: Prisma.IntFilter<"central_secretariats"> | number
   is_published?: Prisma.BoolFilter<"central_secretariats"> | boolean
   info_item?: Prisma.XOR<Prisma.Info_itemsScalarRelationFilter, Prisma.info_itemsWhereInput>
+  people?: Prisma.Central_secretariat_peopleListRelationFilter
 }, "id">
 
 export type central_secretariatsOrderByWithAggregationInput = {
@@ -303,6 +306,7 @@ export type central_secretariatsCreateInput = {
   sort_order?: number
   is_published?: boolean
   info_item: Prisma.info_itemsCreateNestedOneWithoutCentral_secretariatsInput
+  people?: Prisma.central_secretariat_peopleCreateNestedManyWithoutSecretariatInput
 }
 
 export type central_secretariatsUncheckedCreateInput = {
@@ -313,6 +317,7 @@ export type central_secretariatsUncheckedCreateInput = {
   source_note?: string | null
   sort_order?: number
   is_published?: boolean
+  people?: Prisma.central_secretariat_peopleUncheckedCreateNestedManyWithoutSecretariatInput
 }
 
 export type central_secretariatsUpdateInput = {
@@ -322,6 +327,7 @@ export type central_secretariatsUpdateInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   info_item?: Prisma.info_itemsUpdateOneRequiredWithoutCentral_secretariatsNestedInput
+  people?: Prisma.central_secretariat_peopleUpdateManyWithoutSecretariatNestedInput
 }
 
 export type central_secretariatsUncheckedUpdateInput = {
@@ -332,6 +338,7 @@ export type central_secretariatsUncheckedUpdateInput = {
   source_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  people?: Prisma.central_secretariat_peopleUncheckedUpdateManyWithoutSecretariatNestedInput
 }
 
 export type central_secretariatsCreateManyInput = {
@@ -414,6 +421,11 @@ export type central_secretariatsSumOrderByAggregateInput = {
   sort_order?: Prisma.SortOrder
 }
 
+export type Central_secretariatsScalarRelationFilter = {
+  is?: Prisma.central_secretariatsWhereInput
+  isNot?: Prisma.central_secretariatsWhereInput
+}
+
 export type central_secretariatsCreateNestedManyWithoutInfo_itemInput = {
   create?: Prisma.XOR<Prisma.central_secretariatsCreateWithoutInfo_itemInput, Prisma.central_secretariatsUncheckedCreateWithoutInfo_itemInput> | Prisma.central_secretariatsCreateWithoutInfo_itemInput[] | Prisma.central_secretariatsUncheckedCreateWithoutInfo_itemInput[]
   connectOrCreate?: Prisma.central_secretariatsCreateOrConnectWithoutInfo_itemInput | Prisma.central_secretariatsCreateOrConnectWithoutInfo_itemInput[]
@@ -456,12 +468,27 @@ export type central_secretariatsUncheckedUpdateManyWithoutInfo_itemNestedInput =
   deleteMany?: Prisma.central_secretariatsScalarWhereInput | Prisma.central_secretariatsScalarWhereInput[]
 }
 
+export type central_secretariatsCreateNestedOneWithoutPeopleInput = {
+  create?: Prisma.XOR<Prisma.central_secretariatsCreateWithoutPeopleInput, Prisma.central_secretariatsUncheckedCreateWithoutPeopleInput>
+  connectOrCreate?: Prisma.central_secretariatsCreateOrConnectWithoutPeopleInput
+  connect?: Prisma.central_secretariatsWhereUniqueInput
+}
+
+export type central_secretariatsUpdateOneRequiredWithoutPeopleNestedInput = {
+  create?: Prisma.XOR<Prisma.central_secretariatsCreateWithoutPeopleInput, Prisma.central_secretariatsUncheckedCreateWithoutPeopleInput>
+  connectOrCreate?: Prisma.central_secretariatsCreateOrConnectWithoutPeopleInput
+  upsert?: Prisma.central_secretariatsUpsertWithoutPeopleInput
+  connect?: Prisma.central_secretariatsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.central_secretariatsUpdateToOneWithWhereWithoutPeopleInput, Prisma.central_secretariatsUpdateWithoutPeopleInput>, Prisma.central_secretariatsUncheckedUpdateWithoutPeopleInput>
+}
+
 export type central_secretariatsCreateWithoutInfo_itemInput = {
   name_ar: string
   head_name?: string | null
   source_note?: string | null
   sort_order?: number
   is_published?: boolean
+  people?: Prisma.central_secretariat_peopleCreateNestedManyWithoutSecretariatInput
 }
 
 export type central_secretariatsUncheckedCreateWithoutInfo_itemInput = {
@@ -471,6 +498,7 @@ export type central_secretariatsUncheckedCreateWithoutInfo_itemInput = {
   source_note?: string | null
   sort_order?: number
   is_published?: boolean
+  people?: Prisma.central_secretariat_peopleUncheckedCreateNestedManyWithoutSecretariatInput
 }
 
 export type central_secretariatsCreateOrConnectWithoutInfo_itemInput = {
@@ -512,6 +540,60 @@ export type central_secretariatsScalarWhereInput = {
   is_published?: Prisma.BoolFilter<"central_secretariats"> | boolean
 }
 
+export type central_secretariatsCreateWithoutPeopleInput = {
+  name_ar: string
+  head_name?: string | null
+  source_note?: string | null
+  sort_order?: number
+  is_published?: boolean
+  info_item: Prisma.info_itemsCreateNestedOneWithoutCentral_secretariatsInput
+}
+
+export type central_secretariatsUncheckedCreateWithoutPeopleInput = {
+  id?: number
+  info_item_id: number
+  name_ar: string
+  head_name?: string | null
+  source_note?: string | null
+  sort_order?: number
+  is_published?: boolean
+}
+
+export type central_secretariatsCreateOrConnectWithoutPeopleInput = {
+  where: Prisma.central_secretariatsWhereUniqueInput
+  create: Prisma.XOR<Prisma.central_secretariatsCreateWithoutPeopleInput, Prisma.central_secretariatsUncheckedCreateWithoutPeopleInput>
+}
+
+export type central_secretariatsUpsertWithoutPeopleInput = {
+  update: Prisma.XOR<Prisma.central_secretariatsUpdateWithoutPeopleInput, Prisma.central_secretariatsUncheckedUpdateWithoutPeopleInput>
+  create: Prisma.XOR<Prisma.central_secretariatsCreateWithoutPeopleInput, Prisma.central_secretariatsUncheckedCreateWithoutPeopleInput>
+  where?: Prisma.central_secretariatsWhereInput
+}
+
+export type central_secretariatsUpdateToOneWithWhereWithoutPeopleInput = {
+  where?: Prisma.central_secretariatsWhereInput
+  data: Prisma.XOR<Prisma.central_secretariatsUpdateWithoutPeopleInput, Prisma.central_secretariatsUncheckedUpdateWithoutPeopleInput>
+}
+
+export type central_secretariatsUpdateWithoutPeopleInput = {
+  name_ar?: Prisma.StringFieldUpdateOperationsInput | string
+  head_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  info_item?: Prisma.info_itemsUpdateOneRequiredWithoutCentral_secretariatsNestedInput
+}
+
+export type central_secretariatsUncheckedUpdateWithoutPeopleInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  info_item_id?: Prisma.IntFieldUpdateOperationsInput | number
+  name_ar?: Prisma.StringFieldUpdateOperationsInput | string
+  head_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
 export type central_secretariatsCreateManyInfo_itemInput = {
   id?: number
   name_ar: string
@@ -527,6 +609,7 @@ export type central_secretariatsUpdateWithoutInfo_itemInput = {
   source_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  people?: Prisma.central_secretariat_peopleUpdateManyWithoutSecretariatNestedInput
 }
 
 export type central_secretariatsUncheckedUpdateWithoutInfo_itemInput = {
@@ -536,6 +619,7 @@ export type central_secretariatsUncheckedUpdateWithoutInfo_itemInput = {
   source_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  people?: Prisma.central_secretariat_peopleUncheckedUpdateManyWithoutSecretariatNestedInput
 }
 
 export type central_secretariatsUncheckedUpdateManyWithoutInfo_itemInput = {
@@ -548,6 +632,35 @@ export type central_secretariatsUncheckedUpdateManyWithoutInfo_itemInput = {
 }
 
 
+/**
+ * Count Type Central_secretariatsCountOutputType
+ */
+
+export type Central_secretariatsCountOutputType = {
+  people: number
+}
+
+export type Central_secretariatsCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  people?: boolean | Central_secretariatsCountOutputTypeCountPeopleArgs
+}
+
+/**
+ * Central_secretariatsCountOutputType without action
+ */
+export type Central_secretariatsCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Central_secretariatsCountOutputType
+   */
+  select?: Prisma.Central_secretariatsCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * Central_secretariatsCountOutputType without action
+ */
+export type Central_secretariatsCountOutputTypeCountPeopleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.central_secretariat_peopleWhereInput
+}
+
 
 export type central_secretariatsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -558,6 +671,8 @@ export type central_secretariatsSelect<ExtArgs extends runtime.Types.Extensions.
   sort_order?: boolean
   is_published?: boolean
   info_item?: boolean | Prisma.info_itemsDefaultArgs<ExtArgs>
+  people?: boolean | Prisma.central_secretariats$peopleArgs<ExtArgs>
+  _count?: boolean | Prisma.Central_secretariatsCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["central_secretariats"]>
 
 export type central_secretariatsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -595,6 +710,8 @@ export type central_secretariatsSelectScalar = {
 export type central_secretariatsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "info_item_id" | "name_ar" | "head_name" | "source_note" | "sort_order" | "is_published", ExtArgs["result"]["central_secretariats"]>
 export type central_secretariatsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   info_item?: boolean | Prisma.info_itemsDefaultArgs<ExtArgs>
+  people?: boolean | Prisma.central_secretariats$peopleArgs<ExtArgs>
+  _count?: boolean | Prisma.Central_secretariatsCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type central_secretariatsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   info_item?: boolean | Prisma.info_itemsDefaultArgs<ExtArgs>
@@ -607,6 +724,7 @@ export type $central_secretariatsPayload<ExtArgs extends runtime.Types.Extension
   name: "central_secretariats"
   objects: {
     info_item: Prisma.$info_itemsPayload<ExtArgs>
+    people: Prisma.$central_secretariat_peoplePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1011,6 +1129,7 @@ readonly fields: central_secretariatsFieldRefs;
 export interface Prisma__central_secretariatsClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   info_item<T extends Prisma.info_itemsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.info_itemsDefaultArgs<ExtArgs>>): Prisma.Prisma__info_itemsClient<runtime.Types.Result.GetResult<Prisma.$info_itemsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  people<T extends Prisma.central_secretariats$peopleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.central_secretariats$peopleArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$central_secretariat_peoplePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1445,6 +1564,30 @@ export type central_secretariatsDeleteManyArgs<ExtArgs extends runtime.Types.Ext
    * Limit how many central_secretariats to delete.
    */
   limit?: number
+}
+
+/**
+ * central_secretariats.people
+ */
+export type central_secretariats$peopleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the central_secretariat_people
+   */
+  select?: Prisma.central_secretariat_peopleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the central_secretariat_people
+   */
+  omit?: Prisma.central_secretariat_peopleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.central_secretariat_peopleInclude<ExtArgs> | null
+  where?: Prisma.central_secretariat_peopleWhereInput
+  orderBy?: Prisma.central_secretariat_peopleOrderByWithRelationInput | Prisma.central_secretariat_peopleOrderByWithRelationInput[]
+  cursor?: Prisma.central_secretariat_peopleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Central_secretariat_peopleScalarFieldEnum | Prisma.Central_secretariat_peopleScalarFieldEnum[]
 }
 
 /**

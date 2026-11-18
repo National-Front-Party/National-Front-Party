@@ -225,7 +225,7 @@ export type Staff_audit_logGroupByOutputType = {
   actor_staff_user_id: string | null
   target_id: string
   target_name: string
-  target_email: string
+  target_email: string | null
   target_staff_user_id: string | null
   action_type: $Enums.staff_audit_action
   details: runtime.JsonValue | null
@@ -261,9 +261,9 @@ export type staff_audit_logWhereInput = {
   actor_name?: Prisma.StringFilter<"staff_audit_log"> | string
   actor_email?: Prisma.StringFilter<"staff_audit_log"> | string
   actor_staff_user_id?: Prisma.UuidNullableFilter<"staff_audit_log"> | string | null
-  target_id?: Prisma.UuidFilter<"staff_audit_log"> | string
+  target_id?: Prisma.StringFilter<"staff_audit_log"> | string
   target_name?: Prisma.StringFilter<"staff_audit_log"> | string
-  target_email?: Prisma.StringFilter<"staff_audit_log"> | string
+  target_email?: Prisma.StringNullableFilter<"staff_audit_log"> | string | null
   target_staff_user_id?: Prisma.UuidNullableFilter<"staff_audit_log"> | string | null
   action_type?: Prisma.Enumstaff_audit_actionFilter<"staff_audit_log"> | $Enums.staff_audit_action
   details?: Prisma.JsonNullableFilter<"staff_audit_log">
@@ -280,7 +280,7 @@ export type staff_audit_logOrderByWithRelationInput = {
   actor_staff_user_id?: Prisma.SortOrderInput | Prisma.SortOrder
   target_id?: Prisma.SortOrder
   target_name?: Prisma.SortOrder
-  target_email?: Prisma.SortOrder
+  target_email?: Prisma.SortOrderInput | Prisma.SortOrder
   target_staff_user_id?: Prisma.SortOrderInput | Prisma.SortOrder
   action_type?: Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -298,9 +298,9 @@ export type staff_audit_logWhereUniqueInput = Prisma.AtLeast<{
   actor_name?: Prisma.StringFilter<"staff_audit_log"> | string
   actor_email?: Prisma.StringFilter<"staff_audit_log"> | string
   actor_staff_user_id?: Prisma.UuidNullableFilter<"staff_audit_log"> | string | null
-  target_id?: Prisma.UuidFilter<"staff_audit_log"> | string
+  target_id?: Prisma.StringFilter<"staff_audit_log"> | string
   target_name?: Prisma.StringFilter<"staff_audit_log"> | string
-  target_email?: Prisma.StringFilter<"staff_audit_log"> | string
+  target_email?: Prisma.StringNullableFilter<"staff_audit_log"> | string | null
   target_staff_user_id?: Prisma.UuidNullableFilter<"staff_audit_log"> | string | null
   action_type?: Prisma.Enumstaff_audit_actionFilter<"staff_audit_log"> | $Enums.staff_audit_action
   details?: Prisma.JsonNullableFilter<"staff_audit_log">
@@ -317,7 +317,7 @@ export type staff_audit_logOrderByWithAggregationInput = {
   actor_staff_user_id?: Prisma.SortOrderInput | Prisma.SortOrder
   target_id?: Prisma.SortOrder
   target_name?: Prisma.SortOrder
-  target_email?: Prisma.SortOrder
+  target_email?: Prisma.SortOrderInput | Prisma.SortOrder
   target_staff_user_id?: Prisma.SortOrderInput | Prisma.SortOrder
   action_type?: Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -338,9 +338,9 @@ export type staff_audit_logScalarWhereWithAggregatesInput = {
   actor_name?: Prisma.StringWithAggregatesFilter<"staff_audit_log"> | string
   actor_email?: Prisma.StringWithAggregatesFilter<"staff_audit_log"> | string
   actor_staff_user_id?: Prisma.UuidNullableWithAggregatesFilter<"staff_audit_log"> | string | null
-  target_id?: Prisma.UuidWithAggregatesFilter<"staff_audit_log"> | string
+  target_id?: Prisma.StringWithAggregatesFilter<"staff_audit_log"> | string
   target_name?: Prisma.StringWithAggregatesFilter<"staff_audit_log"> | string
-  target_email?: Prisma.StringWithAggregatesFilter<"staff_audit_log"> | string
+  target_email?: Prisma.StringNullableWithAggregatesFilter<"staff_audit_log"> | string | null
   target_staff_user_id?: Prisma.UuidNullableWithAggregatesFilter<"staff_audit_log"> | string | null
   action_type?: Prisma.Enumstaff_audit_actionWithAggregatesFilter<"staff_audit_log"> | $Enums.staff_audit_action
   details?: Prisma.JsonNullableWithAggregatesFilter<"staff_audit_log">
@@ -354,7 +354,7 @@ export type staff_audit_logCreateInput = {
   actor_email: string
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Date | string
@@ -370,7 +370,7 @@ export type staff_audit_logUncheckedCreateInput = {
   actor_staff_user_id?: string | null
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   target_staff_user_id?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -384,7 +384,7 @@ export type staff_audit_logUpdateInput = {
   actor_email?: Prisma.StringFieldUpdateOperationsInput | string
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -400,7 +400,7 @@ export type staff_audit_logUncheckedUpdateInput = {
   actor_staff_user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   target_staff_user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -415,7 +415,7 @@ export type staff_audit_logCreateManyInput = {
   actor_staff_user_id?: string | null
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   target_staff_user_id?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -429,7 +429,7 @@ export type staff_audit_logUpdateManyMutationInput = {
   actor_email?: Prisma.StringFieldUpdateOperationsInput | string
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -443,7 +443,7 @@ export type staff_audit_logUncheckedUpdateManyInput = {
   actor_staff_user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   target_staff_user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -614,7 +614,7 @@ export type staff_audit_logCreateWithoutActor_staff_userInput = {
   actor_email: string
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Date | string
@@ -628,7 +628,7 @@ export type staff_audit_logUncheckedCreateWithoutActor_staff_userInput = {
   actor_email: string
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   target_staff_user_id?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -652,7 +652,7 @@ export type staff_audit_logCreateWithoutTarget_staff_userInput = {
   actor_email: string
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Date | string
@@ -667,7 +667,7 @@ export type staff_audit_logUncheckedCreateWithoutTarget_staff_userInput = {
   actor_staff_user_id?: string | null
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Date | string
@@ -708,9 +708,9 @@ export type staff_audit_logScalarWhereInput = {
   actor_name?: Prisma.StringFilter<"staff_audit_log"> | string
   actor_email?: Prisma.StringFilter<"staff_audit_log"> | string
   actor_staff_user_id?: Prisma.UuidNullableFilter<"staff_audit_log"> | string | null
-  target_id?: Prisma.UuidFilter<"staff_audit_log"> | string
+  target_id?: Prisma.StringFilter<"staff_audit_log"> | string
   target_name?: Prisma.StringFilter<"staff_audit_log"> | string
-  target_email?: Prisma.StringFilter<"staff_audit_log"> | string
+  target_email?: Prisma.StringNullableFilter<"staff_audit_log"> | string | null
   target_staff_user_id?: Prisma.UuidNullableFilter<"staff_audit_log"> | string | null
   action_type?: Prisma.Enumstaff_audit_actionFilter<"staff_audit_log"> | $Enums.staff_audit_action
   details?: Prisma.JsonNullableFilter<"staff_audit_log">
@@ -740,7 +740,7 @@ export type staff_audit_logCreateManyActor_staff_userInput = {
   actor_email: string
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   target_staff_user_id?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -755,7 +755,7 @@ export type staff_audit_logCreateManyTarget_staff_userInput = {
   actor_staff_user_id?: string | null
   target_id: string
   target_name: string
-  target_email: string
+  target_email?: string | null
   action_type: $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Date | string
@@ -768,7 +768,7 @@ export type staff_audit_logUpdateWithoutActor_staff_userInput = {
   actor_email?: Prisma.StringFieldUpdateOperationsInput | string
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -782,7 +782,7 @@ export type staff_audit_logUncheckedUpdateWithoutActor_staff_userInput = {
   actor_email?: Prisma.StringFieldUpdateOperationsInput | string
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   target_staff_user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -796,7 +796,7 @@ export type staff_audit_logUncheckedUpdateManyWithoutActor_staff_userInput = {
   actor_email?: Prisma.StringFieldUpdateOperationsInput | string
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   target_staff_user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -810,7 +810,7 @@ export type staff_audit_logUpdateWithoutTarget_staff_userInput = {
   actor_email?: Prisma.StringFieldUpdateOperationsInput | string
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -825,7 +825,7 @@ export type staff_audit_logUncheckedUpdateWithoutTarget_staff_userInput = {
   actor_staff_user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -839,7 +839,7 @@ export type staff_audit_logUncheckedUpdateManyWithoutTarget_staff_userInput = {
   actor_staff_user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   target_id?: Prisma.StringFieldUpdateOperationsInput | string
   target_name?: Prisma.StringFieldUpdateOperationsInput | string
-  target_email?: Prisma.StringFieldUpdateOperationsInput | string
+  target_email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   action_type?: Prisma.Enumstaff_audit_actionFieldUpdateOperationsInput | $Enums.staff_audit_action
   details?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   occurred_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -941,7 +941,7 @@ export type $staff_audit_logPayload<ExtArgs extends runtime.Types.Extensions.Int
     actor_staff_user_id: string | null
     target_id: string
     target_name: string
-    target_email: string
+    target_email: string | null
     target_staff_user_id: string | null
     action_type: $Enums.staff_audit_action
     details: runtime.JsonValue | null

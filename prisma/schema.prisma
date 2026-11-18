@@ -28,6 +28,11 @@ enum staff_audit_action {
   staff_activated
   staff_deactivated
   staff_password_reset
+  content_created
+  content_updated
+  content_published
+  content_unpublished
+  content_deleted
 }
 
 model staff_users {
@@ -50,6 +55,7 @@ model staff_users {
   updated_info_items                                 info_items[]
   updated_leaders                                    leaders[]
   updated_parliamentary_unit_items                   parliamentary_unit_items[]
+  updated_central_secretariat_people                 central_secretariat_people[]
   updated_news_articles                              news_articles[]
   created_news_articles                              news_articles[]       @relation("news_articles_created_by")
   reviewed_news_articles                             news_articles[]       @relation("news_articles_reviewed_by")
@@ -63,9 +69,9 @@ model staff_audit_log {
   actor_name           String
   actor_email          String
   actor_staff_user_id  String?            @db.Uuid
-  target_id            String             @db.Uuid
+  target_id            String
   target_name          String
-  target_email         String
+  target_email         String?
   target_staff_user_id String?            @db.Uuid
   action_type          staff_audit_action
   details              Json?              @db.JsonB
@@ -191,27 +197,32 @@ model leaders {
 }
 
 model info_items {
-  id               Int                    @id @default(autoincrement()) @db.SmallInt
-  slug             String                 @unique
-  title            String
-  body             String?
-  source_note      String?
-  link_url         String?
-  link_label       String?
-  icon             String?
-  sort_order       Int                    @default(0) @db.SmallInt
-  is_published     Boolean                @default(false)
-  updated_by       String?                @db.Uuid
-  created_at       DateTime               @default(now()) @db.Timestamptz(6)
-  updated_at       DateTime               @default(now()) @db.Timestamptz(6)
-  kind             String?
-  button_style     String?
-  action_type      String?
-  panel_id         Int?                   @db.SmallInt
-  leader_id        String?                @db.Uuid
-  updated_by_user  staff_users?           @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  panel            panels?                @relation(fields: [panel_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  leader           leaders?               @relation(fields: [leader_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  id                Int                    @id @default(autoincrement()) @db.SmallInt
+  slug              String                 @unique
+  title             String
+  body              String?
+  source_note       String?
+  link_url          String?
+  link_label        String?
+  icon              String?
+  sort_order        Int                    @default(0) @db.SmallInt
+  is_published      Boolean                @default(false)
+  updated_by        String?                @db.Uuid
+  created_at        DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime               @default(now()) @db.Timestamptz(6)
+  kind              String?
+  button_style      String?
+  action_type       String?
+  panel_id          Int?                   @db.SmallInt
+  leader_id         String?                @db.Uuid
+  button_label      String?
+  person_name       String?
+  person_role_title String?
+  decision_number   String?
+  decision_date     DateTime?              @db.Date
+  updated_by_user   staff_users?           @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  panel             panels?                @relation(fields: [panel_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  leader            leaders?               @relation(fields: [leader_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
   central_secretariats central_secretariats[]
 
   @@index([updated_by], map: "idx_info_updated_by")
@@ -220,16 +231,36 @@ model info_items {
 }
 
 model central_secretariats {
-  id           Int        @id @default(autoincrement()) @db.SmallInt
-  info_item_id Int        @db.SmallInt
+  id           Int                         @id @default(autoincrement()) @db.SmallInt
+  info_item_id Int                         @db.SmallInt
   name_ar      String
   head_name    String?
   source_note  String?
-  sort_order   Int        @default(0) @db.SmallInt
-  is_published Boolean    @default(false)
-  info_item    info_items @relation(fields: [info_item_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sort_order   Int                         @default(0) @db.SmallInt
+  is_published Boolean                     @default(false)
+  info_item    info_items                  @relation(fields: [info_item_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  people       central_secretariat_people[]
 
   @@index([info_item_id], map: "idx_central_info_item")
+}
+
+model central_secretariat_people {
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  secretariat_id Int                  @db.SmallInt
+  full_name      String
+  position_title String?
+  image_url      String?
+  details        String?
+  sort_order     Int                  @default(0) @db.SmallInt
+  is_published   Boolean              @default(false)
+  updated_by     String?              @db.Uuid
+  created_at     DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime             @default(now()) @db.Timestamptz(6)
+  secretariat    central_secretariats @relation(fields: [secretariat_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  updated_by_user staff_users?        @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([secretariat_id], map: "idx_csp_secretariat")
+  @@index([updated_by], map: "idx_csp_updated_by")
 }
 
 model governorate_secretariats_info {
