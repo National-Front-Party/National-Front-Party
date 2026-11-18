@@ -2,17 +2,50 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import JoinModal from "@/components/Home/ui/JoinModal";
 import ModalShell from "@/components/Home/ui/ModalShell";
 import Reveal from "@/components/Home/ui/Reveal";
 import { membershipTypes } from "@/data/mock/membership";
-import { NEWS, PORTAL_URL } from "@/data/mock/newsMock";
 import "./NewsSection.css";
 
-export default function NewsSection() {
+const PORTAL_URL = "/";
+
+export default function NewsSection({ data }) {
   const [activeNews, setActiveNews] = useState(null);
   const [joinOpen, setJoinOpen] = useState(false);
+  const [startIndex, setStartIndex] = useState(0);
+  const touchStartRef = useRef(0);
+  const newsList = data || [];
+
+  const maxIndex = Math.max(0, newsList.length - 3);
+
+  function handlePrev() {
+    setStartIndex((prev) => Math.max(0, prev - 1));
+  }
+
+  function handleNext() {
+    setStartIndex((prev) => Math.min(maxIndex, prev + 1));
+  }
+
+  function handleTouchStart(e) {
+    touchStartRef.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e) {
+    const touchEnd = e.changedTouches[0].clientX;
+    const diff = touchEnd - touchStartRef.current;
+    if (diff > 50) {
+      handlePrev();
+    } else if (diff < -50) {
+      handleNext();
+    }
+  }
+
+  const visibleNews =
+    newsList.length <= 3
+      ? newsList
+      : newsList.slice(startIndex, startIndex + 3);
 
   return (
     <>
@@ -43,37 +76,101 @@ export default function NewsSection() {
             </div>
           </Reveal>
 
-          <div className="news-grid grid min-w-0 flex-1 grid-cols-1 gap-[14px] min-[480px]:grid-cols-2 min-[768px]:grid-cols-3">
-            {NEWS.map((item, index) => (
-              <Reveal
-                key={item.id}
-                direction="up"
-                delay={0.1 + index * 0.1}
-                duration={0.7}
-                className="w-full flex"
-              >
-                <button
-                  type="button"
-                  className="news-card w-full cursor-pointer overflow-hidden rounded-[18px] border border-[rgba(21,23,28,0.07)] bg-white p-0 text-start text-ink shadow-card"
-                  onClick={() => setActiveNews(item)}
-                  aria-haspopup="dialog"
+          <div className="relative flex min-w-0 flex-1 flex-col justify-center gap-2">
+            {newsList.length > 3 ? (
+              <div className="flex items-center justify-between px-1 pb-1">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-light bg-gold-tint px-3 py-1 text-xs font-bold text-ink">
+                    <span className="size-2 rounded-full bg-gold" />
+                    <span>
+                      تصفح الأخبار ({startIndex + 1} -{" "}
+                      {Math.min(startIndex + 3, newsList.length)} من{" "}
+                      {newsList.length})
+                    </span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handlePrev}
+                    disabled={startIndex === 0}
+                    aria-label="الأخبار السابقة"
+                    className="flex h-9 items-center gap-1.5 rounded-xl border border-gold/40 bg-white px-3 text-xs font-bold text-ink shadow-sm transition-all hover:border-gold hover:bg-gold-gradient hover:text-ink active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-gold/30 disabled:hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                  >
+                    <span>السابق</span>
+                    <svg
+                      className="size-3.5 rotate-180"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    disabled={startIndex >= maxIndex}
+                    aria-label="الأخبار التالية"
+                    className="flex h-9 items-center gap-1.5 rounded-xl border border-gold/40 bg-white px-3 text-xs font-bold text-ink shadow-sm transition-all hover:border-gold hover:bg-gold-gradient hover:text-ink active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-gold/30 disabled:hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                  >
+                    <svg
+                      className="size-3.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                    <span>التالي</span>
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            <div
+              className="grid min-w-0 flex-1 grid-cols-1 gap-[14px] min-[480px]:grid-cols-2 min-[768px]:grid-cols-3"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              {visibleNews.map((item) => (
+                <div
+                  key={item.id}
+                  className="w-full flex animate-elem-fade-up motion-reduce:animate-none"
                 >
-                  <span className="news-card-image block aspect-[16/9] w-full overflow-hidden bg-page">
-                    <Image
-                      src={item.img}
-                      alt={item.title}
-                      width={420}
-                      height={236}
-                      className="news-card-photo h-full w-full object-cover"
-                    />
-                  </span>
-                  <span className="news-card-text flex flex-col p-[12px_14px_16px]">
-                    <span className="news-card-meta mb-1 text-[12px] font-extrabold text-gold-dark">{item.meta}</span>
-                    <span className="news-card-title font-['Noto_Kufi_Arabic',sans-serif] text-[15px] font-extrabold leading-[1.6]">{item.title}</span>
-                  </span>
-                </button>
-              </Reveal>
-            ))}
+                  <button
+                    type="button"
+                    className="news-card flex flex-col justify-start h-full w-full cursor-pointer overflow-hidden rounded-[18px] border border-[rgba(21,23,28,0.07)] bg-white p-0 text-start text-ink shadow-card"
+                    onClick={() => setActiveNews(item)}
+                    aria-haspopup="dialog"
+                  >
+                    <span className="news-card-image relative block aspect-[16/9] w-full shrink-0 overflow-hidden bg-page">
+                      <Image
+                        src={item.img}
+                        alt={item.title}
+                        width={420}
+                        height={236}
+                        className="news-card-photo h-full w-full object-cover"
+                      />
+                    </span>
+                    <span className="news-card-text flex flex-1 flex-col justify-start p-[12px_14px_16px]">
+                      <span className="news-card-meta mb-1 block text-[12px] font-extrabold text-gold-dark">
+                        {item.meta}
+                      </span>
+                      <span className="news-card-title font-['Noto_Kufi_Arabic',sans-serif] text-[15px] font-extrabold leading-[1.6] line-clamp-2 min-h-[48px]">
+                        {item.title}
+                      </span>
+                    </span>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
           <Reveal

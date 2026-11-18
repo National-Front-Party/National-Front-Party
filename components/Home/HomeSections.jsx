@@ -9,14 +9,16 @@ import GeographicSearch from "@/components/Home/sections/GeographicSearch";
 import Vision2030 from "@/components/Home/sections/Vision2030";
 import PartyStats from "@/components/Home/sections/PartyStats";
 import Reveal from "@/components/Home/ui/Reveal";
-import {
-  mainLinks,
-  partyProgram,
-} from "@/data/mock/home";
-import { centralSecretariats } from "@/data/mock/central-secretariats";
-import { parliamentaryItems } from "@/data/mock/parliamentary";
+export default function HomeSections({ data = {} }) {
+  const mainLinks = data.mainLinks || [];
+  const partyProgram = data.partyProgram || { title: "برنامج الحزب", paragraphs: [], source: "" };
+  const centralSecretariats = data.centralSecretariats;
+  const parliamentaryItems = data.parliamentaryItems || [];
+  const governorates = data.governorates;
+  const requests = data.requests;
+  const news = data.news;
+  const vision = data.vision;
 
-export default function HomeSections() {
   return (
     <section
       aria-label="أقسام الصفحة الرئيسية"
@@ -56,7 +58,7 @@ export default function HomeSections() {
             className="flex h-full min-h-0 min-w-0 flex-col gap-4 col-span-1 min-[600px]:col-span-2 min-[900px]:col-span-2 min-[1200px]:col-span-1 scroll-mt-28 focus:outline-none"
           >
             <Reveal direction="scale" delay={0.38} duration={0.7} className="flex h-full min-h-0 flex-1 flex-col">
-              <GovernoratesSecretariats />
+              <GovernoratesSecretariats data={governorates} />
             </Reveal>
           </div>
 
@@ -75,13 +77,13 @@ export default function HomeSections() {
             tabIndex={-1}
             className="flex h-full min-h-0 min-w-0 flex-col gap-4 col-span-1 min-[600px]:col-span-1 min-[900px]:col-span-3 min-[1200px]:col-span-1 scroll-mt-28 focus:outline-none"
           >
-            <GovernmentMinistriesColumn />
+            <GovernmentMinistriesColumn data={requests} />
           </div>
         </div>
       </div>
-      <NewsSection />
-      <GeographicSearch />
-      <Vision2030 />
+      <NewsSection data={news} />
+      <GeographicSearch data={governorates} />
+      <Vision2030 data={vision} />
       <PartyStats />
     </section>
   );

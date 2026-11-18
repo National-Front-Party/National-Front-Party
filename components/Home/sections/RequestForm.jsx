@@ -26,28 +26,67 @@ function FieldError({ id, message }) {
   ) : null;
 }
 
-export default function RequestForm({ data, header, selected, onSelect }) {
+export default function RequestForm({
+  data,
+  header,
+  selected,
+  onSelect,
+  selectedMinistry: propSelectedMinistry,
+  onSelectMinistry: propOnSelectMinistry,
+  selectedSector: propSelectedSector,
+  onSelectSector: propOnSelectSector,
+  ministryError: propMinistryError,
+  onMinistryErrorChange: propOnMinistryErrorChange,
+}) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
   const [toast, setToast] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [internalSector, setInternalSector] = useState("");
+  const [internalMinistry, setInternalMinistry] = useState("");
+  const [internalMinistryError, setInternalMinistryError] = useState("");
+
+  const currentMinistry =
+    propSelectedMinistry !== undefined
+      ? propSelectedMinistry
+      : (selected ?? internalMinistry);
+  const setMinistry = propOnSelectMinistry ?? onSelect ?? setInternalMinistry;
+
+  const currentSector =
+    propSelectedSector !== undefined ? propSelectedSector : internalSector;
+  const setSector = propOnSelectSector ?? setInternalSector;
+
+  const externalMinistryError =
+    propMinistryError !== undefined ? propMinistryError : internalMinistryError;
+  const setExternalMinistryError =
+    propOnMinistryErrorChange ?? setInternalMinistryError;
+
   const nameInputRef = useRef(null);
   const phoneInputRef = useRef(null);
   const toastRef = useRef(null);
   const pendingToastRef = useRef(null);
   const toastIdRef = useRef(0);
-  const sectorError = selected ? undefined : errors.sector;
+
+  const sectorError = errors.sector;
+  const ministryError = externalMinistryError || errors.ministry;
   const sectorValue = data.sectorOptions.some(
-    (option) => option.value === selected,
+    (option) => option.value === currentSector,
   )
-    ? selected
+    ? currentSector
     : "";
-  const entityName = data.entityNames[selected] ?? data.entityNames[""];
+
+  const ministryItem = data.ministries?.find((m) => m.id === currentMinistry);
+  const entityName = ministryItem
+    ? ministryItem.label
+    : (data.entityNames?.[currentMinistry] ?? "اختر الوزارة من القائمة أعلاه");
+
   const currentValues = {
     name,
     phone,
-    sector: selected,
+    sector: currentSector,
+    ministry: currentMinistry,
     entity: entityName,
   };
 
@@ -93,13 +132,12 @@ export default function RequestForm({ data, header, selected, onSelect }) {
   }
 
   function handleSectorChange(value) {
-    onSelect(value);
+    setSector(value);
 
     if (touched.sector || errors.sector) {
       const validation = validateRequest({
         ...currentValues,
         sector: value,
-        entity: data.entityNames[value] ?? data.entityNames[""],
       });
       setFieldError("sector", validation.errors.sector);
     }
@@ -138,37 +176,87 @@ export default function RequestForm({ data, header, selected, onSelect }) {
     setToast(nextToast);
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    if (isSubmitting) return;
 
     const validation = validateRequest(currentValues);
     const { payload } = validation;
     setName(payload.name);
     setPhone(normalizeRequestPhoneInput(payload.phone));
-    setTouched({ name: true, phone: true, sector: true });
+    setTouched({ name: true, phone: true, sector: true, ministry: true });
     setErrors(validation.errors);
+    if (setExternalMinistryError) {
+      setExternalMinistryError(validation.errors.ministry || "");
+    }
 
     if (!validation.valid) {
       showToast("error");
-      const firstInvalidField = ["name", "phone", "sector"].find(
+      const firstInvalidField = ["ministry", "name", "phone", "sector"].find(
         (field) => validation.errors[field],
       );
 
-      if (firstInvalidField === "name") nameInputRef.current?.focus();
-      if (firstInvalidField === "phone") phoneInputRef.current?.focus();
-      if (firstInvalidField === "sector") {
+      if (firstInvalidField === "ministry") {
+        const firstRadio = document.querySelector('[role="radio"]');
+        firstRadio?.focus();
+        firstRadio?.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (firstInvalidField === "name") {
+        nameInputRef.current?.focus();
+      } else if (firstInvalidField === "phone") {
+        phoneInputRef.current?.focus();
+      } else if (firstInvalidField === "sector") {
         document.getElementById("request-sector")?.focus();
       }
 
       return;
     }
 
-    setName("");
-    setPhone("");
-    onSelect("");
-    setTouched({});
-    setErrors({});
-    showToast("success");
+    const ministryObj = data.ministries?.find((m) => m.id === currentMinistry);
+    const sectorObj = data.sectorOptions?.find(
+      (s) => s.value === currentSector,
+    );
+
+    const ministryDbId =
+      ministryObj?.dbId ??
+      (data.ministries?.findIndex((m) => m.id === currentMinistry) + 1);
+    const sectorDbId = sectorObj?.dbId;
+
+    if (!ministryDbId || !sectorDbId) {
+      showToast("error");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/service-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: payload.name,
+          phone: payload.phone,
+          ministry_id: Number(ministryDbId),
+          sector_id: Number(sectorDbId),
+        }),
+      });
+
+      if (!response.ok) {
+        showToast("error");
+        return;
+      }
+
+      setName("");
+      setPhone("");
+      setMinistry("");
+      setSector("");
+      setTouched({});
+      setErrors({});
+      if (setExternalMinistryError) setExternalMinistryError("");
+      showToast("success");
+    } catch {
+      showToast("error");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -279,16 +367,31 @@ export default function RequestForm({ data, header, selected, onSelect }) {
               <FieldError id="request-sector-error" message={sectorError} />
             </div>
 
-            <p className="rounded-xl border border-gold-light bg-gold-tint px-4 py-3 text-sm text-ink">
-              <span className="font-bold">{data.fields.entity}</span>{" "}
-              {entityName}
-            </p>
+            <div>
+              <div
+                className={`rounded-xl border px-4 py-3 text-sm transition-colors ${
+                  ministryError
+                    ? "border-[#C0392B] bg-[#FDEDEC] text-[#922B21] shadow-[0_0_0_3px_rgba(192,57,43,0.16)]"
+                    : "border-gold-light bg-gold-tint text-ink"
+                }`}
+              >
+                <span className="font-bold">{data.fields.entity}</span>{" "}
+                <span>{entityName}</span>
+              </div>
+              {ministryError ? (
+                <FieldError
+                  id="request-ministry-error"
+                  message={ministryError}
+                />
+              ) : null}
+            </div>
 
             <button
               type="submit"
-              className="flex h-12 w-full items-center justify-center rounded-2xl bg-gold-gradient px-6 font-bold text-ink transition-all duration-300 ease-out hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none mt-auto"
+              disabled={isSubmitting}
+              className="flex h-12 w-full items-center justify-center rounded-2xl bg-gold-gradient px-6 font-bold text-ink transition-all duration-300 ease-out hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none mt-auto disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {data.fields.submit}
+              {isSubmitting ? "جاري إرسال الطلب..." : data.fields.submit}
             </button>
           </form>
         </div>

@@ -35,13 +35,20 @@ registerHooks({
 });
 
 const { prisma } = await import("../lib/db.js");
-const { GOVERNORATE_PEOPLE } = await import("../data/mock/governoratesMock.js");
-const { parliamentaryItems } = await import("../data/mock/parliamentary.js");
-const { requestsMock } = await import("../data/mock/requestsMock.js");
-const { NEWS } = await import("../data/mock/newsMock.js");
-const { centralSecretariats } = await import("../data/mock/central-secretariats.js");
-const { mainLinks, partyProgram } = await import("../data/mock/home.js");
-const { VISION_2030 } = await import("../data/mock/vision2030Mock.js");
+const fs = await import("fs");
+const seedData = JSON.parse(
+  fs.readFileSync(new URL("./seed-data.json", import.meta.url), "utf-8"),
+);
+const {
+  GOVERNORATE_PEOPLE,
+  parliamentaryItems,
+  requestsMock,
+  NEWS,
+  centralSecretariats,
+  mainLinks,
+  partyProgram,
+  VISION_2030,
+} = seedData;
 
 console.log("🚀 Starting database seeding from data mock files...");
 
