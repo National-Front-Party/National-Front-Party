@@ -1,0 +1,215 @@
+.st-stats-section {
+  width: 100%;
+  max-width: 1320px;
+  margin: 28px auto 0;
+  padding: 0 20px 56px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .st-stats-section {
+    padding: 0 20px 72px;
+  }
+}
+
+.st-stats-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #fff;
+  border: 1px solid rgba(21, 23, 28, 0.07);
+  border-radius: 24px;
+  box-shadow:
+    0 1px 2px rgba(21, 23, 28, 0.04),
+    0 18px 44px rgba(21, 23, 28, 0.08);
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.st-stats-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(90deg, #be953a, #e6cc85 50%, #be953a);
+  transform: scaleY(0);
+  transform-origin: bottom center;
+  transition: transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  pointer-events: none;
+}
+
+.st-stats-card::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 86%;
+  top: 7%;
+  left: 0;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 0 0 15px 3px #fff;
+  transform: skewX(-20deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.st-stats-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.st-stats-number-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.st-stats-number {
+  font-family: "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: #8c6a16;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  direction: rtl;
+  transform: translateY(0) scale(1);
+  transition:
+    color 0.3s ease,
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.st-stats-prefix {
+  font-variant-numeric: tabular-nums;
+}
+
+.st-stats-digits {
+  font-variant-numeric: tabular-nums;
+}
+
+.st-stats-accent-line {
+  display: block;
+  width: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: #15171c;
+  margin: 6px auto 0;
+  transition: width 0.4s ease;
+}
+
+.st-stats-label {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5b6270;
+  line-height: 1.4;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+@keyframes st-stats-shine {
+  0% {
+    opacity: 0;
+    left: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    left: 100%;
+  }
+}
+
+@media (hover: hover) {
+  .st-stats-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(190, 149, 58, 0.35);
+  }
+
+  .st-stats-card:hover::before {
+    transform: scaleY(1);
+  }
+
+  .st-stats-card:hover .st-stats-number {
+    color: #15171c;
+    transform: translateY(-2px) scale(1.1);
+    transition:
+      color 0.3s ease 0.1s,
+      transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .st-stats-card:hover .st-stats-accent-line {
+    width: 48px;
+    transition: width 0.4s ease 0.15s;
+  }
+
+  .st-stats-card:hover .st-stats-label {
+    color: #15171c;
+    transition: color 0.3s ease 0.1s;
+  }
+
+  .st-stats-card:hover::after {
+    animation: st-stats-shine 0.7s linear 250ms 1;
+  }
+
+  .st-stats-card:active {
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-stats-card,
+  .st-stats-card::before,
+  .st-stats-card::after,
+  .st-stats-content,
+  .st-stats-number,
+  .st-stats-accent-line,
+  .st-stats-label {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .st-stats-card::before,
+  .st-stats-card::after,
+  .st-stats-accent-line {
+    display: none !important;
+  }
+
+  .st-stats-card:hover,
+  .st-stats-card:active {
+    transform: none !important;
+    box-shadow:
+      0 1px 2px rgba(21, 23, 28, 0.04),
+      0 18px 44px rgba(21, 23, 28, 0.08) !important;
+    background: #c9a24b !important;
+  }
+
+  .st-stats-card:hover .st-stats-number {
+    color: #15171c !important;
+    transform: none !important;
+  }
+
+  .st-stats-card:hover .st-stats-label {
+    color: #15171c !important;
+  }
+}
