@@ -4,10 +4,7 @@ import GovernoratesSecretariats from "@/components/Home/sections/GovernoratesSec
 import MainSection from "@/components/Home/sections/MainSection";
 import ParliamentaryUnit from "@/components/Home/sections/ParliamentaryUnit";
 import ProgramCard from "@/components/Home/sections/ProgramCard";
-import NextArrowFooter from "@/components/Home/ui/NextArrowFooter";
-import SectionCard from "@/components/Home/ui/SectionCard";
 import {
-  governorates,
   mainLinks,
   partyProgram,
 } from "@/data/mock/home";
@@ -34,14 +31,8 @@ export default function HomeSections() {
             <CentralSecretariats data={centralSecretariats} />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
-            <SectionCard
-              title={governorates.title}
-              scroll
-              footer={<NextArrowFooter href="/governorates" />}
-            >
-              <GovernoratesSecretariats data={governorates} />
-            </SectionCard>
+          <div className="flex min-w-0 flex-col gap-4 xl:h-full xl:min-h-0">
+            <GovernoratesSecretariats />
           </div>
 
           <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
