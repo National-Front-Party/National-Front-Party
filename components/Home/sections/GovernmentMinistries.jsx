@@ -69,7 +69,7 @@ export default function GovernmentMinistries({
 
           return (
             <li
-              key={ministry.id}
+              key={ministry.id || ministry.dbId || String(index)}
               className="animate-elem-fade-up motion-reduce:animate-none"
               style={{ animationDelay: `${index * 50 + 100}ms` }}
             >

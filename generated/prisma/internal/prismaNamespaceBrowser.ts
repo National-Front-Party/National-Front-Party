@@ -68,7 +68,8 @@ export const ModelName = {
   request_sectors: 'request_sectors',
   service_requests: 'service_requests',
   news_sources: 'news_sources',
-  news_articles: 'news_articles'
+  news_articles: 'news_articles',
+  party_programs: 'party_programs'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -393,6 +394,19 @@ export const News_articlesScalarFieldEnum = {
 } as const
 
 export type News_articlesScalarFieldEnum = (typeof News_articlesScalarFieldEnum)[keyof typeof News_articlesScalarFieldEnum]
+
+
+export const Party_programsScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  body: 'body',
+  source_note: 'source_note',
+  is_published: 'is_published',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Party_programsScalarFieldEnum = (typeof Party_programsScalarFieldEnum)[keyof typeof Party_programsScalarFieldEnum]
 
 
 export const SortOrder = {

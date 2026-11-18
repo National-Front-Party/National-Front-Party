@@ -47,7 +47,7 @@ export default function GovernmentMinistriesColumn({ data }) {
 
         const ministriesList = Array.isArray(minJson?.ministries)
           ? minJson.ministries.map((m) => ({
-              id: m.slug,
+              id: m.slug || String(m.id),
               label: m.name_ar,
               dbId: m.id,
             }))
@@ -55,7 +55,7 @@ export default function GovernmentMinistriesColumn({ data }) {
 
         const sectorList = Array.isArray(secJson?.request_sectors)
           ? secJson.request_sectors.map((s) => ({
-              value: s.code,
+              value: s.code || String(s.id),
               label: s.name_ar,
               dbId: s.id,
             }))
