@@ -16,14 +16,14 @@ export default function GovernmentMinistriesColumn() {
       lang="ar"
       className="flex h-full min-h-0 w-full flex-1 flex-col gap-4"
     >
-      <Reveal direction="left" delay={0.56} duration={0.7} className="flex min-h-0 flex-col">
+      <Reveal direction="left" delay={0.56} duration={0.7} className="flex min-h-0 flex-none flex-col">
         <GovernmentMinistries
           data={requestsMock}
           selected={selected}
           onSelect={setSelected}
         />
       </Reveal>
-      <Reveal direction="up" delay={0.66} duration={0.7} className="flex min-h-0 flex-col">
+      <Reveal direction="up" delay={0.66} duration={0.7} className="flex min-h-0 flex-1 flex-col">
         <RequestForm
           data={requestsMock}
           selected={selected}

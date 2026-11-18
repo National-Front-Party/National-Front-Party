@@ -31,11 +31,15 @@ export default function ParliamentaryUnit({ data }) {
       >
         <div className="flex h-full flex-1 flex-col">
           <ol className="shrink-0 pt-3">
-            {data.map((item) => {
+            {data.map((item, index) => {
               const Icon = iconMap[item.icon] ?? Landmark;
 
               return (
-                <li key={item.id} className="relative pb-11">
+                <li
+                  key={item.id}
+                  className="relative pb-11 animate-elem-fade-up motion-reduce:animate-none"
+                  style={{ animationDelay: `${index * 90 + 120}ms` }}
+                >
                   {/* Animated Dashed Line */}
                   <div
                     aria-hidden="true"

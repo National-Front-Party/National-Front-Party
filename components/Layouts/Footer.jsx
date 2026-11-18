@@ -219,8 +219,12 @@ function Footer() {
                     <nav aria-label="روابط التذييل">
                         <SectionHeading>روابط سريعة</SectionHeading>
                         <ul className="space-y-2">
-                            {FOOTER_LINKS.map((link) => (
-                                <li key={link.label}>
+                            {FOOTER_LINKS.map((link, index) => (
+                                <li
+                                    key={link.label}
+                                    className="animate-elem-fade-up motion-reduce:animate-none"
+                                    style={{ animationDelay: `${index * 35 + 150}ms` }}
+                                >
                                     <a
                                         href={link.href}
                                         onClick={(e) => handleAnchorClick(e, link)}
@@ -291,7 +295,7 @@ function Footer() {
                     <section>
                         <SectionHeading>تابعنا</SectionHeading>
                         <div className="flex flex-wrap gap-3">
-                            {SOCIAL_LINKS.map(({ id, label, href }) => {
+                            {SOCIAL_LINKS.map(({ id, label, href }, index) => {
                                 const Icon = socialIcons[id] || FacebookIcon;
                                 return (
                                     <a
@@ -300,7 +304,8 @@ function Footer() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         aria-label={label}
-                                        className="flex h-11 w-11 items-center justify-center rounded-full border border-line-dark text-white transition-all duration-300 hover:-translate-y-1 hover:border-gold hover:bg-gold hover:text-ink motion-reduce:transition-none"
+                                        className="flex h-11 w-11 items-center justify-center rounded-full border border-line-dark text-white transition-all duration-300 hover:-translate-y-1 hover:border-gold hover:bg-gold hover:text-ink motion-reduce:transition-none animate-elem-scale-in motion-reduce:animate-none"
+                                        style={{ animationDelay: `${index * 50 + 150}ms` }}
                                     >
                                         <Icon />
                                     </a>

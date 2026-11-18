@@ -62,7 +62,11 @@ export default function GovernmentMinistries({
             : "[@media(hover:hover)]:hover:bg-ink [@media(hover:hover)]:hover:text-white [@media(hover:hover)]:hover:px-5 [@media(hover:hover)]:hover:border-transparent";
 
           return (
-            <li key={ministry.id}>
+            <li
+              key={ministry.id}
+              className="animate-elem-fade-up motion-reduce:animate-none"
+              style={{ animationDelay: `${index * 50 + 100}ms` }}
+            >
               <button
                 ref={(element) => {
                   radioRefs.current[index] = element;

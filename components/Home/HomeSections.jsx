@@ -32,10 +32,10 @@ export default function HomeSections() {
             tabIndex={-1}
             className="flex h-full min-h-0 min-w-0 flex-col gap-4 col-span-1 min-[900px]:col-span-2 min-[1200px]:col-span-1 scroll-mt-28 focus:outline-none"
           >
-            <Reveal direction="right" delay={0.08} duration={0.7} className="flex min-h-0 flex-col">
+            <Reveal direction="right" delay={0.08} duration={0.7} className="flex min-h-0 flex-1 flex-col">
               <MainSection data={mainLinks} />
             </Reveal>
-            <Reveal direction="up" delay={0.18} duration={0.7} className="flex min-h-0 flex-col">
+            <Reveal direction="up" delay={0.18} duration={0.7} className="flex min-h-0 flex-none flex-col">
               <ProgramCard data={partyProgram} />
             </Reveal>
           </div>

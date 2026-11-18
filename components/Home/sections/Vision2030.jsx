@@ -48,13 +48,29 @@ export default function Vision2030() {
             className="w-full min-w-0 flex min-[1000px]:flex-[999_1_380px]"
           >
             <div className="vision2030-text flex w-full min-w-0 flex-col gap-2.5">
-              <p className="vision2030-eyebrow m-0 text-[13px] font-extrabold text-gold-light">{VISION_2030.eyebrow}</p>
-              <h2 className="vision2030-title m-0 text-[clamp(24px,5vw,32px)] font-black leading-[1.35]">{VISION_2030.title}</h2>
-              <p className="vision2030-intro m-0 max-w-[560px] text-[15px] leading-[1.8] text-on-dark">{VISION_2030.intro}</p>
+              <p className="vision2030-eyebrow m-0 text-[13px] font-extrabold text-gold-light animate-elem-fade-up motion-reduce:animate-none">
+                {VISION_2030.eyebrow}
+              </p>
+              <h2
+                className="vision2030-title m-0 text-[clamp(24px,5vw,32px)] font-black leading-[1.35] animate-elem-fade-up motion-reduce:animate-none"
+                style={{ animationDelay: "60ms" }}
+              >
+                {VISION_2030.title}
+              </h2>
+              <p
+                className="vision2030-intro m-0 max-w-[560px] text-[15px] leading-[1.8] text-on-dark animate-elem-fade-up motion-reduce:animate-none"
+                style={{ animationDelay: "120ms" }}
+              >
+                {VISION_2030.intro}
+              </p>
 
               <div className="vision2030-chips flex flex-wrap gap-1.5" aria-label="مبادئ الرؤية">
-                {VISION_2030.chips.map((chip) => (
-                  <span className="vision2030-chip rounded-full border border-gold px-3 py-[3px] text-[13px] font-bold text-gold-light" key={chip}>
+                {VISION_2030.chips.map((chip, idx) => (
+                  <span
+                    className="vision2030-chip rounded-full border border-gold px-3 py-[3px] text-[13px] font-bold text-gold-light animate-elem-scale-in motion-reduce:animate-none"
+                    style={{ animationDelay: `${idx * 40 + 180}ms` }}
+                    key={chip}
+                  >
                     {chip}
                   </span>
                 ))}
@@ -62,7 +78,8 @@ export default function Vision2030() {
 
               <button
                 type="button"
-                className="vision2030-details-button relative mt-1 inline-flex min-h-[46px] items-center justify-center self-start overflow-hidden rounded-xl border border-gold bg-transparent px-[22px] text-[15px] font-extrabold text-gold-light cursor-pointer"
+                className="vision2030-details-button relative mt-1 inline-flex min-h-[46px] items-center justify-center self-start overflow-hidden rounded-xl border border-gold bg-transparent px-[22px] text-[15px] font-extrabold text-gold-light cursor-pointer animate-elem-fade-up motion-reduce:animate-none"
+                style={{ animationDelay: "260ms" }}
                 aria-haspopup="dialog"
                 onClick={() => setModalOpen(true)}
               >

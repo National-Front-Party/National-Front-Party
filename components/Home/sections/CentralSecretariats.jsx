@@ -63,7 +63,7 @@ export default function CentralSecretariats({ data }) {
         }
       >
         <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-2.5 text-center sm:gap-3">
-          <div className="group flex size-[120px] items-center justify-center overflow-hidden rounded-full border-4 border-gold bg-gold-tint p-1 shadow-[0_8px_24px_rgba(201,162,74,0.28)]">
+          <div className="group flex size-[120px] items-center justify-center overflow-hidden rounded-full border-4 border-gold bg-gold-tint p-1 shadow-[0_8px_24px_rgba(201,162,74,0.28)] animate-elem-scale-in motion-reduce:animate-none">
             {!data.president.image || imageFailed ? (
               <UserRound
                 aria-hidden="true"
@@ -83,7 +83,7 @@ export default function CentralSecretariats({ data }) {
             )}
           </div>
 
-          <div>
+          <div className="animate-elem-fade-up motion-reduce:animate-none" style={{ animationDelay: "80ms" }}>
             <h3 className="text-lg font-extrabold text-ink">
               {data.president.name}
             </h3>
@@ -91,12 +91,13 @@ export default function CentralSecretariats({ data }) {
           </div>
 
           <div className="mt-1 flex w-full flex-col gap-2.5">
-            {buttons.map((button) => (
+            {buttons.map((button, index) => (
               <button
                 key={button.id}
                 type="button"
                 onClick={() => setActive(button.id)}
-                className={`${buttonBase} ${button.style}`}
+                className={`${buttonBase} ${button.style} animate-elem-fade-up motion-reduce:animate-none`}
+                style={{ animationDelay: `${index * 60 + 160}ms` }}
               >
                 <span>{button.label}</span>
                 <ArrowLeft
@@ -116,10 +117,11 @@ export default function CentralSecretariats({ data }) {
               {data.leadership.title}
             </h3>
             <ul className="space-y-1 text-right">
-              {data.leadership.leaders.map((leader) => (
+              {data.leadership.leaders.map((leader, index) => (
                 <li
                   key={leader.name}
-                  className="flex items-center gap-3 rounded-2xl px-2 py-1.5"
+                  className="flex items-center gap-3 rounded-2xl px-2 py-1.5 animate-elem-fade-up motion-reduce:animate-none"
+                  style={{ animationDelay: `${index * 60 + 380}ms` }}
                 >
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-gold bg-white text-sm font-extrabold text-ink">
                     {leader.badge}

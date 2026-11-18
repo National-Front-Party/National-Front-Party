@@ -353,7 +353,8 @@ export default function GovernoratesSecretariats() {
                   }}
                   className={`${styles.governorateBox} ${
                     isOpen ? styles.governorateBoxOpen : ""
-                  }`}
+                  } animate-elem-fade-up motion-reduce:animate-none`}
+                  style={{ animationDelay: `${Math.min(index, 7) * 40 + 100}ms` }}
                 >
                   <button
                     id={buttonId}

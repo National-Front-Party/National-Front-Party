@@ -32,7 +32,7 @@ function NavigationLinks({
                         className={
                             isMobile
                                 ? "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                                : undefined
+                                : "animate-nav-item-enter motion-reduce:animate-none"
                         }
                         style={
                             isMobile
@@ -43,7 +43,9 @@ function NavigationLinks({
                                         ? `${index * 25}ms`
                                         : `${(NAV_LINKS.length - index) * 25}ms`,
                                 }
-                                : undefined
+                                : {
+                                    animationDelay: `${index * 40 + 120}ms`,
+                                }
                         }
                     >
                         <a
@@ -386,7 +388,8 @@ function NavbarContent({ pathname }) {
                     ref={logoRef}
                     href="/"
                     onClick={handleLogoClick}
-                    className="flex min-w-0 items-center gap-3 max-[991px]:flex-1 cursor-pointer focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-gold focus-visible:outline-offset-[3px]"
+                    className="flex min-w-0 items-center gap-3 max-[991px]:flex-1 cursor-pointer focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-gold focus-visible:outline-offset-[3px] animate-nav-item-enter motion-reduce:animate-none"
+                    style={{ animationDelay: "60ms" }}
                     aria-label="العودة إلى أعلى الصفحة"
                 >
                     <Image
@@ -437,7 +440,10 @@ function NavbarContent({ pathname }) {
                     </button>
                 </div>
 
-                <div className="hidden shrink-0 items-center gap-2 min-[992px]:flex">
+                <div
+                    className="hidden shrink-0 items-center gap-2 min-[992px]:flex animate-nav-item-enter motion-reduce:animate-none"
+                    style={{ animationDelay: "450ms" }}
+                >
                     <FacebookLink />
                     <JoinButton
                         className="min-h-12 rounded-btn bg-ink px-5 font-extrabold text-white shadow-btn transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-gold-dark hover:shadow-card active:translate-y-0 active:scale-[0.99] active:shadow-btn motion-reduce:transition-none sm:px-7"
