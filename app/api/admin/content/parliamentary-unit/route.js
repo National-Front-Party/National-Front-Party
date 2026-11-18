@@ -1,4 +1,4 @@
-import { createAdminParliamentaryCollectionHandlers } from "../../../../../../lib/content/handlers/parliamentary-unit.js";
+import { createAdminParliamentaryCollectionHandlers } from "../../../../../lib/content/handlers/parliamentary-unit.js";
 
 const handlers = createAdminParliamentaryCollectionHandlers();
 
