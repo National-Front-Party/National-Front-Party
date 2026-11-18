@@ -220,6 +220,20 @@ try {
     },
   });
 
+  if (prisma.party_programs) {
+    const existing = await prisma.party_programs.findFirst();
+    if (!existing) {
+      await prisma.party_programs.create({
+        data: {
+          title: partyProgram.title,
+          body: partyProgram.paragraphs.join("\n\n"),
+          source_note: partyProgram.source,
+          is_published: true,
+        },
+      });
+    }
+  }
+
   // Vision 2030
   await prisma.info_items.upsert({
     where: { slug: "vision-2030" },
