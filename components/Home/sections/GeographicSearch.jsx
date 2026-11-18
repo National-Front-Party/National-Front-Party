@@ -124,16 +124,17 @@ export default function GeographicSearch() {
   return (
     <section
       id="geo"
+      tabIndex={-1}
       dir="rtl"
       lang="ar"
       aria-label="البحث الجغرافي"
-      className="geo-section"
+      className="geo-section mx-auto mt-[18px] w-full max-w-[1320px] px-5 text-right scroll-mt-28 focus:outline-none"
     >
       <form
-        className="geo-search-bar"
+        className="geo-search-bar flex w-full flex-col gap-[10px] rounded-[28px] bg-ink p-[8px_10px] shadow-[0_20px_44px_rgba(21,23,28,0.28)] min-[700px]:flex-row min-[700px]:flex-wrap min-[1100px]:flex-nowrap min-[1100px]:items-center min-[1100px]:gap-2"
         onSubmit={handleSubmit}
       >
-        <div className="geo-governorate">
+        <div className="geo-governorate w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0">
           <CustomSelect
             id="geo-governorate"
             label="المحافظة"
@@ -154,7 +155,7 @@ export default function GeographicSearch() {
           onChange={(event) => updateFilter("markaz", event.target.value)}
           placeholder="المركز"
           aria-label="المركز"
-          className={`${inputBase} geo-field geo-markaz`}
+          className={`${inputBase} geo-field geo-markaz w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
         />
         <datalist id="geo-markaz-list">
           {markazOptions.map((markaz) => (
@@ -168,7 +169,7 @@ export default function GeographicSearch() {
           onChange={(event) => updateFilter("village", event.target.value)}
           placeholder="القرية"
           aria-label="القرية"
-          className={`${inputBase} geo-field geo-village`}
+          className={`${inputBase} geo-field geo-village w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
         />
 
         <input
@@ -177,10 +178,10 @@ export default function GeographicSearch() {
           onChange={(event) => updateFilter("ezba", event.target.value)}
           placeholder="العزبة"
           aria-label="العزبة"
-          className={`${inputBase} geo-field geo-ezba`}
+          className={`${inputBase} geo-field geo-ezba w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
         />
 
-        <button type="submit" className="geo-search-button bg-gold-gradient">
+        <button type="submit" className="geo-search-button bg-gold-gradient w-full min-[1100px]:w-auto min-[1100px]:flex-none">
           <svg
             aria-hidden="true"
             width="22"
@@ -201,15 +202,15 @@ export default function GeographicSearch() {
         <div
           role="status"
           aria-live="polite"
-          className={`geo-result-card${exiting ? " geo-result-card-exit" : ""}`}
+          className={`geo-result-card w-full${exiting ? " geo-result-card-exit" : ""}`}
         >
-          <h2 className="geo-result-title">{result.title}</h2>
-          <p className="geo-result-subtitle">{result.subtitle}</p>
+          <h2 className="geo-result-title font-['Noto_Kufi_Arabic',sans-serif] m-0 text-[18px] font-black text-ink leading-[1.6]">{result.title}</h2>
+          <p className="geo-result-subtitle mt-1 mb-0 text-[14px] text-muted">{result.subtitle}</p>
           {result.rows.map((person) => (
-            <p className="geo-result-row" key={`${person.name}-${person.role}`}>
-              <span className="geo-person-name">{person.name}</span>
+            <p className="geo-result-row mt-1.5 mb-0 border-t border-line py-1.5 text-[13px] text-muted break-words" key={`${person.name}-${person.role}`}>
+              <span className="geo-person-name text-[15px] font-extrabold text-ink">{person.name}</span>
               {" - "}
-              <span className="geo-person-role">{person.role}</span>
+              <span className="geo-person-role text-[13px] text-muted">{person.role}</span>
             </p>
           ))}
         </div>

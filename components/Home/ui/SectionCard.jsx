@@ -35,16 +35,15 @@ export default function SectionCard({
   headerClassName = "",
   showUnderline = true,
   variant = "light",
-  scroll = false,
 }) {
   const isDark = variant === "dark";
 
   return (
     <section
       aria-label={title}
-      className={`flex h-auto min-h-fit min-w-0 flex-1 flex-col overflow-hidden rounded-3xl shadow-card xl:h-full ${sectionCardHoverClassName} ${
+      className={`flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-3xl shadow-card ${sectionCardHoverClassName} ${
         isDark ? "bg-ink text-white" : "bg-white text-ink"
-      } ${scroll ? "xl:min-h-0" : ""} ${className}`}
+      } ${className}`}
     >
       <SectionCardHeader
         title={title}
@@ -53,9 +52,7 @@ export default function SectionCard({
         showUnderline={showUnderline}
       />
       <div
-        className={`flex-1 min-h-fit overflow-visible p-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-          scroll ? "xl:min-h-0 xl:overflow-y-auto" : ""
-        } ${
+        className={`flex-1 min-h-0 overflow-visible p-4 flex flex-col ${
           isDark ? "text-white" : "text-ink"
         } ${contentClassName}`}
       >

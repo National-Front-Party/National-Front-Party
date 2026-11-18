@@ -3,36 +3,46 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import JoinButton from "@/components/JoinButton";
-
-const links = [
-    { label: "الرئيسية", href: "/" },
-    { label: "الأمانات المركزية", href: "/central-secretariats" },
-    { label: "أمانات المحافظات", href: "/governorates" },
-    { label: "الوحدة البرلمانية", href: "/parliamentary-unit" },
-    { label: "مع الحكومة والوزارات", href: "/government" },
-    { label: "رؤية مصر 2030", href: "/vision-2030" },
-    { label: "القرية", href: "/village" },
-    { label: "العزبة", href: "/ezba" },
-];
-
-function isActiveLink(pathname, href) {
-    return href === "/"
-        ? pathname === "/"
-        : pathname === href || pathname.startsWith(`${href}/`);
-}
+import { NAV_LINKS, SOCIAL_LINKS } from "@/data/mock/linksMock";
 
 function NavigationLinks({
-    pathname,
+    activeHash,
+    setActiveHash,
     onNavigate,
     isMobile = false,
     isMenuOpen = false,
 }) {
+    const handleAnchorClick = (e, href) => {
+        if (onNavigate) {
+            onNavigate();
+        }
+        if (href.startsWith("#")) {
+            e.preventDefault();
+            const id = href.slice(1);
+            const target = document.getElementById(id);
+            if (target) {
+                const prefersReduced =
+                    typeof window !== "undefined" &&
+                    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                target.scrollIntoView({
+                    behavior: prefersReduced ? "auto" : "smooth",
+                    block: "start",
+                });
+                target.focus({ preventScroll: true });
+                window.history.pushState(null, "", href);
+                if (setActiveHash) {
+                    setActiveHash(href);
+                }
+            }
+        }
+    };
+
     return (
         <ul className={isMobile ? "flex w-full flex-col" : "flex flex-wrap justify-center gap-1"}>
-            {links.map(({ label, href }, index) => {
-                const isActive = isActiveLink(pathname, href);
+            {NAV_LINKS.map(({ label, href }, index) => {
+                const isActive = activeHash === href || (!activeHash && href === "#c-home");
 
                 return (
                     <li
@@ -49,14 +59,14 @@ function NavigationLinks({
                                     transform: `translateX(${isMenuOpen ? 0 : 30}px)`,
                                     transitionDelay: isMenuOpen
                                         ? `${index * 25}ms`
-                                        : `${(links.length - index) * 25}ms`,
+                                        : `${(NAV_LINKS.length - index) * 25}ms`,
                                 }
                                 : undefined
                         }
                     >
-                        <Link
+                        <a
                             href={href}
-                            onClick={onNavigate}
+                            onClick={(e) => handleAnchorClick(e, href)}
                             aria-current={isActive ? "page" : undefined}
                             className={`relative flex min-h-12 items-center border-b-[3px] border-transparent px-3 text-[15px] font-extrabold whitespace-nowrap transition-colors hover:text-gold-dark after:absolute after:right-0 after:bottom-[-3px] after:h-[3px] after:w-0 after:bg-gold after:content-[''] after:transition-[width] after:duration-300 after:ease-[cubic-bezier(0.16,1,0.3,1)] hover:after:w-full ${isActive
                                     ? "text-gold-dark after:w-full"
@@ -64,7 +74,7 @@ function NavigationLinks({
                                 } ${isMobile ? "w-full justify-start" : ""}`}
                         >
                             {label}
-                        </Link>
+                        </a>
                     </li>
                 );
             })}
@@ -73,12 +83,14 @@ function NavigationLinks({
 }
 
 function FacebookLink() {
+    const facebook = SOCIAL_LINKS.find((s) => s.id === "facebook");
+
     return (
         <a
-            href="https://www.facebook.com/ElgabhaElwatanya/"
+            href={facebook?.href || "https://www.facebook.com/ElgabhaElwatanya/"}
             target="_blank"
-            rel="noopener"
-            aria-label="صفحة حزب الجبهة الوطنية على فيسبوك"
+            rel="noopener noreferrer"
+            aria-label="فيسبوك حزب الجبهة الوطنية"
             className="flex h-[46px] w-[46px] items-center justify-center rounded-full border border-border text-ink shadow-sm transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-[3px] hover:scale-[1.03] hover:bg-ink hover:text-white hover:shadow-card active:translate-y-0 active:scale-[0.98] active:shadow-sm motion-reduce:transition-none"
         >
             <svg
@@ -99,10 +111,20 @@ export default function Navbar() {
 }
 
 function NavbarContent({ pathname }) {
+    const [activeHash, setActiveHash] = useState("");
     const [menuState, setMenuState] = useState(() => ({
         pathname,
         isMenuOpen: false,
     }));
+
+    useEffect(() => {
+        const updateHash = () => {
+            setActiveHash(window.location.hash || "#c-home");
+        };
+        updateHash();
+        window.addEventListener("hashchange", updateHash);
+        return () => window.removeEventListener("hashchange", updateHash);
+    }, []);
 
     if (menuState.pathname !== pathname) {
         setMenuState({ pathname, isMenuOpen: false });
@@ -194,7 +216,10 @@ function NavbarContent({ pathname }) {
                 className="hidden border-t border-line min-[992px]:block"
             >
                 <div className="mx-auto max-w-[1320px] px-5">
-                    <NavigationLinks pathname={pathname} />
+                    <NavigationLinks
+                        activeHash={activeHash}
+                        setActiveHash={setActiveHash}
+                    />
                 </div>
             </nav>
 
@@ -213,7 +238,8 @@ function NavbarContent({ pathname }) {
                     <nav aria-label="القائمة الرئيسية">
                         <div className="mx-auto max-w-[1320px] px-5 py-2">
                             <NavigationLinks
-                                pathname={pathname}
+                                activeHash={activeHash}
+                                setActiveHash={setActiveHash}
                                 onNavigate={() => setIsMenuOpen(false)}
                                 isMobile
                                 isMenuOpen={isMenuOpen}
@@ -225,7 +251,7 @@ function NavbarContent({ pathname }) {
                                 style={{
                                     opacity: isMenuOpen ? 1 : 0,
                                     transform: `translateX(${isMenuOpen ? 0 : 30}px)`,
-                                    transitionDelay: isMenuOpen ? `${links.length * 25}ms` : "0ms",
+                                    transitionDelay: isMenuOpen ? `${NAV_LINKS.length * 25}ms` : "0ms",
                                 }}
                             />
                         </div>

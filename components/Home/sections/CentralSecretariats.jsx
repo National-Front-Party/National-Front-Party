@@ -55,8 +55,12 @@ export default function CentralSecretariats({ data }) {
     <>
       <SectionCard
         title={data.secretariats.buttonLabel}
-        scroll
-        footer={<NextArrowFooter href="/central-secretariats" />}
+        footer={
+          <NextArrowFooter
+            onClick={() => setActive("secretariats")}
+            ariaLabel="عرض الأمانات المركزية"
+          />
+        }
       >
         <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-2.5 text-center sm:gap-3">
           <div className="group flex size-[120px] items-center justify-center overflow-hidden rounded-full border-4 border-gold bg-gold-tint p-1 shadow-[0_8px_24px_rgba(201,162,74,0.28)]">

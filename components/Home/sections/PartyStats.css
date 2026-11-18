@@ -1,37 +1,7 @@
-.st-stats-section {
-  width: 100%;
-  max-width: 1320px;
-  margin: 28px auto 0;
-  padding: 0 20px 56px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  box-sizing: border-box;
-}
-
-@media (min-width: 768px) {
-  .st-stats-section {
-    padding: 0 20px 72px;
-  }
-}
-
 .st-stats-card {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: #fff;
-  border: 1px solid rgba(21, 23, 28, 0.07);
-  border-radius: 24px;
-  box-shadow:
-    0 1px 2px rgba(21, 23, 28, 0.04),
-    0 18px 44px rgba(21, 23, 28, 0.08);
-  padding: 22px 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  box-sizing: border-box;
   transition:
     transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
     box-shadow 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -81,29 +51,10 @@
 }
 
 .st-stats-number {
-  font-family: "Noto Kufi Arabic", "IBM Plex Sans Arabic", sans-serif;
-  font-size: 40px;
-  font-weight: 900;
-  line-height: 1.2;
-  color: #8c6a16;
-  font-variant-numeric: tabular-nums;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: center;
-  direction: rtl;
   transform: translateY(0) scale(1);
   transition:
     color 0.3s ease,
     transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.st-stats-prefix {
-  font-variant-numeric: tabular-nums;
-}
-
-.st-stats-digits {
-  font-variant-numeric: tabular-nums;
 }
 
 .st-stats-accent-line {
@@ -117,12 +68,6 @@
 }
 
 .st-stats-label {
-  margin: 8px 0 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: #5b6270;
-  line-height: 1.4;
-  text-align: center;
   transition: color 0.3s ease;
 }
 

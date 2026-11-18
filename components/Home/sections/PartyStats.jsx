@@ -84,10 +84,11 @@ export default function PartyStats() {
     <section
       ref={sectionRef}
       id="st-stats"
+      tabIndex={-1}
       dir="rtl"
       lang="ar"
       aria-label="الحزب في أرقام"
-      className="st-stats-section"
+      className="st-stats-section mx-auto mt-[28px] w-full max-w-[1320px] px-5 pb-[56px] min-[768px]:pb-[72px] grid grid-cols-1 min-[380px]:grid-cols-2 min-[1000px]:grid-cols-4 gap-4 items-stretch scroll-mt-28 focus:outline-none"
     >
       {STATS.map((stat) => {
         const currentCount = prefersReducedMotion
@@ -97,13 +98,13 @@ export default function PartyStats() {
         const fullAriaLabel = `${stat.prefix || ""}${stat.value} ${stat.label}`.trim();
 
         return (
-          <article key={stat.id} className="st-stats-card card">
+          <article key={stat.id} className="st-stats-card card flex h-full min-h-0 flex-col items-center justify-center rounded-[24px] border border-[rgba(21,23,28,0.07)] bg-white p-[22px_18px] text-center shadow-card">
             <div className="st-stats-content">
               <div
                 className="st-stats-number-wrapper"
                 aria-label={fullAriaLabel}
               >
-                <span aria-hidden="true" className="st-stats-number">
+                <span aria-hidden="true" className="st-stats-number font-['Noto_Kufi_Arabic',sans-serif] text-[32px] min-[600px]:text-[40px] font-black leading-[1.2] text-[#8c6a16] tabular-nums inline-flex flex-row items-baseline justify-center">
                   {stat.prefix ? (
                     <span className="st-stats-prefix">{stat.prefix}</span>
                   ) : null}
@@ -111,7 +112,7 @@ export default function PartyStats() {
                 </span>
               </div>
               <span aria-hidden="true" className="st-stats-accent-line" />
-              <p className="st-stats-label">{stat.label}</p>
+              <p className="st-stats-label mt-2 text-[14px] font-bold text-muted leading-[1.4] text-center">{stat.label}</p>
             </div>
           </article>
         );

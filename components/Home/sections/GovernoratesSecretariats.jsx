@@ -323,11 +323,12 @@ export default function GovernoratesSecretariats() {
   return (
     <>
       <section
-        id="geo"
+        id="c-govs"
+        tabIndex={-1}
         aria-labelledby={`${cardId}-title`}
         dir="rtl"
         lang="ar"
-        className={styles.card}
+        className={`${styles.card} flex h-full min-h-0 w-full flex-1 flex-col scroll-mt-28 focus:outline-none`}
       >
         <header className={styles.cardHeader}>
           <h2 id={`${cardId}-title`} className={styles.cardTitle}>
@@ -425,7 +426,7 @@ export default function GovernoratesSecretariats() {
         <a
           href="#geo"
           aria-label="ابحث عن أمانتك"
-          className={`${styles.gobar} bg-gold-gradient`}
+          className={`${styles.gobar} bg-gold-gradient mt-auto shrink-0`}
         >
           <svg
             aria-hidden="true"

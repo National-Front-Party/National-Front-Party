@@ -19,31 +19,49 @@ export default function HomeSections() {
   return (
     <section
       aria-label="أقسام الصفحة الرئيسية"
-      className="flex min-h-0 flex-none flex-col overflow-x-clip bg-page py-4 md:py-6 xl:flex-1"
+      className="flex min-h-0 flex-none flex-col overflow-x-clip bg-page"
     >
-      <div className="mx-auto w-full max-w-[1320px] px-5">
+      <div className="mx-auto w-full max-w-[1320px] px-[14px] pt-[16px] pb-[8px] min-[600px]:px-[20px] min-[600px]:pt-[22px] min-[600px]:pb-[10px]">
         <div
           dir="rtl"
-          className="grid min-w-0 grid-cols-1 items-stretch gap-4 overflow-visible md:grid-cols-3 lg:grid-cols-[repeat(5,minmax(0,1fr))] xl:h-full xl:min-h-0 xl:flex-1 xl:grid-rows-1"
+          className="grid min-w-0 grid-cols-1 items-stretch gap-[14px] min-[600px]:grid-cols-2 min-[600px]:gap-[16px] min-[900px]:grid-cols-6 min-[1200px]:grid-cols-5"
         >
-          <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
+          <div
+            id="c-home"
+            tabIndex={-1}
+            className="flex h-full min-h-0 min-w-0 flex-col gap-4 col-span-1 min-[900px]:col-span-2 min-[1200px]:col-span-1 scroll-mt-28 focus:outline-none"
+          >
             <MainSection data={mainLinks} />
             <ProgramCard data={partyProgram} />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
+          <div
+            id="c-central"
+            tabIndex={-1}
+            className="flex h-full min-h-0 min-w-0 flex-col gap-4 col-span-1 min-[900px]:col-span-2 min-[1200px]:col-span-1 scroll-mt-28 focus:outline-none"
+          >
             <CentralSecretariats data={centralSecretariats} />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-4 xl:h-full xl:min-h-0">
+          <div className="flex h-full min-h-0 min-w-0 flex-col gap-4 col-span-1 min-[600px]:col-span-2 min-[900px]:col-span-2 min-[1200px]:col-span-1">
             <GovernoratesSecretariats />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-4 xl:min-h-0">
+          <div
+            id="c-parl"
+            tabIndex={-1}
+            className="flex h-full min-h-0 min-w-0 flex-col gap-4 col-span-1 min-[600px]:col-span-1 min-[900px]:col-span-3 min-[1200px]:col-span-1 scroll-mt-28 focus:outline-none"
+          >
             <ParliamentaryUnit data={parliamentaryItems} />
           </div>
 
-          <GovernmentMinistriesColumn />
+          <div
+            id="c-gov"
+            tabIndex={-1}
+            className="flex h-full min-h-0 min-w-0 flex-col gap-4 col-span-1 min-[600px]:col-span-1 min-[900px]:col-span-3 min-[1200px]:col-span-1 scroll-mt-28 focus:outline-none"
+          >
+            <GovernmentMinistriesColumn />
+          </div>
         </div>
       </div>
       <NewsSection />
