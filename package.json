@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "node --test",
     "seed:governorates": "node scripts/seed-governorates.js",
+    "seed:mock": "node scripts/seed-all-mock-data.js",
     "create:super-admin": "node scripts/create-super-admin.js"
   },
   "dependencies": {
