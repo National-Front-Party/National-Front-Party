@@ -32,7 +32,7 @@ function NavigationLinks({
                         className={
                             isMobile
                                 ? "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                                : undefined
+                                : "animate-nav-item-enter motion-reduce:animate-none"
                         }
                         style={
                             isMobile
@@ -43,7 +43,9 @@ function NavigationLinks({
                                         ? `${index * 25}ms`
                                         : `${(NAV_LINKS.length - index) * 25}ms`,
                                 }
-                                : undefined
+                                : {
+                                    animationDelay: `${index * 40 + 120}ms`,
+                                }
                         }
                     >
                         <a
@@ -379,14 +381,15 @@ function NavbarContent({ pathname }) {
     return (
         <header
             dir="rtl"
-            className="sticky top-0 z-50 border-b border-line bg-white/90 shadow-sm backdrop-blur"
+            className="sticky top-0 z-50 border-b border-line bg-white/90 shadow-sm backdrop-blur animate-navbar-entrance"
         >
-            <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-y-2 px-5 py-3 max-[991px]:flex-wrap max-[479px]:py-2">
+            <div className="mx-auto flex max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] items-center justify-between gap-y-2 px-5 py-3 max-[991px]:flex-wrap max-[479px]:py-2">
                 <Link
                     ref={logoRef}
                     href="/"
                     onClick={handleLogoClick}
-                    className="flex min-w-0 items-center gap-3 max-[991px]:flex-1 cursor-pointer focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-gold focus-visible:outline-offset-[3px]"
+                    className="flex min-w-0 items-center gap-3 max-[991px]:flex-1 cursor-pointer focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-gold focus-visible:outline-offset-[3px] animate-nav-item-enter motion-reduce:animate-none"
+                    style={{ animationDelay: "60ms" }}
                     aria-label="العودة إلى أعلى الصفحة"
                 >
                     <Image
@@ -437,7 +440,10 @@ function NavbarContent({ pathname }) {
                     </button>
                 </div>
 
-                <div className="hidden shrink-0 items-center gap-2 min-[992px]:flex">
+                <div
+                    className="hidden shrink-0 items-center gap-2 min-[992px]:flex animate-nav-item-enter motion-reduce:animate-none"
+                    style={{ animationDelay: "450ms" }}
+                >
                     <FacebookLink />
                     <JoinButton
                         className="min-h-12 rounded-btn bg-ink px-5 font-extrabold text-white shadow-btn transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-gold-dark hover:shadow-card active:translate-y-0 active:scale-[0.99] active:shadow-btn motion-reduce:transition-none sm:px-7"
@@ -449,7 +455,7 @@ function NavbarContent({ pathname }) {
                 aria-label="القائمة الرئيسية"
                 className="hidden border-t border-line min-[992px]:block"
             >
-                <div className="mx-auto max-w-[1320px] px-5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="mx-auto max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <NavigationLinks
                         activeKey={activeKey}
                         onLinkClick={handleLinkClick}
@@ -472,7 +478,7 @@ function NavbarContent({ pathname }) {
                     }`}
                 >
                     <nav aria-label="القائمة الرئيسية">
-                        <div className="mx-auto max-w-[1320px] px-5 py-2">
+                        <div className="mx-auto max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-5 py-2">
                             <NavigationLinks
                                 activeKey={activeKey}
                                 onLinkClick={handleLinkClick}

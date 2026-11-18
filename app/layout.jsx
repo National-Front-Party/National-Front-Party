@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
     <html lang="ar" dir="rtl" className={plex.variable}>
       <body className="font-sans flex min-h-dvh flex-col [&>header]:shrink-0 [&>footer]:shrink-0">
         <Navbar />
-        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+        <main className="flex min-h-0 flex-1 flex-col overflow-x-clip">{children}</main>
         <Footer />
       </body>
     </html>

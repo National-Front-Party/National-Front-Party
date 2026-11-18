@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useSyncExternalStore } from "react";
+import Reveal from "@/components/Home/ui/Reveal";
 import { CONTACT, FOOTER_LINKS, SOCIAL_LINKS } from "@/data/mock/linksMock";
 
 const subscribeToYear = () => () => { };
@@ -194,116 +195,129 @@ function Footer() {
         <footer dir="rtl" className="bg-ink text-on-dark">
             <div aria-hidden="true" className="h-[3px] bg-gold-gradient" />
 
-            <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-10 px-5 py-12 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
-                <section>
-                    <div className="inline-flex max-w-full">
-                        <Image
-                            src="/logo2.png"
-                            alt="شعار حزب الجبهة الوطنية"
-                            width={2172}
-                            height={724}
-                            className="h-auto w-[240px] max-w-full object-contain"
-                        />
-                    </div>
-                    <p className="mt-5 text-sm leading-7 text-on-dark/80">
-                        كيان سياسي مصري يسعى لتعزيز قيم العدالة الاجتماعية والحرية وسيادة
-                        القانون، مع التركيز على تمكين المشاركة الشعبية وبناء مستقبل مشرق لكل
-                        أبناء الوطن.
-                    </p>
-                </section>
+            <div className="mx-auto grid max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] grid-cols-1 gap-10 px-5 py-12 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
+                <Reveal direction="up" delay={0.05} duration={0.7}>
+                    <section>
+                        <div className="inline-flex max-w-full">
+                            <Image
+                                src="/logo2.png"
+                                alt="شعار حزب الجبهة الوطنية"
+                                width={2172}
+                                height={724}
+                                className="h-auto w-[240px] max-w-full object-contain"
+                            />
+                        </div>
+                        <p className="mt-5 text-sm leading-7 text-on-dark/80">
+                            كيان سياسي مصري يسعى لتعزيز قيم العدالة الاجتماعية والحرية وسيادة
+                            القانون، مع التركيز على تمكين المشاركة الشعبية وبناء مستقبل مشرق لكل
+                            أبناء الوطن.
+                        </p>
+                    </section>
+                </Reveal>
 
-                <nav aria-label="روابط التذييل">
-                    <SectionHeading>روابط سريعة</SectionHeading>
-                    <ul className="space-y-2">
-                        {FOOTER_LINKS.map((link) => (
-                            <li key={link.label}>
-                                <a
-                                    href={link.href}
-                                    onClick={(e) => handleAnchorClick(e, link)}
-                                    className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
+                <Reveal direction="up" delay={0.15} duration={0.7}>
+                    <nav aria-label="روابط التذييل">
+                        <SectionHeading>روابط سريعة</SectionHeading>
+                        <ul className="space-y-2">
+                            {FOOTER_LINKS.map((link, index) => (
+                                <li
+                                    key={link.label}
+                                    className="animate-elem-fade-up motion-reduce:animate-none"
+                                    style={{ animationDelay: `${index * 35 + 150}ms` }}
                                 >
-                                    {link.label}
-                                    <LinkUnderline />
-                                </a>
+                                    <a
+                                        href={link.href}
+                                        onClick={(e) => handleAnchorClick(e, link)}
+                                        className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
+                                    >
+                                        {link.label}
+                                        <LinkUnderline />
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </Reveal>
+
+                <Reveal direction="up" delay={0.25} duration={0.7}>
+                    <section>
+                        <SectionHeading>تواصل معنا</SectionHeading>
+                        <ul className="space-y-4">
+                            <li className="flex items-start gap-3 text-sm leading-7 text-on-dark/80">
+                                <span className="mt-1 shrink-0 text-gold">
+                                    <LocationIcon />
+                                </span>
+                                <span>{CONTACT.address}</span>
                             </li>
-                        ))}
-                    </ul>
-                </nav>
-
-                <section>
-                    <SectionHeading>تواصل معنا</SectionHeading>
-                    <ul className="space-y-4">
-                        <li className="flex items-start gap-3 text-sm leading-7 text-on-dark/80">
-                            <span className="mt-1 shrink-0 text-gold">
-                                <LocationIcon />
-                            </span>
-                            <span>{CONTACT.address}</span>
-                        </li>
-                        <li className="flex items-start gap-3">
-                            <span className="mt-1 shrink-0 text-gold">
-                                <PhoneIcon />
-                            </span>
-                            {isPlaceholder(CONTACT.phone) ? (
-                                <span dir="ltr" className="py-1 text-on-dark/80">
-                                    {CONTACT.phone}
+                            <li className="flex items-start gap-3">
+                                <span className="mt-1 shrink-0 text-gold">
+                                    <PhoneIcon />
                                 </span>
-                            ) : (
-                                <a
-                                    href={`tel:${CONTACT.phone.replace(/[^\d+]/g, "")}`}
-                                    dir="ltr"
-                                    className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
-                                >
-                                    {CONTACT.phone}
-                                    <LinkUnderline />
-                                </a>
-                            )}
-                        </li>
-                        <li className="flex items-start gap-3">
-                            <span className="mt-1 shrink-0 text-gold">
-                                <MailIcon />
-                            </span>
-                            {isPlaceholder(CONTACT.email) ? (
-                                <span dir="ltr" className="py-1 text-on-dark/80">
-                                    {CONTACT.email}
+                                {isPlaceholder(CONTACT.phone) ? (
+                                    <span dir="ltr" className="py-1 text-on-dark/80">
+                                        {CONTACT.phone}
+                                    </span>
+                                ) : (
+                                    <a
+                                        href={`tel:${CONTACT.phone.replace(/[^\d+]/g, "")}`}
+                                        dir="ltr"
+                                        className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
+                                    >
+                                        {CONTACT.phone}
+                                        <LinkUnderline />
+                                    </a>
+                                )}
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <span className="mt-1 shrink-0 text-gold">
+                                    <MailIcon />
                                 </span>
-                            ) : (
-                                <a
-                                    href={`mailto:${CONTACT.email.trim()}`}
-                                    dir="ltr"
-                                    className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
-                                >
-                                    {CONTACT.email}
-                                    <LinkUnderline />
-                                </a>
-                            )}
-                        </li>
-                    </ul>
-                </section>
+                                {isPlaceholder(CONTACT.email) ? (
+                                    <span dir="ltr" className="py-1 text-on-dark/80">
+                                        {CONTACT.email}
+                                    </span>
+                                ) : (
+                                    <a
+                                        href={`mailto:${CONTACT.email.trim()}`}
+                                        dir="ltr"
+                                        className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
+                                    >
+                                        {CONTACT.email}
+                                        <LinkUnderline />
+                                    </a>
+                                )}
+                            </li>
+                        </ul>
+                    </section>
+                </Reveal>
 
-                <section>
-                    <SectionHeading>تابعنا</SectionHeading>
-                    <div className="flex flex-wrap gap-3">
-                        {SOCIAL_LINKS.map(({ id, label, href }) => {
-                            const Icon = socialIcons[id] || FacebookIcon;
-                            return (
-                                <a
-                                    key={id}
-                                    href={href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label={label}
-                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-line-dark text-white transition-all duration-300 hover:-translate-y-1 hover:border-gold hover:bg-gold hover:text-ink motion-reduce:transition-none"
-                                >
-                                    <Icon />
-                                </a>
-                            );
-                        })}
-                    </div>
-                </section>
+                <Reveal direction="up" delay={0.35} duration={0.7}>
+                    <section>
+                        <SectionHeading>تابعنا</SectionHeading>
+                        <div className="flex flex-wrap gap-3">
+                            {SOCIAL_LINKS.map(({ id, label, href }, index) => {
+                                const Icon = socialIcons[id] || FacebookIcon;
+                                return (
+                                    <a
+                                        key={id}
+                                        href={href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={label}
+                                        className="flex h-11 w-11 items-center justify-center rounded-full border border-line-dark text-white transition-all duration-300 hover:-translate-y-1 hover:border-gold hover:bg-gold hover:text-ink motion-reduce:transition-none animate-elem-scale-in motion-reduce:animate-none"
+                                        style={{ animationDelay: `${index * 50 + 150}ms` }}
+                                    >
+                                        <Icon />
+                                    </a>
+                                );
+                            })}
+                        </div>
+                    </section>
+                </Reveal>
             </div>
 
             <div className="border-t border-line-dark">
-                <div className="mx-auto flex max-w-[1320px] justify-center px-5 py-5 text-sm text-on-dark/70">
+                <div className="mx-auto flex max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] justify-center px-5 py-5 text-sm text-on-dark/70">
                     <div className="flex flex-wrap items-center justify-center gap-2 text-center">
                         <span>
                             جميع الحقوق محفوظة ©{" "}
