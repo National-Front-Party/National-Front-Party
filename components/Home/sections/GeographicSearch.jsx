@@ -30,9 +30,44 @@ export default function GeographicSearch({ data }) {
   const [exiting, setExiting] = useState(false);
   const exitTimerRef = useRef(null);
 
-  const peopleMap = data?.people || {};
+  const [peopleMap, setPeopleMap] = useState(data?.people || {});
   const fallback = data?.fallback || DEFAULT_FALLBACK;
   const allGovNames = data ? [...data.main, ...data.other] : GEO_GOVERNORATES;
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadPublicGovernorateSecretariats() {
+      try {
+        const response = await fetch("/api/content/governorate-secretariats");
+        if (!response.ok) return;
+        const resJson = await response.json();
+        if (!ignore && Array.isArray(resJson?.governorate_secretariats)) {
+          const map = {};
+          for (const item of resJson.governorate_secretariats) {
+            const govName = item.governorate?.name_ar;
+            if (govName) {
+              if (!map[govName]) map[govName] = [];
+              map[govName].push({
+                name: item.full_name,
+                role: item.role_title || "",
+                photo: item.photo_url || undefined,
+              });
+            }
+          }
+          if (Object.keys(map).length > 0) {
+            setPeopleMap((prev) => ({ ...prev, ...map }));
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load /api/content/governorate-secretariats:", error);
+      }
+    }
+
+    loadPublicGovernorateSecretariats();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(
     () => () => {

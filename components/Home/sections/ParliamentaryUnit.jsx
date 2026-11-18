@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Church, House, Landmark } from "lucide-react";
 import NextArrowFooter from "@/components/Home/ui/NextArrowFooter";
 import ParliamentIllustration from "@/components/Home/ui/ParliamentIllustration";
@@ -16,7 +16,48 @@ const iconMap = {
 
 export default function ParliamentaryUnit({ data }) {
   const [active, setActive] = useState(null);
-  const activeItem = data.find((item) => item.id === active);
+  const [items, setItems] = useState(data || []);
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadParliamentaryData() {
+      try {
+        const response = await fetch("/api/content/parliamentary-unit");
+        if (!response.ok) return;
+        const result = await response.json();
+        if (
+          !ignore &&
+          Array.isArray(result?.parliamentary_units) &&
+          result.parliamentary_units.length > 0
+        ) {
+          setItems(
+            result.parliamentary_units.map((p) => ({
+              id: p.slug,
+              title: p.title,
+              subtitle: p.subtitle || "",
+              icon: p.icon || "landmark",
+              modal: {
+                title: p.title,
+                personName: p.head_name || null,
+                personRole: p.head_role || null,
+                paragraphs: p.body ? p.body.split("\n\n") : [],
+                source: p.source_note || null,
+              },
+            })),
+          );
+        }
+      } catch (error) {
+        console.error("Failed to load /api/content/parliamentary-unit:", error);
+      }
+    }
+
+    loadParliamentaryData();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const activeItem = items.find((item) => item.id === active);
 
   return (
     <>
@@ -31,7 +72,7 @@ export default function ParliamentaryUnit({ data }) {
       >
         <div className="flex h-full flex-1 flex-col">
           <ol className="shrink-0 pt-3">
-            {data.map((item, index) => {
+            {items.map((item, index) => {
               const Icon = iconMap[item.icon] ?? Landmark;
 
               return (

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import JoinModal from "@/components/Home/ui/JoinModal";
 import ModalShell from "@/components/Home/ui/ModalShell";
 import Reveal from "@/components/Home/ui/Reveal";
@@ -16,7 +16,70 @@ export default function NewsSection({ data }) {
   const [joinOpen, setJoinOpen] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
   const touchStartRef = useRef(0);
-  const newsList = data || [];
+  const [newsList, setNewsList] = useState(data || []);
+
+  useEffect(() => {
+    let ignore = false;
+    async function fetchPublicNews() {
+      try {
+        const response = await fetch("/api/content/news");
+        if (!response.ok) return;
+        const result = await response.json();
+        if (!ignore && Array.isArray(result?.news) && result.news.length > 0) {
+          setNewsList(
+            result.news.map((item) => ({
+              id: item.id,
+              slug: item.slug,
+              title: item.title,
+              meta: item.meta || item.formatted_date || "",
+              paras: [],
+              note: item.meta || item.formatted_date || "",
+              img: item.image_url || "/news1.jpg",
+              link: item.slug ? `/news/${item.slug}` : "/",
+              linkLabel: "التفاصيل من المصدر",
+            })),
+          );
+        }
+      } catch (error) {
+        console.error("Failed to load /api/content/news:", error);
+      }
+    }
+    fetchPublicNews();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  async function handleArticleClick(item) {
+    setActiveNews(item);
+    if (item.slug) {
+      try {
+        const response = await fetch(`/api/content/news/${item.slug}`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result?.article) {
+            setActiveNews((prev) =>
+              prev?.id === item.id
+                ? {
+                    ...prev,
+                    title: result.article.title || prev.title,
+                    paras:
+                      result.article.paragraphs ||
+                      (result.article.body ? [result.article.body] : prev.paras),
+                    note: result.article.meta || prev.note,
+                    link: result.article.source_url || prev.link,
+                    linkLabel:
+                      result.article.link_label || prev.linkLabel,
+                  }
+                : prev,
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load article detail:", error);
+      }
+    }
+  }
 
   const maxIndex = Math.max(0, newsList.length - 3);
 
@@ -147,7 +210,7 @@ export default function NewsSection({ data }) {
                   <button
                     type="button"
                     className="news-card flex flex-col justify-start h-full w-full cursor-pointer overflow-hidden rounded-[18px] border border-[rgba(21,23,28,0.07)] bg-white p-0 text-start text-ink shadow-card"
-                    onClick={() => setActiveNews(item)}
+                    onClick={() => handleArticleClick(item)}
                     aria-haspopup="dialog"
                   >
                     <span className="news-card-image relative block aspect-[16/9] w-full shrink-0 overflow-hidden bg-page">

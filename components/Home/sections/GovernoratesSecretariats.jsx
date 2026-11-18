@@ -167,8 +167,43 @@ function normalizeArabic(value) {
 }
 
 export default function GovernoratesSecretariats({ data }) {
-  const peopleMap = data?.people || {};
+  const [peopleMap, setPeopleMap] = useState(data?.people || {});
   const fallback = data?.fallback || DEFAULT_FALLBACK;
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadPublicGovernorateSecretariats() {
+      try {
+        const response = await fetch("/api/content/governorate-secretariats");
+        if (!response.ok) return;
+        const result = await response.json();
+        if (!ignore && Array.isArray(result?.governorate_secretariats)) {
+          const map = {};
+          for (const item of result.governorate_secretariats) {
+            const govName = item.governorate?.name_ar;
+            if (govName) {
+              if (!map[govName]) map[govName] = [];
+              map[govName].push({
+                name: item.full_name,
+                role: item.role_title || "",
+                photo: item.photo_url || undefined,
+              });
+            }
+          }
+          if (Object.keys(map).length > 0) {
+            setPeopleMap((prev) => ({ ...prev, ...map }));
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load /api/content/governorate-secretariats:", error);
+      }
+    }
+
+    loadPublicGovernorateSecretariats();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const [openGovernorate, setOpenGovernorate] = useState(DEFAULT_MAIN[0]);
   const [extraGovernorate, setExtraGovernorate] = useState(null);
