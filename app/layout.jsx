@@ -1,7 +1,6 @@
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Layouts/Navbar";
-import Footer from "@/components/Layouts/Footer";
+import PublicShell from "@/components/Layouts/PublicShell";
 
 const plex = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
@@ -19,9 +18,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" className={plex.variable} suppressHydrationWarning>
       <body className="font-sans flex min-h-dvh flex-col [&>header]:shrink-0 [&>footer]:shrink-0" suppressHydrationWarning>
-        <Navbar />
-        <main className="flex min-h-0 flex-1 flex-col overflow-x-clip">{children}</main>
-        <Footer />
+        <PublicShell>{children}</PublicShell>
       </body>
     </html>
   );
