@@ -164,6 +164,7 @@ export default function GeographicSearch() {
         </datalist>
 
         <input
+          id="geo-village"
           type="text"
           value={filters.village}
           onChange={(event) => updateFilter("village", event.target.value)}
@@ -173,6 +174,7 @@ export default function GeographicSearch() {
         />
 
         <input
+          id="geo-ezba"
           type="text"
           value={filters.ezba}
           onChange={(event) => updateFilter("ezba", event.target.value)}

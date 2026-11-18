@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useSyncExternalStore } from "react";
-import { CONTACT, NAV_LINKS, SOCIAL_LINKS } from "@/data/mock/linksMock";
+import { CONTACT, FOOTER_LINKS, SOCIAL_LINKS } from "@/data/mock/linksMock";
 
 const subscribeToYear = () => () => { };
 const getCurrentYear = () => String(new Date().getFullYear());
@@ -122,21 +122,70 @@ function Footer() {
         getServerYear,
     );
 
-    const handleAnchorClick = (e, href) => {
-        if (href.startsWith("#")) {
+    const handleAnchorClick = (e, link) => {
+        if (link.href.startsWith("#")) {
             e.preventDefault();
-            const id = href.slice(1);
+            const id = link.href.slice(1);
             const target = document.getElementById(id);
+            const focusElement = link.focus ? document.getElementById(link.focus) : null;
+
+            const prefersReduced =
+                typeof window !== "undefined" &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+            let isAlreadyAtTarget = false;
             if (target) {
-                const prefersReduced =
-                    typeof window !== "undefined" &&
-                    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-                target.scrollIntoView({
-                    behavior: prefersReduced ? "auto" : "smooth",
-                    block: "start",
-                });
-                target.focus({ preventScroll: true });
-                window.history.pushState(null, "", href);
+                const rect = target.getBoundingClientRect();
+                const readingLine = window.innerHeight * 0.3;
+                if (rect.top <= readingLine && rect.bottom >= readingLine) {
+                    isAlreadyAtTarget = true;
+                }
+            }
+
+            const focusTarget = () => {
+                if (focusElement) {
+                    focusElement.focus({ preventScroll: true });
+                } else if (target) {
+                    target.focus({ preventScroll: true });
+                }
+            };
+
+            window.history.replaceState(null, "", link.href);
+
+            if (isAlreadyAtTarget) {
+                focusTarget();
+                return;
+            }
+
+            if (prefersReduced) {
+                if (target) {
+                    target.scrollIntoView({ behavior: "auto", block: "start" });
+                }
+                focusTarget();
+                return;
+            }
+
+            if (target) {
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+                let focused = false;
+                const safeFocus = () => {
+                    if (!focused) {
+                        focused = true;
+                        focusTarget();
+                    }
+                };
+
+                if ("onscrollend" in window) {
+                    const handleScrollEnd = () => {
+                        window.removeEventListener("scrollend", handleScrollEnd);
+                        safeFocus();
+                    };
+                    window.addEventListener("scrollend", handleScrollEnd, { once: true });
+                    setTimeout(safeFocus, 800);
+                } else {
+                    setTimeout(safeFocus, 700);
+                }
             }
         }
     };
@@ -166,14 +215,14 @@ function Footer() {
                 <nav aria-label="روابط التذييل">
                     <SectionHeading>روابط سريعة</SectionHeading>
                     <ul className="space-y-2">
-                        {NAV_LINKS.map(({ label, href }) => (
-                            <li key={href}>
+                        {FOOTER_LINKS.map((link) => (
+                            <li key={link.label}>
                                 <a
-                                    href={href}
-                                    onClick={(e) => handleAnchorClick(e, href)}
+                                    href={link.href}
+                                    onClick={(e) => handleAnchorClick(e, link)}
                                     className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
                                 >
-                                    {label}
+                                    {link.label}
                                     <LinkUnderline />
                                 </a>
                             </li>
