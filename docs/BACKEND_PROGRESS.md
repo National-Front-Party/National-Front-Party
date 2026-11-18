@@ -368,3 +368,46 @@ Implemented public-facing read-only APIs for News Articles (`GET /api/content/ne
 - Lint: **0 errors, 0 warnings** (`cmd /c "npm run lint"`).
 - Prisma: `node ./node_modules/prisma/build/index.js validate` succeeded.
 - Zero database writes, zero schema/migration changes, zero frontend changes, zero git commits.
+
+## Phase 16.2 — Fix Four Confirmed Backend Bugs
+
+Implemented minimal, focused fixes for four independently confirmed backend bugs (Bug #1, Bug #5, Bug #4, Bug #2), with Bug #3 (Advisory Lock) explicitly excluded. Zero schema or migration changes, zero writes to primary database `NationalFrontPartyDatabase`, zero git commits.
+
+### Key Implementation Details
+- **Bug #1 (Public Leadership Import)**:
+  - File: `app/api/content/leadership/route.js`.
+  - Corrected relative import path to `../../../../lib/content/handlers/leadership.js` to match file depth (4).
+- **Bug #5 (Organizational Content 12 Route Imports)**:
+  - Files: 6 central-secretariats, 3 governorate-secretariats, 3 parliamentary-unit routes under `app/api/admin/content/`.
+  - Corrected relative imports to accurately match file system depth (depths 5, 6, 7, 8, 9).
+  - Admin leadership and popup routes remained untouched as verified functional in Phase 16.1.
+- **Bug #4 (Request Sectors created_at Selection)**:
+  - File: `lib/services/service-catalogs.js`.
+  - Replaced shared `catalogSelect` with `baseCatalogSelect` and catalog-conditional selection: `created_at` is only selected for `ministries`, preventing `PrismaClientValidationError` on `request_sectors` (which has no `created_at` column in Prisma schema).
+- **Bug #2 (governorate_id SmallInt Overflow)**:
+  - File: `lib/validation/application.js`.
+  - Added `.lte(32767)` to `governorate_id` schema to prevent values exceeding PostgreSQL `SmallInt` from reaching Prisma queries and causing uncaught 500 errors.
+- **Bug #3 (Advisory Lock)**:
+  - File: `lib/services/staff.js:46`.
+  - Added `::text` cast to `pg_advisory_xact_lock(${ADMIN_GUARD_LOCK})::text` in `tx.$queryRaw`.
+  - Root cause resolved: PostgreSQL function `pg_advisory_xact_lock` returns `void`, which caused `@prisma/adapter-pg` to fail with `UnsupportedNativeDataType: void` and Prisma `P2010`. Casting the expression's return type to `::text` allows the driver adapter to deserialize the column cleanly without altering the transaction-level advisory lock semantics.
+
+### Verification & Tests
+- Unit test suite: **267/267 tests passing** (`npm test`).
+  - Added tests for `governorate_id` SmallInt range boundaries (1, 32767, 32768, 999999, 0) in `lib/validation/application.test.js`.
+  - Added assertion verifying catalog-specific `created_at` selection in `lib/services/service-catalogs.test.js`.
+- Lint: **0 errors, 0 warnings** (`npm run lint`).
+- Prisma: `npx prisma validate` succeeded.
+- Full live HTTP regression suite executed against isolated test DB (`NationalFrontPartyDatabase_test`):
+  - Bug #1: `GET /api/content/leadership` returned HTTP 200 with `{ panels, contents }`.
+  - Bug #5: Live GET for central-secretariats, governorate-secretariats, and parliamentary-unit returned HTTP 200.
+  - Bug #4: All 5 request-sector operations succeeded (GET collection 200, POST create 201, GET by ID 200, PATCH update 200, PATCH status 200) without `created_at`; ministries retained `created_at`.
+  - Bug #2: `governorate_id = 136` (201 created), `32767` (400 INVALID_GOVERNORATE), `32768` (400 VALIDATION), `999999` (400 VALIDATION instead of 500), `999` (400 INVALID_GOVERNORATE).
+  - Bug #3:
+    - `POST /api/admin/staff` creating `super_admin` returned HTTP 201 and recorded audit log.
+    - `PATCH /api/admin/staff/[id]` role change returned HTTP 200 and updated DB/audit log.
+    - `PATCH /api/admin/staff/[id]/status` deactivation and reactivation returned HTTP 200.
+    - Last active super-admin deactivation returned HTTP 409 `LAST_ACTIVE_SUPER_ADMIN` with 0 audit growth.
+    - Last active super-admin demotion returned HTTP 409 `LAST_ACTIVE_SUPER_ADMIN`.
+    - Concurrent deactivation race correctly serialized: 1 request succeeded (200) and 1 rejected (409), maintaining exactly 1 active super-admin in DB.
+- Primary database `NationalFrontPartyDatabase` remains 100% clean and untouched.

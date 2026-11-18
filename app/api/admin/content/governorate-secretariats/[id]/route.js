@@ -1,4 +1,4 @@
-import { createAdminGovernorateSecretariatItemHandlers } from "../../../../../../../lib/content/handlers/governorate-secretariats.js";
+import { createAdminGovernorateSecretariatItemHandlers } from "../../../../../../lib/content/handlers/governorate-secretariats.js";
 
 const handlers = createAdminGovernorateSecretariatItemHandlers();
 
