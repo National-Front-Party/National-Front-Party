@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import CustomSelect, {
   inputBase,
 } from "@/components/Home/ui/CustomSelect";
+import Reveal from "@/components/Home/ui/Reveal";
 import {
   GOVERNORATE_FALLBACK,
   GOVERNORATE_PEOPLE,
@@ -128,77 +129,79 @@ export default function GeographicSearch() {
       dir="rtl"
       lang="ar"
       aria-label="البحث الجغرافي"
-      className="geo-section mx-auto mt-[18px] w-full max-w-[1320px] px-5 text-right scroll-mt-28 focus:outline-none"
+      className="geo-section mx-auto mt-[18px] w-full max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-5 text-right scroll-mt-28 focus:outline-none"
     >
-      <form
-        className="geo-search-bar flex w-full flex-col gap-[10px] rounded-[28px] bg-ink p-[8px_10px] shadow-[0_20px_44px_rgba(21,23,28,0.28)] min-[700px]:flex-row min-[700px]:flex-wrap min-[1100px]:flex-nowrap min-[1100px]:items-center min-[1100px]:gap-2"
-        onSubmit={handleSubmit}
-      >
-        <div className="geo-governorate w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0">
-          <CustomSelect
-            id="geo-governorate"
-            label="المحافظة"
-            placeholder="المحافظة"
-            options={[
-              { value: "", label: "المحافظة" },
-              ...governorateOptions,
-            ]}
-            value={filters.governorate}
-            onChange={(value) => updateFilter("governorate", value)}
+      <Reveal direction="up" delay={0.08} duration={0.7} className="w-full">
+        <form
+          className="geo-search-bar flex w-full flex-col gap-[10px] rounded-[28px] bg-ink p-[8px_10px] shadow-[0_20px_44px_rgba(21,23,28,0.28)] min-[700px]:flex-row min-[700px]:flex-wrap min-[1100px]:flex-nowrap min-[1100px]:items-center min-[1100px]:gap-2"
+          onSubmit={handleSubmit}
+        >
+          <div className="geo-governorate w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0">
+            <CustomSelect
+              id="geo-governorate"
+              label="المحافظة"
+              placeholder="المحافظة"
+              options={[
+                { value: "", label: "المحافظة" },
+                ...governorateOptions,
+              ]}
+              value={filters.governorate}
+              onChange={(value) => updateFilter("governorate", value)}
+            />
+          </div>
+
+          <input
+            type="text"
+            list="geo-markaz-list"
+            value={filters.markaz}
+            onChange={(event) => updateFilter("markaz", event.target.value)}
+            placeholder="المركز"
+            aria-label="المركز"
+            className={`${inputBase} geo-field geo-markaz w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
           />
-        </div>
+          <datalist id="geo-markaz-list">
+            {markazOptions.map((markaz) => (
+              <option key={markaz} value={markaz} />
+            ))}
+          </datalist>
 
-        <input
-          type="text"
-          list="geo-markaz-list"
-          value={filters.markaz}
-          onChange={(event) => updateFilter("markaz", event.target.value)}
-          placeholder="المركز"
-          aria-label="المركز"
-          className={`${inputBase} geo-field geo-markaz w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
-        />
-        <datalist id="geo-markaz-list">
-          {markazOptions.map((markaz) => (
-            <option key={markaz} value={markaz} />
-          ))}
-        </datalist>
+          <input
+            id="geo-village"
+            type="text"
+            value={filters.village}
+            onChange={(event) => updateFilter("village", event.target.value)}
+            placeholder="القرية"
+            aria-label="القرية"
+            className={`${inputBase} geo-field geo-village w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
+          />
 
-        <input
-          id="geo-village"
-          type="text"
-          value={filters.village}
-          onChange={(event) => updateFilter("village", event.target.value)}
-          placeholder="القرية"
-          aria-label="القرية"
-          className={`${inputBase} geo-field geo-village w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
-        />
+          <input
+            id="geo-ezba"
+            type="text"
+            value={filters.ezba}
+            onChange={(event) => updateFilter("ezba", event.target.value)}
+            placeholder="العزبة"
+            aria-label="العزبة"
+            className={`${inputBase} geo-field geo-ezba w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
+          />
 
-        <input
-          id="geo-ezba"
-          type="text"
-          value={filters.ezba}
-          onChange={(event) => updateFilter("ezba", event.target.value)}
-          placeholder="العزبة"
-          aria-label="العزبة"
-          className={`${inputBase} geo-field geo-ezba w-full min-[700px]:w-[calc(50%-5px)] min-[700px]:flex-[1_1_calc(50%-10px)] min-[1100px]:w-0 min-[1100px]:flex-1 min-[1100px]:min-w-0`}
-        />
-
-        <button type="submit" className="geo-search-button bg-gold-gradient w-full min-[1100px]:w-auto min-[1100px]:flex-none">
-          <svg
-            aria-hidden="true"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="M20 20l-3.5-3.5" />
-          </svg>
-          <span>بحث</span>
-        </button>
-      </form>
+          <button type="submit" className="geo-search-button bg-gold-gradient w-full min-[1100px]:w-auto min-[1100px]:flex-none">
+            <svg
+              aria-hidden="true"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-3.5-3.5" />
+            </svg>
+            <span>بحث</span>
+          </button>
+        </form>
+      </Reveal>
 
       {result ? (
         <div

@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { inputBase } from "@/components/Home/ui/CustomSelect";
+import { SectionCardHeader } from "@/components/Home/ui/SectionCard";
 import "./GovernoratesSecretariats.css";
 import {
   GOVERNORATE_FALLBACK,
@@ -328,14 +329,12 @@ export default function GovernoratesSecretariats() {
         aria-labelledby={`${cardId}-title`}
         dir="rtl"
         lang="ar"
-        className={`${styles.card} flex h-full min-h-0 w-full flex-1 flex-col scroll-mt-28 focus:outline-none`}
+        className={`${styles.card} group flex h-full min-h-0 w-full flex-1 flex-col scroll-mt-28 focus:outline-none`}
       >
-        <header className={styles.cardHeader}>
-          <h2 id={`${cardId}-title`} className={styles.cardTitle}>
-            أمانات المحافظات
-          </h2>
-          <div aria-hidden="true" className={styles.titleUnderline} />
-        </header>
+        <SectionCardHeader
+          title="أمانات المحافظات"
+          className="pb-2"
+        />
 
         <div className={styles.cardBody}>
           <div className={styles.governorateList}>

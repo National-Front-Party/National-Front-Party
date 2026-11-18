@@ -41,16 +41,16 @@ export default function ParliamentaryUnit({ data }) {
                     aria-hidden="true"
                     className="
                       pointer-events-none absolute
-                      right-[32px] top-[30px]
+                      right-[31px] top-[32px]
                       z-0 h-[76px] w-[2px]
-                      -translate-x-1/2 translate-x-[1px]
+                      -translate-x-1/2
+                      animate-dash-rain
                       motion-reduce:hidden
                     "
                     style={{
                       backgroundImage:
-                        "repeating-linear-gradient(to bottom, var(--color-gold) 0 6px, transparent 6px 12px)",
+                        "repeating-linear-gradient(to bottom, #c9a24b 0 6px, transparent 6px 12px)",
                       backgroundSize: "2px 12px",
-                      animation: "dash-rain 0.5s linear infinite",
                     }}
                   />
 

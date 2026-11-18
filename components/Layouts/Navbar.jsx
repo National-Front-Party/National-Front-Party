@@ -379,9 +379,9 @@ function NavbarContent({ pathname }) {
     return (
         <header
             dir="rtl"
-            className="sticky top-0 z-50 border-b border-line bg-white/90 shadow-sm backdrop-blur"
+            className="sticky top-0 z-50 border-b border-line bg-white/90 shadow-sm backdrop-blur animate-navbar-entrance"
         >
-            <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-y-2 px-5 py-3 max-[991px]:flex-wrap max-[479px]:py-2">
+            <div className="mx-auto flex max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] items-center justify-between gap-y-2 px-5 py-3 max-[991px]:flex-wrap max-[479px]:py-2">
                 <Link
                     ref={logoRef}
                     href="/"
@@ -449,7 +449,7 @@ function NavbarContent({ pathname }) {
                 aria-label="القائمة الرئيسية"
                 className="hidden border-t border-line min-[992px]:block"
             >
-                <div className="mx-auto max-w-[1320px] px-5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="mx-auto max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <NavigationLinks
                         activeKey={activeKey}
                         onLinkClick={handleLinkClick}
@@ -472,7 +472,7 @@ function NavbarContent({ pathname }) {
                     }`}
                 >
                     <nav aria-label="القائمة الرئيسية">
-                        <div className="mx-auto max-w-[1320px] px-5 py-2">
+                        <div className="mx-auto max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-5 py-2">
                             <NavigationLinks
                                 activeKey={activeKey}
                                 onLinkClick={handleLinkClick}
