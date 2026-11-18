@@ -1,4 +1,4 @@
-import { createAdminCentralSecretariatPersonItemHandlers } from "../../../../../../../../../../lib/content/handlers/central-secretariats.js";
+import { createAdminCentralSecretariatPersonItemHandlers } from "../../../../../../../../lib/content/handlers/central-secretariats.js";
 
 const handlers = createAdminCentralSecretariatPersonItemHandlers();
 
