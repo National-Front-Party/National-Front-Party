@@ -385,3 +385,13 @@ model news_articles {
   @@index([updated_by], map: "idx_news_articles_updated_by")
   @@index([is_published, published_on(sort: Desc)], map: "idx_news_articles_published_listing")
 }
+
+model party_programs {
+  id           Int      @id @default(autoincrement()) @db.SmallInt
+  title        String   @default("برنامج الحزب")
+  body         String
+  source_note  String?  @default("الموقع الرسمي للحزب")
+  is_published Boolean  @default(true)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @db.Timestamptz(6)
+}

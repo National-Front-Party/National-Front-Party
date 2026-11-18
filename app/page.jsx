@@ -1,5 +1,12 @@
+import { Suspense } from "react";
 import IntroHeading from "@/components/Home/IntroHeading";
 import HomeSections from "@/components/Home/HomeSections";
+import { getHomePageData, getDefaultHomeData } from "@/lib/home-data";
+
+async function HomeSectionsServer() {
+  const homeData = await getHomePageData();
+  return <HomeSections data={homeData} />;
+}
 
 export default function HomePage() {
   return (
@@ -7,7 +14,9 @@ export default function HomePage() {
       <div className="shrink-0">
         <IntroHeading />
       </div>
-      <HomeSections />
+      <Suspense fallback={<HomeSections data={getDefaultHomeData()} />}>
+        <HomeSectionsServer />
+      </Suspense>
     </div>
   );
 }

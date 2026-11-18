@@ -6,14 +6,16 @@ import CustomSelect, {
 } from "@/components/Home/ui/CustomSelect";
 import Reveal from "@/components/Home/ui/Reveal";
 import {
-  GOVERNORATE_FALLBACK,
-  GOVERNORATE_PEOPLE,
-} from "@/data/mock/governoratesMock";
-import {
   GEO_GOVERNORATES,
   MARKAZ_BY_GOVERNORATE,
 } from "@/data/mock/geoSearchMock";
 import "./GeographicSearch.css";
+
+const DEFAULT_FALLBACK = {
+  name: "هيكل أمانة المحافظة قيد الاعتماد",
+  role: "جاري استكمال التشكيلات",
+  photo: "/avatars/avatar-fallback.svg",
+};
 
 const emptyFilters = {
   governorate: "",
@@ -22,11 +24,50 @@ const emptyFilters = {
   ezba: "",
 };
 
-export default function GeographicSearch() {
+export default function GeographicSearch({ data }) {
   const [filters, setFilters] = useState(emptyFilters);
   const [result, setResult] = useState(null);
   const [exiting, setExiting] = useState(false);
   const exitTimerRef = useRef(null);
+
+  const [peopleMap, setPeopleMap] = useState(data?.people || {});
+  const fallback = data?.fallback || DEFAULT_FALLBACK;
+  const allGovNames = data ? [...data.main, ...data.other] : GEO_GOVERNORATES;
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadPublicGovernorateSecretariats() {
+      try {
+        const response = await fetch("/api/content/governorate-secretariats");
+        if (!response.ok) return;
+        const resJson = await response.json();
+        if (!ignore && Array.isArray(resJson?.governorate_secretariats)) {
+          const map = {};
+          for (const item of resJson.governorate_secretariats) {
+            const govName = item.governorate?.name_ar;
+            if (govName) {
+              if (!map[govName]) map[govName] = [];
+              map[govName].push({
+                name: item.full_name,
+                role: item.role_title || "",
+                photo: item.photo_url || undefined,
+              });
+            }
+          }
+          if (Object.keys(map).length > 0) {
+            setPeopleMap((prev) => ({ ...prev, ...map }));
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load /api/content/governorate-secretariats:", error);
+      }
+    }
+
+    loadPublicGovernorateSecretariats();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(
     () => () => {
@@ -96,13 +137,13 @@ export default function GeographicSearch() {
     }
     if (filters.ezba.trim()) scopeParts.push(`عزبة ${filters.ezba.trim()}`);
 
-    const people = GOVERNORATE_PEOPLE[filters.governorate];
+    const people = peopleMap[filters.governorate];
     const rows = people?.length
       ? people.map(({ name, role }) => ({ name, role }))
       : [
           {
-            name: GOVERNORATE_FALLBACK.name,
-            role: GOVERNORATE_FALLBACK.role,
+            name: fallback.name,
+            role: fallback.role,
           },
         ];
 
@@ -117,7 +158,7 @@ export default function GeographicSearch() {
   }
 
   const markazOptions = MARKAZ_BY_GOVERNORATE[filters.governorate] ?? [];
-  const governorateOptions = GEO_GOVERNORATES.map((name) => ({
+  const governorateOptions = allGovNames.map((name) => ({
     value: name,
     label: name,
   }));

@@ -107,3 +107,8 @@ export type news_sources = Prisma.news_sourcesModel
  * 
  */
 export type news_articles = Prisma.news_articlesModel
+/**
+ * Model party_programs
+ * 
+ */
+export type party_programs = Prisma.party_programsModel

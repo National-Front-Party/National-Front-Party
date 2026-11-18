@@ -10,7 +10,8 @@ const errorMessages = {
   nameInvalid: "الاسم يجب أن يحتوي على حروف فقط",
   phoneRequired: "من فضلك أدخل رقم الموبايل",
   phoneInvalid: "أدخل رقم موبايل مصري صحيح مكون من 11 رقم",
-  sectorRequired: "من فضلك اختر القطاع أو الجهة",
+  sectorRequired: "من فضلك اختر القطاع",
+  ministryRequired: "من فضلك اختر الوزارة أو الجهة من القائمة أعلاه",
 };
 
 export function normalizeRequestName(value) {
@@ -31,11 +32,12 @@ export function normalizeRequestPhoneInput(value) {
   return normalizeRequestPhone(value).replace(/\D/g, "").slice(0, 11);
 }
 
-export function validateRequest({ name, phone, sector, entity } = {}) {
+export function validateRequest({ name, phone, sector, ministry, entity } = {}) {
   const payload = {
     name: normalizeRequestName(name),
     phone: normalizeRequestPhone(phone),
     sector: String(sector ?? ""),
+    ministry: String(ministry ?? ""),
     entity: String(entity ?? ""),
   };
   const errors = {};
@@ -55,6 +57,10 @@ export function validateRequest({ name, phone, sector, entity } = {}) {
     errors.phone = errorMessages.phoneRequired;
   } else if (!/^01[0125][0-9]{8}$/.test(payload.phone)) {
     errors.phone = errorMessages.phoneInvalid;
+  }
+
+  if (!payload.ministry) {
+    errors.ministry = errorMessages.ministryRequired;
   }
 
   if (!payload.sector) {

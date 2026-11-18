@@ -13,14 +13,47 @@ import {
 import { inputBase } from "@/components/Home/ui/CustomSelect";
 import { SectionCardHeader } from "@/components/Home/ui/SectionCard";
 import "./GovernoratesSecretariats.css";
-import {
-  GOVERNORATE_FALLBACK,
-  GOVERNORATE_PEOPLE,
-  MAIN_GOVERNORATES,
-  OTHER_GOVERNORATES,
-} from "@/data/mock/governoratesMock";
 
-const ALL_GOVERNORATES = [...MAIN_GOVERNORATES, ...OTHER_GOVERNORATES];
+const DEFAULT_FALLBACK = {
+  name: "هيكل أمانة المحافظة قيد الاعتماد",
+  role: "جاري استكمال التشكيلات",
+  photo: "/avatars/avatar-fallback.svg",
+};
+
+const DEFAULT_MAIN = [
+  "القاهرة",
+  "الجيزة",
+  "الإسكندرية",
+  "الدقهلية",
+  "البحر الأحمر",
+  "الشرقية",
+  "المنوفية",
+  "القليوبية",
+];
+
+const DEFAULT_OTHER = [
+  "أسوان",
+  "أسيوط",
+  "الأقصر",
+  "الإسماعيلية",
+  "البحيرة",
+  "بني سويف",
+  "بورسعيد",
+  "جنوب سيناء",
+  "دمياط",
+  "سوهاج",
+  "السويس",
+  "شمال سيناء",
+  "الغربية",
+  "الفيوم",
+  "قنا",
+  "كفر الشيخ",
+  "مطروح",
+  "المنيا",
+  "الوادي الجديد",
+];
+
+const ALL_GOVERNORATES = [...DEFAULT_MAIN, ...DEFAULT_OTHER];
 const SHEET_EXIT_DURATION = 250;
 const styles = {
   card: "governorates-card",
@@ -133,8 +166,46 @@ function normalizeArabic(value) {
     .toLocaleLowerCase("ar");
 }
 
-export default function GovernoratesSecretariats() {
-  const [openGovernorate, setOpenGovernorate] = useState(MAIN_GOVERNORATES[0]);
+export default function GovernoratesSecretariats({ data }) {
+  const [peopleMap, setPeopleMap] = useState(data?.people || {});
+  const fallback = data?.fallback || DEFAULT_FALLBACK;
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadPublicGovernorateSecretariats() {
+      try {
+        const response = await fetch("/api/content/governorate-secretariats");
+        if (!response.ok) return;
+        const result = await response.json();
+        if (!ignore && Array.isArray(result?.governorate_secretariats)) {
+          const map = {};
+          for (const item of result.governorate_secretariats) {
+            const govName = item.governorate?.name_ar;
+            if (govName) {
+              if (!map[govName]) map[govName] = [];
+              map[govName].push({
+                name: item.full_name,
+                role: item.role_title || "",
+                photo: item.photo_url || undefined,
+              });
+            }
+          }
+          if (Object.keys(map).length > 0) {
+            setPeopleMap((prev) => ({ ...prev, ...map }));
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load /api/content/governorate-secretariats:", error);
+      }
+    }
+
+    loadPublicGovernorateSecretariats();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const [openGovernorate, setOpenGovernorate] = useState(DEFAULT_MAIN[0]);
   const [extraGovernorate, setExtraGovernorate] = useState(null);
   const [sheetPhase, setSheetPhase] = useState("closed");
   const [search, setSearch] = useState("");
@@ -152,11 +223,11 @@ export default function GovernoratesSecretariats() {
   const sheetIsMounted = sheetPhase !== "closed";
 
   const visibleGovernorates = useMemo(() => {
-    if (!extraGovernorate || MAIN_GOVERNORATES.includes(extraGovernorate)) {
-      return MAIN_GOVERNORATES;
+    if (!extraGovernorate || DEFAULT_MAIN.includes(extraGovernorate)) {
+      return DEFAULT_MAIN;
     }
 
-    return [...MAIN_GOVERNORATES.slice(0, 7), extraGovernorate];
+    return [...DEFAULT_MAIN.slice(0, 7), extraGovernorate];
   }, [extraGovernorate]);
 
   const filteredGovernorates = useMemo(() => {
@@ -265,7 +336,7 @@ export default function GovernoratesSecretariats() {
   }
 
   function handleSheetSelect(name) {
-    if (!MAIN_GOVERNORATES.includes(name)) {
+    if (!DEFAULT_MAIN.includes(name)) {
       setExtraGovernorate(name);
     }
 
@@ -342,7 +413,7 @@ export default function GovernoratesSecretariats() {
               const isOpen = openGovernorate === name;
               const panelId = `${cardId}-panel-${index}`;
               const buttonId = `${cardId}-button-${index}`;
-              const people = GOVERNORATE_PEOPLE[name] ?? [GOVERNORATE_FALLBACK];
+              const people = peopleMap[name] ?? [fallback];
 
               return (
                 <article

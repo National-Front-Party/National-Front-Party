@@ -414,7 +414,8 @@ export const ModelName = {
   request_sectors: 'request_sectors',
   service_requests: 'service_requests',
   news_sources: 'news_sources',
-  news_articles: 'news_articles'
+  news_articles: 'news_articles',
+  party_programs: 'party_programs'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -430,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "staff_users" | "staff_audit_log" | "governorates" | "membership_applications" | "members" | "application_status_history" | "panels" | "leaders" | "info_items" | "central_secretariats" | "central_secretariat_people" | "governorate_secretariats_info" | "parliamentary_unit_items" | "ministries" | "request_sectors" | "service_requests" | "news_sources" | "news_articles"
+    modelProps: "staff_users" | "staff_audit_log" | "governorates" | "membership_applications" | "members" | "application_status_history" | "panels" | "leaders" | "info_items" | "central_secretariats" | "central_secretariat_people" | "governorate_secretariats_info" | "parliamentary_unit_items" | "ministries" | "request_sectors" | "service_requests" | "news_sources" | "news_articles" | "party_programs"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1766,6 +1767,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    party_programs: {
+      payload: Prisma.$party_programsPayload<ExtArgs>
+      fields: Prisma.party_programsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.party_programsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.party_programsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>
+        }
+        findFirst: {
+          args: Prisma.party_programsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.party_programsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>
+        }
+        findMany: {
+          args: Prisma.party_programsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>[]
+        }
+        create: {
+          args: Prisma.party_programsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>
+        }
+        createMany: {
+          args: Prisma.party_programsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.party_programsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>[]
+        }
+        delete: {
+          args: Prisma.party_programsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>
+        }
+        update: {
+          args: Prisma.party_programsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>
+        }
+        deleteMany: {
+          args: Prisma.party_programsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.party_programsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.party_programsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>[]
+        }
+        upsert: {
+          args: Prisma.party_programsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_programsPayload>
+        }
+        aggregate: {
+          args: Prisma.Party_programsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParty_programs>
+        }
+        groupBy: {
+          args: Prisma.party_programsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Party_programsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.party_programsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Party_programsCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2111,6 +2186,19 @@ export const News_articlesScalarFieldEnum = {
 } as const
 
 export type News_articlesScalarFieldEnum = (typeof News_articlesScalarFieldEnum)[keyof typeof News_articlesScalarFieldEnum]
+
+
+export const Party_programsScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  body: 'body',
+  source_note: 'source_note',
+  is_published: 'is_published',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Party_programsScalarFieldEnum = (typeof Party_programsScalarFieldEnum)[keyof typeof Party_programsScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2461,6 +2549,7 @@ export type GlobalOmitConfig = {
   service_requests?: Prisma.service_requestsOmit
   news_sources?: Prisma.news_sourcesOmit
   news_articles?: Prisma.news_articlesOmit
+  party_programs?: Prisma.party_programsOmit
 }
 
 /* Types for Logging */

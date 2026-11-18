@@ -1,12 +1,49 @@
 "use client";
 
 import { ArrowLeft, BookOpen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InfoModal from "@/components/Home/ui/InfoModal";
 import { sectionCardHoverClassName } from "@/components/Home/ui/SectionCard";
 
 export default function ProgramCard({ data }) {
   const [open, setOpen] = useState(false);
+  const [program, setProgram] = useState(
+    data || {
+      title: "برنامج الحزب",
+      paragraphs: ["نص برنامج الحزب ومحاوره يضاف هنا بعد اعتماده."],
+      source: "الموقع الرسمي للحزب",
+    },
+  );
+
+  useEffect(() => {
+    let ignore = false;
+    async function loadPartyProgram() {
+      try {
+        const response = await fetch("/api/content/party-program");
+        if (!response.ok) return;
+        const result = await response.json();
+        if (!ignore && result?.party_program) {
+          setProgram({
+            title: result.party_program.title || "برنامج الحزب",
+            paragraphs:
+              result.party_program.paragraphs ||
+              (result.party_program.body
+                ? result.party_program.body.split(/\r?\n+/)
+                : ["نص برنامج الحزب ومحاوره يضاف هنا بعد اعتماده."]),
+            source:
+              result.party_program.source_note || "الموقع الرسمي للحزب",
+          });
+        }
+      } catch (error) {
+        console.error("Failed to load /api/content/party-program:", error);
+      }
+    }
+
+    loadPartyProgram();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   return (
     <>
@@ -23,7 +60,7 @@ export default function ProgramCard({ data }) {
           className="text-gold-light transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6 motion-reduce:transition-none motion-reduce:transform-none"
         />
         <span className="text-2xl font-extrabold text-white transition-colors duration-300 group-hover:text-gold-light motion-reduce:transition-none">
-          {data.title}
+          {program.title}
         </span>
         <ArrowLeft
           aria-hidden="true"
@@ -34,9 +71,9 @@ export default function ProgramCard({ data }) {
       <InfoModal
         open={open}
         onClose={() => setOpen(false)}
-        title={data.title}
-        paragraphs={data.paragraphs}
-        source={data.source}
+        title={program.title}
+        paragraphs={program.paragraphs}
+        source={program.source}
       />
     </>
   );

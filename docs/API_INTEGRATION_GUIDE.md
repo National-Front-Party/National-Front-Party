@@ -134,6 +134,7 @@
 | **104** | `GET` | `/api/content/parliamentary-unit/[id]` | Public Content | Public | متاح للجمهور (تفاصيل بند برلماني منشور) | [تفاصيل](#89-تفاصيل-بند-برلماني-منشور-get-apicontentparliamentary-unitid) |
 | **105** | `GET` | `/api/content/popups` | Public Content | Public | متاح للجمهور (النوافذ المنبثقة المنشورة) | [تفاصيل](#810-عرض-النوافذ-المنبثقة-المنشورة-get-apicontentpopups) |
 | **106** | `GET` | `/api/content/popups/[id]` | Public Content | Public | متاح للجمهور (تفاصيل نافذة منبثقة منشورة) | [تفاصيل](#811-تفاصيل-نافذة-منبثقة-منشورة-get-apicontentpopupsid) |
+| **107** | `GET` | `/api/content/party-program` | Public Content | Public | متاح للجمهور (عرض بيانات ومحاور برنامج الحزب) | [تفاصيل](#812-عرض-برنامج-الحزب-المنشور-get-apicontentparty-program) |
 
 ---
 
