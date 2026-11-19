@@ -848,3 +848,35 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق والاختبارات:**
   - `npx eslint components/Admin/ui/ActionDropdown.jsx app/admin/applications/page.jsx app/admin/service-requests/page.jsx app/admin/news/page.jsx`: 0 errors, 0 warnings.
   - `npm test`: جميع الاختبارات (272/272) ناجحة بنسبة 100%.
+
+---
+
+## المرحلة D5.2: تطوير وإعادة تصميم واجهة إدارة مصادر الأخبار المعتمدة (News Sources UI/UX Redesign)
+- **الحالة:** مكتملة بنجاح (Frontend Admin UI & Editorial Management).
+- **الأهداف المنجزة:**
+  1. **إعادة تصميم الصفحة بالكامل (`/admin/news-sources`):**
+     - تصميم عصري وفاخر يتماشى مع هوية الحزب البصرية بلمسات ذهبية أنيقة وتدرجات ضوئية محيطية وتوزيع بصري متناسق.
+     - شريط فلاتر وتبويبات الحالات (`الكل`، `المصادر المعتمدة`، `المعطلة مؤقتاً`) مع عدادات إحصائية ديناميكية ومباشرة لكل تبويب.
+     - شريط بحث فوري باسم الجريدة/الموقع أو المعرف اللطيف (Slug) بتصميم مطابق تماماً لحقول الموقع الرئيسي (`h-14`, `rounded-2xl`, `hover:border-gold`, `focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]`).
+     - زر تحديث سريع بـ rotate animation لتحديث البيانات في أي وقت.
+  2. **طريقة العرض المتجاوبة بالكامل بدون تمرير أفقي:**
+     - **Desktop (`hidden lg:block`):** جدول منظم بنسب مئوية مضبوطة بدقة `w-[10%]`, `w-[32%]`, `w-[22%]`, `w-[12%]`, `w-[12%]`, `w-[12%]` مع بادنج أيسر مريح `pl-6 sm:pl-8` وزر نسخ المعرف اللطيف بنقرة واحدة (One-click copy).
+     - **Mobile & Tablet (`block lg:hidden`):** شبكة كروت متجاوبة بالكامل (`grid grid-cols-1 md:grid-cols-2 gap-4`) تعرض كل مصدر في كارت أنيق يوضح الاسم، الـ Slug، ترتيب العرض، تاريخ التسجيل، وشارة الحالة وأزرار الإجراءات.
+  3. **التبديل الفوري لحالة التفعيل والاعتماد (Instant Status Toggle):**
+     - إمكانية تفعيل أو تعطيل المصدر بنقرة واحدة مباشرة من الجدول أو الكارت مع حالة تحميل تفاعلية `updatingStatusId === source.id` واستدعاء `PATCH /api/admin/news/sources/[id]/status`.
+     - تحديث فوري (Optimistic UI) للواجهة مع إشعار Toast إيجابي وتأكيد فوري.
+  4. **مكون النافذة المنبثقة لإضافة وتعديل المصادر (`SourceEditorModal`):**
+     - إنشاء المكون `components/Admin/News/SourceEditorModal.jsx`.
+     - دعم كامل لإنشاء مصدر جديد وتعديل المصادر الحالية.
+     - توليد تلقائي ذكي للـ Slug أثناء كتابة الاسم، مع إمكانية التعديل اليدوي وتطهير المدخلات (`normalizeSlug`).
+     - معالجة خطأ تكرار المعرف `DUPLICATE_SLUG` بوضوح ولطف.
+     - زر إغلاق ذهبي دوار احترافي وخلفية معتمة بضبابية (`backdrop-blur-xs`).
+  5. **الحفاظ على الصلاحيات وحماية الوصول (RBAC Guard):**
+     - حصر الوصول حصرياً لمدير النظام (`super_admin`) وفقاً لقواعد النظام، وعرض واجهة تنبيه راقية (`ShieldAlert`) لغير المصرح لهم مع روابط توجيهية.
+- **الملفات المعدلة والمضافة:**
+  - `components/Admin/News/SourceEditorModal.jsx` (جديد)
+  - `app/admin/news-sources/page.jsx` (محدث ومطور بالكامل)
+  - `docs/BACKEND_PROGRESS.md` (محدث)
+- **التحقق والاختبارات:**
+  - `npx eslint components/Admin/News/SourceEditorModal.jsx app/admin/news-sources/page.jsx`: خالي تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 272 ناجحة بنسبة 100% (272 pass, 0 fail).

@@ -1,21 +1,733 @@
 "use client";
 
-import PageHeader from "@/components/Admin/ui/PageHeader";
-import EmptyState from "@/components/Admin/ui/EmptyState";
-import { NavIcon } from "@/components/Admin/AdminIcons";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import Link from "next/link";
+import {
+  Globe,
+  Plus,
+  Search,
+  RotateCcw,
+  Pencil,
+  CheckCircle2,
+  XCircle,
+  Hash,
+  Calendar,
+  ShieldAlert,
+  ChevronRight,
+  ChevronLeft,
+  Copy,
+  Check,
+} from "lucide-react";
+import { adminFetch } from "@/lib/admin/api";
+import { useToast } from "@/lib/admin/toast-context";
+import { useAdminAuth } from "@/lib/admin/auth-context";
+import Spinner from "@/components/Admin/ui/Spinner";
+import Skeleton from "@/components/Admin/ui/Skeleton";
+import ActionDropdown from "@/components/Admin/ui/ActionDropdown";
+import SourceEditorModal from "@/components/Admin/News/SourceEditorModal";
+
+// Convert numbers to Arabic-Indic digits
+function toArabicDigits(num) {
+  if (num === null || num === undefined) return "٠";
+  const arabic = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+  return String(num).replace(/[0-9]/g, (d) => arabic[Number(d)]);
+}
+
+// Format date in Arabic locale
+function formatDate(dateStr) {
+  if (!dateStr) return "—";
+  try {
+    const d = new Date(dateStr);
+    return new Intl.DateTimeFormat("ar-EG", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(d);
+  } catch {
+    return dateStr;
+  }
+}
 
 export default function NewsSourcesPage() {
+  const { user } = useAdminAuth();
+  const { showSuccess, showError } = useToast();
+
+  const isSuperAdmin = user?.role === "super_admin";
+
+  // Data & Pagination
+  const [sources, setSources] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    page_size: 25,
+    total: 0,
+    total_pages: 1,
+  });
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Filters
+  const [statusTab, setStatusTab] = useState("all"); // 'all' | 'active' | 'inactive'
+  const [searchInput, setSearchInput] = useState("");
+
+  // Modals & Action loading
+  const [editingSource, setEditingSource] = useState(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [updatingStatusId, setUpdatingStatusId] = useState(null);
+  const [copiedSlug, setCopiedSlug] = useState(null);
+
+  // Fetch sources from API
+  const fetchSources = useCallback(
+    async (page = 1, showSpinner = false) => {
+      if (!isSuperAdmin) {
+        setLoading(false);
+        return;
+      }
+      if (showSpinner) setLoading(true);
+      else setRefreshing(true);
+
+      try {
+        const queryParams = new URLSearchParams({
+          page: String(page),
+          page_size: "25",
+        });
+
+        if (statusTab === "active") queryParams.set("is_active", "true");
+        if (statusTab === "inactive") queryParams.set("is_active", "false");
+
+        const data = await adminFetch(`/api/admin/news/sources?${queryParams.toString()}`);
+        if (data && data.sources) {
+          setSources(data.sources);
+          if (data.pagination) {
+            setPagination(data.pagination);
+          }
+        }
+      } catch (err) {
+        showError(err.message || "تعذر تحميل قائمة مصادر الأخبار");
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [isSuperAdmin, statusTab, showError],
+  );
+
+  // Initial and reactive load on statusTab or superAdmin change
+  useEffect(() => {
+    let mounted = true;
+    if (!isSuperAdmin) {
+      return;
+    }
+
+    const queryParams = new URLSearchParams({
+      page: "1",
+      page_size: "25",
+    });
+
+    if (statusTab === "active") queryParams.set("is_active", "true");
+    if (statusTab === "inactive") queryParams.set("is_active", "false");
+
+    adminFetch(`/api/admin/news/sources?${queryParams.toString()}`)
+      .then((data) => {
+        if (!mounted) return;
+        if (data?.sources) {
+          setSources(data.sources);
+          if (data.pagination) setPagination(data.pagination);
+        }
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        showError(err.message || "تعذر تحميل قائمة مصادر الأخبار");
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [isSuperAdmin, statusTab, showError]);
+
+  // Client-side search filtering
+  const filteredSources = useMemo(() => {
+    const q = searchInput.trim().toLowerCase();
+    if (!q) return sources;
+    return sources.filter(
+      (s) =>
+        s.name_ar?.toLowerCase().includes(q) ||
+        s.slug?.toLowerCase().includes(q),
+    );
+  }, [sources, searchInput]);
+
+  // Counts for tabs
+  const activeCount = useMemo(
+    () => sources.filter((s) => s.is_active).length,
+    [sources],
+  );
+  const inactiveCount = useMemo(
+    () => sources.filter((s) => !s.is_active).length,
+    [sources],
+  );
+
+  // Toggle active/inactive status
+  const handleToggleStatus = async (source) => {
+    if (updatingStatusId === source.id) return;
+
+    setUpdatingStatusId(source.id);
+    const nextStatus = !source.is_active;
+
+    try {
+      await adminFetch(`/api/admin/news/sources/${source.id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ is_active: nextStatus }),
+      });
+
+      // Update local state optimistically
+      setSources((prev) =>
+        prev.map((s) =>
+          s.id === source.id ? { ...s, is_active: nextStatus } : s,
+        ),
+      );
+
+      showSuccess(
+        nextStatus
+          ? `تم تفعيل واعتماد المصدر «${source.name_ar}» بنجاح`
+          : `تم تعطيل المصدر «${source.name_ar}» مؤقتاً`,
+      );
+    } catch (err) {
+      showError(err.message || "تعذر تغيير حالة المصدر الإعلامي");
+    } finally {
+      setUpdatingStatusId(null);
+    }
+  };
+
+  // Copy slug to clipboard
+  const handleCopySlug = (slugText) => {
+    navigator.clipboard?.writeText(slugText);
+    setCopiedSlug(slugText);
+    showSuccess(`تم نسخ المعرف (${slugText}) إلى الحافظة`);
+    setTimeout(() => setCopiedSlug(null), 2500);
+  };
+
+  // Get dropdown items for a source
+  const getSourceMenuItems = (source) => [
+    {
+      id: "edit",
+      label: "تعديل بيانات المصدر",
+      icon: <Pencil className="size-4 text-gold-dark" />,
+      onClick: () => {
+        setEditingSource(source);
+        setIsEditorOpen(true);
+      },
+    },
+    {
+      id: "toggle-status",
+      label: source.is_active ? "تعطيل المصدر مؤقتاً" : "تفعيل واعتماد المصدر",
+      tone: source.is_active ? "danger" : "success",
+      icon: source.is_active ? (
+        <XCircle className="size-4 text-rose-600" />
+      ) : (
+        <CheckCircle2 className="size-4 text-emerald-600" />
+      ),
+      onClick: () => handleToggleStatus(source),
+    },
+    { divider: true },
+    {
+      id: "copy-slug",
+      label: "نسخ المعرف اللطيف (Slug)",
+      icon: <Copy className="size-4 text-muted" />,
+      onClick: () => handleCopySlug(source.slug),
+    },
+  ];
+
+  // RBAC Access Guard: Only super_admin can manage news sources
+  if (!isSuperAdmin) {
+    return (
+      <div className="space-y-6" dir="rtl">
+        <div className="rounded-3xl border border-rose-500/20 bg-rose-50/50 p-8 sm:p-12 text-center shadow-card animate-elem-fade-up">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 shadow-2xs mb-4">
+            <ShieldAlert className="size-8" />
+          </div>
+          <h2 className="text-xl font-black text-ink mb-2">غير مصرح بالوصول</h2>
+          <p className="max-w-md mx-auto text-sm text-muted mb-6 leading-relaxed">
+            صفحة إدارة وتوثيق مصادر الأخبار مخصصة حصرياً لمدير النظام (Super Admin). يرجى الرجوع للوحة التحكم الرئيسية أو صفحة الأخبار.
+          </p>
+          <div className="flex items-center justify-center gap-3">
+            <Link
+              href="/admin/news"
+              className="rounded-2xl border border-line bg-white px-5 py-2.5 text-xs font-bold text-ink hover:border-gold hover:text-gold-dark transition-all"
+            >
+              الذهاب إلى الأخبار
+            </Link>
+            <Link
+              href="/admin"
+              className="rounded-2xl bg-gold-gradient px-5 py-2.5 text-xs font-black text-ink shadow-btn hover:brightness-110 transition-all"
+            >
+              الرئيسية
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6" dir="rtl">
-      <PageHeader
-        title="مصادر الأخبار"
-        description="إدارة الصحف والمصادر الإعلامية المعتمدة لتوثيق الأخبار"
-      />
+      {/* 1. Header Section */}
+      <div className="relative overflow-hidden rounded-3xl border border-line bg-white p-6 sm:p-8 shadow-card animate-elem-fade-up">
+        {/* Decorative ambient gradient */}
+        <div className="pointer-events-none absolute -top-24 -left-24 size-72 rounded-full bg-gold-tint/40 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 -right-24 size-72 rounded-full bg-gold/10 blur-3xl" />
 
-      <EmptyState
-        icon={() => <NavIcon name="news-sources" className="size-8" />}
-        title="مصادر الأخبار (قريباً)"
-        description="يجري تطوير واجهة إدارة مصادر الأخبار المعتمدة ضمن المراحل القادمة."
+        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
+              <Globe className="size-7" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold-tint/50 px-2.5 py-0.5 text-[11px] font-bold text-gold-dark">
+                  المحتوى الصحفي والإعلامي
+                </span>
+                <span className="text-[11px] text-muted">لوحة الإدارة الرسمية</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-ink tracking-tight">
+                مصادر الأخبار المعتمدة
+              </h1>
+              <p className="mt-1 text-xs sm:text-sm text-muted">
+                إدارة وتوثيق الصحف والمواقع الإخبارية والمنصات الصحفية المعتمدة لتوثيق مقالات الحزب
+              </p>
+            </div>
+          </div>
+
+          {/* Primary Action Button: Add New Source */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => fetchSources(pagination.page, false)}
+              disabled={refreshing || loading}
+              className="flex size-11 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-200 hover:border-gold hover:text-ink hover:bg-gold-tint/30 hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+              title="تحديث البيانات"
+            >
+              <RotateCcw className={`size-4 ${refreshing ? "animate-spin text-gold-dark" : ""}`} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setEditingSource(null);
+                setIsEditorOpen(true);
+              }}
+              className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs sm:text-sm font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)] hover:scale-[1.02] active:scale-95 cursor-pointer"
+            >
+              <Plus className="size-4 stroke-[2.5]" />
+              <span>إضافة مصدر جديد</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Status Filter Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-2xl bg-page/70 border border-line shadow-2xs [scrollbar-width:none] animate-elem-fade-up">
+        {[
+          { id: "all", label: "جميع المصادر", count: sources.length },
+          { id: "active", label: "المصادر المعتمدة", count: activeCount },
+          { id: "inactive", label: "المعطلة مؤقتاً", count: inactiveCount },
+        ].map((tab) => {
+          const isActive = statusTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setStatusTab(tab.id)}
+              className={`group relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 ${
+                isActive
+                  ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.03] hover:brightness-110"
+                  : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:scale-105"
+              }`}
+            >
+              <span>{tab.label}</span>
+              <span
+                className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                  isActive
+                    ? "bg-ink text-white"
+                    : "bg-page text-muted group-hover:bg-gold-tint group-hover:text-ink"
+                }`}
+              >
+                {toArabicDigits(tab.count)}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 3. Search Bar with Website Form Style */}
+      <div className="rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-card animate-elem-fade-up">
+        <div className="relative">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="بحث فوري باسم المصدر الصحفي أو المعرف (Slug)..."
+            className="h-14 w-full rounded-2xl border border-border bg-white pr-4 pl-12 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
+          />
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+            <Search className="size-5" />
+          </span>
+        </div>
+      </div>
+
+      {/* 4. News Sources Listing Container */}
+      <div className="rounded-3xl border border-line bg-white shadow-card overflow-hidden animate-elem-fade-up">
+        {loading ? (
+          <div className="p-6 sm:p-8 space-y-4">
+            <div className="flex items-center justify-between pb-4 border-b border-line">
+              <Skeleton className="h-6 w-48 rounded-xl" />
+              <Skeleton className="h-6 w-24 rounded-xl" />
+            </div>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center justify-between py-3">
+                <Skeleton className="h-8 w-1/4 rounded-xl" />
+                <Skeleton className="h-8 w-1/5 rounded-xl" />
+                <Skeleton className="h-8 w-1/6 rounded-xl" />
+                <Skeleton className="h-8 w-20 rounded-xl" />
+              </div>
+            ))}
+          </div>
+        ) : filteredSources.length === 0 ? (
+          <div className="p-12 sm:p-16 text-center">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs mb-4">
+              <Globe className="size-8" />
+            </div>
+            <h3 className="text-base sm:text-lg font-black text-ink mb-1">
+              {searchInput
+                ? "لا توجد مصادر مطابقة لبحثك"
+                : "لم يتم تسجيل أي مصادر إخبارية بعد"}
+            </h3>
+            <p className="max-w-md mx-auto text-xs sm:text-sm text-muted mb-6 leading-relaxed">
+              {searchInput
+                ? "جرب كتابة اسم مختلف أو معرف لطيف آخر للبحث في المصادر المعتمدة."
+                : "يمكنك إضافة أول مصدر إعلامي معتمد مثل الجرائد والمواقع الصحفية الرسمية لربطه بمقالات الحزب."}
+            </p>
+            {searchInput ? (
+              <button
+                type="button"
+                onClick={() => setSearchInput("")}
+                className="rounded-2xl border border-line bg-white px-5 py-2.5 text-xs font-bold text-ink hover:border-gold hover:text-gold-dark transition-all"
+              >
+                مسح البحث
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingSource(null);
+                  setIsEditorOpen(true);
+                }}
+                className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-2.5 text-xs font-black text-ink shadow-btn hover:brightness-110 transition-all"
+              >
+                <Plus className="size-4" />
+                <span>إضافة أول مصدر الآن</span>
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Desktop Table View (hidden lg:block) - Zero horizontal scrolling */}
+            <div className="hidden lg:block">
+              <table className="w-full text-right text-xs">
+                <thead>
+                  <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
+                    <th className="py-4 pr-6 pl-3 w-[10%]"># المعرف</th>
+                    <th className="py-4 px-3 w-[32%]">المصدر الصحفي</th>
+                    <th className="py-4 px-3 w-[22%]">المعرف اللطيف (Slug)</th>
+                    <th className="py-4 px-3 w-[12%] text-center">ترتيب العرض</th>
+                    <th className="py-4 px-3 w-[12%]">حالة الاعتماد</th>
+                    <th className="py-4 pr-3 pl-6 sm:pl-8 w-[12%] text-center">الإجراءات</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line/60">
+                  {filteredSources.map((source) => {
+                    const menuItems = getSourceMenuItems(source);
+                    const isUpdating = updatingStatusId === source.id;
+
+                    return (
+                      <tr
+                        key={source.id}
+                        className="group transition-colors hover:bg-gold-tint/25"
+                      >
+                        {/* ID */}
+                        <td className="py-4 pr-6 pl-3 font-mono font-bold text-muted">
+                          #{source.id}
+                        </td>
+
+                        {/* Arabic Name & Icon */}
+                        <td className="py-4 px-3">
+                          <div className="flex items-center gap-3">
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 text-gold-dark shadow-2xs group-hover:border-gold/50 transition-colors">
+                              <Globe className="size-4" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <span className="block font-black text-ink group-hover:text-gold-dark transition-colors truncate">
+                                {source.name_ar}
+                              </span>
+                              <span className="block text-[11px] text-muted truncate">
+                                تم التسجيل: {formatDate(source.created_at)}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Slug with Copy Button */}
+                        <td className="py-4 px-3">
+                          <button
+                            type="button"
+                            onClick={() => handleCopySlug(source.slug)}
+                            className="group/slug inline-flex items-center gap-1.5 rounded-xl border border-line bg-page/50 px-2.5 py-1 font-mono text-[11px] font-bold text-ink hover:border-gold hover:bg-gold-tint/40 transition-all cursor-pointer"
+                            title="انقر لنسخ المعرف اللطيف"
+                          >
+                            <span>{source.slug}</span>
+                            {copiedSlug === source.slug ? (
+                              <Check className="size-3 text-emerald-600 shrink-0" />
+                            ) : (
+                              <Copy className="size-3 text-muted group-hover/slug:text-gold-dark shrink-0 transition-colors" />
+                            )}
+                          </button>
+                        </td>
+
+                        {/* Sort Order */}
+                        <td className="py-4 px-3 text-center">
+                          <span className="inline-flex items-center gap-1 font-mono text-xs font-bold text-ink">
+                            <Hash className="size-3 text-muted" />
+                            <span>{toArabicDigits(source.sort_order ?? 0)}</span>
+                          </span>
+                        </td>
+
+                        {/* Status Badge & Fast Toggle */}
+                        <td className="py-4 px-3">
+                          <button
+                            type="button"
+                            disabled={isUpdating}
+                            onClick={() => handleToggleStatus(source)}
+                            className={`group/status inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-bold transition-all cursor-pointer ${
+                              source.is_active
+                                ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200"
+                                : "border-rose-200 bg-rose-50 text-rose-700 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200"
+                            }`}
+                            title={
+                              source.is_active
+                                ? "انقر للتعطيل المؤقت"
+                                : "انقر لتفعيل واعتماد المصدر"
+                            }
+                          >
+                            {isUpdating ? (
+                              <Spinner size="xs" color="ink" />
+                            ) : (
+                              <span
+                                className={`size-1.5 rounded-full ${
+                                  source.is_active ? "bg-emerald-600" : "bg-rose-600"
+                                }`}
+                              />
+                            )}
+                            <span>{source.is_active ? "معتمد ونشط" : "معطل مؤقتاً"}</span>
+                          </button>
+                        </td>
+
+                        {/* Actions: Edit button + ActionDropdown */}
+                        <td className="py-4 pr-3 pl-6 sm:pl-8">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingSource(source);
+                                setIsEditorOpen(true);
+                              }}
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                              title="تعديل بيانات المصدر"
+                            >
+                              <Pencil className="size-3.5" />
+                              <span>تعديل</span>
+                            </button>
+
+                            <ActionDropdown
+                              items={menuItems}
+                              label={`إجراءات المصدر #${source.id}`}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile & Tablet Card Layout (block lg:hidden) - Zero horizontal scrolling */}
+            <div className="block lg:hidden p-4 sm:p-5 bg-page/30">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredSources.map((source) => {
+                  const menuItems = getSourceMenuItems(source);
+                  const isUpdating = updatingStatusId === source.id;
+
+                  return (
+                    <div
+                      key={source.id}
+                      className="group relative flex flex-col justify-between rounded-2xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:border-gold/50 transition-all duration-300"
+                    >
+                      {/* Card Top: Badges & ID */}
+                      <div className="flex items-center justify-between gap-2 border-b border-line/60 pb-3">
+                        <span className="font-mono text-xs font-bold text-muted">
+                          #{source.id}
+                        </span>
+
+                        <button
+                          type="button"
+                          disabled={isUpdating}
+                          onClick={() => handleToggleStatus(source)}
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold transition-all cursor-pointer ${
+                            source.is_active
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                              : "border-rose-200 bg-rose-50 text-rose-700"
+                          }`}
+                        >
+                          {isUpdating ? (
+                            <Spinner size="xs" color="ink" />
+                          ) : (
+                            <span
+                              className={`size-1.5 rounded-full ${
+                                source.is_active ? "bg-emerald-600" : "bg-rose-600"
+                              }`}
+                            />
+                          )}
+                          <span>{source.is_active ? "معتمد ونشط" : "معطل مؤقتاً"}</span>
+                        </button>
+                      </div>
+
+                      {/* Card Body: Name, Slug, Sort Order */}
+                      <div className="my-3 space-y-2">
+                        <div className="flex items-center gap-2.5">
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-line bg-page text-gold-dark">
+                            <Globe className="size-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-black text-ink text-sm sm:text-base truncate">
+                              {source.name_ar}
+                            </h4>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs pt-1">
+                          <span className="text-muted">المعرف اللطيف:</span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopySlug(source.slug)}
+                            className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-ink bg-page/70 px-2 py-0.5 rounded-lg border border-line"
+                          >
+                            <span>{source.slug}</span>
+                            <Copy className="size-3 text-muted" />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted">ترتيب العرض:</span>
+                          <span className="font-mono font-bold text-ink">
+                            {toArabicDigits(source.sort_order ?? 0)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card Footer: Creation Date & Actions */}
+                      <div className="flex items-center justify-between border-t border-line/60 pt-3 mt-1">
+                        <span className="flex items-center gap-1 text-[11px] text-muted font-mono">
+                          <Calendar className="size-3" />
+                          <span>{formatDate(source.created_at)}</span>
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingSource(source);
+                              setIsEditorOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark active:scale-95 transition-all shadow-2xs cursor-pointer"
+                          >
+                            <Pencil className="size-3.5" />
+                            <span>تعديل</span>
+                          </button>
+
+                          <ActionDropdown
+                            items={menuItems}
+                            label={`إجراءات المصدر #${source.id}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* 5. Pagination Bar */}
+        {pagination.total > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-line bg-page/40 px-6 py-4 text-xs font-bold text-muted">
+            <div>
+              <span>عرض </span>
+              <strong className="text-ink">
+                {toArabicDigits((pagination.page - 1) * pagination.page_size + 1)}
+              </strong>
+              <span> إلى </span>
+              <strong className="text-ink">
+                {toArabicDigits(
+                  Math.min(pagination.page * pagination.page_size, pagination.total),
+                )}
+              </strong>
+              <span> من إجمالي </span>
+              <strong className="text-ink">{toArabicDigits(pagination.total)}</strong>
+              <span> مصدر إعلامي</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={pagination.page <= 1 || loading}
+                onClick={() => fetchSources(pagination.page - 1)}
+                className="flex size-9 items-center justify-center rounded-xl border border-line bg-white text-ink transition-all hover:border-gold hover:bg-gold-tint/40 disabled:opacity-40 cursor-pointer shadow-2xs"
+                title="الصفحة السابقة"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+
+              <span className="px-2 font-mono text-xs text-ink font-bold">
+                {toArabicDigits(pagination.page)} / {toArabicDigits(pagination.total_pages)}
+              </span>
+
+              <button
+                type="button"
+                disabled={pagination.page >= pagination.total_pages || loading}
+                onClick={() => fetchSources(pagination.page + 1)}
+                className="flex size-9 items-center justify-center rounded-xl border border-line bg-white text-ink transition-all hover:border-gold hover:bg-gold-tint/40 disabled:opacity-40 cursor-pointer shadow-2xs"
+                title="الصفحة التالية"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 6. Source Editor Modal (Add/Edit) */}
+      <SourceEditorModal
+        isOpen={isEditorOpen}
+        source={editingSource}
+        onClose={() => {
+          setIsEditorOpen(false);
+          setEditingSource(null);
+        }}
+        onSaved={() => {
+          fetchSources(pagination.page, false);
+        }}
       />
     </div>
   );
