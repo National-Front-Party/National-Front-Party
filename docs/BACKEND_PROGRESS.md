@@ -871,3 +871,23 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق والاختبارات:**
   - `npx eslint components/Admin/News/ArticleEditorModal.jsx app/admin/news/page.jsx`: خالي تماماً من الأخطاء (0 errors, 0 warnings).
   - `npm test`: جميع الاختبارات الـ 272 ناجحة بنسبة 100% (272 pass, 0 fail).
+
+---
+
+## مرحلة D5.4: تحسين تجاوب شريط فلاتر الحالات لصفحات لوحة التحكم (Applications, Services & News Zero-Scroll Tabs)
+- **الحالة:** مكتملة بنجاح (Frontend UI/UX Enhancement).
+- **الأهداف المنجزة:**
+  1. **شريط فلاتر حالات طلبات الانضمام (`/admin/applications`):**
+     - معالجة مشكلة الامتداد الأفقي الزائد على Desktop (`sm:w-auto sm:inline-flex`) بحيث يلتف الشريط حول التبويبات بدقة دون ترك مساحة رمادية فارغة على اليسار.
+     - معالجة الـ Responsive على الشاشات الصغيرة والموبايل: إزالة `overflow-x-auto`، وجعل الحاوية تتسع لكامل العرض `w-full flex` مع تقسيم متوازن `flex-1 min-w-0` لكل تبويب ومحاذاة مركزية.
+     - حل مشكلة اقتطاع نصوص الأزرار وظهور علامة الحذف (`...`): إخفاء النقطة الدائرية الملونة على الموبايل (`hidden sm:inline-block`) لتوفير مساحة كافية للكلمة، واستبدال `truncate` بـ `whitespace-nowrap text-center` مع بادنج جانبي مناسب `px-1 sm:px-4` واعتماد نصوص مختصرة واضحة ومباشرة (`الكل`, `جديد`, `مراجعة`, `مقبول`, `مرفوض`) مما جعل الكلمات تظهر كاملة وواضحة جداً.
+  2. **شريط فلاتر حالات طلبات الخدمات (`/admin/service-requests`) والأخبار (`/admin/news`):**
+     - تطبيق نفس المعالجة الدقيقة لمنع اقتطاع النصوص في باقي صفحات لوحة التحكم.
+- **الملفات المعدلة:**
+  - `app/admin/applications/page.jsx`
+  - `app/admin/service-requests/page.jsx`
+  - `app/admin/news/page.jsx`
+  - `docs/BACKEND_PROGRESS.md`
+- **التحقق والاختبارات:**
+  - `npx eslint app/admin/applications/page.jsx app/admin/service-requests/page.jsx app/admin/news/page.jsx`: 0 errors, 0 warnings.
+  - `npm test`: 272/272 ناجحة بنسبة 100%.
