@@ -1,5 +1,6 @@
 import { requireStaff } from "../../../../../lib/auth/guard.js";
-import { jsonResponse } from "../../../../../lib/auth/http.js";
+import { jsonResponse, logAuthError } from "../../../../../lib/auth/http.js";
+import { hasPermission } from "../../../../../lib/auth/permissions.js";
 import { saveUploadedNewsImage } from "../../../../../lib/services/news-storage.js";
 
 export async function POST(request) {
@@ -9,9 +10,14 @@ export async function POST(request) {
     return jsonResponse({ error: "UNAUTHENTICATED" }, 401);
   }
 
-  // Only super_admin and news_editor can upload news images
-  if (staff.role !== "super_admin" && staff.role !== "news_editor") {
-    return jsonResponse({ error: "FORBIDDEN" }, 403);
+  // Only super_admin, news_editor, or staff with news:write permission can upload news images
+  const canUpload =
+    staff.role === "super_admin" ||
+    staff.role === "news_editor" ||
+    hasPermission(staff.role, "news:write");
+
+  if (!canUpload) {
+    return jsonResponse({ error: "FORBIDDEN", message: "ليس لديك صلاحية لرفع صور الأخبار" }, 403);
   }
 
   const contentType = request.headers.get("content-type") || "";
@@ -51,7 +57,8 @@ export async function POST(request) {
       },
       201,
     );
-  } catch {
+  } catch (err) {
+    logAuthError(err);
     return jsonResponse(
       { error: "SERVER_ERROR", message: "حدث خطأ غير متوقع أثناء رفع الصورة" },
       500,

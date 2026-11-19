@@ -82,7 +82,11 @@ export default function ArticleEditorModal({
   const handleFileChange = (file) => {
     if (!file) return;
 
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type.toLowerCase())) {
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    const isAllowedMime = file.type && ALLOWED_IMAGE_TYPES.includes(file.type.toLowerCase());
+    const isAllowedExt = ["jpg", "jpeg", "png", "webp"].includes(ext);
+
+    if (!isAllowedMime && !isAllowedExt) {
       showError("نوع الصورة غير مدعوم. يرجى اختيار صورة بصيغة JPG أو PNG أو WebP");
       return;
     }
@@ -162,6 +166,25 @@ export default function ArticleEditorModal({
       return;
     }
 
+    // Clean and validate external source URL if provided
+    let cleanSourceUrl = sourceUrl.trim();
+    if (cleanSourceUrl) {
+      if (!/^https?:\/\//i.test(cleanSourceUrl)) {
+        if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i.test(cleanSourceUrl)) {
+          cleanSourceUrl = `https://${cleanSourceUrl}`;
+        } else {
+          showError("يرجى إدخال رابط مصدر خارجي صحيح يبدأ بـ https:// أو تركه فارغاً");
+          return;
+        }
+      }
+    }
+
+    // Clean slug
+    let cleanSlug = slug.trim().toLowerCase();
+    if (cleanSlug) {
+      cleanSlug = cleanSlug.replace(/\s+/g, "-");
+    }
+
     setSubmitting(true);
     let finalImageUrl = existingImageUrl;
 
@@ -174,14 +197,30 @@ export default function ArticleEditorModal({
 
         const uploadRes = await fetch("/api/admin/news/upload", {
           method: "POST",
+          credentials: "include",
           body: uploadFormData,
         });
 
-        const uploadResult = await uploadRes.json();
+        let uploadResult = {};
+        try {
+          uploadResult = await uploadRes.json();
+        } catch {
+          uploadResult = {};
+        }
+
         setUploadingImage(false);
 
         if (!uploadRes.ok) {
-          throw new Error(uploadResult.message || "فشل رفع ملف صورة الغلاف");
+          if (uploadRes.status === 401) {
+            throw new Error("انتهت الجلسة؛ يرجى إعادة تسجيل الدخول");
+          }
+          if (uploadRes.status === 403) {
+            throw new Error("ليس لديك صلاحية لرفع صور الأخبار (متاح لمدير النظام ومحرر الأخبار)");
+          }
+          if (uploadRes.status === 413) {
+            throw new Error("حجم الصورة كبير جداً (الحد الأقصى 5 ميجابايت)");
+          }
+          throw new Error(uploadResult.message || uploadResult.error || "فشل رفع ملف صورة الغلاف");
         }
 
         finalImageUrl = uploadResult.url;
@@ -196,13 +235,13 @@ export default function ArticleEditorModal({
         body: trimmedBody,
         source_name: trimmedSourceName,
         published_on: publishedOn,
-        date_precision: datePrecision,
+        date_precision: datePrecision || "day",
         is_featured: Boolean(isFeatured),
         sort_order: Number(sortOrder) || 0,
-        source_url: sourceUrl.trim() || "",
+        source_url: cleanSourceUrl || "",
         image_url: finalImageUrl || "",
         image_alt: imageAlt.trim() || "",
-        ...(slug.trim() ? { slug: slug.trim() } : {}),
+        ...(cleanSlug ? { slug: cleanSlug } : {}),
       };
 
       if (isEdit) {
@@ -222,6 +261,14 @@ export default function ArticleEditorModal({
       if (onSaved) onSaved();
       onClose();
     } catch (err) {
+      if (err.issues && typeof err.issues === "object") {
+        const firstKey = Object.keys(err.issues)[0];
+        const firstMsg = err.issues[firstKey]?.[0];
+        if (firstMsg) {
+          showError(`خطأ في البيانات (${firstKey}): ${firstMsg}`);
+          return;
+        }
+      }
       if (err.message && err.message.includes("DUPLICATE_SLUG")) {
         showError("هذا المعرف اللطيف (Slug) مستخدم لمقال آخر بالفعل؛ يرجى اختيار slug مختلف.");
       } else if (err.message && err.message.includes("CANNOT_EDIT_IN_CURRENT_STATUS")) {
@@ -390,7 +437,7 @@ export default function ArticleEditorModal({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
               className="hidden"
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
