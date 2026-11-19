@@ -914,3 +914,27 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق والاختبارات:**
   - `npx eslint app/admin/page.jsx`: 0 errors, 0 warnings.
   - `npm test`: 272/272 ناجحة بنسبة 100%.
+
+---
+
+## مرحلة D5.6: ضمان ديناميكية جميع بيانات صفحة نظرة عامة من قاعدة البيانات (Overview 100% Dynamic Data)
+- **الحالة:** مكتملة بنجاح (Frontend Data Integration & RBAC Alignment).
+- **التدقيق والحلول المنفذة دون المساس بقاعدة البيانات أو الباك إند:**
+  1. **إصلاح قراءة إجمالي فريق العمل (`stats.staffTotal`):**
+     - تم تصحيح قراءة الإجمالي من مسار `/api/admin/staff` عبر `staffRes?.total ?? staffRes?.pagination?.total` ليطابق كائن الاستجابة الحقيقي المعين في `listStaff` ويعرض عدد الموظفين الفعلي في قاعدة البيانات بدقة.
+  2. **حساب نسبة إنجاز الطلبات ديناميكياً بدلاً من الرقم الثابت 74% (`completionRate`):**
+     - تم إلغاء أي قيمة ثابتة وحساب النسبة ديناميكياً ومباشرة من قاعدة البيانات:
+       - استعلام عدد الطلبات المقبولة/المكتملة من مساري `/api/admin/applications?status=accepted` و `/api/admin/service-requests?status=completed`.
+       - قسمة المكتمل على الإجمالي: `Math.round(((acceptedApps + completedSrv) / totalCount) * 100)`.
+       - ضبط شريط التقدم ونسبة النسبة المئوية لتعكس الأداء الحقيقي للطلبات في الداتا بيز لحظة بلحظة.
+  3. **ربط قائمة الطلبات الحقيقية وحالاتها الدقيقة من قاعدة البيانات (`recentRequests`):**
+     - استخدام نوع العضوية الفعلي من جدول `membership_applications` (`app.type`: عضوية عاملة / عمل تطوعي / مناصرة ومتابعة) بدلاً من الاسم الثابت العام.
+     - استخدام اسم القطاع أو الوزارة الفعلي من جداول `request_sectors` و `government_ministries` لطلبات الخدمات.
+     - مطابقة شارات الحالات وتلوينها بدقة مع قيم الداتا بيز الحقيقية (`new`, `under_review`, `in_progress`, `accepted`, `completed`, `rejected`, `closed`) دون خلط أو إطلاق مسميات تقريبية.
+     - ترتيب الطلبات بتقديم الطلبات التي تحتاج مراجعة أولاً، تليها الأحدث تاريخاً.
+- **الملفات المعدلة:**
+  - `app/admin/page.jsx`
+  - `docs/BACKEND_PROGRESS.md`
+- **التحقق والاختبارات:**
+  - `npx eslint app/admin/page.jsx`: 0 errors, 0 warnings.
+  - `npm test`: 272/272 ناجحة بنسبة 100%.
