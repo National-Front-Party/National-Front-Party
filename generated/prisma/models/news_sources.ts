@@ -381,9 +381,9 @@ export type news_sourcesSumOrderByAggregateInput = {
   sort_order?: Prisma.SortOrder
 }
 
-export type News_sourcesScalarRelationFilter = {
-  is?: Prisma.news_sourcesWhereInput
-  isNot?: Prisma.news_sourcesWhereInput
+export type News_sourcesNullableScalarRelationFilter = {
+  is?: Prisma.news_sourcesWhereInput | null
+  isNot?: Prisma.news_sourcesWhereInput | null
 }
 
 export type news_sourcesCreateNestedOneWithoutNews_articlesInput = {
@@ -392,10 +392,12 @@ export type news_sourcesCreateNestedOneWithoutNews_articlesInput = {
   connect?: Prisma.news_sourcesWhereUniqueInput
 }
 
-export type news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput = {
+export type news_sourcesUpdateOneWithoutNews_articlesNestedInput = {
   create?: Prisma.XOR<Prisma.news_sourcesCreateWithoutNews_articlesInput, Prisma.news_sourcesUncheckedCreateWithoutNews_articlesInput>
   connectOrCreate?: Prisma.news_sourcesCreateOrConnectWithoutNews_articlesInput
   upsert?: Prisma.news_sourcesUpsertWithoutNews_articlesInput
+  disconnect?: Prisma.news_sourcesWhereInput | boolean
+  delete?: Prisma.news_sourcesWhereInput | boolean
   connect?: Prisma.news_sourcesWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.news_sourcesUpdateToOneWithWhereWithoutNews_articlesInput, Prisma.news_sourcesUpdateWithoutNews_articlesInput>, Prisma.news_sourcesUncheckedUpdateWithoutNews_articlesInput>
 }

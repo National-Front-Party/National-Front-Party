@@ -422,7 +422,7 @@ export default function ServiceRequestsPage() {
       </div>
 
       {/* 2. Status Segmented Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] border-b border-line animate-elem-fade-up">
+      <div className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-2xl bg-page/70 border border-line shadow-2xs [scrollbar-width:none] animate-elem-fade-up">
         {[
           { id: "", label: "جميع الحالات" },
           { id: "new", label: "جديد" },
@@ -439,16 +439,18 @@ export default function ServiceRequestsPage() {
                 setLoading(true);
                 setStatusFilter(tab.id);
               }}
-              className={`flex shrink-0 items-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all duration-200 ${
+              className={`group relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 ${
                 isActive
-                  ? "bg-gold-tint text-gold-dark border border-gold/40 shadow-xs"
-                  : "text-muted hover:bg-page hover:text-ink"
+                  ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.03] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
+                  : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:shadow-xs hover:scale-105 hover:-translate-y-0.5"
               }`}
             >
               {tab.id && (
                 <span
-                  className={`size-2 rounded-full ${
-                    STATUS_CONFIG[tab.id]?.dot || "bg-muted"
+                  className={`size-2.5 rounded-full transition-transform duration-300 group-hover:scale-125 ${
+                    isActive
+                      ? "ring-2 ring-white/90 " + (STATUS_CONFIG[tab.id]?.dot || "bg-ink")
+                      : STATUS_CONFIG[tab.id]?.dot || "bg-muted"
                   }`}
                 />
               )}

@@ -376,6 +376,7 @@ export const News_articlesScalarFieldEnum = {
   body: 'body',
   image_url: 'image_url',
   image_alt: 'image_alt',
+  source_name: 'source_name',
   source_id: 'source_id',
   source_url: 'source_url',
   published_on: 'published_on',

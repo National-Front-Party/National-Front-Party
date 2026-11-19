@@ -11,7 +11,7 @@ import Spinner from "@/components/Admin/ui/Spinner";
 const TYPE_LABELS = {
   member: "عضوية عاملة",
   volunteer: "متطوع",
-  follower: "مؤازر",
+  follower: "زائر",
 };
 
 // Status labels and badge styling

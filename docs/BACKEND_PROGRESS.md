@@ -580,7 +580,6 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
   - `npm test`: جميع الاختبارات (267/267) ناجحة بنسبة 100%.
   - `npx eslint`: خالٍ من أي أخطاء أو تحذيرات (0 errors, 0 warnings).
 
-
 ---
 
 ## المرحلة D3.1: إضافة معالجة وقبول ورفض طلبات الخدمات (Service Requests Actions & Status Handling)
@@ -624,3 +623,86 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق:**
   - `npm test`: جميع الاختبارات (267/267) ناجحة بنسبة 100%.
   - `npx eslint`: خالٍ من أي أخطاء أو تحذيرات (0 errors, 0 warnings).
+
+---
+
+## المرحلة D4: إعادة تصميم وتطوير صفحة إدارة الأخبار بلوحة التحكم (Admin News Management Redesign & API Integration)
+- **الحالة:** مكتملة بنجاح (Frontend-Only متوافق 100% مع الباك إند وقاعدة البيانات القائمة).
+- **الالتزام بالقواعد:** لم يتم إجراء أي تعديل على ملفات الباك إند أو قاعدة البيانات أو الـ Schema أو Migrations أو Endpoints إطلاقاً.
+- **الملفات المنشأة والمعدلة:**
+  - `components/Admin/News/ArticleEditorModal.jsx`:
+    - نافذة إنشاء (`POST /api/admin/news/articles`) وتعديل (`PATCH /api/admin/news/articles/[id]`) المقالات الإخبارية.
+    - تدعم كل الحقول المعتمدة بقاعدة البيانات والباك إند: العنوان (`title`)، الاسم اللطيف (`slug`)، رابط المصدر الخارجي (`source_url`)، المصدر الإخباري (`source_id`) مع خيارات ديناميكية ومصادر بديلة للمحررين، تاريخ النشر (`published_on`)، دقة التاريخ (`date_precision` يوم/شهر)، رابط الغلاف (`image_url`)، النص البديل للصورة (`image_alt`)، محتوى المقال (`body`)، وأولويات التمييز والترتيب (`is_featured`, `sort_order`).
+    - تطبيق هوية الموقع واستماراته الرسمية بالكامل (`h-14`, `rounded-2xl`, `border-border`, التوهج الذهبي `focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]`) وزر الإغلاق التفاعلي الذهبي الدوّار `(X)`.
+  - `components/Admin/News/ArticleReviewModal.jsx`:
+    - نافذة فحص ومراجعة المقالات المخصصة لأدوار `super_admin` و `news_reviewer`.
+    - تتيح الموافقة والنشر الفوري (`POST /publish`)، أو طلب تعديلات مع تدوين ملاحظات المراجعة الإلزامية (`POST /request-changes`)، أو إلغاء النشر (`POST /unpublish`).
+    - تمنع المراجع من نشر مقال قام هو نفسه بإنشائه (Self-Publishing Prevention) مع عرض شريط تنبيهي توضيحي احتراماً لقيد الباك إند.
+  - `components/Admin/News/ArticleDeleteModal.jsx`:
+    - نافذة الحذف النهائي المخصصة حصرياً لـ `super_admin` عبر `DELETE /api/admin/news/articles/[id]` مع إرسال `{ confirm: true }`.
+  - `components/Admin/News/ArticleDetailsModal.jsx`:
+    - نافذة عرض تفاصيل المقال الكاملة والمستندات والبيانات الوصفية وسجل المراجعة والكاتب والمصدر ورابط التغطية الخارجية.
+  - `app/admin/news/page.jsx`:
+    - واجهة إدارة الأخبار المتكاملة المربوطة بالـ APIs وقاعدة البيانات.
+    - شريط أدوار تفاعلي يوضح صلاحيات المستخدم الحالي (`news_editor`, `news_reviewer`, `super_admin`).
+    - تبويبات مقسمة بحالات دورة حياة المقال الحقيقية: «الكل»، «مسودة» (`draft`)، «قيد المراجعة» (`pending_review`)، «مطلوب تعديلات» (`changes_requested`)، «منشور» (`published`).
+    - أدوات بحث وفلترة متقدمة (بحث نصي، فلترة بالمصدر الإخباري، فلترة بالمؤلف، فلترة بالمقالات المميزة) باستخدام مكون `CustomSelect` الرسمي والتصميم الموحد.
+    - جدول مقالات تفاعلي يعرض الصور المصغرة، العناوين، المصادر، المحررين، التواريخ المنسقة بالعربية، والحالات.
+    - أزرار إجراءات ذكية مخصصة تتغير بحسب حالة المقال ودور المستخدم (عرض التفاصيل، تقديم للمراجعة، مراجعة، تعديل، حذف، إلخ).
+    - شريط ترقيم صفحات (Pagination) بالأرقام المشرقية والتنقل بين الصفحات والنتائج.
+- **التحقق:**
+  - `npm test`: جميع الاختبارات (267/267) ناجحة بنسبة 100%.
+  - `npx eslint`: فحص شامل لملفات الأخبار الجديدة بنجاح تام (0 errors, 0 warnings).
+
+---
+
+## المرحلة D4.1: تحويل حقل مصدر الخبر إلى إدخال يدوي وتفعيل رفع صور الغلاف الحقيقية (Manual News Source Input & Real Cover Image Upload)
+- **الحالة:** مكتملة بنجاح (Full-Stack).
+- **التعديلات على قاعدة البيانات (Database Schema & Migration):**
+  - إنشاء وتطبيق Migration آمن وقابل للرجوع `20261119130000_news_source_text`:
+    - إضافة عمود `source_name text` في جدول `news_articles`.
+    - جعل عمود `source_id` اختياري (`DROP NOT NULL`) دون المساس بجدول `news_sources` أو علاقات المفتاح الأجنبي.
+    - ترحيل البيانات التاريخية بالكامل (Backfill): تحديث جميع المقالات السابقة تلقائياً بنسخ اسم المصدر العربي من `news_sources.name_ar` إلى `source_name` لضمان عدم فقدان أي بيانات تاريخية (الحفاظ التام على المقالات الأربعة القائمة).
+  - تحديث `prisma/schema.prisma` وإعادة توليد Prisma Client بنجاح (`source_name String?`, `source_id Int? @db.SmallInt`, `source news_sources?`).
+- **خدمة وإدارة رفع وتخزين الصور (File Upload & Storage Service):**
+  - إنشاء `lib/services/news-storage.js`:
+    - دالة `saveUploadedNewsImage`: التحقق الصارم من توقيع الملف (Magic Bytes) لكل من JPG و PNG و WebP ورفض أي ملفات مزيفة أو غير متوافقة، والتحقق من الحد الأقصى للحجم (5 MB)، وتوليد اسم ملف آمن وفريد باستخدام UUID لمنع أي تعارض، وحفظ الملف في المسار الفعلي `public/uploads/news/news-<uuid>.<ext>`.
+    - دالة `safeDeleteUploadedNewsImage`: منع تراكم الملفات المهملة (Orphaned Files) عبر الحذف الآمن للملفات عند استبدال صورة الغلاف في المقال أو عند حذفه نهائياً، مع حماية مسارات النظام والأصول الثابتة من أي حذف خاطئ.
+  - إنشاء المسار البرمجي `POST /api/admin/news/upload` في `app/api/admin/news/upload/route.js`، مع حماية الصلاحيات (`news:create` أو `super_admin`) ومعالجة `multipart/form-data`.
+  - تحديث `lib/news/http.js` لدعم معالجة `multipart/form-data` مع إمكانية رفع وحفظ الصور مباشرة من الطلب.
+- **تحديث التحقق والخدمات (Validation & Services):**
+  - `lib/validation/news.js`: تحديث `articleCreateSchema` و `articleUpdateSchema` لقبول `source_name` كنص يدوي من 2 إلى 200 حرف، مع بقاء `source_id` اختيارياً والتوافق التام مع الاختبارات السابقة.
+  - `lib/services/news-articles.js`:
+    - دعم حفظ واسترجاع `source_name` في `articleAdminSelect`, `articlePublicListSelect`, `articlePublicDetailSelect`.
+    - ربط `source_id` تلقائياً بالمصدر المطابق في `news_sources` إن وجد.
+    - حذف صور الغلاف القديمة عند استبدالها بصورة جديدة أو عند حذف المقال.
+  - `lib/news/formatting.js`: تحديث `mapArticleToPublicItem` ليعتمد على `source_name` مع fallback لـ `source.name_ar`.
+- **تحديث واجهة المستخدم (Admin Frontend UX):**
+  - `components/Admin/News/ArticleEditorModal.jsx`:
+    - استبدال القائمة المنسدلة لحقل «مصدر الخبر المعتمد» بحقل إدخال نصي قياسي يقبل كتابة أي اسم مصدر يدوياً مع الاحتفاظ بستايل الموقع الرسمي (`h-14`, `rounded-2xl`, `border-border`, التوهج الذهبي `focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]`).
+    - استبدال حقل إدخال رابط الصورة بمكون رفع ملفات حقيقي متكامل يدعم السحب والإفلات (Drag & Drop) أو النقر للاختيار.
+    - عرض معاينة فورية للصورة المحددة أو صورة الغلاف الحالية عند التعديل، مع أزرار واضحة لـ «استبدال الصورة» و «حذف الصورة»، مع حقل النص البديل (Alt text).
+  - `components/Admin/News/ArticleDetailsModal.jsx`: عرض `source_name` المحفوظ يدوياً بدقة.
+  - `app/admin/news/page.jsx`: عرض `source_name` مباشرة في جدول المقالات.
+- **التحقق:**
+  - `npm test`: جميع الاختبارات (272/272) ناجحة بنسبة 100% (بما فيها 5 اختبارات جديدة لخدمة التخزين والرفع والتحقق).
+  - `npx eslint`: فحص شامل وخالٍ تماماً من أي أخطاء أو تحذيرات (0 errors, 0 warnings).
+
+---
+
+## المرحلة D4.2: تطوير شريط تبويبات الحالات كأزرار تفاعلية بالتدرج الذهبي (Status Tabs Golden Gradient Buttons & Enhanced Micro-Interactions)
+- **الحالة:** مكتملة بنجاح (Frontend UI/UX).
+- **الملفات المعدلة:**
+  - `app/admin/applications/page.jsx`:
+    - تحويل تبويبات حالات طلبات الانضمام إلى أزرار مستقلة مرتفعة (`rounded-xl px-5 py-2.5`) داخل حاوية أنيقة مدمجة (`rounded-2xl bg-page/70 border border-line shadow-2xs`).
+    - الزر المحدد/النشط: تدرج ذهبي رسمي فاخر (`bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.03]`).
+    - الأزرار غير النشطة: أزرار بيضاء ناصعة محددة بحدود وظلال خفيفة (`bg-white text-muted border border-line shadow-2xs`) مع تأثيرات تمرير جذابة (`hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:shadow-xs hover:scale-105 hover:-translate-y-0.5`).
+    - إضافة حلقة بيضاء مضيئة لنقطة الحالة عند التحديد وتكبيرها عند التمرير (`group-hover:scale-125`) مع استجابة ضغط ناعمة (`active:scale-95`).
+  - `app/admin/service-requests/page.jsx`: تطبيق نفس تصميم الأزرار الذهبية التفاعلية والانتقالات على شريط حالات طلبات الخدمات لتطابق الهوية البصرية بنسبة 100%.
+  - `app/admin/news/page.jsx`: توحيد شريط حالات الأخبار بنفس التصميم الذهبي الفاخر والانتقالات السلسة.
+- **التحقق:**
+  - `npm test`: جميع الاختبارات (272/272) ناجحة بنسبة 100%.
+  - `npx eslint`: فحص شامل لجميع الصفحات المعدلة بنجاح تام (0 errors, 0 warnings).
+
+
+

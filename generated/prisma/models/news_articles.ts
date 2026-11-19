@@ -43,6 +43,7 @@ export type News_articlesMinAggregateOutputType = {
   body: string | null
   image_url: string | null
   image_alt: string | null
+  source_name: string | null
   source_id: number | null
   source_url: string | null
   published_on: Date | null
@@ -67,6 +68,7 @@ export type News_articlesMaxAggregateOutputType = {
   body: string | null
   image_url: string | null
   image_alt: string | null
+  source_name: string | null
   source_id: number | null
   source_url: string | null
   published_on: Date | null
@@ -91,6 +93,7 @@ export type News_articlesCountAggregateOutputType = {
   body: number
   image_url: number
   image_alt: number
+  source_name: number
   source_id: number
   source_url: number
   published_on: number
@@ -127,6 +130,7 @@ export type News_articlesMinAggregateInputType = {
   body?: true
   image_url?: true
   image_alt?: true
+  source_name?: true
   source_id?: true
   source_url?: true
   published_on?: true
@@ -151,6 +155,7 @@ export type News_articlesMaxAggregateInputType = {
   body?: true
   image_url?: true
   image_alt?: true
+  source_name?: true
   source_id?: true
   source_url?: true
   published_on?: true
@@ -175,6 +180,7 @@ export type News_articlesCountAggregateInputType = {
   body?: true
   image_url?: true
   image_alt?: true
+  source_name?: true
   source_id?: true
   source_url?: true
   published_on?: true
@@ -286,7 +292,8 @@ export type News_articlesGroupByOutputType = {
   body: string
   image_url: string | null
   image_alt: string | null
-  source_id: number
+  source_name: string | null
+  source_id: number | null
   source_url: string | null
   published_on: Date
   date_precision: string
@@ -333,7 +340,8 @@ export type news_articlesWhereInput = {
   body?: Prisma.StringFilter<"news_articles"> | string
   image_url?: Prisma.StringNullableFilter<"news_articles"> | string | null
   image_alt?: Prisma.StringNullableFilter<"news_articles"> | string | null
-  source_id?: Prisma.IntFilter<"news_articles"> | number
+  source_name?: Prisma.StringNullableFilter<"news_articles"> | string | null
+  source_id?: Prisma.IntNullableFilter<"news_articles"> | number | null
   source_url?: Prisma.StringNullableFilter<"news_articles"> | string | null
   published_on?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   date_precision?: Prisma.StringFilter<"news_articles"> | string
@@ -348,7 +356,7 @@ export type news_articlesWhereInput = {
   updated_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
   created_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
-  source?: Prisma.XOR<Prisma.News_sourcesScalarRelationFilter, Prisma.news_sourcesWhereInput>
+  source?: Prisma.XOR<Prisma.News_sourcesNullableScalarRelationFilter, Prisma.news_sourcesWhereInput> | null
   updated_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
   created_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
   reviewed_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
@@ -361,7 +369,8 @@ export type news_articlesOrderByWithRelationInput = {
   body?: Prisma.SortOrder
   image_url?: Prisma.SortOrderInput | Prisma.SortOrder
   image_alt?: Prisma.SortOrderInput | Prisma.SortOrder
-  source_id?: Prisma.SortOrder
+  source_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  source_id?: Prisma.SortOrderInput | Prisma.SortOrder
   source_url?: Prisma.SortOrderInput | Prisma.SortOrder
   published_on?: Prisma.SortOrder
   date_precision?: Prisma.SortOrder
@@ -392,7 +401,8 @@ export type news_articlesWhereUniqueInput = Prisma.AtLeast<{
   body?: Prisma.StringFilter<"news_articles"> | string
   image_url?: Prisma.StringNullableFilter<"news_articles"> | string | null
   image_alt?: Prisma.StringNullableFilter<"news_articles"> | string | null
-  source_id?: Prisma.IntFilter<"news_articles"> | number
+  source_name?: Prisma.StringNullableFilter<"news_articles"> | string | null
+  source_id?: Prisma.IntNullableFilter<"news_articles"> | number | null
   source_url?: Prisma.StringNullableFilter<"news_articles"> | string | null
   published_on?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   date_precision?: Prisma.StringFilter<"news_articles"> | string
@@ -407,7 +417,7 @@ export type news_articlesWhereUniqueInput = Prisma.AtLeast<{
   updated_by?: Prisma.UuidNullableFilter<"news_articles"> | string | null
   created_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"news_articles"> | Date | string
-  source?: Prisma.XOR<Prisma.News_sourcesScalarRelationFilter, Prisma.news_sourcesWhereInput>
+  source?: Prisma.XOR<Prisma.News_sourcesNullableScalarRelationFilter, Prisma.news_sourcesWhereInput> | null
   updated_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
   created_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
   reviewed_by_user?: Prisma.XOR<Prisma.Staff_usersNullableScalarRelationFilter, Prisma.staff_usersWhereInput> | null
@@ -420,7 +430,8 @@ export type news_articlesOrderByWithAggregationInput = {
   body?: Prisma.SortOrder
   image_url?: Prisma.SortOrderInput | Prisma.SortOrder
   image_alt?: Prisma.SortOrderInput | Prisma.SortOrder
-  source_id?: Prisma.SortOrder
+  source_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  source_id?: Prisma.SortOrderInput | Prisma.SortOrder
   source_url?: Prisma.SortOrderInput | Prisma.SortOrder
   published_on?: Prisma.SortOrder
   date_precision?: Prisma.SortOrder
@@ -452,7 +463,8 @@ export type news_articlesScalarWhereWithAggregatesInput = {
   body?: Prisma.StringWithAggregatesFilter<"news_articles"> | string
   image_url?: Prisma.StringNullableWithAggregatesFilter<"news_articles"> | string | null
   image_alt?: Prisma.StringNullableWithAggregatesFilter<"news_articles"> | string | null
-  source_id?: Prisma.IntWithAggregatesFilter<"news_articles"> | number
+  source_name?: Prisma.StringNullableWithAggregatesFilter<"news_articles"> | string | null
+  source_id?: Prisma.IntNullableWithAggregatesFilter<"news_articles"> | number | null
   source_url?: Prisma.StringNullableWithAggregatesFilter<"news_articles"> | string | null
   published_on?: Prisma.DateTimeWithAggregatesFilter<"news_articles"> | Date | string
   date_precision?: Prisma.StringWithAggregatesFilter<"news_articles"> | string
@@ -476,6 +488,7 @@ export type news_articlesCreateInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
+  source_name?: string | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -487,7 +500,7 @@ export type news_articlesCreateInput = {
   review_note?: string | null
   created_at?: Date | string
   updated_at?: Date | string
-  source: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
+  source?: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_news_articlesInput
   created_by_user?: Prisma.staff_usersCreateNestedOneWithoutCreated_news_articlesInput
   reviewed_by_user?: Prisma.staff_usersCreateNestedOneWithoutReviewed_news_articlesInput
@@ -500,7 +513,8 @@ export type news_articlesUncheckedCreateInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
-  source_id: number
+  source_name?: string | null
+  source_id?: number | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -524,6 +538,7 @@ export type news_articlesUpdateInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -535,7 +550,7 @@ export type news_articlesUpdateInput = {
   review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  source?: Prisma.news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput
+  source?: Prisma.news_sourcesUpdateOneWithoutNews_articlesNestedInput
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput
   created_by_user?: Prisma.staff_usersUpdateOneWithoutCreated_news_articlesNestedInput
   reviewed_by_user?: Prisma.staff_usersUpdateOneWithoutReviewed_news_articlesNestedInput
@@ -548,7 +563,8 @@ export type news_articlesUncheckedUpdateInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -572,7 +588,8 @@ export type news_articlesCreateManyInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
-  source_id: number
+  source_name?: string | null
+  source_id?: number | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -596,6 +613,7 @@ export type news_articlesUpdateManyMutationInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -616,7 +634,8 @@ export type news_articlesUncheckedUpdateManyInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -650,6 +669,7 @@ export type news_articlesCountOrderByAggregateInput = {
   body?: Prisma.SortOrder
   image_url?: Prisma.SortOrder
   image_alt?: Prisma.SortOrder
+  source_name?: Prisma.SortOrder
   source_id?: Prisma.SortOrder
   source_url?: Prisma.SortOrder
   published_on?: Prisma.SortOrder
@@ -679,6 +699,7 @@ export type news_articlesMaxOrderByAggregateInput = {
   body?: Prisma.SortOrder
   image_url?: Prisma.SortOrder
   image_alt?: Prisma.SortOrder
+  source_name?: Prisma.SortOrder
   source_id?: Prisma.SortOrder
   source_url?: Prisma.SortOrder
   published_on?: Prisma.SortOrder
@@ -703,6 +724,7 @@ export type news_articlesMinOrderByAggregateInput = {
   body?: Prisma.SortOrder
   image_url?: Prisma.SortOrder
   image_alt?: Prisma.SortOrder
+  source_name?: Prisma.SortOrder
   source_id?: Prisma.SortOrder
   source_url?: Prisma.SortOrder
   published_on?: Prisma.SortOrder
@@ -904,6 +926,7 @@ export type news_articlesCreateWithoutUpdated_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
+  source_name?: string | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -915,7 +938,7 @@ export type news_articlesCreateWithoutUpdated_by_userInput = {
   review_note?: string | null
   created_at?: Date | string
   updated_at?: Date | string
-  source: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
+  source?: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
   created_by_user?: Prisma.staff_usersCreateNestedOneWithoutCreated_news_articlesInput
   reviewed_by_user?: Prisma.staff_usersCreateNestedOneWithoutReviewed_news_articlesInput
 }
@@ -927,7 +950,8 @@ export type news_articlesUncheckedCreateWithoutUpdated_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
-  source_id: number
+  source_name?: string | null
+  source_id?: number | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -960,6 +984,7 @@ export type news_articlesCreateWithoutCreated_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
+  source_name?: string | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -971,7 +996,7 @@ export type news_articlesCreateWithoutCreated_by_userInput = {
   review_note?: string | null
   created_at?: Date | string
   updated_at?: Date | string
-  source: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
+  source?: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_news_articlesInput
   reviewed_by_user?: Prisma.staff_usersCreateNestedOneWithoutReviewed_news_articlesInput
 }
@@ -983,7 +1008,8 @@ export type news_articlesUncheckedCreateWithoutCreated_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
-  source_id: number
+  source_name?: string | null
+  source_id?: number | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1016,6 +1042,7 @@ export type news_articlesCreateWithoutReviewed_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
+  source_name?: string | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1027,7 +1054,7 @@ export type news_articlesCreateWithoutReviewed_by_userInput = {
   review_note?: string | null
   created_at?: Date | string
   updated_at?: Date | string
-  source: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
+  source?: Prisma.news_sourcesCreateNestedOneWithoutNews_articlesInput
   updated_by_user?: Prisma.staff_usersCreateNestedOneWithoutUpdated_news_articlesInput
   created_by_user?: Prisma.staff_usersCreateNestedOneWithoutCreated_news_articlesInput
 }
@@ -1039,7 +1066,8 @@ export type news_articlesUncheckedCreateWithoutReviewed_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
-  source_id: number
+  source_name?: string | null
+  source_id?: number | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1091,7 +1119,8 @@ export type news_articlesScalarWhereInput = {
   body?: Prisma.StringFilter<"news_articles"> | string
   image_url?: Prisma.StringNullableFilter<"news_articles"> | string | null
   image_alt?: Prisma.StringNullableFilter<"news_articles"> | string | null
-  source_id?: Prisma.IntFilter<"news_articles"> | number
+  source_name?: Prisma.StringNullableFilter<"news_articles"> | string | null
+  source_id?: Prisma.IntNullableFilter<"news_articles"> | number | null
   source_url?: Prisma.StringNullableFilter<"news_articles"> | string | null
   published_on?: Prisma.DateTimeFilter<"news_articles"> | Date | string
   date_precision?: Prisma.StringFilter<"news_articles"> | string
@@ -1147,6 +1176,7 @@ export type news_articlesCreateWithoutSourceInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
+  source_name?: string | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1170,6 +1200,7 @@ export type news_articlesUncheckedCreateWithoutSourceInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
+  source_name?: string | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1219,7 +1250,8 @@ export type news_articlesCreateManyUpdated_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
-  source_id: number
+  source_name?: string | null
+  source_id?: number | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1242,7 +1274,8 @@ export type news_articlesCreateManyCreated_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
-  source_id: number
+  source_name?: string | null
+  source_id?: number | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1265,7 +1298,8 @@ export type news_articlesCreateManyReviewed_by_userInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
-  source_id: number
+  source_name?: string | null
+  source_id?: number | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1288,6 +1322,7 @@ export type news_articlesUpdateWithoutUpdated_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1299,7 +1334,7 @@ export type news_articlesUpdateWithoutUpdated_by_userInput = {
   review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  source?: Prisma.news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput
+  source?: Prisma.news_sourcesUpdateOneWithoutNews_articlesNestedInput
   created_by_user?: Prisma.staff_usersUpdateOneWithoutCreated_news_articlesNestedInput
   reviewed_by_user?: Prisma.staff_usersUpdateOneWithoutReviewed_news_articlesNestedInput
 }
@@ -1311,7 +1346,8 @@ export type news_articlesUncheckedUpdateWithoutUpdated_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1334,7 +1370,8 @@ export type news_articlesUncheckedUpdateManyWithoutUpdated_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1357,6 +1394,7 @@ export type news_articlesUpdateWithoutCreated_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1368,7 +1406,7 @@ export type news_articlesUpdateWithoutCreated_by_userInput = {
   review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  source?: Prisma.news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput
+  source?: Prisma.news_sourcesUpdateOneWithoutNews_articlesNestedInput
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput
   reviewed_by_user?: Prisma.staff_usersUpdateOneWithoutReviewed_news_articlesNestedInput
 }
@@ -1380,7 +1418,8 @@ export type news_articlesUncheckedUpdateWithoutCreated_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1403,7 +1442,8 @@ export type news_articlesUncheckedUpdateManyWithoutCreated_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1426,6 +1466,7 @@ export type news_articlesUpdateWithoutReviewed_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1437,7 +1478,7 @@ export type news_articlesUpdateWithoutReviewed_by_userInput = {
   review_note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  source?: Prisma.news_sourcesUpdateOneRequiredWithoutNews_articlesNestedInput
+  source?: Prisma.news_sourcesUpdateOneWithoutNews_articlesNestedInput
   updated_by_user?: Prisma.staff_usersUpdateOneWithoutUpdated_news_articlesNestedInput
   created_by_user?: Prisma.staff_usersUpdateOneWithoutCreated_news_articlesNestedInput
 }
@@ -1449,7 +1490,8 @@ export type news_articlesUncheckedUpdateWithoutReviewed_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1472,7 +1514,8 @@ export type news_articlesUncheckedUpdateManyWithoutReviewed_by_userInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  source_id?: Prisma.IntFieldUpdateOperationsInput | number
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1495,6 +1538,7 @@ export type news_articlesCreateManySourceInput = {
   body: string
   image_url?: string | null
   image_alt?: string | null
+  source_name?: string | null
   source_url?: string | null
   published_on: Date | string
   date_precision?: string
@@ -1518,6 +1562,7 @@ export type news_articlesUpdateWithoutSourceInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1541,6 +1586,7 @@ export type news_articlesUncheckedUpdateWithoutSourceInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1564,6 +1610,7 @@ export type news_articlesUncheckedUpdateManyWithoutSourceInput = {
   body?: Prisma.StringFieldUpdateOperationsInput | string
   image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_on?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   date_precision?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1589,6 +1636,7 @@ export type news_articlesSelect<ExtArgs extends runtime.Types.Extensions.Interna
   body?: boolean
   image_url?: boolean
   image_alt?: boolean
+  source_name?: boolean
   source_id?: boolean
   source_url?: boolean
   published_on?: boolean
@@ -1604,7 +1652,7 @@ export type news_articlesSelect<ExtArgs extends runtime.Types.Extensions.Interna
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
-  source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
+  source?: boolean | Prisma.news_articles$sourceArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
   created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
   reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
@@ -1617,6 +1665,7 @@ export type news_articlesSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   body?: boolean
   image_url?: boolean
   image_alt?: boolean
+  source_name?: boolean
   source_id?: boolean
   source_url?: boolean
   published_on?: boolean
@@ -1632,7 +1681,7 @@ export type news_articlesSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
-  source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
+  source?: boolean | Prisma.news_articles$sourceArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
   created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
   reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
@@ -1645,6 +1694,7 @@ export type news_articlesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   body?: boolean
   image_url?: boolean
   image_alt?: boolean
+  source_name?: boolean
   source_id?: boolean
   source_url?: boolean
   published_on?: boolean
@@ -1660,7 +1710,7 @@ export type news_articlesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   updated_by?: boolean
   created_at?: boolean
   updated_at?: boolean
-  source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
+  source?: boolean | Prisma.news_articles$sourceArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
   created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
   reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
@@ -1673,6 +1723,7 @@ export type news_articlesSelectScalar = {
   body?: boolean
   image_url?: boolean
   image_alt?: boolean
+  source_name?: boolean
   source_id?: boolean
   source_url?: boolean
   published_on?: boolean
@@ -1690,21 +1741,21 @@ export type news_articlesSelectScalar = {
   updated_at?: boolean
 }
 
-export type news_articlesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "body" | "image_url" | "image_alt" | "source_id" | "source_url" | "published_on" | "date_precision" | "is_featured" | "sort_order" | "is_published" | "status" | "created_by" | "reviewed_by" | "reviewed_at" | "review_note" | "updated_by" | "created_at" | "updated_at", ExtArgs["result"]["news_articles"]>
+export type news_articlesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "body" | "image_url" | "image_alt" | "source_name" | "source_id" | "source_url" | "published_on" | "date_precision" | "is_featured" | "sort_order" | "is_published" | "status" | "created_by" | "reviewed_by" | "reviewed_at" | "review_note" | "updated_by" | "created_at" | "updated_at", ExtArgs["result"]["news_articles"]>
 export type news_articlesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
+  source?: boolean | Prisma.news_articles$sourceArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
   created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
   reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
 }
 export type news_articlesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
+  source?: boolean | Prisma.news_articles$sourceArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
   created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
   reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
 }
 export type news_articlesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  source?: boolean | Prisma.news_sourcesDefaultArgs<ExtArgs>
+  source?: boolean | Prisma.news_articles$sourceArgs<ExtArgs>
   updated_by_user?: boolean | Prisma.news_articles$updated_by_userArgs<ExtArgs>
   created_by_user?: boolean | Prisma.news_articles$created_by_userArgs<ExtArgs>
   reviewed_by_user?: boolean | Prisma.news_articles$reviewed_by_userArgs<ExtArgs>
@@ -1713,7 +1764,7 @@ export type news_articlesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Type
 export type $news_articlesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "news_articles"
   objects: {
-    source: Prisma.$news_sourcesPayload<ExtArgs>
+    source: Prisma.$news_sourcesPayload<ExtArgs> | null
     updated_by_user: Prisma.$staff_usersPayload<ExtArgs> | null
     created_by_user: Prisma.$staff_usersPayload<ExtArgs> | null
     reviewed_by_user: Prisma.$staff_usersPayload<ExtArgs> | null
@@ -1725,7 +1776,8 @@ export type $news_articlesPayload<ExtArgs extends runtime.Types.Extensions.Inter
     body: string
     image_url: string | null
     image_alt: string | null
-    source_id: number
+    source_name: string | null
+    source_id: number | null
     source_url: string | null
     published_on: Date
     date_precision: string
@@ -2134,7 +2186,7 @@ readonly fields: news_articlesFieldRefs;
  */
 export interface Prisma__news_articlesClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  source<T extends Prisma.news_sourcesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_sourcesDefaultArgs<ExtArgs>>): Prisma.Prisma__news_sourcesClient<runtime.Types.Result.GetResult<Prisma.$news_sourcesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  source<T extends Prisma.news_articles$sourceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_articles$sourceArgs<ExtArgs>>): Prisma.Prisma__news_sourcesClient<runtime.Types.Result.GetResult<Prisma.$news_sourcesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   updated_by_user<T extends Prisma.news_articles$updated_by_userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_articles$updated_by_userArgs<ExtArgs>>): Prisma.Prisma__staff_usersClient<runtime.Types.Result.GetResult<Prisma.$staff_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   created_by_user<T extends Prisma.news_articles$created_by_userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_articles$created_by_userArgs<ExtArgs>>): Prisma.Prisma__staff_usersClient<runtime.Types.Result.GetResult<Prisma.$staff_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   reviewed_by_user<T extends Prisma.news_articles$reviewed_by_userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.news_articles$reviewed_by_userArgs<ExtArgs>>): Prisma.Prisma__staff_usersClient<runtime.Types.Result.GetResult<Prisma.$staff_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -2173,6 +2225,7 @@ export interface news_articlesFieldRefs {
   readonly body: Prisma.FieldRef<"news_articles", 'String'>
   readonly image_url: Prisma.FieldRef<"news_articles", 'String'>
   readonly image_alt: Prisma.FieldRef<"news_articles", 'String'>
+  readonly source_name: Prisma.FieldRef<"news_articles", 'String'>
   readonly source_id: Prisma.FieldRef<"news_articles", 'Int'>
   readonly source_url: Prisma.FieldRef<"news_articles", 'String'>
   readonly published_on: Prisma.FieldRef<"news_articles", 'DateTime'>
@@ -2586,6 +2639,25 @@ export type news_articlesDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many news_articles to delete.
    */
   limit?: number
+}
+
+/**
+ * news_articles.source
+ */
+export type news_articles$sourceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the news_sources
+   */
+  select?: Prisma.news_sourcesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the news_sources
+   */
+  omit?: Prisma.news_sourcesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.news_sourcesInclude<ExtArgs> | null
+  where?: Prisma.news_sourcesWhereInput
 }
 
 /**
