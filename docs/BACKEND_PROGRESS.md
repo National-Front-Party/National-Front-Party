@@ -848,3 +848,26 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق والاختبارات:**
   - `npx eslint components/Admin/ui/ActionDropdown.jsx app/admin/applications/page.jsx app/admin/service-requests/page.jsx app/admin/news/page.jsx`: 0 errors, 0 warnings.
   - `npm test`: جميع الاختبارات (272/272) ناجحة بنسبة 100%.
+
+---
+
+## مرحلة D5.3: ربط قائمة مصادر الأخبار من الداتا بيز وتحسين تجاوب شريط فلاتر الحالات (News Active Sources & Zero-Scroll Tabs)
+- **الحالة:** مكتملة بنجاح (Frontend UI/UX Enhancement).
+- **الأهداف المنجزة:**
+  1. **ربط قائمة مصادر الأخبار في محرر المقال (`ArticleEditorModal.jsx`):**
+     - استبدال حقل الإدخال النصي اليدوي لمصدر الخبر بقائمة منسدلة أنيقة باستخدام المكون المعتمد للموقع `CustomSelect` مع الهوية البصرية الرسمية (ارتفاع `h-14`، حواف `rounded-2xl`، إطار وتوهج ذهبي متناسق).
+     - استدعاء المصادر المعتمدة مباشرة من قاعدة البيانات عبر مسار الـ API `GET /api/admin/news/sources?is_active=true&page_size=100`.
+     - **استبعاد المصادر المعطلة بدقة:** تم تطبيق فلترة صارمة `is_active === true` بحيث لا تظهر إطلاقاً أي مصادر صحفية تم تعطيلها مؤقتاً في لوحة التحكم، تلبيةً لتعليمات المستخدم بدقة.
+     - ربط المعرف اللطيف والرقمي `source_id` و`source_name` وإرسال البيانات للباك إند بتوافق كامل مع مخطط التحقق `articleCreateSchema` و `articleUpdateSchema`.
+  2. **تحسين تجاوب شريط فلاتر حالات الأخبار (`Status Segmented Tabs`):**
+     - إلغاء التمرير الأفقي `overflow-x-auto` تماماً لتجنب مشكلة الـ scrollbar على الموبايل والشاشات الصغيرة مع الحفاظ على التناسق البصري الجذاب.
+     - اعتماد نظام عرض متجاوب ذكي:
+       - **على الشاشات الكبيرة (Desktop):** تم تحويل الحاوية إلى `sm:w-auto sm:inline-flex` بدلاً من الامتداد الكامل للشاشة؛ مما يلغي المساحة الرمادية الفارغة الطويلة على اليسار ويجعل الشريط يلتف بأناقة حول التبويبات فقط.
+       - **على الشاشات الصغيرة (Mobile):** الحاوية تشغل العرض كاملاً `w-full flex` مع تقسيم متساوٍ ومتوازن `flex-1 min-w-0` لكل تبويب مع نصوص عربية مختصرة وبليغة (`الكل`, `مسودة`, `للمراجعة`, `تعديلات`, `منشور`) تمنع أي شريط تمرير أو تداخل في النصوص على الشاشات حتى 360px.
+- **الملفات المعدلة:**
+  - `components/Admin/News/ArticleEditorModal.jsx` (ربط `CustomSelect` بالمصادر النشطة فقط مع التوافق التام مع API).
+  - `app/admin/news/page.jsx` (تحديث جلب المصادر النشطة وإعادة تصميم شريط التبويبات المتجاوب بدون scroll).
+  - `docs/BACKEND_PROGRESS.md` (توثيق المرحلة).
+- **التحقق والاختبارات:**
+  - `npx eslint components/Admin/News/ArticleEditorModal.jsx app/admin/news/page.jsx`: خالي تماماً من الأخطاء (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 272 ناجحة بنسبة 100% (272 pass, 0 fail).
