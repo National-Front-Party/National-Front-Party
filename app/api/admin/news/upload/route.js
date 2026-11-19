@@ -1,6 +1,6 @@
-import { requireStaff } from "../../../../lib/auth/guard.js";
-import { jsonResponse } from "../../../../lib/auth/http.js";
-import { saveUploadedNewsImage } from "../../../../lib/services/news-storage.js";
+import { requireStaff } from "../../../../../lib/auth/guard.js";
+import { jsonResponse } from "../../../../../lib/auth/http.js";
+import { saveUploadedNewsImage } from "../../../../../lib/services/news-storage.js";
 
 export async function POST(request) {
   const staff = await requireStaff(request);

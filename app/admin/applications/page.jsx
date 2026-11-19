@@ -114,6 +114,7 @@ export default function ApplicationsPage() {
   // Quick Action States
   const [quickAcceptTarget, setQuickAcceptTarget] = useState(null);
   const [quickRejectTarget, setQuickRejectTarget] = useState(null);
+  const [targetDeleteApp, setTargetDeleteApp] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [actionInProgressId, setActionInProgressId] = useState(null);
 
@@ -375,6 +376,26 @@ export default function ApplicationsPage() {
       setRejectReason("");
     } catch (err) {
       showError(err.message || "تعذر رفض الطلب");
+    } finally {
+      setActionInProgressId(null);
+    }
+  };
+
+  // Handle Application Deletion
+  const handleConfirmDeleteApp = async () => {
+    if (!targetDeleteApp) return;
+    setActionInProgressId(targetDeleteApp.id);
+    try {
+      await adminFetch(`/api/admin/applications/${targetDeleteApp.id}`, {
+        method: "DELETE",
+        body: JSON.stringify({ confirm: true }),
+      });
+      showSuccess(`تم حذف طلب الانضمام رقم #${targetDeleteApp.application_no} نهائياً`);
+      setApplications((prev) => prev.filter((item) => item.id !== targetDeleteApp.id));
+      setPagination((prev) => ({ ...prev, total: Math.max(0, prev.total - 1) }));
+      setTargetDeleteApp(null);
+    } catch (err) {
+      showError(err.message || "تعذر حذف طلب الانضمام");
     } finally {
       setActionInProgressId(null);
     }
@@ -836,11 +857,26 @@ export default function ApplicationsPage() {
                           <button
                             type="button"
                             onClick={() => handleOpenDetails(app.id)}
-                            className="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint hover:text-gold-dark shadow-2xs"
+                            className="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint hover:text-gold-dark shadow-2xs hover:scale-105 active:scale-95"
                           >
                             <span>التفاصيل</span>
                             <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                               <path d="M15 18l-6-6 6-6" />
+                            </svg>
+                          </button>
+
+                          {/* Delete Button */}
+                          <button
+                            type="button"
+                            disabled={actionInProgressId === app.id}
+                            onClick={() => setTargetDeleteApp(app)}
+                            className="inline-flex size-7.5 items-center justify-center rounded-xl border border-rose-200 bg-rose-50/70 text-rose-700 shadow-2xs transition-all duration-200 hover:bg-rose-100 hover:border-rose-300 hover:scale-110 active:scale-95 disabled:opacity-50"
+                            title="حذف هذا الطلب نهائياً"
+                            aria-label="حذف طلب الانضمام"
+                          >
+                            <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                             </svg>
                           </button>
                         </div>
@@ -1056,7 +1092,98 @@ export default function ApplicationsPage() {
         </div>
       )}
 
-      {/* 6. Application Details Modal */}
+      {/* 6. Delete Confirmation Modal */}
+      {targetDeleteApp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-fade-in">
+          <div className="relative w-full max-w-md rounded-3xl border border-line bg-white p-6 shadow-card animate-scale-up space-y-5 text-right">
+            {/* Header with red warning and rotating gold close button */}
+            <div className="flex items-center justify-between border-b border-line pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs">
+                  <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    <line x1="10" y1="11" x2="10" y2="17" />
+                    <line x1="14" y1="11" x2="14" y2="17" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-ink">تأكيد حذف طلب الانضمام</h3>
+                  <p className="text-xs text-muted">إجراء نهائي يتطلب تأكيداً مسبقاً</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTargetDeleteApp(null)}
+                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95"
+                aria-label="إغلاق النافذة"
+              >
+                <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Target details snippet */}
+            <div className="rounded-2xl border border-line bg-page/60 p-4 space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-muted">رقم الطلب:</span>
+                <span className="font-mono font-bold text-ink">#{targetDeleteApp.application_no}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">اسم المتقدم:</span>
+                <span className="font-bold text-ink">{targetDeleteApp.full_name}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">نوع الانضمام:</span>
+                <span className="font-bold text-ink">
+                  {TYPE_CONFIG[targetDeleteApp.application_type]?.label || targetDeleteApp.application_type}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">المحافظة:</span>
+                <span className="font-bold text-ink">{targetDeleteApp.governorate?.name_ar || "—"}</span>
+              </div>
+            </div>
+
+            {/* Warning alert */}
+            <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-3.5 text-xs text-rose-800 leading-relaxed font-medium">
+              ⚠️ <strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه. سيتم حذف هذا الطلب وسجل حالته بالكامل من قاعدة البيانات.
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={actionInProgressId === targetDeleteApp.id}
+                onClick={() => setTargetDeleteApp(null)}
+                className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs disabled:opacity-50"
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                disabled={actionInProgressId === targetDeleteApp.id}
+                onClick={handleConfirmDeleteApp}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all shadow-btn disabled:opacity-50 cursor-pointer"
+              >
+                {actionInProgressId === targetDeleteApp.id ? (
+                  <Spinner size="xs" color="white" />
+                ) : (
+                  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                )}
+                <span>تأكيد الحذف النهائي</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Application Details Modal */}
       <ApplicationDetailsModal
         applicationId={selectedAppId}
         isOpen={isModalOpen}

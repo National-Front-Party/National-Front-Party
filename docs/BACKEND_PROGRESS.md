@@ -704,5 +704,31 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
   - `npm test`: جميع الاختبارات (272/272) ناجحة بنسبة 100%.
   - `npx eslint`: فحص شامل لجميع الصفحات المعدلة بنجاح تام (0 errors, 0 warnings).
 
+---
+
+## المرحلة D4.3: تفعيل أزرار الحذف النهائي مع نوافذ التأكيد لطلبات الانضمام وطلبات الخدمات (Delete Buttons & Confirmation Modals)
+- **الحالة:** مكتملة بنجاح (Full-Stack).
+- **منطق وحماية الباك إند (Backend Endpoints & Services):**
+  - `lib/services/applications.js`:
+    - إضافة دالة `deleteApplication(applicationId, db)` لحذف طلب الانضمام ذرياً عبر Prisma transaction، مع معالجة قيد المفتاح الأجنبي الصارم (`RESTRICT`) بحذف سجل العضوية المرتبط في جدول `members` أولاً في حال كان الطلب مقبولاً مسبقاً، وحذف سجلات التغيير التابعة في `application_status_history` تلقائياً ثم حذف الطلب.
+  - `lib/services/service-requests.js`:
+    - إضافة دالة `deleteServiceRequest(id, db)` لحذف طلب الخدمة نهائياً من جدول `service_requests`.
+  - `app/api/admin/applications/[id]/route.js`:
+    - تصدير معالج `DELETE` للتحقق من مصادقة الموظف وصلاحياته (`super_admin` أو `membership_officer`) وتطبيق معيار التأكيد الصارم للعمليات الحساسة `{ confirm: true }` عبر `deleteConfirmSchema`.
+  - `app/api/admin/service-requests/[id]/route.js`:
+    - تصدير معالج `DELETE` للتحقق من مصادقة الموظف وصلاحياته (`super_admin` أو `service_officer`) وتطبيق معيار التأكيد الصارم `{ confirm: true }`.
+- **واجهة المستخدم وتجربة الاستخدام (Frontend UI/UX):**
+  - `app/admin/applications/page.jsx`:
+    - إضافة زر الحذف في عمود الإجراءات بالجدول بأيقونة سلة مهملات حمراء وتأثيرات حركية أنيقة (`hover:scale-110 active:scale-95`).
+    - نافذة تأكيد حذف عائمة (Confirmation Modal) متوافقة مع هوية الموقع: زر إغلاق ذهبي دوار `(X)`، تفاصيل الطلب المراد حذفه (الرقم، الاسم، النوع، المحافظة)، تحذير أحمر واضح بأن الإجراء نهائي ولا يمكن التراجع عنه، وزر تأكيد الحذف مع مؤشر تحميل تفاعلي (Spinner).
+    - تحديث فوري للمصفوفة المحلية والعدّاد الإجمالي بدون الحاجة لإعادة تحميل الصفحة بالكامل مع إشعار نجاح فوري (Toast).
+  - `app/admin/service-requests/page.jsx`:
+    - إضافة زر الحذف في عمود الإجراءات لكل صف طلب خدمة.
+    - نافذة تأكيد حذف متطابقة في الفخامة والأمان تتضمن تفاصيل المواطن، الوزارة، القطاع، ورقم الطلب، وتأكيد الحذف الصارم.
+- **التحقق:**
+  - `npm test`: جميع الاختبارات (272/272) ناجحة 100%.
+  - `npx eslint`: فحص شامل لجميع الملفات المعدلة بنجاح تام (0 errors, 0 warnings).
+
+
 
 
