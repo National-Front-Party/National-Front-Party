@@ -271,107 +271,104 @@ export default function NewsSourcesPage() {
   }
 
   return (
-    <div className="space-y-6" dir="rtl">
-      {/* 1. Header Section */}
-      <div className="relative overflow-hidden rounded-3xl border border-line bg-white p-6 sm:p-8 shadow-card animate-elem-fade-up">
-        {/* Decorative ambient gradient */}
-        <div className="pointer-events-none absolute -top-24 -left-24 size-72 rounded-full bg-gold-tint/40 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -right-24 size-72 rounded-full bg-gold/10 blur-3xl" />
-
-        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-          <div className="flex items-center gap-4">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
-              <Globe className="size-7" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold-tint/50 px-2.5 py-0.5 text-[11px] font-bold text-gold-dark">
-                  المحتوى الصحفي والإعلامي
-                </span>
-                <span className="text-[11px] text-muted">لوحة الإدارة الرسمية</span>
-              </div>
+    <div className="space-y-6 max-w-full" dir="rtl">
+      {/* 1. Page Header (Open, Breathable, Unboxed Layout) */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-elem-fade-up">
+        <div className="flex items-center gap-3.5">
+          <div className="flex size-12 sm:size-14 shrink-0 items-center justify-center rounded-2xl border border-gold/40 bg-gold-tint text-gold-dark shadow-2xs">
+            <Globe className="size-6 sm:size-7" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2.5">
               <h1 className="text-2xl sm:text-3xl font-black text-ink tracking-tight">
                 مصادر الأخبار المعتمدة
               </h1>
-              <p className="mt-1 text-xs sm:text-sm text-muted">
-                إدارة وتوثيق الصحف والمواقع الإخبارية والمنصات الصحفية المعتمدة لتوثيق مقالات الحزب
-              </p>
+              <span className="rounded-full border border-gold/40 bg-gold-tint px-3 py-0.5 text-xs font-black text-gold-dark shadow-2xs">
+                {toArabicDigits(pagination.total)} مصدر
+              </span>
             </div>
+            <p className="mt-1 text-xs sm:text-sm text-muted">
+              إدارة وتوثيق الصحف والمواقع الإخبارية والمنصات الصحفية المعتمدة لتوثيق مقالات الحزب
+            </p>
           </div>
+        </div>
 
-          {/* Primary Action Button: Add New Source */}
-          <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => fetchSources(pagination.page, false)}
-              disabled={refreshing || loading}
-              className="flex size-11 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-200 hover:border-gold hover:text-ink hover:bg-gold-tint/30 hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
-              title="تحديث البيانات"
-            >
-              <RotateCcw className={`size-4 ${refreshing ? "animate-spin text-gold-dark" : ""}`} />
-            </button>
+        {/* Primary Action Buttons */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => fetchSources(pagination.page, false)}
+            disabled={refreshing || loading}
+            className="flex size-11 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-200 hover:border-gold hover:text-ink hover:bg-gold-tint/40 hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+            title="تحديث البيانات"
+          >
+            <RotateCcw className={`size-4 ${refreshing ? "animate-spin text-gold-dark" : ""}`} />
+          </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setEditingSource(null);
-                setIsEditorOpen(true);
-              }}
-              className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs sm:text-sm font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)] hover:scale-[1.02] active:scale-95 cursor-pointer"
-            >
-              <Plus className="size-4 stroke-[2.5]" />
-              <span>إضافة مصدر جديد</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setEditingSource(null);
+              setIsEditorOpen(true);
+            }}
+            className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs sm:text-sm font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)] hover:scale-[1.02] active:scale-95 cursor-pointer"
+          >
+            <Plus className="size-4 stroke-[2.5]" />
+            <span>إضافة مصدر جديد</span>
+          </button>
         </div>
       </div>
 
-      {/* 2. Status Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-2xl bg-page/70 border border-line shadow-2xs [scrollbar-width:none] animate-elem-fade-up">
-        {[
-          { id: "all", label: "جميع المصادر", count: sources.length },
-          { id: "active", label: "المصادر المعتمدة", count: activeCount },
-          { id: "inactive", label: "المعطلة مؤقتاً", count: inactiveCount },
-        ].map((tab) => {
-          const isActive = statusTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setStatusTab(tab.id)}
-              className={`group relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 ${
-                isActive
-                  ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.03] hover:brightness-110"
-                  : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:scale-105"
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span
-                className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
+      {/* 2. Unified Controls Toolbar (Tabs + Search on the same clean row without heavy box wrappers) */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 animate-elem-fade-up">
+        {/* Status Filter Tabs */}
+        <div className="flex sm:inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-page/80 border border-line shadow-2xs w-full sm:w-auto overflow-hidden">
+          {[
+            { id: "all", label: "جميع المصادر", shortLabel: "الكل", count: sources.length },
+            { id: "active", label: "المصادر المعتمدة", shortLabel: "المعتمدة", count: activeCount },
+            { id: "inactive", label: "المعطلة مؤقتاً", shortLabel: "المعطلة", count: inactiveCount },
+          ].map((tab) => {
+            const isActive = statusTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setStatusTab(tab.id)}
+                className={`group relative flex flex-1 sm:flex-initial items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-2.5 sm:px-4 py-2 text-xs font-bold cursor-pointer transition-all duration-200 ease-out active:scale-95 select-none min-w-0 ${
                   isActive
-                    ? "bg-ink text-white"
-                    : "bg-page text-muted group-hover:bg-gold-tint group-hover:text-ink"
+                    ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.03] hover:brightness-110"
+                    : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:scale-105"
                 }`}
               >
-                {toArabicDigits(tab.count)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+                <span className="truncate">
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.shortLabel}</span>
+                </span>
+                <span
+                  className={`inline-flex items-center justify-center rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] font-bold shrink-0 ${
+                    isActive
+                      ? "bg-ink text-white"
+                      : "bg-page text-muted group-hover:bg-gold-tint group-hover:text-ink"
+                  }`}
+                >
+                  {toArabicDigits(tab.count)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-      {/* 3. Search Bar with Website Form Style */}
-      <div className="rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-card animate-elem-fade-up">
-        <div className="relative">
+        {/* Search Bar (Clean and compact, seamlessly integrated) */}
+        <div className="relative w-full md:w-80 shrink-0">
           <input
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="بحث فوري باسم المصدر الصحفي أو المعرف (Slug)..."
-            className="h-14 w-full rounded-2xl border border-border bg-white pr-4 pl-12 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
+            placeholder="بحث فوري باسم المصدر أو المعرف..."
+            className="h-11 w-full rounded-2xl border border-line bg-white pr-4 pl-10 text-right text-xs font-medium text-ink shadow-2xs transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
           />
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
-            <Search className="size-5" />
+          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
+            <Search className="size-4" />
           </span>
         </div>
       </div>
