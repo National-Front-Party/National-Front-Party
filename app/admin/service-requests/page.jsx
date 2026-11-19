@@ -2,6 +2,21 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import {
+  Check,
+  X,
+  Eye,
+  Trash2,
+  Clock,
+  Building2,
+  FileText,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  AlertTriangle,
+  MessageCircle,
+  Copy,
+} from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import { useAdminAuth } from "@/lib/admin/auth-context";
@@ -10,8 +25,9 @@ import Spinner from "@/components/Admin/ui/Spinner";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import CustomSelect from "@/components/Home/ui/CustomSelect";
 import ServiceRequestDetailsModal from "@/components/Admin/ServiceRequests/ServiceRequestDetailsModal";
+import ActionDropdown from "@/components/Admin/ui/ActionDropdown";
 
-// Status configuration
+// Status configuration & styling
 const STATUS_CONFIG = {
   new: {
     label: "جديد",
@@ -84,6 +100,8 @@ export default function ServiceRequestsPage() {
 
   const role = user?.role;
   const canView = canAccess(role, "service-requests");
+  const canUpdate = canAccess(role, "services:manage") || role === "super_admin";
+  const canBulkDelete = role === "super_admin" || canAccess(role, "records:delete");
 
   // Data & Pagination
   const [requests, setRequests] = useState([]);
@@ -114,6 +132,8 @@ export default function ServiceRequestsPage() {
   const [quickRejectTarget, setQuickRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [targetDeleteReq, setTargetDeleteReq] = useState(null);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
   const [actionInProgressId, setActionInProgressId] = useState(null);
 
   // Load Ministries for filter
@@ -344,7 +364,7 @@ export default function ServiceRequestsPage() {
     }
   };
 
-  // Handle Service Request Deletion
+  // Handle Single Service Request Deletion
   const handleConfirmDeleteReq = async () => {
     if (!targetDeleteReq) return;
     setActionInProgressId(targetDeleteReq.id);
@@ -364,14 +384,59 @@ export default function ServiceRequestsPage() {
     }
   };
 
+  // Handle Bulk Deletion (Current Page)
+  const handleConfirmBulkDeleteRequests = async () => {
+    if (!canBulkDelete || requests.length === 0) return;
+    setBulkDeleteLoading(true);
+
+    try {
+      const itemsToDelete = [...requests];
+      const deletePromises = itemsToDelete.map((req) =>
+        adminFetch(`/api/admin/service-requests/${req.id}`, {
+          method: "DELETE",
+          body: JSON.stringify({ confirm: true }),
+        })
+          .then(() => ({ success: true, id: req.id }))
+          .catch((err) => ({ success: false, id: req.id, error: err.message })),
+      );
+
+      const results = await Promise.allSettled(deletePromises);
+      const successfulCount = results.filter(
+        (r) => r.status === "fulfilled" && r.value.success,
+      ).length;
+
+      if (successfulCount > 0) {
+        showSuccess(
+          `تم بنجاح حذف ${toArabicDigits(successfulCount)} طلب من أصل ${toArabicDigits(itemsToDelete.length)} طلب بالصفحة`,
+        );
+      } else {
+        showError("فشل في حذف طلبات الصفحة الحالية، يرجى المحاولة لاحقاً");
+      }
+
+      setIsBulkDeleteModalOpen(false);
+      setLoading(true);
+
+      const targetPage =
+        successfulCount === itemsToDelete.length && pagination.page > 1
+          ? pagination.page - 1
+          : pagination.page;
+
+      fetchRequests(targetPage);
+    } catch (err) {
+      showError(err.message || "حدث خطأ أثناء تنفيذ الحذف الجماعي");
+    } finally {
+      setBulkDeleteLoading(false);
+    }
+  };
+
   // Copy helper
-  const handleCopyPhone = (phone) => {
+  const handleCopyPhone = useCallback((phone) => {
     if (!phone) return;
     navigator.clipboard
       .writeText(phone)
       .then(() => showSuccess("تم نسخ رقم الهاتف بنجاح"))
       .catch(() => showError("تعذر النسخ"));
-  };
+  }, [showSuccess, showError]);
 
   // Dropdown options for CustomSelect
   const ministryOptions = useMemo(
@@ -396,15 +461,80 @@ export default function ServiceRequestsPage() {
     [sectors],
   );
 
-  // Unauthorized view for users without service-requests permission
+  // Build Row Actions Menu Items
+  const getRowMenuItems = useCallback(
+    (req) => {
+      const items = [];
+
+      // View details
+      items.push({
+        id: "view",
+        label: "عرض تفاصيل الطلب",
+        icon: <Eye className="size-4 text-ink" />,
+        onClick: () => handleOpenDetails(req.id),
+      });
+
+      // Quick reject for in_progress
+      if (canUpdate && req.status === "in_progress") {
+        items.push({
+          id: "reject",
+          label: "رفض الطلب مع ذكر السبب",
+          icon: <X className="size-4 text-rose-600" />,
+          tone: "danger",
+          onClick: () => {
+            setQuickRejectTarget(req);
+            setRejectReason("");
+          },
+        });
+      }
+
+      // Phone actions if phone exists
+      if (req.phone) {
+        items.push({ divider: true });
+        items.push({
+          id: "copy-phone",
+          label: "نسخ رقم الهاتف",
+          icon: <Copy className="size-4 text-gold-dark" />,
+          onClick: () => handleCopyPhone(req.phone),
+        });
+        items.push({
+          id: "whatsapp",
+          label: "مراسلة عبر واتساب",
+          icon: <MessageCircle className="size-4 text-emerald-600" />,
+          onClick: () => {
+            window.open(
+              `https://wa.me/20${req.phone.replace(/^0/, "")}`,
+              "_blank",
+              "noreferrer",
+            );
+          },
+        });
+      }
+
+      // Delete action (always available in menu with confirmation modal)
+      items.push({ divider: true });
+      items.push({
+        id: "delete",
+        label: "حذف الطلب نهائياً",
+        icon: <Trash2 className="size-4 text-rose-600" />,
+        tone: "danger",
+        onClick: () => setTargetDeleteReq(req),
+      });
+
+      return items;
+    },
+    [canUpdate, handleCopyPhone],
+  );
+
+  // Unauthorized view
   if (user && !canView) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center animate-elem-fade-up" dir="rtl">
+      <div
+        className="flex flex-col items-center justify-center py-20 text-center animate-elem-fade-up"
+        dir="rtl"
+      >
         <div className="flex size-16 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs mb-4">
-          <svg className="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
+          <AlertTriangle className="size-8" />
         </div>
         <h2 className="text-lg font-black text-ink">غير مصرح لك بالوصول إلى هذا القسم</h2>
         <p className="mt-1 text-xs sm:text-sm text-muted max-w-md">
@@ -415,9 +545,7 @@ export default function ServiceRequestsPage() {
           className="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-5 py-2.5 text-xs font-bold text-ink shadow-btn hover:brightness-110 transition-all"
         >
           <span>العودة للوحة التحكم الرئيسية</span>
-          <svg className="size-4 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
+          <ChevronLeft className="size-4" />
         </Link>
       </div>
     );
@@ -425,7 +553,7 @@ export default function ServiceRequestsPage() {
 
   return (
     <div className="space-y-6" dir="rtl">
-      {/* 1. Page Header with Title, Count & Description */}
+      {/* 1. Page Header with Title, Count & Actions */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between animate-elem-fade-up">
         <div>
           <div className="flex items-center gap-3">
@@ -440,6 +568,22 @@ export default function ServiceRequestsPage() {
             متابعة طلبات المواطنين الخدمية الموجهة للوزارات والقطاعات والتنسيق بشأنها
           </p>
         </div>
+
+        {/* Action Buttons: Bulk Delete (super_admin) */}
+        {canBulkDelete && requests.length > 0 && (
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              type="button"
+              disabled={bulkDeleteLoading || loading}
+              onClick={() => setIsBulkDeleteModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50/70 px-4 py-2.5 text-xs font-bold text-rose-700 shadow-2xs hover:bg-rose-100 hover:border-rose-300 hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
+              title="حذف جميع طلبات الخدمة المعروضة في الصفحة الحالية"
+            >
+              <Trash2 className="size-4 text-rose-600" />
+              <span>حذف طلبات الصفحة ({toArabicDigits(requests.length)})</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 2. Status Segmented Tabs */}
@@ -485,7 +629,7 @@ export default function ServiceRequestsPage() {
       <div className="rounded-3xl border border-line bg-white p-5 sm:p-6 shadow-card animate-elem-fade-up">
         <form onSubmit={handleSearchSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 items-center">
-            {/* Search Input: h-14, rounded-2xl, border-border, focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] */}
+            {/* Search Input: h-14, rounded-2xl, border-border, focus:gold shadow */}
             <div className="relative">
               <input
                 type="text"
@@ -495,10 +639,7 @@ export default function ServiceRequestsPage() {
                 className="h-14 w-full rounded-2xl border border-border bg-white pr-4 pl-12 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
               />
               <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
-                <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
+                <Search className="size-5" />
               </span>
             </div>
 
@@ -534,7 +675,7 @@ export default function ServiceRequestsPage() {
             <div className="flex items-center gap-2">
               <button
                 type="submit"
-                className="flex-1 h-14 rounded-2xl bg-gold-gradient px-4 text-xs sm:text-sm font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all"
+                className="flex-1 h-14 rounded-2xl bg-gold-gradient px-4 text-xs sm:text-sm font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all cursor-pointer"
               >
                 تطبيق البحث
               </button>
@@ -543,7 +684,7 @@ export default function ServiceRequestsPage() {
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="h-14 rounded-2xl border border-border bg-white px-4 text-xs font-bold text-muted hover:border-rose-300 hover:text-rose-600 transition-colors shadow-none"
+                  className="h-14 rounded-2xl border border-border bg-white px-4 text-xs font-bold text-muted hover:border-rose-300 hover:text-rose-600 transition-colors shadow-none cursor-pointer"
                   title="إلغاء جميع الفلاتر"
                 >
                   إعادة ضبط
@@ -554,259 +695,360 @@ export default function ServiceRequestsPage() {
         </form>
       </div>
 
-      {/* 4. Service Requests Data Table Card */}
+      {/* 4. Service Requests Data Presentation (Responsive - No Table Scrolling) */}
       <div className="rounded-3xl border border-line bg-white shadow-card overflow-hidden animate-elem-fade-up">
-        <div className="overflow-x-auto">
-          <table className="w-full text-right text-xs">
-            <thead>
-              <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
-                <th className="py-4 px-5">رقم الطلب</th>
-                <th className="py-4 px-5">المواطن مقدم الطلب</th>
-                <th className="py-4 px-5">رقم الهاتف</th>
-                <th className="py-4 px-5">الوزارة المعنية</th>
-                <th className="py-4 px-5">القطاع الخدمي</th>
-                <th className="py-4 px-5">الحالة</th>
-                <th className="py-4 px-5">تاريخ التقديم</th>
-                <th className="py-4 px-5 text-center">الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line/60">
-              {loading ? (
-                // Skeletons
-                [1, 2, 3, 4, 5].map((i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td className="py-4 px-5"><Skeleton width="60px" height="20px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5"><Skeleton width="130px" height="18px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5"><Skeleton width="90px" height="16px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5"><Skeleton width="120px" height="16px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5"><Skeleton width="110px" height="16px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5"><Skeleton width="70px" height="20px" rounded="rounded-full" /></td>
-                    <td className="py-4 px-5"><Skeleton width="80px" height="16px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5 text-center"><Skeleton width="60px" height="28px" rounded="rounded-xl" /></td>
+        {loading ? (
+          // Skeletons
+          <div className="p-6 space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-line/60 animate-pulse bg-page/30"
+              >
+                <div className="flex items-center gap-3">
+                  <Skeleton width="40px" height="40px" rounded="rounded-xl" />
+                  <div className="space-y-1.5">
+                    <Skeleton width="140px" height="16px" rounded="rounded-md" />
+                    <Skeleton width="100px" height="12px" rounded="rounded-md" />
+                  </div>
+                </div>
+                <div className="hidden sm:flex items-center gap-4">
+                  <Skeleton width="90px" height="16px" rounded="rounded-md" />
+                  <Skeleton width="80px" height="20px" rounded="rounded-full" />
+                </div>
+                <Skeleton width="90px" height="32px" rounded="rounded-xl" />
+              </div>
+            ))}
+          </div>
+        ) : requests.length === 0 ? (
+          // Empty State
+          <div className="py-16 text-center">
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="flex size-14 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
+                <Search className="size-7" />
+              </div>
+              <p className="text-sm font-extrabold text-ink">لم يتم العثور على أي طلبات خدمات</p>
+              <p className="text-xs text-muted max-w-sm">
+                {hasActiveFilters
+                  ? "لا توجد نتائج تطابق معايير البحث الحالية، جرّب تغيير الفلاتر."
+                  : "لم يقم أي مواطن بتقديم طلب خدمة حتى الآن."}
+              </p>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="mt-2 rounded-xl border border-gold/40 bg-gold-tint px-4 py-2 text-xs font-bold text-gold-dark hover:bg-gold hover:text-white transition-all shadow-2xs cursor-pointer"
+                >
+                  إعادة ضبط الفلاتر
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Desktop Table View (hidden lg:block) - proportional, clean, no horizontal scrolling */}
+            <div className="hidden lg:block w-full">
+              <table className="w-full text-right text-xs table-fixed">
+                <thead>
+                  <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
+                    <th className="py-4 pr-6 pl-3 w-[10%]">رقم الطلب</th>
+                    <th className="py-4 px-3 w-[22%]">المواطن مقدم الطلب</th>
+                    <th className="py-4 px-3 w-[14%]">رقم الهاتف</th>
+                    <th className="py-4 px-3 w-[15%]">الوزارة المعنية</th>
+                    <th className="py-4 px-3 w-[12%]">القطاع الخدمي</th>
+                    <th className="py-4 px-3 w-[10%]">الحالة</th>
+                    <th className="py-4 pr-3 pl-6 sm:pl-8 w-[17%] text-center">الإجراءات</th>
                   </tr>
-                ))
-              ) : requests.length === 0 ? (
-                // Empty State
-                <tr>
-                  <td colSpan={8} className="py-16 text-center">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="flex size-14 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
-                        <svg className="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="11" cy="11" r="8" />
-                          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>
-                      </div>
-                      <p className="text-sm font-extrabold text-ink">لم يتم العثور على أي طلبات خدمات</p>
-                      <p className="text-xs text-muted max-w-sm">
-                        {hasActiveFilters
-                          ? "لا توجد نتائج تطابق معايير البحث الحالية، جرّب تغيير الفلاتر."
-                          : "لم يقم أي مواطن بتقديم طلب خدمة حتى الآن."}
-                      </p>
-                      {hasActiveFilters && (
-                        <button
-                          type="button"
-                          onClick={handleResetFilters}
-                          className="mt-2 rounded-xl border border-gold/40 bg-gold-tint px-4 py-2 text-xs font-bold text-gold-dark hover:bg-gold hover:text-white transition-all shadow-2xs"
-                        >
-                          إعادة ضبط الفلاتر
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                // Requests Rows
-                requests.map((req) => {
+                </thead>
+                <tbody className="divide-y divide-line/60">
+                  {requests.map((req) => {
+                    const statusCfg = STATUS_CONFIG[req.status] || STATUS_CONFIG.new;
+                    const menuItems = getRowMenuItems(req);
+
+                    return (
+                      <tr
+                        key={req.id}
+                        className="group transition-colors hover:bg-gold-tint/25"
+                      >
+                        {/* Request Number */}
+                        <td className="py-4 pr-6 pl-3 font-mono font-bold text-ink truncate">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenDetails(req.id)}
+                            className="hover:text-gold-dark hover:underline focus:outline-none cursor-pointer"
+                          >
+                            #{req.request_no}
+                          </button>
+                        </td>
+
+                        {/* Citizen Full Name */}
+                        <td className="py-4 px-3">
+                          <div className="flex items-center gap-3">
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-xs shadow-2xs group-hover:border-gold/50 transition-colors">
+                              {req.full_name ? req.full_name.trim().charAt(0) : "م"}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenDetails(req.id)}
+                                className="block text-right font-extrabold text-ink group-hover:text-gold-dark transition-colors truncate w-full cursor-pointer"
+                                title={req.full_name}
+                              >
+                                {req.full_name}
+                              </button>
+                              <span className="block text-[11px] text-muted truncate">
+                                {formatRelativeTime(req.created_at)}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Phone with quick action */}
+                        <td className="py-4 px-3">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-medium text-ink truncate" dir="ltr">
+                              {req.phone || "—"}
+                            </span>
+                            {req.phone && (
+                              <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyPhone(req.phone)}
+                                  className="text-[10px] text-gold-dark hover:underline font-bold cursor-pointer"
+                                  title="نسخ رقم الهاتف"
+                                >
+                                  نسخ
+                                </button>
+                                <a
+                                  href={`https://wa.me/20${req.phone.replace(/^0/, "")}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[10px] text-emerald-600 hover:underline font-bold cursor-pointer"
+                                  title="مراسلة عبر واتساب"
+                                >
+                                  واتساب
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Ministry */}
+                        <td className="py-4 px-3 text-ink font-bold truncate">
+                          {req.ministry?.name_ar || "—"}
+                        </td>
+
+                        {/* Sector */}
+                        <td className="py-4 px-3 text-muted font-medium truncate">
+                          {req.request_sector?.name_ar || req.sector?.name_ar || "—"}
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-4 px-3">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${statusCfg.tone}`}
+                          >
+                            <span className={`size-1.5 rounded-full ${statusCfg.dot}`} />
+                            {statusCfg.label}
+                          </span>
+                        </td>
+
+                        {/* Actions: Primary Action Button + Three-dot Menu */}
+                        <td className="py-4 pr-3 pl-6 sm:pl-8">
+                          <div className="flex items-center justify-center gap-2">
+                            {/* Primary Dynamic Action based on status */}
+                            {canUpdate && req.status === "new" ? (
+                              <button
+                                type="button"
+                                disabled={actionInProgressId === req.id}
+                                onClick={() => handleStartProgress(req)}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-gold/40 bg-gold-tint px-3 py-1.5 text-xs font-bold text-gold-dark hover:bg-gold hover:text-white transition-all shadow-2xs hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+                                title="بدء مراجعة هذا الطلب"
+                              >
+                                {actionInProgressId === req.id ? (
+                                  <Spinner size="xs" color="gold" />
+                                ) : (
+                                  <Clock className="size-3.5" />
+                                )}
+                                <span>بدء المراجعة</span>
+                              </button>
+                            ) : canUpdate && req.status === "in_progress" ? (
+                              <button
+                                type="button"
+                                disabled={actionInProgressId === req.id}
+                                onClick={() => setQuickAcceptTarget(req)}
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-2xs hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+                                title="قبول وإنجاز الطلب"
+                              >
+                                <Check className="size-3.5" />
+                                <span>قبول</span>
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleOpenDetails(req.id)}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                                title="عرض التفاصيل"
+                              >
+                                <Eye className="size-3.5" />
+                                <span>التفاصيل</span>
+                              </button>
+                            )}
+
+                            {/* Secondary Actions Dropdown */}
+                            <ActionDropdown items={menuItems} label={`إجراءات الطلب #${req.request_no}`} />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile & Tablet Card Layout (block lg:hidden) - Zero horizontal scrolling */}
+            <div className="block lg:hidden p-4 sm:p-5 bg-page/30">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {requests.map((req) => {
                   const statusCfg = STATUS_CONFIG[req.status] || STATUS_CONFIG.new;
+                  const menuItems = getRowMenuItems(req);
 
                   return (
-                    <tr
+                    <div
                       key={req.id}
-                      className="group transition-colors hover:bg-gold-tint/25"
+                      className="group relative flex flex-col justify-between rounded-2xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:border-gold/50 transition-all duration-300"
                     >
-                      {/* Request Number */}
-                      <td className="py-4 px-5 font-mono font-bold text-ink">
+                      {/* Card Top: Number & Status */}
+                      <div className="flex items-center justify-between gap-2 border-b border-line/60 pb-3">
                         <button
                           type="button"
                           onClick={() => handleOpenDetails(req.id)}
-                          className="hover:text-gold-dark hover:underline focus:outline-none"
+                          className="font-mono text-xs font-bold text-gold-dark hover:underline cursor-pointer"
                         >
                           #{req.request_no}
                         </button>
-                      </td>
-
-                      {/* Citizen Full Name */}
-                      <td className="py-4 px-5">
-                        <div className="flex items-center gap-3">
-                          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-xs shadow-2xs group-hover:border-gold/50 transition-colors">
-                            {req.full_name ? req.full_name.trim().charAt(0) : "م"}
-                          </div>
-                          <div>
-                            <button
-                              type="button"
-                              onClick={() => handleOpenDetails(req.id)}
-                              className="text-right font-extrabold text-ink group-hover:text-gold-dark transition-colors"
-                            >
-                              {req.full_name}
-                            </button>
-                            <span className="block text-[11px] text-muted">
-                              طلب رقم #{req.request_no}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Phone with quick action */}
-                      <td className="py-4 px-5">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-medium text-ink" dir="ltr">
-                            {req.phone || "—"}
-                          </span>
-                          {req.phone && (
-                            <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-                              <button
-                                type="button"
-                                onClick={() => handleCopyPhone(req.phone)}
-                                className="text-[10px] text-gold-dark hover:underline font-bold"
-                                title="نسخ رقم الهاتف"
-                              >
-                                نسخ
-                              </button>
-                              <a
-                                href={`https://wa.me/20${req.phone.replace(/^0/, "")}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-[10px] text-emerald-600 hover:underline font-bold"
-                                title="واتساب"
-                              >
-                                واتساب
-                              </a>
-                            </div>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Ministry */}
-                      <td className="py-4 px-5">
-                        <span className="inline-flex items-center gap-1 font-bold text-ink text-xs">
-                          {req.ministry?.name_ar || "—"}
-                        </span>
-                      </td>
-
-                      {/* Sector */}
-                      <td className="py-4 px-5 text-muted font-medium">
-                        {req.request_sector?.name_ar || req.sector?.name_ar || "—"}
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-4 px-5">
                         <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${statusCfg.tone}`}
+                          className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${statusCfg.tone}`}
                         >
                           <span className={`size-1.5 rounded-full ${statusCfg.dot}`} />
                           {statusCfg.label}
                         </span>
-                      </td>
+                      </div>
 
-                      {/* Date */}
-                      <td className="py-4 px-5 text-muted text-[11px]">
-                        {formatRelativeTime(req.created_at)}
-                      </td>
+                      {/* Card Body: Citizen Info, Phone, Ministry */}
+                      <div className="my-3 space-y-2.5">
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-sm shadow-2xs group-hover:border-gold/50 transition-colors">
+                            {req.full_name ? req.full_name.trim().charAt(0) : "م"}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenDetails(req.id)}
+                              className="text-right font-black text-sm text-ink group-hover:text-gold-dark transition-colors truncate block w-full cursor-pointer"
+                            >
+                              {req.full_name}
+                            </button>
+                            {req.phone && (
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="font-mono text-xs font-medium text-muted" dir="ltr">
+                                  {req.phone}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyPhone(req.phone)}
+                                  className="text-[10px] text-gold-dark font-bold hover:underline cursor-pointer"
+                                >
+                                  نسخ
+                                </button>
+                                <a
+                                  href={`https://wa.me/20${req.phone.replace(/^0/, "")}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[10px] text-emerald-600 font-bold hover:underline cursor-pointer"
+                                >
+                                  واتساب
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </div>
 
-                      {/* Actions */}
-                      <td className="py-4 px-5">
-                        <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                          {/* If NEW: Quick Start Review */}
-                          {req.status === "new" && (
+                        {/* Ministry & Sector */}
+                        <div className="space-y-1 text-[11px] text-muted pt-1">
+                          <div className="flex items-center gap-1.5">
+                            <Building2 className="size-3 text-gold-dark shrink-0" />
+                            <span className="font-bold text-ink truncate">
+                              {req.ministry?.name_ar || "الوزارة غير محددة"}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <FileText className="size-3 text-muted/70 shrink-0" />
+                            <span className="truncate">
+                              القطاع: {req.request_sector?.name_ar || req.sector?.name_ar || "—"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Footer: Relative Date & Actions */}
+                      <div className="flex items-center justify-between border-t border-line/60 pt-3 mt-1">
+                        <span className="flex items-center gap-1 text-[11px] text-muted">
+                          <Clock className="size-3" />
+                          <span>{formatRelativeTime(req.created_at)}</span>
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                          {/* Primary Dynamic Action based on status */}
+                          {canUpdate && req.status === "new" ? (
                             <button
                               type="button"
                               disabled={actionInProgressId === req.id}
                               onClick={() => handleStartProgress(req)}
-                              className="inline-flex items-center gap-1 rounded-xl border border-gold bg-gold-tint px-2.5 py-1.5 text-[11px] font-bold text-gold-dark hover:bg-gold hover:text-white hover:scale-105 active:scale-95 transition-all shadow-2xs disabled:opacity-50"
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-gold/40 bg-gold-tint px-3 py-1.5 text-xs font-bold text-gold-dark hover:bg-gold hover:text-white transition-all shadow-2xs active:scale-95 disabled:opacity-50 cursor-pointer"
                               title="بدء مراجعة هذا الطلب"
                             >
                               {actionInProgressId === req.id ? (
                                 <Spinner size="xs" color="gold" />
                               ) : (
-                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <circle cx="12" cy="12" r="10" />
-                                  <polyline points="12 6 12 12 16 14" />
-                                </svg>
+                                <Clock className="size-3.5" />
                               )}
                               <span>بدء المراجعة</span>
                             </button>
+                          ) : canUpdate && req.status === "in_progress" ? (
+                            <button
+                              type="button"
+                              disabled={actionInProgressId === req.id}
+                              onClick={() => setQuickAcceptTarget(req)}
+                              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-2xs active:scale-95 disabled:opacity-50 cursor-pointer"
+                              title="قبول وإنجاز الطلب"
+                            >
+                              <Check className="size-3.5" />
+                              <span>قبول</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenDetails(req.id)}
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark transition-all shadow-2xs active:scale-95 cursor-pointer"
+                              title="عرض التفاصيل"
+                            >
+                              <Eye className="size-3.5" />
+                              <span>التفاصيل</span>
+                            </button>
                           )}
 
-                          {/* If IN_PROGRESS: Quick Accept & Quick Reject */}
-                          {req.status === "in_progress" && (
-                            <>
-                              <button
-                                type="button"
-                                disabled={actionInProgressId === req.id}
-                                onClick={() => setQuickAcceptTarget(req)}
-                                className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-2.5 py-1.5 text-[11px] font-bold text-white hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all shadow-2xs disabled:opacity-50"
-                                title="قبول وإنجاز الطلب"
-                              >
-                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                                <span>قبول</span>
-                              </button>
-
-                              <button
-                                type="button"
-                                disabled={actionInProgressId === req.id}
-                                onClick={() => {
-                                  setQuickRejectTarget(req);
-                                  setRejectReason("");
-                                }}
-                                className="inline-flex items-center gap-1 rounded-xl border border-rose-300 bg-rose-50 px-2.5 py-1.5 text-[11px] font-bold text-rose-700 hover:bg-rose-100 hover:scale-105 active:scale-95 transition-all shadow-2xs disabled:opacity-50"
-                                title="رفض الطلب"
-                              >
-                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <line x1="18" y1="6" x2="6" y2="18" />
-                                  <line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                                <span>رفض</span>
-                              </button>
-                            </>
-                          )}
-
-                          {/* Details Button */}
-                          <button
-                            type="button"
-                            onClick={() => handleOpenDetails(req.id)}
-                            className="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint hover:text-gold-dark hover:scale-105 active:scale-95 shadow-2xs"
-                          >
-                            <span>التفاصيل</span>
-                            <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <path d="M15 18l-6-6 6-6" />
-                            </svg>
-                          </button>
-
-                          {/* Delete Button */}
-                          <button
-                            type="button"
-                            disabled={actionInProgressId === req.id}
-                            onClick={() => setTargetDeleteReq(req)}
-                            className="inline-flex size-7.5 items-center justify-center rounded-xl border border-rose-200 bg-rose-50/70 text-rose-700 shadow-2xs transition-all duration-200 hover:bg-rose-100 hover:border-rose-300 hover:scale-110 active:scale-95 disabled:opacity-50"
-                            title="حذف هذا الطلب نهائياً"
-                            aria-label="حذف طلب الخدمة"
-                          >
-                            <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                            </svg>
-                          </button>
+                          {/* Secondary Actions Dropdown */}
+                          <ActionDropdown items={menuItems} label={`إجراءات الطلب #${req.request_no}`} />
                         </div>
-                      </td>
-                    </tr>
+                      </div>
+                    </div>
                   );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                })}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* 5. Pagination Bar */}
         {pagination.total > 0 && (
@@ -836,12 +1078,10 @@ export default function ServiceRequestsPage() {
                   setLoading(true);
                   fetchRequests(pagination.page - 1);
                 }}
-                className="flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted hover:border-gold hover:text-ink disabled:opacity-40 transition-colors shadow-2xs"
+                className="flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted hover:border-gold hover:text-ink disabled:opacity-40 transition-colors shadow-2xs cursor-pointer"
                 title="الصفحة السابقة"
               >
-                <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
+                <ChevronRight className="size-4" />
               </button>
 
               <span className="px-3 py-1 rounded-xl bg-white border border-line text-ink font-bold shadow-2xs">
@@ -855,36 +1095,134 @@ export default function ServiceRequestsPage() {
                   setLoading(true);
                   fetchRequests(pagination.page + 1);
                 }}
-                className="flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted hover:border-gold hover:text-ink disabled:opacity-40 transition-colors shadow-2xs"
+                className="flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted hover:border-gold hover:text-ink disabled:opacity-40 transition-colors shadow-2xs cursor-pointer"
                 title="الصفحة التالية"
               >
-                <svg className="size-4 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
+                <ChevronLeft className="size-4" />
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Quick Accept Confirmation Modal */}
-      {quickAcceptTarget && (
+      {/* 6. Bulk Delete Confirmation Modal (Super Admin) */}
+      {isBulkDeleteModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-elem-fade-up"
           dir="rtl"
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-md rounded-[24px] border border-line bg-white p-6 shadow-card-hover animate-elem-fade-up space-y-4"
+            className="relative w-full max-w-lg rounded-3xl border border-line bg-white p-6 sm:p-7 shadow-card space-y-5 text-right"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between">
+            {/* Header with red warning and rotating gold close button */}
+            <div className="flex items-center justify-between border-b border-line pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs">
+                  <Trash2 className="size-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-ink">
+                    تأكيد حذف جميع طلبات الخدمات بالصفحة الحالية
+                  </h3>
+                  <p className="text-xs text-muted">
+                    عملية حذف جماعي نهائية للصفحة المعروضة
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={bulkDeleteLoading}
+                onClick={() => setIsBulkDeleteModalOpen(false)}
+                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 cursor-pointer disabled:opacity-50"
+                aria-label="إغلاق النافذة"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {/* Scope Details */}
+            <div className="rounded-2xl border border-line bg-page/60 p-4 space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-muted">عدد الطلبات المستهدفة:</span>
+                <span className="font-bold text-rose-600 font-mono text-sm">
+                  {toArabicDigits(requests.length)} طلب
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">الصفحة المستهدفة:</span>
+                <span className="font-bold text-ink">
+                  صفحة {toArabicDigits(pagination.page)} من أصل {toArabicDigits(pagination.total_pages)}
+                </span>
+              </div>
+              {hasActiveFilters && (
+                <div className="flex justify-between items-center">
+                  <span className="text-muted">نطاق الفلترة:</span>
+                  <span className="font-bold text-gold-dark">
+                    فلاتر مخصصة مفعلة حالياً
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Warning alert */}
+            <div className="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-xs text-rose-800 leading-relaxed font-medium space-y-1">
+              <div className="flex items-center gap-1.5 font-black text-rose-900">
+                <AlertTriangle className="size-4 shrink-0 text-rose-600" />
+                <span>تحذير أمني صارم (لا يمكن التراجع عنه)</span>
+              </div>
+              <p>
+                سيؤدي هذا الإجراء إلى حذف جميع طلبات الخدمات الـ (
+                {toArabicDigits(requests.length)}) المعروضة حالياً في هذه الصفحة وسجلات بياناتها نهائياً من قاعدة البيانات.
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={bulkDeleteLoading}
+                onClick={() => setIsBulkDeleteModalOpen(false)}
+                className="rounded-xl border border-line bg-white px-5 py-2.5 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                disabled={bulkDeleteLoading}
+                onClick={handleConfirmBulkDeleteRequests}
+                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all shadow-btn disabled:opacity-50 cursor-pointer"
+              >
+                {bulkDeleteLoading ? (
+                  <Spinner size="xs" color="white" />
+                ) : (
+                  <Trash2 className="size-4" />
+                )}
+                <span>تأكيد الحذف الجماعي ({toArabicDigits(requests.length)} طلب)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Quick Accept Confirmation Modal */}
+      {quickAcceptTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-elem-fade-up"
+          dir="rtl"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="relative w-full max-w-md rounded-3xl border border-line bg-white p-6 shadow-card space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-line pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 shadow-2xs">
-                  <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
+                  <Check className="size-6" />
                 </div>
                 <div>
                   <h3 className="text-base font-black text-ink">تأكيد قبول وإنجاز طلب الخدمة</h3>
@@ -895,13 +1233,10 @@ export default function ServiceRequestsPage() {
               <button
                 type="button"
                 onClick={() => setQuickAcceptTarget(null)}
-                aria-label="إغلاق"
-                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95"
+                aria-label="إغلاق النافذة"
+                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 cursor-pointer"
               >
-                <svg className="size-4.5 transition-transform duration-300 group-hover:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <X className="size-4" />
               </button>
             </div>
 
@@ -912,7 +1247,8 @@ export default function ServiceRequestsPage() {
               </strong>
               ؟
               <span className="block mt-2 text-xs text-muted">
-                الوزارة المعنية: {quickAcceptTarget.ministry?.name_ar || "—"} • القطاع: {quickAcceptTarget.request_sector?.name_ar || "—"}
+                الوزارة المعنية: {quickAcceptTarget.ministry?.name_ar || "—"} • القطاع:{" "}
+                {quickAcceptTarget.request_sector?.name_ar || "—"}
               </span>
             </p>
 
@@ -921,7 +1257,7 @@ export default function ServiceRequestsPage() {
                 type="button"
                 disabled={actionInProgressId === quickAcceptTarget.id}
                 onClick={() => setQuickAcceptTarget(null)}
-                className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink hover:scale-105 active:scale-95 transition-all shadow-2xs disabled:opacity-50"
+                className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
               >
                 إلغاء
               </button>
@@ -929,14 +1265,12 @@ export default function ServiceRequestsPage() {
                 type="button"
                 disabled={actionInProgressId === quickAcceptTarget.id}
                 onClick={handleConfirmAccept}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all shadow-btn disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all shadow-btn disabled:opacity-50 cursor-pointer"
               >
                 {actionInProgressId === quickAcceptTarget.id ? (
                   <Spinner size="xs" color="white" />
                 ) : (
-                  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
+                  <Check className="size-4" />
                 )}
                 <span>تأكيد القبول</span>
               </button>
@@ -945,25 +1279,22 @@ export default function ServiceRequestsPage() {
         </div>
       )}
 
-      {/* Quick Reject Reason Modal */}
+      {/* 8. Quick Reject Reason Modal */}
       {quickRejectTarget && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-elem-fade-up"
           dir="rtl"
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-md rounded-[24px] border border-line bg-white p-6 shadow-card-hover animate-elem-fade-up space-y-4"
+            className="relative w-full max-w-md rounded-3xl border border-line bg-white p-6 shadow-card space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between border-b border-line pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-700 shadow-2xs">
-                  <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
+                  <X className="size-6" />
                 </div>
                 <div>
                   <h3 className="text-base font-black text-ink">رفض طلب الخدمة</h3>
@@ -977,13 +1308,10 @@ export default function ServiceRequestsPage() {
                   setQuickRejectTarget(null);
                   setRejectReason("");
                 }}
-                aria-label="إغلاق"
-                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95"
+                aria-label="إغلاق النافذة"
+                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 cursor-pointer"
               >
-                <svg className="size-4.5 transition-transform duration-300 group-hover:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <X className="size-4" />
               </button>
             </div>
 
@@ -1014,22 +1342,19 @@ export default function ServiceRequestsPage() {
                     setQuickRejectTarget(null);
                     setRejectReason("");
                   }}
-                  className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink hover:scale-105 active:scale-95 transition-all shadow-2xs disabled:opacity-50"
+                  className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={actionInProgressId === quickRejectTarget.id}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all shadow-btn disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all shadow-btn disabled:opacity-50 cursor-pointer"
                 >
                   {actionInProgressId === quickRejectTarget.id ? (
                     <Spinner size="xs" color="white" />
                   ) : (
-                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
+                    <X className="size-4" />
                   )}
                   <span>تأكيد الرفض</span>
                 </button>
@@ -1039,20 +1364,15 @@ export default function ServiceRequestsPage() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* 9. Single Delete Confirmation Modal */}
       {targetDeleteReq && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-fade-in">
-          <div className="relative w-full max-w-md rounded-3xl border border-line bg-white p-6 shadow-card animate-scale-up space-y-5 text-right">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-elem-fade-up">
+          <div className="relative w-full max-w-md rounded-3xl border border-line bg-white p-6 shadow-card space-y-5 text-right">
             {/* Header with red warning and rotating gold close button */}
             <div className="flex items-center justify-between border-b border-line pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex size-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs">
-                  <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    <line x1="10" y1="11" x2="10" y2="17" />
-                    <line x1="14" y1="11" x2="14" y2="17" />
-                  </svg>
+                  <Trash2 className="size-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-black text-ink">تأكيد حذف طلب الخدمة</h3>
@@ -1062,13 +1382,10 @@ export default function ServiceRequestsPage() {
               <button
                 type="button"
                 onClick={() => setTargetDeleteReq(null)}
-                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95"
+                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 cursor-pointer"
                 aria-label="إغلاق النافذة"
               >
-                <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <X className="size-4" />
               </button>
             </div>
 
@@ -1105,7 +1422,7 @@ export default function ServiceRequestsPage() {
                 type="button"
                 disabled={actionInProgressId === targetDeleteReq.id}
                 onClick={() => setTargetDeleteReq(null)}
-                className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink hover:scale-105 active:scale-95 transition-all shadow-2xs disabled:opacity-50"
+                className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
               >
                 إلغاء
               </button>
@@ -1118,10 +1435,7 @@ export default function ServiceRequestsPage() {
                 {actionInProgressId === targetDeleteReq.id ? (
                   <Spinner size="xs" color="white" />
                 ) : (
-                  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
+                  <Trash2 className="size-4" />
                 )}
                 <span>تأكيد الحذف النهائي</span>
               </button>
@@ -1130,7 +1444,7 @@ export default function ServiceRequestsPage() {
         </div>
       )}
 
-      {/* 6. Details Modal */}
+      {/* 10. Service Request Details Modal */}
       <ServiceRequestDetailsModal
         requestId={selectedRequestId}
         isOpen={isModalOpen}
