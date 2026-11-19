@@ -426,12 +426,12 @@ export default function AdminOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-6 items-start">
         {/* Requests Needing Review Card */}
         <div
-          className="rounded-3xl border border-line bg-white p-6 sm:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
+          className="rounded-3xl border border-line bg-white p-4 sm:p-6 lg:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
           style={{ animationDelay: "460ms" }}
         >
           {/* Card Header */}
-          <div className="mb-5 flex items-center justify-between border-b border-line pb-4">
-            <div>
+          <div className="mb-4 sm:mb-5 flex items-center justify-between gap-2 border-b border-line pb-3.5 sm:pb-4">
+            <div className="min-w-0">
               <h3 className="text-base sm:text-lg font-bold text-ink">
                 طلبات تحتاج مراجعتك
               </h3>
@@ -442,7 +442,7 @@ export default function AdminOverviewPage() {
 
             <Link
               href="/admin/applications"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-muted hover:text-gold-dark transition-colors"
+              className="inline-flex shrink-0 items-center gap-1.5 text-xs font-bold text-muted hover:text-gold-dark transition-colors"
             >
               <span>عرض الكل</span>
               <svg className="size-3.5 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -455,13 +455,18 @@ export default function AdminOverviewPage() {
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3 py-2">
-                  <Skeleton width="40px" height="40px" rounded="rounded-xl" />
-                  <div className="flex-1 space-y-1.5">
-                    <Skeleton width="50%" height="16px" rounded="rounded-md" />
-                    <Skeleton width="30%" height="12px" rounded="rounded-md" />
+                <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 py-2.5">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Skeleton width="40px" height="40px" rounded="rounded-xl" />
+                    <div className="flex-1 space-y-1.5">
+                      <Skeleton width="120px" height="16px" rounded="rounded-md" />
+                      <Skeleton width="80px" height="12px" rounded="rounded-md" />
+                    </div>
                   </div>
-                  <Skeleton width="60px" height="28px" rounded="rounded-xl" />
+                  <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                    <Skeleton width="70px" height="26px" rounded="rounded-lg" />
+                    <Skeleton width="60px" height="28px" rounded="rounded-xl" />
+                  </div>
                 </div>
               ))}
             </div>
@@ -480,27 +485,27 @@ export default function AdminOverviewPage() {
               {recentRequests.map((req) => (
                 <div
                   key={req.id}
-                  className="group flex items-center justify-between gap-3 py-3.5 transition-colors hover:bg-gold-tint/20 rounded-xl px-2"
+                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 py-3 sm:py-3.5 transition-colors hover:bg-gold-tint/20 rounded-2xl p-2 sm:px-2.5"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                     {/* Initials Avatar inside brackets [x] matching mockup */}
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-xs shadow-2xs group-hover:border-gold/40 transition-colors">
+                    <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-xs shadow-2xs group-hover:border-gold/40 transition-colors">
                       {req.name ? `[${req.name.trim().charAt(0)}]` : "[م]"}
                     </div>
 
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-xs sm:text-sm font-bold text-ink leading-tight">
                         {req.name}
                       </p>
                       <div className="mt-1 flex items-center gap-1.5 text-[11px] text-muted">
                         <span>{req.type}</span>
-                        <span>-</span>
+                        <span>•</span>
                         <span>{formatRelativeTime(req.createdAt)}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2.5 shrink-0">
+                  <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 pt-2 sm:pt-0 border-t border-line/40 sm:border-t-0">
                     {/* Status Badge */}
                     <span
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-bold ${
@@ -515,7 +520,7 @@ export default function AdminOverviewPage() {
                     {/* Review Button */}
                     <Link
                       href={req.href}
-                      className="rounded-xl border border-line bg-white px-3.5 py-1.5 text-xs font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint hover:text-gold-dark group-hover:scale-105 shadow-2xs"
+                      className="inline-flex items-center justify-center rounded-xl border border-line bg-white px-3.5 py-1.5 text-xs font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint hover:text-gold-dark group-hover:scale-105 shadow-2xs active:scale-95"
                     >
                       مراجعة
                     </Link>
@@ -526,7 +531,7 @@ export default function AdminOverviewPage() {
           )}
 
           {/* Weekly Progress Bar matching mockup */}
-          <div className="mt-6 border-t border-line pt-4">
+          <div className="mt-5 sm:mt-6 border-t border-line pt-4">
             <div className="mb-2 flex items-center justify-between text-xs font-bold">
               <span className="text-muted">نسبة إنجاز الطلبات هذا الأسبوع</span>
               <span className="text-gold-dark font-extrabold">
@@ -544,7 +549,7 @@ export default function AdminOverviewPage() {
 
         {/* Quick Access Tiles Card (2x3 Grid) */}
         <div
-          className="rounded-3xl border border-line bg-white p-6 sm:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
+          className="rounded-3xl border border-line bg-white p-4 sm:p-6 lg:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
           style={{ animationDelay: "530ms" }}
         >
           {/* Card Header */}
