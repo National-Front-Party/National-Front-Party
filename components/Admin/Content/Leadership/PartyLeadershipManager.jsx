@@ -11,12 +11,14 @@ import PresidentCard from "./PresidentCard";
 import PresidentEditModal from "./PresidentEditModal";
 import LeaderCardList from "./LeaderCardList";
 import LeaderFormModal from "./LeaderFormModal";
-import { AlertCircle, RotateCcw } from "lucide-react";
+import LeadershipSpeechesManager from "./Speeches/LeadershipSpeechesManager";
+import { AlertCircle, RotateCcw, Users, Mic2 } from "lucide-react";
 
 export default function PartyLeadershipManager() {
   const { user } = useAdminAuth();
   const { showSuccess, showError } = useToast();
 
+  const [activeSection, setActiveSection] = useState("leaders"); // "leaders" | "speeches"
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [panel, setPanel] = useState(null);
@@ -337,38 +339,82 @@ export default function PartyLeadershipManager() {
   }
 
   return (
-    <div className="space-y-8" dir="rtl">
-      {/* 1. Party President Section */}
-      <section aria-labelledby="party-president-section-title">
-        <h2 id="party-president-section-title" className="sr-only">
-          رئيس الحزب
-        </h2>
-        <PresidentCard
-          president={president}
-          onEdit={() => setIsPresidentModalOpen(true)}
-          onCreate={() => setIsPresidentModalOpen(true)}
-          canManage={canManage}
-        />
-      </section>
+    <div className="space-y-6" dir="rtl">
+      {/* Sub-Section Segmented Navigation */}
+      <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+        <button
+          type="button"
+          onClick={() => setActiveSection("leaders")}
+          className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all ${
+            activeSection === "leaders"
+              ? "bg-slate-900 text-white shadow-xs"
+              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}
+        >
+          <Users className="size-4" aria-hidden="true" />
+          <span>رئيس وقيادات الحزب</span>
+          <span
+            className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold ${
+              activeSection === "leaders"
+                ? "bg-gold text-ink"
+                : "bg-slate-200 text-slate-700"
+            }`}
+          >
+            {1 + leaders.length}
+          </span>
+        </button>
 
-      {/* 2. Party Leadership List Section */}
-      <section aria-labelledby="party-leaders-list-section-title">
-        <h2 id="party-leaders-list-section-title" className="sr-only">
-          قائمة قيادات الحزب
-        </h2>
-        <LeaderCardList
-          leaders={leaders}
-          onAddNew={() => setLeaderFormState({ isOpen: true, leader: null })}
-          onEdit={(leader) => setLeaderFormState({ isOpen: true, leader })}
-          onDelete={(leader) => setDeletingLeader(leader)}
-          onToggleStatus={handleToggleLeaderStatus}
-          onMoveUp={(leader) => handleMoveLeader(leader, "up")}
-          onMoveDown={(leader) => handleMoveLeader(leader, "down")}
-          canManage={canManage}
-          canDelete={canDelete}
-          isBusy={isSubmitting}
-        />
-      </section>
+        <button
+          type="button"
+          onClick={() => setActiveSection("speeches")}
+          className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all ${
+            activeSection === "speeches"
+              ? "bg-slate-900 text-white shadow-xs"
+              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          }`}
+        >
+          <Mic2 className="size-4" aria-hidden="true" />
+          <span>أزرار وكلمات العمود الثاني</span>
+        </button>
+      </div>
+
+      {activeSection === "leaders" ? (
+        <div className="space-y-8">
+          {/* 1. Party President Section */}
+          <section aria-labelledby="party-president-section-title">
+            <h2 id="party-president-section-title" className="sr-only">
+              رئيس الحزب
+            </h2>
+            <PresidentCard
+              president={president}
+              onEdit={() => setIsPresidentModalOpen(true)}
+              onCreate={() => setIsPresidentModalOpen(true)}
+              canManage={canManage}
+            />
+          </section>
+
+          {/* 2. Party Leadership List Section */}
+          <section aria-labelledby="party-leaders-list-section-title">
+            <h2 id="party-leaders-list-section-title" className="sr-only">
+              قائمة قيادات الحزب
+            </h2>
+            <LeaderCardList
+              leaders={leaders}
+              onAddNew={() => setLeaderFormState({ isOpen: true, leader: null })}
+              onEdit={(leader) => setLeaderFormState({ isOpen: true, leader })}
+              onDelete={(leader) => setDeletingLeader(leader)}
+              onToggleStatus={handleToggleLeaderStatus}
+              onMoveUp={(leader) => handleMoveLeader(leader, "up")}
+              onMoveDown={(leader) => handleMoveLeader(leader, "down")}
+              canManage={canManage}
+              canDelete={canDelete}
+              isBusy={isSubmitting}
+            />
+          </section>
+        </div>
+      ) : (
+        <LeadershipSpeechesManager />
+      )}
 
       {/* President Edit Modal */}
       {isPresidentModalOpen && (

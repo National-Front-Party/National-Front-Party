@@ -286,7 +286,8 @@ export default function LeaderFormModal({
                 الاسم بالكامل <span className="text-red-500">*</span>
               </label>
               <span
-                className={`text-[11px] font-medium ${
+                dir="ltr"
+                className={`inline-block text-[11px] font-medium ${
                   fullName.trim().length > 200 ? "text-red-600 font-bold" : "text-slate-400"
                 }`}
               >
@@ -325,7 +326,8 @@ export default function LeaderFormModal({
                 الصفة الحزبية / المنصب
               </label>
               <span
-                className={`text-[11px] font-medium ${
+                dir="ltr"
+                className={`inline-block text-[11px] font-medium ${
                   roleTitle.trim().length > 200 ? "text-red-600 font-bold" : "text-slate-400"
                 }`}
               >
@@ -365,7 +367,8 @@ export default function LeaderFormModal({
                   الشارة (اختياري)
                 </label>
                 <span
-                  className={`text-[11px] font-medium ${
+                  dir="ltr"
+                  className={`inline-block text-[11px] font-medium ${
                     badgeLabel.trim().length > 50 ? "text-red-600 font-bold" : "text-slate-400"
                   }`}
                 >

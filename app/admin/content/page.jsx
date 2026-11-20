@@ -13,6 +13,7 @@ import Skeleton from "@/components/Admin/ui/Skeleton";
 import PartyProgramManager from "@/components/Admin/Content/PartyProgram/PartyProgramManager";
 import HomepagePopupsManager from "@/components/Admin/Content/Popups/HomepagePopupsManager";
 import PartyLeadershipManager from "@/components/Admin/Content/Leadership/PartyLeadershipManager";
+import CentralSecretariatsManager from "@/components/Admin/Content/CentralSecretariats/CentralSecretariatsManager";
 import { useSearchParams } from "next/navigation";
 
 function ContentPageBody() {
@@ -66,6 +67,8 @@ function ContentPageBody() {
                 <HomepagePopupsManager />
               ) : tab.id === "leadership" ? (
                 <PartyLeadershipManager />
+              ) : tab.id === "central-secretariats" ? (
+                <CentralSecretariatsManager />
               ) : (
                 <EmptyState
                   icon={() => <NavIcon name="content" className="size-8" />}
