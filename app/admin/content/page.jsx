@@ -15,6 +15,7 @@ import HomepagePopupsManager from "@/components/Admin/Content/Popups/HomepagePop
 import PartyLeadershipManager from "@/components/Admin/Content/Leadership/PartyLeadershipManager";
 import CentralSecretariatsManager from "@/components/Admin/Content/CentralSecretariats/CentralSecretariatsManager";
 import GovernorateSecretariatsManager from "@/components/Admin/Content/GovernorateSecretariats/GovernorateSecretariatsManager";
+import ParliamentaryUnitManager from "@/components/Admin/Content/ParliamentaryUnit/ParliamentaryUnitManager";
 import { useSearchParams } from "next/navigation";
 
 function ContentPageBody() {
@@ -72,6 +73,8 @@ function ContentPageBody() {
                 <CentralSecretariatsManager />
               ) : tab.id === "governorate-secretariats" ? (
                 <GovernorateSecretariatsManager />
+              ) : tab.id === "parliamentary-unit" ? (
+                <ParliamentaryUnitManager />
               ) : (
                 <EmptyState
                   icon={() => <NavIcon name="content" className="size-8" />}

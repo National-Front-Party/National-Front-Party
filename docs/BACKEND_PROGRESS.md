@@ -1153,6 +1153,35 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
   - `node --test` العام: نجاح 313/313 اختباراً بنسبة 100%.
   - معالجة كافة تحذيرات المفاتيح المتكررة (Duplicate React Keys) في `GovernoratesSecretariats.jsx` و `SecretariatsModal.jsx`.
 
+---
+
+## المرحلة P09.2: واجهة إدارة الوحدة البرلمانية (Parliamentary Unit Admin Management)
+- **الحالة:** مكتملة ومختبرة بنجاح (Fully Implemented & Verified).
+- **التعديلات والمكونات المنفذة:**
+  1. **مدير الوحدة البرلمانية (`ParliamentaryUnitManager.jsx`):**
+     - جلب قائمة عناصر الوحدة البرلمانية من `GET /api/admin/content/parliamentary-unit?page=1&page_size=100`.
+     - عرض بطاقات العناصر البرلمانية بشكل منظم يشمل: شارة الترتيب، زر التفعيل السريع للنشر بنقرة واحدة، الأيقونة المذهبة، العنوان والعنوان الفرعي، صندوق ملخص محتوى الـ Popup (المسؤول، الصفة، مقتطف الكلمة، والمصدر).
+     - توفير أزرار الإجراءات: «معاينة النافذة»، «تعديل»، و«حذف» بعد التأكيد عبر `DeleteConfirmModal`.
+     - معالجة حالات التحميل (`Skeleton`)، الخطأ مع إعادة المحاولة، والقائمة الفارغة (`EmptyState`).
+  2. **نموذج إضافة وتعديل العنصر ومحتوى النافذة (`ParliamentaryItemFormModal.jsx`):**
+     - دمج بيانات العنصر في العمود مع محتوى الـ Popup في نموذج موحد عالي التنظيم وسهل الاستخدام.
+     - توليد المعرف البرمجي (`slug`) تلقائياً في الخلفية بطريقة متوافقة مع قواعد الباك إند دون إرباك المشرف.
+     - منتقي بصري للأيقونات الثلاث المدعومة فعلياً في الصفحة الرئيسية (`landmark`, `church`, `house`) مع معاينة حية للأيقونة.
+     - حقول: العنوان الرئيسي (إلزامي)، العنوان الفرعي، ترتيب الظهور، حالة النشر، اسم المسؤول، الصفة، نص الكلمة (حتى 10,000 حرف مع دعم تقسيم الفقرات)، والمصدر.
+     - زر معاينة فورية مستقلة للنافذة المنبثقة من داخل النموذج دون حفظ أو نشر.
+  3. **معاينة النافذة المنبثقة (`ParliamentaryPreviewModal.jsx`):**
+     - معاينة مطابقة 100% للنافذة المنبثقة الحقيقية بالاعتماد على مكون `ParliamentaryModal.jsx`.
+  4. **إصلاح تزامن الموقع العام (`ParliamentaryUnit.jsx`):**
+     - استيعاب الاستجابة الفعلية للـ API (`parliamentary_items` بجانب `parliamentary_units`).
+     - تحصين المفاتيح ضد التكرار: `key={item.id ? parl-${item.id} : parl-idx-${index}}`.
+     - تحديث زر التذييل لاستهداف أول عنصر متوفر ديناميكياً بدلاً من التثبيت على `senate`.
+  5. **ربط صفحة إدارة المحتوى (`app/admin/content/page.jsx`):**
+     - تفعيل التبويب `parliamentary-unit` لعرض `ParliamentaryUnitManager`.
+- **التحقق والاختبارات:**
+  - `eslint`: 0 أخطاء و 0 تحذيرات في كافة ملفات المرحلة.
+  - `node --test lib/content/phase13-handlers.test.js lib/services/content-phase13.test.js lib/validation/content/content.test.js`: نجاح 27/27 اختباراً بنسبة 100%.
+  - `node --test` العام: نجاح 313/313 اختباراً بنسبة 100%.
+
 
 
 
