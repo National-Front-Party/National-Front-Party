@@ -558,16 +558,16 @@ export default function AdminOverviewPage() {
               {recentRequests.map((req) => (
                 <div
                   key={req.id}
-                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 py-3 sm:py-3.5 transition-colors hover:bg-gold-tint/20 rounded-2xl p-2 sm:px-2.5"
+                  className="group flex flex-col md:flex-row md:items-center justify-between gap-2.5 md:gap-3 py-3 md:py-3.5 transition-colors hover:bg-gold-tint/20 rounded-2xl p-2 md:px-2.5"
                 >
-                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                  <div className="flex items-center gap-2.5 md:gap-3 min-w-0 flex-1">
                     {/* Initials Avatar inside brackets [x] matching mockup */}
-                    <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-xs shadow-2xs group-hover:border-gold/40 transition-colors">
+                    <div className="flex size-9 md:size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-xs shadow-2xs group-hover:border-gold/40 transition-colors">
                       {req.name ? `[${req.name.trim().charAt(0)}]` : "[م]"}
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs sm:text-sm font-bold text-ink leading-tight">
+                      <p className="truncate text-xs md:text-sm font-bold text-ink leading-tight">
                         {req.name}
                       </p>
                       <div className="mt-1 flex items-center gap-1.5 text-[11px] text-muted">
@@ -578,7 +578,7 @@ export default function AdminOverviewPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 pt-2 sm:pt-0 border-t border-line/40 sm:border-t-0">
+                  <div className="flex items-center justify-between md:justify-end gap-2 shrink-0 pt-2 md:pt-0 border-t border-line/40 md:border-t-0">
                     {/* Status Badge */}
                     <span
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-bold ${

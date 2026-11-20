@@ -1044,9 +1044,11 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
      - تمكين `super_admin` و `service_officer` بصلاحية `services:manage` من الإدارة الكاملة.
      - حظر باقي الأدوار غير المخولة مع إظهار شاشة تنبيه ودية.
 - **الملفات المضافة والمعدلة:**
-  - `components/Admin/Catalogs/CatalogEditorModal.jsx` (مكون مودال الإضافة والتعديل).
-  - `app/admin/catalogs/page.jsx` (صفحة إدارة الكتالوجات المتكاملة).
+  - `components/Admin/Catalogs/CatalogEditorModal.jsx` (إضافة التحقق من صحة الحقول عند الإرسال ومنع الحقول الفارغة مع إظهار تنبيهات وتلوين الحقل بالأحمر، وزر الإغلاق الدوار الذهبي، وتوحيد استايل الحقول h-14 rounded-2xl).
+  - `app/admin/catalogs/page.jsx` (تحسين التجاوب على الموبايل عبر النزول الرأسي المنظم للتبويبات flex-col sm:flex-row لمنع التداخل تماماً، وتوحيد شريط البحث h-14 مع الأيقونة والظلال الذهبية، وإضافة تأثيرات Hover متقدمة للتبويبات والفلاتر).
+  - `components/Admin/AppShell.jsx` (إصلاح وتنسيق عنصر القائمة الجانبية النشط وإزالة التدرج الجانبي المتداخل border-r-4 على الحواف المنحنية).
+  - `app/admin/page.jsx` (تحسين تجاوب كارت "طلبات تحتاج مراجعتك" لمنع أي تداخل بين النصوص وشارة الحالة على جميع الشاشات).
   - `docs/BACKEND_PROGRESS.md` (توثيق المرحلة).
 - **التحقق والاختبارات:**
-  - `npx eslint components/Admin/Catalogs/CatalogEditorModal.jsx app/admin/catalogs/page.jsx`: 0 errors, 0 warnings.
-  - `npm test`: جميع الاختبارات الـ 276 ناجحة بنسبة 100% (276 pass, 0 fail).
+  - `npx eslint app/admin/catalogs/page.jsx components/Admin/Catalogs/CatalogEditorModal.jsx components/Admin/AppShell.jsx app/admin/page.jsx`: 0 errors, 0 warnings.
+  - `npm test`: جميع الاختبارات الـ 282 ناجحة بنسبة 100% (282 pass, 0 fail).

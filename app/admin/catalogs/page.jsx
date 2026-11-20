@@ -308,7 +308,9 @@ export default function CatalogsPage() {
     if (isMinistry) {
       if (isEdit) {
         setMinistries((prev) =>
-          prev.map((m) => (m.id === savedItem.id ? { ...m, ...savedItem } : m)),
+          prev
+            .map((m) => (m.id === savedItem.id ? { ...m, ...savedItem } : m))
+            .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.id - b.id),
         );
       } else {
         fetchMinistries(ministriesPagination.page, false);
@@ -316,7 +318,9 @@ export default function CatalogsPage() {
     } else {
       if (isEdit) {
         setSectors((prev) =>
-          prev.map((s) => (s.id === savedItem.id ? { ...s, ...savedItem } : s)),
+          prev
+            .map((s) => (s.id === savedItem.id ? { ...s, ...savedItem } : s))
+            .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.id - b.id),
         );
       } else {
         fetchSectors(sectorsPagination.page, false);
@@ -503,21 +507,29 @@ export default function CatalogsPage() {
       </div>
 
       {/* 3. Primary Segmented Tabs: Ministries vs Request Sectors */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full sm:w-auto sm:inline-flex animate-elem-fade-up">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full sm:w-auto sm:inline-flex animate-elem-fade-up">
         <button
           type="button"
           onClick={() => handleTabSwitch("ministries")}
-          className={`flex-1 sm:flex-initial flex items-center justify-center gap-2.5 rounded-xl px-5 sm:px-7 py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none ${
+          className={`group relative flex-1 sm:flex-initial flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-6 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 select-none whitespace-nowrap min-w-0 ${
             isMinistry
-              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.02]"
-              : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40"
+              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.02] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
+              : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50 hover:shadow-xs hover:scale-[1.01] sm:hover:scale-105 sm:hover:-translate-y-0.5"
           }`}
         >
-          <Building2 className="size-4" />
-          <span>الوزارات الحكومية</span>
+          <div className="flex items-center gap-2.5">
+            <Building2
+              className={`size-4 shrink-0 transition-transform duration-300 ${
+                isMinistry ? "text-ink" : "text-muted group-hover:text-gold-dark group-hover:scale-110"
+              }`}
+            />
+            <span className="whitespace-nowrap">الوزارات الحكومية</span>
+          </div>
           <span
-            className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
-              isMinistry ? "bg-ink text-white" : "bg-page text-muted"
+            className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[10px] font-bold font-mono shrink-0 transition-all duration-300 ${
+              isMinistry
+                ? "bg-ink text-white shadow-2xs"
+                : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark group-hover:scale-110"
             }`}
           >
             {toArabicDigits(ministries.length)}
@@ -527,17 +539,25 @@ export default function CatalogsPage() {
         <button
           type="button"
           onClick={() => handleTabSwitch("request_sectors")}
-          className={`flex-1 sm:flex-initial flex items-center justify-center gap-2.5 rounded-xl px-5 sm:px-7 py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none ${
+          className={`group relative flex-1 sm:flex-initial flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-6 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 select-none whitespace-nowrap min-w-0 ${
             !isMinistry
-              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.02]"
-              : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40"
+              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.02] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
+              : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50 hover:shadow-xs hover:scale-[1.01] sm:hover:scale-105 sm:hover:-translate-y-0.5"
           }`}
         >
-          <Layers className="size-4" />
-          <span>القطاعات الخدمية</span>
+          <div className="flex items-center gap-2.5">
+            <Layers
+              className={`size-4 shrink-0 transition-transform duration-300 ${
+                !isMinistry ? "text-ink" : "text-muted group-hover:text-gold-dark group-hover:scale-110"
+              }`}
+            />
+            <span className="whitespace-nowrap">القطاعات الخدمية</span>
+          </div>
           <span
-            className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
-              !isMinistry ? "bg-ink text-white" : "bg-page text-muted"
+            className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[10px] font-bold font-mono shrink-0 transition-all duration-300 ${
+              !isMinistry
+                ? "bg-ink text-white shadow-2xs"
+                : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark group-hover:scale-110"
             }`}
           >
             {toArabicDigits(sectors.length)}
@@ -546,13 +566,13 @@ export default function CatalogsPage() {
       </div>
 
       {/* 4. Toolbar: Status Filter Tabs + Search Input */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 animate-elem-fade-up">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3.5 animate-elem-fade-up">
         {/* Status Filter Tabs */}
-        <div className="flex sm:inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-page/80 border border-line shadow-2xs w-full sm:w-auto overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full md:w-auto">
           {[
-            { id: "all", label: "جميع العناصر", shortLabel: "الكل", count: activeRecords.length },
-            { id: "active", label: "المعتمدة والنشطة", shortLabel: "المعتمدة", count: activeCount },
-            { id: "inactive", label: "المعطلة مؤقتاً", shortLabel: "المعطلة", count: inactiveCount },
+            { id: "all", label: "جميع العناصر", count: activeRecords.length },
+            { id: "active", label: "المعتمدة والنشطة", count: activeCount },
+            { id: "inactive", label: "المعطلة مؤقتاً", count: inactiveCount },
           ].map((tab) => {
             const isActive = statusFilter === tab.id;
             return (
@@ -560,21 +580,18 @@ export default function CatalogsPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setStatusFilter(tab.id)}
-                className={`group relative flex flex-1 sm:flex-initial items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-2.5 sm:px-4 py-2 text-xs font-bold cursor-pointer transition-all duration-200 ease-out active:scale-95 select-none min-w-0 ${
+                className={`group relative flex-1 sm:flex-initial flex items-center justify-between sm:justify-center gap-2.5 rounded-xl px-4 sm:px-4 py-2.5 sm:py-2 text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 select-none whitespace-nowrap min-w-0 ${
                   isActive
-                    ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.03]"
-                    : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40"
+                    ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.03] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
+                    : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50 hover:shadow-xs hover:scale-[1.01] sm:hover:scale-105 sm:hover:-translate-y-0.5"
                 }`}
               >
-                <span className="truncate">
-                  <span className="hidden sm:inline">{tab.label}</span>
-                  <span className="sm:hidden">{tab.shortLabel}</span>
-                </span>
+                <span className="whitespace-nowrap">{tab.label}</span>
                 <span
-                  className={`inline-flex items-center justify-center rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] font-bold shrink-0 ${
+                  className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-bold font-mono shrink-0 transition-all duration-300 ${
                     isActive
-                      ? "bg-ink text-white"
-                      : "bg-page text-muted group-hover:bg-gold-tint group-hover:text-ink"
+                      ? "bg-ink text-white shadow-2xs"
+                      : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark group-hover:scale-110"
                   }`}
                 >
                   {toArabicDigits(tab.count)}
@@ -584,27 +601,27 @@ export default function CatalogsPage() {
           })}
         </div>
 
-        {/* Instant Search Bar */}
-        <div className="relative w-full md:w-80">
+        {/* Instant Search Bar styled identically to the website form */}
+        <div className="relative w-full md:w-96">
           <input
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder={
               isMinistry
-                ? "بحث باسم الوزارة أو المعرف (Slug)..."
+                ? "بحث باسم الوزارة أو المعرف اللطيف (Slug)..."
                 : "بحث باسم القطاع أو الكود (Code)..."
             }
-            className="w-full h-11 rounded-2xl border border-line bg-white pr-10 pl-9 text-xs font-bold text-ink placeholder:text-muted/60 shadow-2xs transition-all focus:border-gold focus:bg-white focus:outline-none focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
+            className="h-14 w-full rounded-2xl border border-border bg-white pr-4 pl-12 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
           />
-          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted">
-            <Search className="size-4" />
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+            <Search className="size-5" />
           </span>
           {searchInput && (
             <button
               type="button"
               onClick={() => setSearchInput("")}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink cursor-pointer"
+              className="absolute left-11 top-1/2 -translate-y-1/2 flex size-6 items-center justify-center rounded-lg text-xs font-bold text-muted hover:bg-gold-tint hover:text-gold-dark hover:scale-110 active:scale-95 transition-all cursor-pointer"
               title="مسح البحث"
             >
               ✕
@@ -800,7 +817,7 @@ export default function CatalogsPage() {
                                 setEditingItem(item);
                                 setIsEditorOpen(true);
                               }}
-                              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-ink hover:border-gold hover:bg-gold-tint/40 hover:text-gold-dark transition-all cursor-pointer"
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shadow-2xs"
                               title="تعديل البيانات"
                             >
                               <Pencil className="size-3 text-gold-dark" />
@@ -907,7 +924,7 @@ export default function CatalogsPage() {
                             setEditingItem(item);
                             setIsEditorOpen(true);
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/40 cursor-pointer"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shadow-2xs"
                         >
                           <Pencil className="size-3 text-gold-dark" />
                           <span>تعديل</span>
