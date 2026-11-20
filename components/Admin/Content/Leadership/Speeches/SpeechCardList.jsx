@@ -85,7 +85,7 @@ export default function SpeechCardList({
 
           return (
             <div
-              key={sp.id}
+              key={`${sp.id ?? "sp"}-${index}`}
               className="group relative flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-xs transition-all hover:border-gold/60 hover:shadow-md"
             >
               <div className="space-y-3">

@@ -184,6 +184,7 @@ export default function GovernoratesSecretariats({ data }) {
             if (govName) {
               if (!map[govName]) map[govName] = [];
               map[govName].push({
+                id: item.id,
                 name: item.full_name,
                 role: item.role_title || "",
                 photo: item.photo_url || undefined,
@@ -205,7 +206,23 @@ export default function GovernoratesSecretariats({ data }) {
     };
   }, []);
 
-  const [openGovernorate, setOpenGovernorate] = useState(DEFAULT_MAIN[0]);
+  const mainGovernorates = useMemo(() => {
+    if (data?.main && Array.isArray(data.main) && data.main.length > 0) {
+      return data.main;
+    }
+    return DEFAULT_MAIN;
+  }, [data]);
+
+  const allGovernorates = useMemo(() => {
+    if (data?.main && Array.isArray(data.main) && data.main.length > 0) {
+      return [...data.main, ...(data.other || [])];
+    }
+    return ALL_GOVERNORATES;
+  }, [data]);
+
+  const [openGovernorate, setOpenGovernorate] = useState(
+    (data?.main && data.main[0]) || DEFAULT_MAIN[0]
+  );
   const [extraGovernorate, setExtraGovernorate] = useState(null);
   const [sheetPhase, setSheetPhase] = useState("closed");
   const [search, setSearch] = useState("");
@@ -223,22 +240,22 @@ export default function GovernoratesSecretariats({ data }) {
   const sheetIsMounted = sheetPhase !== "closed";
 
   const visibleGovernorates = useMemo(() => {
-    if (!extraGovernorate || DEFAULT_MAIN.includes(extraGovernorate)) {
-      return DEFAULT_MAIN;
+    if (!extraGovernorate || mainGovernorates.includes(extraGovernorate)) {
+      return mainGovernorates;
     }
 
-    return [...DEFAULT_MAIN.slice(0, 7), extraGovernorate];
-  }, [extraGovernorate]);
+    return [...mainGovernorates.slice(0, 7), extraGovernorate];
+  }, [extraGovernorate, mainGovernorates]);
 
   const filteredGovernorates = useMemo(() => {
     const normalizedQuery = normalizeArabic(search);
 
-    if (!normalizedQuery) return ALL_GOVERNORATES;
+    if (!normalizedQuery) return allGovernorates;
 
-    return ALL_GOVERNORATES.filter((name) =>
+    return allGovernorates.filter((name) =>
       normalizeArabic(name).includes(normalizedQuery),
     );
-  }, [search]);
+  }, [search, allGovernorates]);
 
   useEffect(() => {
     if (!sheetIsMounted) return undefined;
@@ -459,8 +476,11 @@ export default function GovernoratesSecretariats({ data }) {
                   >
                     <div className={styles.panelContent}>
                       <div className={styles.peopleList}>
-                        {people.map((person) => (
-                          <div key={`${name}-${person.name}`} className={styles.personRow}>
+                        {people.map((person, index) => (
+                          <div
+                            key={person.id ? `person-${person.id}` : `${name}-${person.name}-${index}`}
+                            className={styles.personRow}
+                          >
                             {person.photo ? (
                               <Image
                                 src={person.photo}

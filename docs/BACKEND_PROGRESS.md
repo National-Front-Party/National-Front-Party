@@ -1096,6 +1096,65 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
   - `eslint components/Admin/Content/Leadership/PresidentEditModal.jsx`: 0 أخطاء و 0 تحذيرات.
   - `node --test`: نجاح جميع اختبارات الباك إند الـ 301 بنسبة 100%.
 
+---
+
+## المرحلة P08.2: واجهة إدارة أمانات المحافظات (Governorate Secretariats Management UI)
+- **الحالة:** مكتملة ومختبرة بنجاح (Fully Implemented & Verified).
+- **التعديلات والمكونات المنفذة:**
+  1. **مكون مدير أمانات المحافظات (`GovernorateSecretariatsManager.jsx`):**
+     - جلب قائمة الـ 27 محافظة السيادية الثابتة من `GET /api/governorates`.
+     - بناء شريط جانبي يمين الشاشة (`lg:col-span-4`) يعرض المحافظات الـ 27 مع كود كل محافظة والترتيب مع إمكانية البحث الفوري باسم أو كود المحافظة.
+     - تحديد المحافظة النشطة بوضوح وتحديث كوادرها فور الاختيار.
+     - عرض كوادر أمانة المحافظة المختارة من خلال `GET /api/admin/content/governorate-secretariats?page=1&page_size=100&governorate_id={id}`.
+     - إتاحة التبديل السريع لحالة النشر بنقرة واحدة `PATCH .../status` وحذف العضو بعد التأكيد عبر `DeleteConfirmModal`.
+     - معالجة حالات التحميل (`Skeleton`) والخطأ (`Retry`) والبيانات الفارغة (`EmptyState`).
+  2. **نموذج إضافة وتعديل عضو الأمانة (`GovernoratePersonFormModal.jsx`):**
+     - نموذج متكامل يعتمد هيكلية الحاوية المحصنة: رأس ثابت وتذييل ثابت وجسم قابل للتمرير الداخلي `max-h-[90vh]`.
+     - الحقول: الاسم بالكامل (إلزامي)، الصفة/المنصب (اختياري)، ترتيب الظهور (رقم صحيح)، وحالة النشر.
+     - رفع ومعاينة وحذف الصورة الشخصية اختيارية تماماً 100% باستخدام `ImageUploadField.jsx` ومسار `POST /api/admin/content/upload`، مع إمكانية الحفظ دون صورة دون أي خطأ.
+     - دعم عدادات الأحرف `dir="ltr"` وتنبيهات الأخطاء المباشرة لكل حقل.
+  3. **الربط مع صفحة إدارة المحتوى (`app/admin/content/page.jsx`):**
+     - ربط التبويب `governorate-secretariats` لعرض المكون عند اختياره بسلاسة.
+- **التحقق والاختبارات:**
+  - `eslint`: 0 أخطاء و 0 تحذيرات في كافة ملفات المرحلة.
+  - `node --test lib/content/phase13-handlers.test.js lib/services/content-phase13.test.js`: نجاح 22/22 اختباراً بنسبة 100%.
+  - `node --test` العام: نجاح 284/284 اختباراً بنسبة 100%.
+
+---
+
+## المرحلة P08.3: إدارة المحافظات والتحكم في الظهور بالموقع (Governorates Management & Visibility Control)
+- **الحالة:** مكتملة ومختبرة بنجاح (Fully Implemented & Verified).
+- **التعديلات والمكونات المنفذة:**
+  1. **خدمات الباك إند (`lib/services/governorates.js`):**
+     - إضافة وظائف CRUD متكاملة للمحافظات:
+       - `listGovernoratesAdmin`: جلب المحافظات مرتبة تصاعدياً مع إحصائيات عدد الكوادر والأعضاء وطلبات الانضمام التابعة لها.
+       - `createGovernorate`: إضافة محافظة جديدة مع توحيد كود المحافظة بحروف كبيرة وتوثيق العملية في سجل التدقيق.
+       - `updateGovernorate`: تعديل بيانات المحافظة (الاسم، الكود، الترتيب، حالة الظهور).
+       - `setGovernorateActive`: تبديل حالة الظهور في الموقع العام (`is_active: true/false`).
+       - `deleteGovernorate`: حذف المحافظة مع فحص تكامل صارم يمنع الحذف في حال وجود بيانات أو طلبات مرتبطة (`GOVERNORATE_HAS_DATA`) وتوثيق الحذف.
+  2. **واجهات ومسارات الـ Admin APIs:**
+     - `GET /api/admin/content/governorates`: قائمة المحافظات الإدارية.
+     - `POST /api/admin/content/governorates`: إضافة محافظة.
+     - `PATCH /api/admin/content/governorates/[id]`: تعديل بيانات المحافظة.
+     - `PATCH /api/admin/content/governorates/[id]/status`: تفعيل أو إخفاء المحافظة.
+     - `DELETE /api/admin/content/governorates/[id]`: حذف المحافظة بشرط التأكيد وعدم وجود بيانات مرتبطة.
+  3. **واجهة لوحة التحكم:**
+     - بناء نافذة `GovernorateFormModal.jsx` لإضافة وتعديل بيانات وترتيب وظهور المحافظة.
+     - دمج عناصر التحكم في شريط المحافظات بـ `GovernorateSecretariatsManager.jsx`:
+       - زر «+ إضافة محافظة جديدة».
+       - إظهار مؤشر ملون لكل محافظة (معروضة بالموقع أو مخفية).
+       - زر إخفاء/إظهار سريع بنقرة واحدة (Eye toggle).
+       - زر تعديل المحافظة وزر الحذف مع نافذة التأكيد وحماية العلاقات.
+  4. **ربط الموقع العام (`GovernoratesSecretariats.jsx`):**
+     - رندرة المحافظات النشطة فقط وتحديث القائمة الرئيسية والفرعية ديناميكياً استناداً إلى بيانات السيرفر دون الاعتماد على القوائم الثابتة، بحيث تختفي أي محافظة معطلة مباشرة من عمود الموقع ومن نافذة تصفح المحافظات.
+- **التحقق والاختبارات:**
+  - `eslint`: 0 أخطاء و 0 تحذيرات في كافة ملفات المرحلة.
+  - `node --test lib/content/governorates-admin.test.js`: نجاح 12/12 اختباراً بنسبة 100%.
+  - `node --test` العام: نجاح 313/313 اختباراً بنسبة 100%.
+  - معالجة كافة تحذيرات المفاتيح المتكررة (Duplicate React Keys) في `GovernoratesSecretariats.jsx` و `SecretariatsModal.jsx`.
+
+
+
 
 
 

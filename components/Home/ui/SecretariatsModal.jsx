@@ -20,7 +20,7 @@ export default function SecretariatsModal({
         <ul>
           {items.map((item, index) => (
             <li
-              key={item.id ?? item.name ?? index}
+              key={item.id ? `sec-${item.id}` : `${item.name || "sec"}-${index}`}
               className={
                 index < items.length - 1 ? "border-b border-line" : undefined
               }
