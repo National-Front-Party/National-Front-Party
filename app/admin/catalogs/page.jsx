@@ -18,6 +18,9 @@ import {
   ChevronLeft,
   Copy,
   Check,
+  Trash2,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
@@ -60,6 +63,9 @@ export default function CatalogsPage() {
     canAccess(user?.role, "catalogs") ||
     canAccess(user?.role, "services:manage");
 
+  const canDelete =
+    user?.role === "super_admin" || canAccess(user?.role, "records:delete");
+
   // Active Catalog Tab: 'ministries' | 'request_sectors'
   const [activeCatalog, setActiveCatalog] = useState("ministries");
 
@@ -94,6 +100,12 @@ export default function CatalogsPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
+
+  // Deletion States
+  const [targetDeleteItem, setTargetDeleteItem] = useState(null);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [deleteInProgressId, setDeleteInProgressId] = useState(null);
+  const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
 
   const isMinistry = activeCatalog === "ministries";
   const activeRecords = isMinistry ? ministries : sectors;
@@ -328,31 +340,151 @@ export default function CatalogsPage() {
     }
   };
 
+  // Handle Single Item Deletion
+  const handleConfirmDelete = async () => {
+    if (!targetDeleteItem) return;
+    setDeleteInProgressId(targetDeleteItem.id);
+    try {
+      const endpoint = isMinistry
+        ? `/api/admin/ministries/${targetDeleteItem.id}`
+        : `/api/admin/request-sectors/${targetDeleteItem.id}`;
+
+      await adminFetch(endpoint, {
+        method: "DELETE",
+        body: JSON.stringify({ confirm: true }),
+      });
+
+      showSuccess(
+        isMinistry
+          ? `تم حذف وزارة "${targetDeleteItem.name_ar}" نهائياً من الكتالوج`
+          : `تم حذف قطاع "${targetDeleteItem.name_ar}" نهائياً من الكتالوج`,
+      );
+
+      if (isMinistry) {
+        setMinistries((prev) => prev.filter((m) => m.id !== targetDeleteItem.id));
+        setMinistriesPagination((prev) => ({
+          ...prev,
+          total: Math.max(0, prev.total - 1),
+        }));
+      } else {
+        setSectors((prev) => prev.filter((s) => s.id !== targetDeleteItem.id));
+        setSectorsPagination((prev) => ({
+          ...prev,
+          total: Math.max(0, prev.total - 1),
+        }));
+      }
+
+      setTargetDeleteItem(null);
+    } catch (err) {
+      if (err.code === "CATALOG_IN_USE" || err.message?.includes("CATALOG_IN_USE")) {
+        showError(
+          isMinistry
+            ? "لا يمكن حذف هذه الوزارة لوجود طلبات خدمة مواطنين مرتبطة بها في النظام. يرجى استخدام التعطيل المؤقت بدلاً من الحذف."
+            : "لا يمكن حذف هذا القطاع لوجود طلبات خدمة مواطنين مرتبطة به في النظام. يرجى استخدام التعطيل المؤقت بدلاً من الحذف.",
+        );
+      } else {
+        showError(err.message || "تعذر حذف العنصر من الكتالوج");
+      }
+    } finally {
+      setDeleteInProgressId(null);
+    }
+  };
+
+  // Handle Bulk Deletion (Filtered Current View)
+  const handleConfirmBulkDelete = async () => {
+    if (!canDelete || filteredRecords.length === 0) return;
+    setBulkDeleteLoading(true);
+
+    try {
+      const itemsToDelete = [...filteredRecords];
+      const endpointBase = isMinistry ? "/api/admin/ministries" : "/api/admin/request-sectors";
+
+      const deletePromises = itemsToDelete.map((item) =>
+        adminFetch(`${endpointBase}/${item.id}`, {
+          method: "DELETE",
+          body: JSON.stringify({ confirm: true }),
+        })
+          .then(() => ({ success: true, id: item.id }))
+          .catch((err) => ({ success: false, id: item.id, error: err.message, code: err.code })),
+      );
+
+      const results = await Promise.allSettled(deletePromises);
+      const successfulCount = results.filter(
+        (r) => r.status === "fulfilled" && r.value.success,
+      ).length;
+
+      const conflictCount = results.filter(
+        (r) =>
+          r.status === "fulfilled" &&
+          !r.value.success &&
+          (r.value.code === "CATALOG_IN_USE" || r.value.error?.includes("CATALOG_IN_USE")),
+      ).length;
+
+      if (successfulCount > 0) {
+        showSuccess(
+          `تم بنجاح حذف ${toArabicDigits(successfulCount)} عنصر من أصل ${toArabicDigits(itemsToDelete.length)} عنصر معروض`,
+        );
+      }
+
+      if (conflictCount > 0) {
+        showError(
+          `تعذر حذف ${toArabicDigits(conflictCount)} عنصر لوجود طلبات خدمة مرتبطة بها في النظام (تم الحفاظ على السجلات المرتبطة)`,
+        );
+      } else if (successfulCount === 0) {
+        showError("فشل في حذف العناصر المعروضة، يرجى المحاولة لاحقاً");
+      }
+
+      setIsBulkDeleteModalOpen(false);
+      if (isMinistry) fetchMinistries(ministriesPagination.page, false);
+      else fetchSectors(sectorsPagination.page, false);
+    } catch (err) {
+      showError(err.message || "حدث خطأ أثناء تنفيذ الحذف الجماعي");
+    } finally {
+      setBulkDeleteLoading(false);
+    }
+  };
+
   // Action Menu items for each row
-  const getActionMenuItems = (item) => [
-    {
-      label: "تعديل البيانات",
-      icon: <Pencil className="size-4 text-gold-dark" />,
-      onClick: () => {
-        setEditingItem(item);
-        setIsEditorOpen(true);
+  const getActionMenuItems = (item) => {
+    const items = [
+      {
+        label: "تعديل البيانات",
+        icon: <Pencil className="size-4 text-gold-dark" />,
+        onClick: () => {
+          setEditingItem(item);
+          setIsEditorOpen(true);
+        },
       },
-    },
-    {
-      label: item.is_active ? "تعطيل مؤقتاً" : "اعتماد وتفعيل",
-      icon: item.is_active ? (
-        <XCircle className="size-4 text-rose-600" />
-      ) : (
-        <CheckCircle2 className="size-4 text-emerald-600" />
-      ),
-      onClick: () => handleToggleStatus(item),
-    },
-    {
-      label: isMinistry ? "نسخ المعرف اللطيف" : "نسخ كود القطاع",
-      icon: <Copy className="size-4 text-muted" />,
-      onClick: () => handleCopyKey(isMinistry ? item.slug : item.code),
-    },
-  ];
+      {
+        label: item.is_active ? "تعطيل مؤقتاً" : "اعتماد وتفعيل",
+        icon: item.is_active ? (
+          <XCircle className="size-4 text-rose-600" />
+        ) : (
+          <CheckCircle2 className="size-4 text-emerald-600" />
+        ),
+        onClick: () => handleToggleStatus(item),
+      },
+      {
+        label: isMinistry ? "نسخ المعرف اللطيف" : "نسخ كود القطاع",
+        icon: <Copy className="size-4 text-muted" />,
+        onClick: () => handleCopyKey(isMinistry ? item.slug : item.code),
+      },
+    ];
+
+    if (canDelete) {
+      items.push({
+        divider: true,
+      });
+      items.push({
+        label: isMinistry ? "حذف الوزارة نهائياً" : "حذف القطاع نهائياً",
+        icon: <Trash2 className="size-4 text-rose-600" />,
+        tone: "danger",
+        onClick: () => setTargetDeleteItem(item),
+      });
+    }
+
+    return items;
+  };
 
   // RBAC Access Guard View
   if (!loading && !canManage) {
@@ -394,8 +526,25 @@ export default function CatalogsPage() {
           </div>
         </div>
 
-        {/* Action Buttons: Refresh & Contextual Add */}
-        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+        {/* Action Buttons: Refresh, Bulk Delete (super_admin), & Contextual Add */}
+        <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+          {canDelete && filteredRecords.length > 0 && (
+            <button
+              type="button"
+              disabled={bulkDeleteLoading || loading}
+              onClick={() => setIsBulkDeleteModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50/80 px-4 py-3 text-xs sm:text-sm font-bold text-rose-700 shadow-2xs hover:bg-rose-100 hover:border-rose-300 transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50"
+              title={
+                isMinistry
+                  ? "حذف جميع الوزارات المعروضة بالصفحة نهائياً"
+                  : "حذف جميع القطاعات المعروضة بالصفحة نهائياً"
+              }
+            >
+              <Trash2 className="size-4 text-rose-600" />
+              <span>حذف الكل ({toArabicDigits(filteredRecords.length)})</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => {
@@ -511,25 +660,25 @@ export default function CatalogsPage() {
         <button
           type="button"
           onClick={() => handleTabSwitch("ministries")}
-          className={`group relative flex-1 sm:flex-initial flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-6 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 select-none whitespace-nowrap min-w-0 ${
+          className={`group relative flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-5 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap min-w-0 active:scale-[0.98] ${
             isMinistry
-              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.02] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
-              : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50 hover:shadow-xs hover:scale-[1.01] sm:hover:scale-105 sm:hover:-translate-y-0.5"
+              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.30)] border border-gold/60 hover:brightness-105"
+              : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50"
           }`}
         >
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 shrink-0">
             <Building2
-              className={`size-4 shrink-0 transition-transform duration-300 ${
-                isMinistry ? "text-ink" : "text-muted group-hover:text-gold-dark group-hover:scale-110"
+              className={`size-4 shrink-0 transition-colors ${
+                isMinistry ? "text-ink" : "text-muted group-hover:text-gold-dark"
               }`}
             />
-            <span className="whitespace-nowrap">الوزارات الحكومية</span>
+            <span className="whitespace-nowrap font-bold">الوزارات الحكومية</span>
           </div>
           <span
-            className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[10px] font-bold font-mono shrink-0 transition-all duration-300 ${
+            className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11px] font-bold font-mono shrink-0 transition-colors ${
               isMinistry
-                ? "bg-ink text-white shadow-2xs"
-                : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark group-hover:scale-110"
+                ? "bg-ink text-gold border border-gold/40 shadow-xs"
+                : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark"
             }`}
           >
             {toArabicDigits(ministries.length)}
@@ -539,25 +688,25 @@ export default function CatalogsPage() {
         <button
           type="button"
           onClick={() => handleTabSwitch("request_sectors")}
-          className={`group relative flex-1 sm:flex-initial flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-6 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 select-none whitespace-nowrap min-w-0 ${
+          className={`group relative flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-5 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap min-w-0 active:scale-[0.98] ${
             !isMinistry
-              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.02] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
-              : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50 hover:shadow-xs hover:scale-[1.01] sm:hover:scale-105 sm:hover:-translate-y-0.5"
+              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.30)] border border-gold/60 hover:brightness-105"
+              : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50"
           }`}
         >
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 shrink-0">
             <Layers
-              className={`size-4 shrink-0 transition-transform duration-300 ${
-                !isMinistry ? "text-ink" : "text-muted group-hover:text-gold-dark group-hover:scale-110"
+              className={`size-4 shrink-0 transition-colors ${
+                !isMinistry ? "text-ink" : "text-muted group-hover:text-gold-dark"
               }`}
             />
-            <span className="whitespace-nowrap">القطاعات الخدمية</span>
+            <span className="whitespace-nowrap font-bold">القطاعات الخدمية</span>
           </div>
           <span
-            className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[10px] font-bold font-mono shrink-0 transition-all duration-300 ${
+            className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11px] font-bold font-mono shrink-0 transition-colors ${
               !isMinistry
-                ? "bg-ink text-white shadow-2xs"
-                : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark group-hover:scale-110"
+                ? "bg-ink text-gold border border-gold/40 shadow-xs"
+                : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark"
             }`}
           >
             {toArabicDigits(sectors.length)}
@@ -567,12 +716,12 @@ export default function CatalogsPage() {
 
       {/* 4. Toolbar: Status Filter Tabs + Search Input */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3.5 animate-elem-fade-up">
-        {/* Status Filter Tabs */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full md:w-auto">
+        {/* Status Filter Tabs - Zero scroll, always 1 row on mobile */}
+        <div className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full md:w-auto">
           {[
-            { id: "all", label: "جميع العناصر", count: activeRecords.length },
-            { id: "active", label: "المعتمدة والنشطة", count: activeCount },
-            { id: "inactive", label: "المعطلة مؤقتاً", count: inactiveCount },
+            { id: "all", label: "جميع العناصر", shortLabel: "الكل", count: activeRecords.length },
+            { id: "active", label: "المعتمدة والنشطة", shortLabel: "النشطة", count: activeCount },
+            { id: "inactive", label: "المعطلة مؤقتاً", shortLabel: "المعطلة", count: inactiveCount },
           ].map((tab) => {
             const isActive = statusFilter === tab.id;
             return (
@@ -580,18 +729,19 @@ export default function CatalogsPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setStatusFilter(tab.id)}
-                className={`group relative flex-1 sm:flex-initial flex items-center justify-between sm:justify-center gap-2.5 rounded-xl px-4 sm:px-4 py-2.5 sm:py-2 text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 select-none whitespace-nowrap min-w-0 ${
+                className={`group relative flex-1 md:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-2 sm:px-4 py-2 sm:py-2 text-[11px] sm:text-xs font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap min-w-0 active:scale-[0.98] ${
                   isActive
-                    ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.03] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
-                    : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50 hover:shadow-xs hover:scale-[1.01] sm:hover:scale-105 sm:hover:-translate-y-0.5"
+                    ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.30)] border border-gold/60 hover:brightness-105"
+                    : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50"
                 }`}
               >
-                <span className="whitespace-nowrap">{tab.label}</span>
+                <span className="hidden sm:inline whitespace-nowrap">{tab.label}</span>
+                <span className="sm:hidden whitespace-nowrap">{tab.shortLabel}</span>
                 <span
-                  className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-bold font-mono shrink-0 transition-all duration-300 ${
+                  className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-bold font-mono shrink-0 transition-colors ${
                     isActive
-                      ? "bg-ink text-white shadow-2xs"
-                      : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark group-hover:scale-110"
+                      ? "bg-ink text-gold border border-gold/40 shadow-xs"
+                      : "bg-page text-muted border border-line/60 group-hover:border-gold/40 group-hover:bg-gold-tint group-hover:text-gold-dark"
                   }`}
                 >
                   {toArabicDigits(tab.count)}
@@ -992,6 +1142,222 @@ export default function CatalogsPage() {
         type={activeCatalog}
         onSaved={handleItemSaved}
       />
+
+      {/* 8. Single Delete Confirmation Modal */}
+      {targetDeleteItem && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-elem-fade-up"
+          dir="rtl"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="relative w-full max-w-md rounded-3xl border border-line bg-white p-6 shadow-card space-y-5 text-right"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with red warning and rotating gold close button */}
+            <div className="flex items-center justify-between border-b border-line pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs">
+                  <Trash2 className="size-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-ink">
+                    {isMinistry ? "تأكيد حذف الوزارة نهائياً" : "تأكيد حذف القطاع نهائياً"}
+                  </h3>
+                  <p className="text-xs text-muted">إجراء نهائي يتطلب تأكيداً مسبقاً</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={deleteInProgressId === targetDeleteItem.id}
+                onClick={() => setTargetDeleteItem(null)}
+                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 cursor-pointer disabled:opacity-50"
+                aria-label="إغلاق النافذة"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {/* Target details snippet */}
+            <div className="rounded-2xl border border-line bg-page/60 p-4 space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-muted">اسم العنصر:</span>
+                <span className="font-bold text-ink">{targetDeleteItem.name_ar}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">
+                  {isMinistry ? "المعرف اللطيف (Slug):" : "كود القطاع (Code):"}
+                </span>
+                <span className="font-mono font-bold text-ink">
+                  {isMinistry ? targetDeleteItem.slug : targetDeleteItem.code}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">ترتيب العرض:</span>
+                <span className="font-mono font-bold text-ink">
+                  {toArabicDigits(targetDeleteItem.sort_order ?? 0)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">حالة الاعتماد:</span>
+                <span
+                  className={`font-bold ${
+                    targetDeleteItem.is_active ? "text-emerald-700" : "text-amber-700"
+                  }`}
+                >
+                  {targetDeleteItem.is_active ? "معتمد ونشط" : "معطل مؤقتاً"}
+                </span>
+              </div>
+            </div>
+
+            {/* Warning alert */}
+            <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-3.5 text-xs text-rose-800 leading-relaxed font-medium space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-rose-900">
+                <AlertTriangle className="size-4 shrink-0 text-rose-600" />
+                <span>تحذير: لا يمكن التراجع عن هذا الإجراء</span>
+              </div>
+              <p>
+                سيتم حذف هذا السجل نهائياً من قاعدة البيانات. في حال وجود طلبات خدمة سابقة مرتبطة
+                به، سيتم منع الحذف تلقائياً للحفاظ على سلامة سجلات المواطنين.
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={deleteInProgressId === targetDeleteItem.id}
+                onClick={() => setTargetDeleteItem(null)}
+                className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                disabled={deleteInProgressId === targetDeleteItem.id}
+                onClick={handleConfirmDelete}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all shadow-btn disabled:opacity-50 cursor-pointer"
+              >
+                {deleteInProgressId === targetDeleteItem.id ? (
+                  <Spinner size="xs" color="white" />
+                ) : (
+                  <Trash2 className="size-4" />
+                )}
+                <span>تأكيد الحذف النهائي</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 9. Bulk Delete Confirmation Modal (Super Admin) */}
+      {isBulkDeleteModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-elem-fade-up"
+          dir="rtl"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="relative w-full max-w-lg rounded-3xl border border-line bg-white p-6 sm:p-7 shadow-card space-y-5 text-right"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with red warning and rotating gold close button */}
+            <div className="flex items-center justify-between border-b border-line pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs">
+                  <Trash2 className="size-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-ink">
+                    {isMinistry
+                      ? "تأكيد حذف جميع الوزارات بالصفحة المعروضة"
+                      : "تأكيد حذف جميع القطاعات بالصفحة المعروضة"}
+                  </h3>
+                  <p className="text-xs text-muted">
+                    عملية حذف جماعي نهائية للعناصر المعروضة حالياً
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={bulkDeleteLoading}
+                onClick={() => setIsBulkDeleteModalOpen(false)}
+                className="group relative flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 cursor-pointer disabled:opacity-50"
+                aria-label="إغلاق النافذة"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {/* Scope Details */}
+            <div className="rounded-2xl border border-line bg-page/60 p-4 space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-muted">الكتالوج المستهدف:</span>
+                <span className="font-bold text-ink">
+                  {isMinistry ? "الوزارات الحكومية" : "القطاعات الخدمية"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">عدد العناصر المستهدفة:</span>
+                <span className="font-bold text-rose-600 font-mono text-sm">
+                  {toArabicDigits(filteredRecords.length)} عنصر
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted">حالة الفلترة النشطة:</span>
+                <span className="font-bold text-gold-dark">
+                  {statusFilter === "all"
+                    ? "جميع العناصر المعروضة"
+                    : statusFilter === "active"
+                    ? "المعتمدة والنشطة فقط"
+                    : "المعطلة مؤقتاً فقط"}
+                </span>
+              </div>
+            </div>
+
+            {/* Warning alert */}
+            <div className="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-xs text-rose-800 leading-relaxed font-medium space-y-1">
+              <div className="flex items-center gap-1.5 font-black text-rose-900">
+                <AlertTriangle className="size-4 shrink-0 text-rose-600" />
+                <span>تحذير أمني صارم (عملية نهائية)</span>
+              </div>
+              <p>
+                سيؤدي هذا الإجراء إلى حذف جميع العناصر الـ (
+                {toArabicDigits(filteredRecords.length)}) المعروضة حالياً نهائياً من قاعدة البيانات.
+                سيتم تخطي أي عناصر مرتبطة بطلبات خدمة مواطنين سابقة تلقائياً للحفاظ على سلامة
+                البيانات.
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={bulkDeleteLoading}
+                onClick={() => setIsBulkDeleteModalOpen(false)}
+                className="rounded-xl border border-line bg-white px-5 py-2.5 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                disabled={bulkDeleteLoading}
+                onClick={handleConfirmBulkDelete}
+                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all shadow-btn disabled:opacity-50 cursor-pointer"
+              >
+                {bulkDeleteLoading ? (
+                  <Spinner size="xs" color="white" />
+                ) : (
+                  <Trash2 className="size-4" />
+                )}
+                <span>تأكيد الحذف الجماعي ({toArabicDigits(filteredRecords.length)} عنصر)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

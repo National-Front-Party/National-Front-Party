@@ -1052,3 +1052,37 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق والاختبارات:**
   - `npx eslint app/admin/catalogs/page.jsx components/Admin/Catalogs/CatalogEditorModal.jsx components/Admin/AppShell.jsx app/admin/page.jsx`: 0 errors, 0 warnings.
   - `npm test`: جميع الاختبارات الـ 282 ناجحة بنسبة 100% (282 pass, 0 fail).
+
+---
+
+## مرحلة D5.9: دعم الحذف النهائي الآمن في الكتالوجات وضبط التجاوب التام للشاشات الصغيرة
+- **الحالة:** مكتملة بنجاح (Safe Permanent Deletion & Full Responsive Layout Optimization).
+- **الأهداف المنجزة:**
+  1. **خدمة الحذف النهائي الآمن مع فحص العلاقات المرجعية (`lib/services/service-catalogs.js`):**
+     - دالة `deleteServiceCatalogItem(catalog, id, db)`: فحص مسبق لاستخدام الوزارة أو القطاع في جدول طلبات الخدمة `service_requests`.
+     - في حال وجود طلبات مرتبطة بالوزارة أو القطاع، يتم رفض الحذف فوراً وإرجاع `{ ok: false, code: "CATALOG_IN_USE", count }` وتوليد خطأ HTTP 409 Conflict للحفاظ التام على السلامة المرجعية وعدم كسر المفاتيح الخارجية `ON DELETE RESTRICT`.
+     - في حال عدم وجود أي طلبات مرتبطة، يتم تنفيذ الحذف بأمان وسلاسة وإرجاع السجل المحذوف.
+  2. **معالجات الـ API للحذف وحماية الصلاحيات (`lib/service-catalogs/handlers.js`):**
+     - تصدير طريقة `DELETE` في معالجات الكتالوجات (`/api/admin/ministries/[id]` و `/api/admin/request-sectors/[id]`).
+     - تقييد صارم لصلاحية الحذف بمدير النظام فقط `super_admin` عبر `records:delete` مع التحقق من جسم الطلب `{ confirm: true }`.
+  3. **واجهة المستخدم للحذف الفردي والجماعي المتطابقة مع صفحة طلبات الخدمة (`app/admin/catalogs/page.jsx`):**
+     - إجراء "حذف نهائي" مخصص ومحمي في قائمة إجراءات كل عنصر `ActionDropdown` باللون الأحمر.
+     - زر "حذف الكل (X)" في شريط العنوان للحذف الجماعي لنتائج العرض المفلترة الحالية حصراً لمدير النظام.
+     - نافذة تأكيد حذف فردي وجماعي مخصصة ومطابقة للهوية المؤسسية تعرض تفاصيل العنصر المحذوف وتحذيراً أمنياً ومؤشرات تحميل تمنع النقر المكرر.
+  4. **الحل الجذري لتجاوب التبويبات ومنع التصادم (Zero Collision Responsive Layout):**
+     - إزالة جميع تحويلات `scale` التي كانت تتسبب في تمدد الأزرار بصرياً واختراق حدود الـ flexbox وتراكب شارات العداد على الأيقونات المجاورة في الشاشات المتوسطة والصغيرة.
+     - التبويبان الرئيسيان ("الوزارات الحكومية" / "القطاعات الخدمية"): نزول رأسي كامل العرض `w-full` على الشاشات الصغيرة مع توزيع متوازن للأيقونة والاسم والشارة، وعرض أفقي مريح `sm:flex-row` و `whitespace-nowrap` على الشاشات الأوسع بدون أي التفاف نصوص أو انكسار سطر.
+     - تبويبات الفلترة ("الكل" / "النشطة" / "المعطلة"): اعتماد تصميم الأسطول الموحد مع تسميات متجاوبة (`shortLabel` على الموبايل و `label` على الشاشات الكبيرة) لتظل دائماً في صف واحد نظيف ومنسق بدون كسر أو تداخل.
+     - شارات العداد: توحيد تصميم الشارة النشطة بالخلفية الداكنة المطعمة بالنص الذهبي وإطار الذهب `bg-ink text-gold border border-gold/40` لتنسجم فخامتها مع الهوية البصرية الرسمية للحزب.
+- **الملفات المضافة والمعدلة:**
+  - `lib/services/service-catalogs.js`
+  - `lib/service-catalogs/handlers.js`
+  - `lib/service-catalogs/handlers.test.js`
+  - `app/api/admin/ministries/[id]/route.js`
+  - `app/api/admin/request-sectors/[id]/route.js`
+  - `components/Admin/Catalogs/catalogs-verification.test.js`
+  - `app/admin/catalogs/page.jsx`
+  - `docs/BACKEND_PROGRESS.md`
+- **التحقق والاختبارات:**
+  - `npx eslint`: خالي تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).

@@ -148,3 +148,83 @@ test("Friendly duplicate error messages mapping", () => {
     "كود القطاع مستخدم بالفعل، برجاء إدخال كود مختلف.",
   );
 });
+
+test("Service Catalog DELETE handler enforces permissions, confirmation, and conflict checks", async () => {
+  const { createServiceCatalogItemHandlers } = await import(
+    "../../../lib/service-catalogs/handlers.js"
+  );
+
+  // 1. Unauthorized staff guard check (service_officer lacks records:delete)
+  const handlers = createServiceCatalogItemHandlers("ministries", {
+    guard: async (_req, opts) => {
+      if (opts?.permission === "records:delete") {
+        return new Response(JSON.stringify({ error: "FORBIDDEN" }), { status: 403 });
+      }
+      return { id: "user-1", role: "service_officer" };
+    },
+    deleteFn: async () => ({ ok: true }),
+  });
+
+  const resForbidden = await handlers.DELETE(
+    new Request("http://localhost/api/admin/ministries/1", { method: "DELETE" }),
+    { params: Promise.resolve({ id: "1" }) },
+  );
+  assert.equal(resForbidden.status, 403);
+
+  // 2. Authorized staff guard with missing confirmation payload
+  const authHandlers = createServiceCatalogItemHandlers("ministries", {
+    guard: async () => ({ id: "admin-1", role: "super_admin" }),
+    deleteFn: async () => ({ ok: true }),
+  });
+
+  const resNoConfirm = await authHandlers.DELETE(
+    new Request("http://localhost/api/admin/ministries/1", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({}),
+    }),
+    { params: Promise.resolve({ id: "1" }) },
+  );
+  assert.equal(resNoConfirm.status, 400);
+
+  // 3. Conflict when catalog item is in use by service requests
+  const conflictHandlers = createServiceCatalogItemHandlers("ministries", {
+    guard: async () => ({ id: "admin-1", role: "super_admin" }),
+    deleteFn: async () => ({ ok: false, code: "CATALOG_IN_USE", count: 3 }),
+  });
+
+  const resConflict = await conflictHandlers.DELETE(
+    new Request("http://localhost/api/admin/ministries/1", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ confirm: true }),
+    }),
+    { params: Promise.resolve({ id: "1" }) },
+  );
+  assert.equal(resConflict.status, 409);
+  const conflictBody = await resConflict.json();
+  assert.equal(conflictBody.error, "CATALOG_IN_USE");
+  assert.equal(conflictBody.count, 3);
+
+  // 4. Successful deletion when unreferenced
+  const successHandlers = createServiceCatalogItemHandlers("ministries", {
+    guard: async () => ({ id: "admin-1", role: "super_admin" }),
+    deleteFn: async (_cat, id) => ({
+      ok: true,
+      item: { id, name_ar: "وزارة تجريبية", slug: "test-min" },
+    }),
+  });
+
+  const resSuccess = await successHandlers.DELETE(
+    new Request("http://localhost/api/admin/ministries/5", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ confirm: true }),
+    }),
+    { params: Promise.resolve({ id: "5" }) },
+  );
+  assert.equal(resSuccess.status, 200);
+  const successBody = await resSuccess.json();
+  assert.equal(successBody.ok, true);
+  assert.equal(successBody.ministry.name_ar, "وزارة تجريبية");
+});
