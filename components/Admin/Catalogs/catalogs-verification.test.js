@@ -9,6 +9,7 @@ import {
   catalogListQuerySchema,
 } from "../../../lib/validation/service-catalogs.js";
 import { canAccess, ROLE_PERMISSIONS } from "../../../lib/admin/permissions.js";
+import { generateCatalogIdentifier } from "../../../lib/admin/catalog-utils.js";
 
 test("Ministries: validation schema strictly accepts only valid fields and rejects unknown/extra fields", () => {
   // Valid create payload
@@ -227,4 +228,71 @@ test("Service Catalog DELETE handler enforces permissions, confirmation, and con
   const successBody = await resSuccess.json();
   assert.equal(successBody.ok, true);
   assert.equal(successBody.ministry.name_ar, "وزارة تجريبية");
+});
+
+test("Automatic slug and code generation on creation meets backend constraints and ensures uniqueness", () => {
+  // 1. Ministry slug generation from Arabic name
+  const minSlug = generateCatalogIdentifier("وزارة الصحة والسكان", "ministries");
+  assert.ok(minSlug.length > 5 && minSlug.length <= 100);
+  assert.ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(minSlug));
+  assert.ok(minSlug.startsWith("wzarh"));
+
+  // 2. Sector code generation from Arabic name
+  const secCode = generateCatalogIdentifier("العلاج على نفقة الدولة", "request_sectors");
+  assert.ok(secCode.length > 5 && secCode.length <= 100);
+  assert.ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(secCode));
+  assert.ok(secCode.startsWith("alalag"));
+
+  // 3. Fallback when name cannot produce Latin characters
+  const fallbackMin = generateCatalogIdentifier("!!! @#$ %^&", "ministries");
+  assert.ok(fallbackMin.startsWith("min-"));
+  assert.ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(fallbackMin));
+
+  const fallbackSec = generateCatalogIdentifier("", "request_sectors");
+  assert.ok(fallbackSec.startsWith("sec-"));
+  assert.ok(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(fallbackSec));
+
+  // 4. Repeated creations of identical Arabic names produce strictly unique identifiers
+  const generatedSet = new Set();
+  for (let i = 0; i < 100; i++) {
+    const id = generateCatalogIdentifier("وزارة الإسكان", "ministries");
+    assert.equal(generatedSet.has(id), false, `Collision detected for ${id}`);
+    generatedSet.add(id);
+  }
+  assert.equal(generatedSet.size, 100);
+
+  // 5. Ministry POST payload with generated slug passes Zod validation
+  const ministryCreatePayload = {
+    name_ar: "وزارة التضامن الاجتماعي",
+    slug: generateCatalogIdentifier("وزارة التضامن الاجتماعي", "ministries"),
+    sort_order: 10,
+  };
+  const parsedMinistry = ministryCreateSchema.safeParse(ministryCreatePayload);
+  assert.equal(parsedMinistry.success, true);
+
+  // 6. Sector POST payload with generated code passes Zod validation
+  const sectorCreatePayload = {
+    name_ar: "طلبات الرعاية الصحية العاجلة",
+    code: generateCatalogIdentifier("طلبات الرعاية الصحية العاجلة", "request_sectors"),
+    sort_order: 2,
+  };
+  const parsedSector = requestSectorCreateSchema.safeParse(sectorCreatePayload);
+  assert.equal(parsedSector.success, true);
+
+  // 7. Ministry PATCH payload strictly omits slug and passes Zod validation
+  const ministryPatchPayload = {
+    name_ar: "وزارة التضامن المحدثة",
+    sort_order: 15,
+  };
+  assert.equal(ministryPatchPayload.slug, undefined);
+  const parsedMinPatch = ministryUpdateSchema.safeParse(ministryPatchPayload);
+  assert.equal(parsedMinPatch.success, true);
+
+  // 8. Sector PATCH payload strictly omits code and passes Zod validation
+  const sectorPatchPayload = {
+    name_ar: "الرعاية الصحية المعدلة",
+  };
+  assert.equal(sectorPatchPayload.code, undefined);
+  const parsedSecPatch = requestSectorUpdateSchema.safeParse(sectorPatchPayload);
+  assert.equal(parsedSecPatch.success, true);
 });
