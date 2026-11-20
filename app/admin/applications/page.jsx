@@ -12,7 +12,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
-  Download,
+  FileSpreadsheet,
   Search,
   AlertTriangle,
   MessageCircle,
@@ -475,8 +475,8 @@ export default function ApplicationsPage() {
     }
   };
 
-  // Handle CSV Export
-  const handleExportCSV = async () => {
+  // Handle Excel Export (.xlsx)
+  const handleExportExcel = async () => {
     if (!canExport || exportLoading) return;
     setExportLoading(true);
     try {
@@ -488,14 +488,14 @@ export default function ApplicationsPage() {
       if (createdFrom) queryParams.set("created_from", createdFrom);
       if (createdTo) queryParams.set("created_to", createdTo);
 
-      const res = await fetch(`/api/admin/applications/export?${queryParams.toString()}`, {
+      const res = await fetch(`/api/admin/applications/export/excel?${queryParams.toString()}`, {
         method: "GET",
         credentials: "include",
       });
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || "فشل تصدير ملف الطلبات");
+        throw new Error(errorData.error || "فشل تصدير ملف إكسيل");
       }
 
       const blob = await res.blob();
@@ -503,15 +503,15 @@ export default function ApplicationsPage() {
       const a = document.createElement("a");
       a.href = url;
       const today = new Date().toISOString().substring(0, 10);
-      a.download = `طلبات_الانضمام_${today}.csv`;
+      a.download = `تقرير_طلبات_الانضمام_${today}.xlsx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      showSuccess("تم تنزيل ملف CSV بنجاح");
+      showSuccess("تم تصدير تقرير Excel بنجاح");
     } catch (err) {
-      showError(err.message || "حدث خطأ أثناء تصدير ملف CSV");
+      showError(err.message || "حدث خطأ أثناء تصدير ملف Excel");
     } finally {
       setExportLoading(false);
     }
@@ -665,15 +665,16 @@ export default function ApplicationsPage() {
             <button
               type="button"
               disabled={exportLoading || pagination.total === 0}
-              onClick={handleExportCSV}
-              className="inline-flex items-center gap-2 rounded-2xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-ink shadow-2xs hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark transition-all duration-200 disabled:opacity-50 cursor-pointer"
+              onClick={handleExportExcel}
+              className="inline-flex items-center gap-2 rounded-2xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-ink shadow-2xs hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
+              title="تصدير تقرير إكسيل احترافي مع لوحة المؤشرات والإحصائيات"
             >
               {exportLoading ? (
                 <Spinner size="sm" color="gold" />
               ) : (
-                <Download className="size-4 text-emerald-700" />
+                <FileSpreadsheet className="size-4 text-emerald-700" />
               )}
-              <span>تصدير CSV</span>
+              <span>تصدير Excel</span>
             </button>
           )}
         </div>
