@@ -12,7 +12,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
-  Download,
+  FileSpreadsheet,
   Search,
   AlertTriangle,
   MessageCircle,
@@ -475,8 +475,8 @@ export default function ApplicationsPage() {
     }
   };
 
-  // Handle CSV Export
-  const handleExportCSV = async () => {
+  // Handle Excel Export (.xlsx)
+  const handleExportExcel = async () => {
     if (!canExport || exportLoading) return;
     setExportLoading(true);
     try {
@@ -488,14 +488,14 @@ export default function ApplicationsPage() {
       if (createdFrom) queryParams.set("created_from", createdFrom);
       if (createdTo) queryParams.set("created_to", createdTo);
 
-      const res = await fetch(`/api/admin/applications/export?${queryParams.toString()}`, {
+      const res = await fetch(`/api/admin/applications/export/excel?${queryParams.toString()}`, {
         method: "GET",
         credentials: "include",
       });
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || "فشل تصدير ملف الطلبات");
+        throw new Error(errorData.error || "فشل تصدير ملف إكسيل");
       }
 
       const blob = await res.blob();
@@ -503,15 +503,15 @@ export default function ApplicationsPage() {
       const a = document.createElement("a");
       a.href = url;
       const today = new Date().toISOString().substring(0, 10);
-      a.download = `طلبات_الانضمام_${today}.csv`;
+      a.download = `تقرير_طلبات_الانضمام_${today}.xlsx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      showSuccess("تم تنزيل ملف CSV بنجاح");
+      showSuccess("تم تصدير تقرير Excel بنجاح");
     } catch (err) {
-      showError(err.message || "حدث خطأ أثناء تصدير ملف CSV");
+      showError(err.message || "حدث خطأ أثناء تصدير ملف Excel");
     } finally {
       setExportLoading(false);
     }
@@ -665,28 +665,29 @@ export default function ApplicationsPage() {
             <button
               type="button"
               disabled={exportLoading || pagination.total === 0}
-              onClick={handleExportCSV}
-              className="inline-flex items-center gap-2 rounded-2xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-ink shadow-2xs hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark transition-all duration-200 disabled:opacity-50 cursor-pointer"
+              onClick={handleExportExcel}
+              className="inline-flex items-center gap-2 rounded-2xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-ink shadow-2xs hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
+              title="تصدير تقرير إكسيل احترافي مع لوحة المؤشرات والإحصائيات"
             >
               {exportLoading ? (
                 <Spinner size="sm" color="gold" />
               ) : (
-                <Download className="size-4 text-emerald-700" />
+                <FileSpreadsheet className="size-4 text-emerald-700" />
               )}
-              <span>تصدير CSV</span>
+              <span>تصدير Excel</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* 2. Status Segmented Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-2xl bg-page/70 border border-line shadow-2xs [scrollbar-width:none] animate-elem-fade-up">
+      {/* 2. Status Segmented Tabs - Zero scroll responsive control */}
+      <div className="flex w-full sm:w-auto sm:inline-flex items-center gap-0.5 sm:gap-2 p-1 sm:p-1.5 rounded-2xl bg-page/70 border border-line shadow-2xs overflow-hidden animate-elem-fade-up">
         {[
-          { id: "", label: "جميع الحالات" },
-          { id: "new", label: "جديد" },
-          { id: "under_review", label: "قيد المراجعة" },
-          { id: "accepted", label: "مقبول" },
-          { id: "rejected", label: "مرفوض" },
+          { id: "", label: "جميع الحالات", shortLabel: "الكل" },
+          { id: "new", label: "جديد", shortLabel: "جديد" },
+          { id: "under_review", label: "قيد المراجعة", shortLabel: "مراجعة" },
+          { id: "accepted", label: "مقبول", shortLabel: "مقبول" },
+          { id: "rejected", label: "مرفوض", shortLabel: "مرفوض" },
         ].map((tab) => {
           const isActive = statusFilter === tab.id;
           return (
@@ -697,22 +698,25 @@ export default function ApplicationsPage() {
                 setLoading(true);
                 setStatusFilter(tab.id);
               }}
-              className={`group relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 ${
+              className={`group relative flex flex-1 sm:flex-initial items-center justify-center gap-1 sm:gap-2 rounded-xl px-1 sm:px-4 py-2 sm:py-2.5 text-[11px] sm:text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 min-w-0 ${
                 isActive
-                  ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.03] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
-                  : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:shadow-xs hover:scale-105 hover:-translate-y-0.5"
+                  ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.02] sm:scale-[1.03] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
+                  : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:shadow-xs hover:scale-[1.02] sm:hover:scale-105 hover:-translate-y-0.5"
               }`}
             >
               {tab.id && (
                 <span
-                  className={`size-2.5 rounded-full transition-transform duration-300 group-hover:scale-125 ${
+                  className={`hidden sm:inline-block size-2.5 shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125 ${
                     isActive
                       ? "ring-2 ring-white/90 " + (STATUS_CONFIG[tab.id]?.dot || "bg-ink")
                       : STATUS_CONFIG[tab.id]?.dot || "bg-muted"
                   }`}
                 />
               )}
-              <span>{tab.label}</span>
+              <span className="whitespace-nowrap text-center">
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
+              </span>
             </button>
           );
         })}

@@ -3,6 +3,24 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  CheckCircle2,
+  Eye,
+  Trash2,
+  Clock,
+  Calendar,
+  User,
+  Search,
+  Plus,
+  RotateCcw,
+  Send,
+  Pencil,
+  MessageSquareText,
+  Newspaper,
+  ChevronRight,
+  ChevronLeft,
+  AlertTriangle,
+} from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import { useAdminAuth } from "@/lib/admin/auth-context";
@@ -10,10 +28,12 @@ import { canAccess } from "@/lib/admin/permissions";
 import Spinner from "@/components/Admin/ui/Spinner";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import CustomSelect from "@/components/Home/ui/CustomSelect";
+import ActionDropdown from "@/components/Admin/ui/ActionDropdown";
 import ArticleEditorModal from "@/components/Admin/News/ArticleEditorModal";
 import ArticleReviewModal from "@/components/Admin/News/ArticleReviewModal";
 import ArticleDeleteModal from "@/components/Admin/News/ArticleDeleteModal";
 import ArticleDetailsModal from "@/components/Admin/News/ArticleDetailsModal";
+import ReviewNotesModal from "@/components/Admin/News/ReviewNotesModal";
 
 // Convert numbers to Arabic-Indic digits
 function toArabicDigits(num) {
@@ -107,28 +127,30 @@ export default function NewsPage() {
   const [targetDeleteArticle, setTargetDeleteArticle] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const [reviewNotesArticle, setReviewNotesArticle] = useState(null);
+  const [isReviewNotesModalOpen, setIsReviewNotesModalOpen] = useState(false);
+
   const [actionInProgressId, setActionInProgressId] = useState(null);
 
-  // Load News Sources (if super_admin, fetch directly; otherwise rely on fallbacks and articles list)
+  // Load News Sources from DB (strictly active sources only)
   useEffect(() => {
     let mounted = true;
-    if (isSuperAdmin) {
-      adminFetch("/api/admin/news/sources")
-        .then((data) => {
-          if (mounted && Array.isArray(data?.sources) && data.sources.length > 0) {
-            setSourcesList(data.sources.filter((s) => s.is_active));
-          }
-        })
-        .catch(() => {
-          // Graceful fallback to default seed sources
-          if (mounted) setSourcesList(FALLBACK_SOURCES);
-        });
-    }
+    adminFetch("/api/admin/news/sources?is_active=true&page_size=100")
+      .then((data) => {
+        if (mounted && Array.isArray(data?.sources)) {
+          setSourcesList(data.sources.filter((s) => s && s.is_active === true));
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setSourcesList(FALLBACK_SOURCES.filter((s) => s && s.is_active === true));
+        }
+      });
 
     return () => {
       mounted = false;
     };
-  }, [isSuperAdmin]);
+  }, []);
 
   // Load Staff List (for author filter in super_admin view)
   useEffect(() => {
@@ -138,7 +160,13 @@ export default function NewsPage() {
         .then((data) => {
           if (mounted && Array.isArray(data?.staff)) {
             setStaffList(
-              data.staff.filter((s) => s.is_active && (s.role === "news_editor" || s.role === "super_admin" || s.role === "news_reviewer")),
+              data.staff.filter(
+                (s) =>
+                  s.is_active &&
+                  (s.role === "news_editor" ||
+                    s.role === "super_admin" ||
+                    s.role === "news_reviewer"),
+              ),
             );
           }
         })
@@ -273,43 +301,73 @@ export default function NewsPage() {
     showError,
   ]);
 
-  // Action: Submit for review
-  const handleSubmitForReview = async (article) => {
-    setActionInProgressId(article.id);
-    try {
-      await adminFetch(`/api/admin/news/articles/${article.id}/submit`, {
-        method: "POST",
-      });
-      showSuccess(`تم إرسال المقال «${article.title}» للمراجعة بنجاح`);
-      setArticles((prev) =>
-        prev.map((a) => (a.id === article.id ? { ...a, status: "pending_review" } : a)),
-      );
-    } catch (err) {
-      showError(err.message || "تعذر إرسال المقال للمراجعة");
-    } finally {
-      setActionInProgressId(null);
-    }
-  };
+  // Action: Submit for review with intelligent repeated-click handling
+  const handleSubmitForReview = useCallback(
+    async (article) => {
+      // 1. If already pending review, display friendly informational notice and do NOT send duplicate request
+      if (article.status === "pending_review") {
+        showSuccess("تم بالفعل إرسال هذا المقال للمراجعة مسبقاً وهو قيد التدقيق والاعتماد.");
+        return;
+      }
+
+      // 2. Prevent accidental repeated clicks while request is processing
+      if (actionInProgressId === article.id) return;
+
+      setActionInProgressId(article.id);
+      try {
+        await adminFetch(`/api/admin/news/articles/${article.id}/submit`, {
+          method: "POST",
+        });
+
+        showSuccess(`تم إرسال المقال «${article.title}» للمراجعة والاعتماد بنجاح`);
+
+        // Immediately update UI to pending_review
+        setArticles((prev) =>
+          prev.map((a) => (a.id === article.id ? { ...a, status: "pending_review" } : a)),
+        );
+      } catch (err) {
+        // If backend indicates already submitted or invalid transition, handle gracefully
+        if (
+          err.message === "INVALID_STATUS_TRANSITION" ||
+          err.error === "INVALID_STATUS_TRANSITION"
+        ) {
+          showSuccess("هذا المقال مرسل بالفعل للمراجعة أو تمت مراجعته مسبقاً.");
+          setArticles((prev) =>
+            prev.map((a) => (a.id === article.id ? { ...a, status: "pending_review" } : a)),
+          );
+        } else {
+          showError(err.message || "تعذر إرسال المقال للمراجعة");
+        }
+      } finally {
+        setActionInProgressId(null);
+      }
+    },
+    [actionInProgressId, showSuccess, showError],
+  );
 
   // Action: Unpublish article
-  const handleUnpublish = async (article) => {
-    setActionInProgressId(article.id);
-    try {
-      await adminFetch(`/api/admin/news/articles/${article.id}/unpublish`, {
-        method: "POST",
-      });
-      showSuccess(`تم سحب المقال «${article.title}» من النشر وإعادته كمسودة`);
-      setArticles((prev) =>
-        prev.map((a) =>
-          a.id === article.id ? { ...a, status: "draft", is_published: false } : a,
-        ),
-      );
-    } catch (err) {
-      showError(err.message || "تعذر إلغاء نشر المقال");
-    } finally {
-      setActionInProgressId(null);
-    }
-  };
+  const handleUnpublish = useCallback(
+    async (article) => {
+      if (actionInProgressId === article.id) return;
+      setActionInProgressId(article.id);
+      try {
+        await adminFetch(`/api/admin/news/articles/${article.id}/unpublish`, {
+          method: "POST",
+        });
+        showSuccess(`تم سحب المقال «${article.title}» من النشر وإعادته كمسودة`);
+        setArticles((prev) =>
+          prev.map((a) =>
+            a.id === article.id ? { ...a, status: "draft", is_published: false } : a,
+          ),
+        );
+      } catch (err) {
+        showError(err.message || "تعذر إلغاء نشر المقال");
+      } finally {
+        setActionInProgressId(null);
+      }
+    },
+    [actionInProgressId, showSuccess, showError],
+  );
 
   // Handle Search Submit
   const handleSearchSubmit = (e) => {
@@ -343,7 +401,6 @@ export default function NewsPage() {
     [sourcesList],
   );
 
-  // Author options: merge staff list and any author found in articles
   const authorOptions = useMemo(() => {
     const map = new Map();
     for (const s of staffList) {
@@ -372,15 +429,123 @@ export default function NewsPage() {
     [],
   );
 
+  // Build Row Actions Menu Items
+  const getRowMenuItems = useCallback(
+    (art) => {
+      const items = [];
+      const isAuthor = Boolean(user?.id && art.created_by === user.id);
+      const canEdit =
+        isSuperAdmin ||
+        (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
+      const canSubmit =
+        isSuperAdmin ||
+        (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
+      const canReview =
+        (isSuperAdmin || isReviewer) && art.status === "pending_review";
+      const canUnpublish =
+        (isSuperAdmin || isReviewer) && art.status === "published";
+
+      // 1. Details
+      items.push({
+        id: "details",
+        label: "عرض تفاصيل المقال",
+        icon: <Eye className="size-4 text-ink" />,
+        onClick: () => {
+          setDetailsArticle(art);
+          setIsDetailsModalOpen(true);
+        },
+      });
+
+      // 2. View Review Notes (if changes_requested)
+      if (art.status === "changes_requested") {
+        items.push({
+          id: "review-notes",
+          label: "عرض التعديلات المطلوبة",
+          icon: <MessageSquareText className="size-4 text-amber-700" />,
+          tone: "accent",
+          onClick: () => {
+            setReviewNotesArticle(art);
+            setIsReviewNotesModalOpen(true);
+          },
+        });
+      }
+
+      // 3. Edit (if permitted)
+      if (canEdit) {
+        items.push({
+          id: "edit",
+          label: "تعديل محتوى المقال",
+          icon: <Pencil className="size-4 text-gold-dark" />,
+          onClick: () => {
+            setEditingArticle(art);
+            setIsEditorModalOpen(true);
+          },
+        });
+      }
+
+      // 4. Submit for review (if permitted and status is draft or changes_requested)
+      if (canSubmit && (art.status === "draft" || art.status === "changes_requested")) {
+        items.push({
+          id: "submit-review",
+          label: "إرسال للمراجعة والاعتماد",
+          icon: <Send className="size-4 text-sky-700" />,
+          onClick: () => handleSubmitForReview(art),
+        });
+      }
+
+      // 5. Review & Publish (for reviewer/super_admin when pending_review)
+      if (canReview) {
+        items.push({
+          id: "review",
+          label: "تدقيق واعتماد النشر",
+          icon: <CheckCircle2 className="size-4 text-emerald-700" />,
+          tone: "success",
+          onClick: () => {
+            setReviewArticle(art);
+            setIsReviewModalOpen(true);
+          },
+        });
+      }
+
+      // 6. Unpublish (when published)
+      if (canUnpublish) {
+        items.push({
+          id: "unpublish",
+          label: "سحب المقال من النشر",
+          icon: <RotateCcw className="size-4 text-amber-700" />,
+          onClick: () => handleUnpublish(art),
+        });
+      }
+
+      // 7. Delete (super_admin only)
+      if (isSuperAdmin) {
+        items.push({ divider: true });
+        items.push({
+          id: "delete",
+          label: "حذف المقال نهائياً",
+          icon: <Trash2 className="size-4 text-rose-600" />,
+          tone: "danger",
+          onClick: () => {
+            setTargetDeleteArticle(art);
+            setIsDeleteModalOpen(true);
+          },
+        });
+      }
+
+      return items;
+    },
+    [user, isSuperAdmin, isReviewer, handleSubmitForReview, handleUnpublish],
+  );
+
   // Unauthorized view
   if (user && !canView) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center animate-elem-fade-up" dir="rtl">
+      <div
+        className="flex flex-col items-center justify-center py-20 text-center animate-elem-fade-up"
+        dir="rtl"
+      >
         <div className="flex size-16 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs mb-4">
-          <svg className="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
+          <AlertTriangle className="size-8" />
         </div>
         <h2 className="text-lg font-black text-ink">غير مصرح لك بالوصول إلى هذا القسم</h2>
         <p className="mt-1 text-xs sm:text-sm text-muted max-w-md">
@@ -391,9 +556,7 @@ export default function NewsPage() {
           className="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-5 py-2.5 text-xs font-bold text-ink shadow-btn hover:brightness-110 transition-all"
         >
           <span>العودة للوحة التحكم الرئيسية</span>
-          <svg className="size-4 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
+          <ChevronLeft className="size-4" />
         </Link>
       </div>
     );
@@ -426,13 +589,10 @@ export default function NewsPage() {
                 setEditingArticle(null);
                 setIsEditorModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs font-bold text-ink shadow-btn hover:brightness-110 hover:scale-105 active:scale-95 transition-all duration-200"
+              className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs font-bold text-ink shadow-btn hover:brightness-110 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
-              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span>+ مقال صحفي جديد</span>
+              <Plus className="size-4" />
+              <span>مقال صحفي جديد</span>
             </button>
           </div>
         )}
@@ -471,14 +631,14 @@ export default function NewsPage() {
         </div>
       )}
 
-      {/* 3. Status Segmented Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-2xl bg-page/70 border border-line shadow-2xs [scrollbar-width:none] animate-elem-fade-up">
+      {/* 3. Status Segmented Tabs - Zero scroll responsive control */}
+      <div className="flex w-full sm:w-auto sm:inline-flex items-center gap-0.5 sm:gap-2 p-1 sm:p-1.5 rounded-2xl bg-page/70 border border-line shadow-2xs overflow-hidden animate-elem-fade-up">
         {[
-          { id: "", label: "جميع الحالات" },
-          { id: "draft", label: "مسودة" },
-          { id: "pending_review", label: "قيد المراجعة" },
-          { id: "changes_requested", label: "مطلوب تعديلات" },
-          { id: "published", label: "منشور" },
+          { id: "", label: "جميع الحالات", shortLabel: "الكل" },
+          { id: "draft", label: "مسودة", shortLabel: "مسودة" },
+          { id: "pending_review", label: "قيد المراجعة", shortLabel: "مراجعة" },
+          { id: "changes_requested", label: "مطلوب تعديلات", shortLabel: "تعديلات" },
+          { id: "published", label: "منشور", shortLabel: "منشور" },
         ].map((tab) => {
           const isActive = statusFilter === tab.id;
           return (
@@ -489,22 +649,25 @@ export default function NewsPage() {
                 setLoading(true);
                 setStatusFilter(tab.id);
               }}
-              className={`group relative flex shrink-0 items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 ${
+              className={`group relative flex flex-1 sm:flex-initial items-center justify-center gap-1 sm:gap-2 rounded-xl px-1 sm:px-4 py-2 sm:py-2.5 text-[11px] sm:text-xs font-bold cursor-pointer transition-all duration-300 ease-out active:scale-95 min-w-0 ${
                 isActive
-                  ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.03] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
-                  : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:shadow-xs hover:scale-105 hover:-translate-y-0.5"
+                  ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.02] sm:scale-[1.03] hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)]"
+                  : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40 hover:shadow-xs hover:scale-[1.02] sm:hover:scale-105 hover:-translate-y-0.5"
               }`}
             >
               {tab.id && (
                 <span
-                  className={`size-2.5 rounded-full transition-transform duration-300 group-hover:scale-125 ${
+                  className={`hidden sm:inline-block size-2.5 shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125 ${
                     isActive
                       ? "ring-2 ring-white/90 " + (STATUS_CONFIG[tab.id]?.dot || "bg-ink")
                       : STATUS_CONFIG[tab.id]?.dot || "bg-muted"
                   }`}
                 />
               )}
-              <span>{tab.label}</span>
+              <span className="whitespace-nowrap text-center">
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
+              </span>
             </button>
           );
         })}
@@ -528,10 +691,7 @@ export default function NewsPage() {
                 className="h-14 w-full rounded-2xl border border-border bg-white pr-4 pl-12 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
               />
               <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
-                <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
+                <Search className="size-5" />
               </span>
             </div>
 
@@ -583,7 +743,7 @@ export default function NewsPage() {
             <div className="flex items-center gap-2">
               <button
                 type="submit"
-                className="flex-1 h-14 rounded-2xl bg-gold-gradient px-4 text-xs sm:text-sm font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all"
+                className="flex-1 h-14 rounded-2xl bg-gold-gradient px-4 text-xs sm:text-sm font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all cursor-pointer"
               >
                 تطبيق البحث
               </button>
@@ -592,7 +752,7 @@ export default function NewsPage() {
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="h-14 rounded-2xl border border-border bg-white px-4 text-xs font-bold text-muted hover:border-rose-300 hover:text-rose-600 transition-colors shadow-none"
+                  className="h-14 rounded-2xl border border-border bg-white px-4 text-xs font-bold text-muted hover:border-rose-300 hover:text-rose-600 transition-colors shadow-none cursor-pointer"
                   title="إلغاء جميع الفلاتر"
                 >
                   إعادة ضبط
@@ -603,343 +763,535 @@ export default function NewsPage() {
         </form>
       </div>
 
-      {/* 5. Articles Data Table Card */}
+      {/* 5. Articles Data Presentation (Responsive - No Table Scrolling) */}
       <div className="rounded-3xl border border-line bg-white shadow-card overflow-hidden animate-elem-fade-up">
-        <div className="overflow-x-auto">
-          <table className="w-full text-right text-xs">
-            <thead>
-              <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
-                <th className="py-4 px-5">المقال الصحفي</th>
-                <th className="py-4 px-5">المصدر</th>
-                <th className="py-4 px-5">الكاتب / المحرر</th>
-                <th className="py-4 px-5">الحالة</th>
-                <th className="py-4 px-5">تاريخ النشر</th>
-                <th className="py-4 px-5 text-center">الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line/60">
-              {loading ? (
-                // Skeletons while loading
-                [1, 2, 3, 4, 5].map((i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td className="py-4 px-5">
-                      <div className="flex items-center gap-3">
-                        <Skeleton width="48px" height="48px" rounded="rounded-xl" />
-                        <div className="space-y-1.5 flex-1">
-                          <Skeleton width="220px" height="18px" rounded="rounded-md" />
-                          <Skeleton width="120px" height="14px" rounded="rounded-md" />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-5"><Skeleton width="90px" height="16px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5"><Skeleton width="100px" height="16px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5"><Skeleton width="80px" height="22px" rounded="rounded-full" /></td>
-                    <td className="py-4 px-5"><Skeleton width="90px" height="16px" rounded="rounded-md" /></td>
-                    <td className="py-4 px-5 text-center"><Skeleton width="140px" height="30px" rounded="rounded-xl" /></td>
+        {loading ? (
+          // Skeletons while loading
+          <div className="p-6 space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-line/60 animate-pulse bg-page/30"
+              >
+                <div className="flex items-center gap-3">
+                  <Skeleton width="48px" height="48px" rounded="rounded-xl" />
+                  <div className="space-y-1.5">
+                    <Skeleton width="220px" height="18px" rounded="rounded-md" />
+                    <Skeleton width="120px" height="14px" rounded="rounded-md" />
+                  </div>
+                </div>
+                <div className="hidden sm:flex items-center gap-4">
+                  <Skeleton width="90px" height="16px" rounded="rounded-md" />
+                  <Skeleton width="80px" height="20px" rounded="rounded-full" />
+                </div>
+                <Skeleton width="120px" height="32px" rounded="rounded-xl" />
+              </div>
+            ))}
+          </div>
+        ) : articles.length === 0 ? (
+          // Empty state
+          <div className="py-16 text-center">
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="flex size-14 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
+                <Newspaper className="size-7" />
+              </div>
+              <p className="text-sm font-extrabold text-ink">لم يتم العثور على أي مقالات صحفية</p>
+              <p className="text-xs text-muted max-w-sm">
+                {hasActiveFilters
+                  ? "لا توجد نتائج تطابق معايير البحث والفلترة الحالية، جرّب تغيير الفلاتر."
+                  : "لم يتم إنشاء أي مقالات حتى الآن في هذا القسم."}
+              </p>
+              {(isSuperAdmin || isEditor) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingArticle(null);
+                    setIsEditorModalOpen(true);
+                  }}
+                  className="mt-2 inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-4 py-2 text-xs font-bold text-ink shadow-btn hover:brightness-110 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                >
+                  <Plus className="size-4" />
+                  <span>إنشاء أول مقال صحفي</span>
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Desktop Table View (hidden lg:block) - Proportional, clean, no horizontal scrolling */}
+            <div className="hidden lg:block w-full">
+              <table className="w-full text-right text-xs table-fixed">
+                <thead>
+                  <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
+                    <th className="py-4 pr-6 pl-3 w-[36%]">المقال الصحفي</th>
+                    <th className="py-4 px-3 w-[15%]">المصدر</th>
+                    <th className="py-4 px-3 w-[14%]">الكاتب / المحرر</th>
+                    <th className="py-4 px-3 w-[12%]">الحالة</th>
+                    <th className="py-4 px-3 w-[10%]">تاريخ النشر</th>
+                    <th className="py-4 pr-3 pl-6 sm:pl-8 w-[13%] text-center">الإجراءات</th>
                   </tr>
-                ))
-              ) : articles.length === 0 ? (
-                // Empty state
-                <tr>
-                  <td colSpan={6} className="py-16 text-center">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="flex size-14 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
-                        <svg className="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                        </svg>
-                      </div>
-                      <p className="text-sm font-extrabold text-ink">لم يتم العثور على أي مقالات صحفية</p>
-                      <p className="text-xs text-muted max-w-sm">
-                        {hasActiveFilters
-                          ? "لا توجد نتائج تطابق معايير البحث والفلترة الحالية، جرّب تغيير الفلاتر."
-                          : "لم يتم إنشاء أي مقالات حتى الآن في هذا القسم."}
-                      </p>
-                      {(isSuperAdmin || isEditor) && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingArticle(null);
-                            setIsEditorModalOpen(true);
-                          }}
-                          className="mt-2 inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-4 py-2 text-xs font-bold text-ink shadow-btn hover:brightness-110 hover:scale-105 active:scale-95 transition-all"
-                        >
-                          <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                          </svg>
-                          <span>إنشاء أول مقال صحفي</span>
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                articles.map((art) => {
-                  const statusCfg = STATUS_CONFIG[art.status] || {
-                    label: art.status,
-                    tone: "bg-page text-muted border-line",
-                    dot: "bg-muted",
-                  };
-                  const isAuthor = Boolean(user?.id && art.created_by === user.id);
-                  const canEdit = isSuperAdmin || (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
-                  const canSubmit = isSuperAdmin || (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
-                  const canReview = (isSuperAdmin || isReviewer) && art.status === "pending_review";
-                  const canUnpublish = (isSuperAdmin || isReviewer) && art.status === "published";
+                </thead>
+                <tbody className="divide-y divide-line/60">
+                  {articles.map((art) => {
+                    const statusCfg = STATUS_CONFIG[art.status] || {
+                      label: art.status,
+                      tone: "bg-page text-muted border-line",
+                      dot: "bg-muted",
+                    };
+                    const isAuthor = Boolean(user?.id && art.created_by === user.id);
+                    const canEdit =
+                      isSuperAdmin ||
+                      (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
+                    const canSubmit =
+                      isSuperAdmin ||
+                      (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
+                    const canReview =
+                      (isSuperAdmin || isReviewer) && art.status === "pending_review";
+                    const menuItems = getRowMenuItems(art);
 
-                  return (
-                    <tr key={art.id} className="hover:bg-page/40 transition-colors">
-                      {/* Title & Preview Image */}
-                      <td className="py-4 px-5">
-                        <div className="flex items-center gap-3">
-                          {/* Thumbnail */}
-                          <div className="relative size-12 shrink-0 rounded-xl overflow-hidden border border-line bg-page flex items-center justify-center">
-                            {art.image_url ? (
-                              <Image
-                                src={art.image_url}
-                                alt={art.image_alt || art.title}
-                                width={48}
-                                height={48}
-                                className="w-full h-full object-cover"
-                                unoptimized
-                              />
-                            ) : (
-                              <span className="text-xl">📰</span>
+                    return (
+                      <tr key={art.id} className="hover:bg-gold-tint/25 transition-colors group">
+                        {/* Title & Preview Image */}
+                        <td className="py-4 pr-6 pl-3">
+                          <div className="flex items-center gap-3">
+                            {/* Thumbnail */}
+                            <div className="relative size-12 shrink-0 rounded-xl overflow-hidden border border-line bg-page flex items-center justify-center">
+                              {art.image_url ? (
+                                <Image
+                                  src={art.image_url}
+                                  alt={art.image_alt || art.title}
+                                  width={48}
+                                  height={48}
+                                  className="w-full h-full object-cover"
+                                  unoptimized
+                                />
+                              ) : (
+                                <Newspaper className="size-5 text-muted/60" />
+                              )}
+                            </div>
+
+                            <div className="space-y-1 min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setDetailsArticle(art);
+                                    setIsDetailsModalOpen(true);
+                                  }}
+                                  className="font-bold text-ink text-xs sm:text-sm hover:text-gold-dark text-right transition-colors line-clamp-1 cursor-pointer"
+                                  title={art.title}
+                                >
+                                  {art.title}
+                                </button>
+
+                                {art.is_featured && (
+                                  <span className="inline-flex items-center rounded-md bg-gold-tint border border-gold/40 px-1.5 py-0.2 text-[10px] font-black text-gold-dark shrink-0">
+                                    ★ مميز
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-2 text-[11px] text-muted">
+                                <span className="font-mono truncate" dir="ltr">
+                                  {art.slug}
+                                </span>
+
+                                {/* Review Notes Quick Badge/Button */}
+                                {art.status === "changes_requested" && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setReviewNotesArticle(art);
+                                      setIsReviewNotesModalOpen(true);
+                                    }}
+                                    className="inline-flex items-center gap-1 rounded-md bg-amber-50 border border-amber-300 px-2 py-0.5 text-[10px] font-bold text-amber-900 hover:bg-amber-100 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-2xs"
+                                    title="عرض ملاحظات وتوجيهات المراجع"
+                                  >
+                                    <MessageSquareText className="size-3 text-amber-700" />
+                                    <span>ملاحظات المراجع</span>
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Source */}
+                        <td className="py-4 px-3">
+                          <span className="rounded-lg bg-page border border-line px-2.5 py-1 text-[11px] font-bold text-ink inline-block truncate max-w-[140px]" title={art.source_name || art.source?.name_ar || "—"}>
+                            {art.source_name || art.source?.name_ar || "—"}
+                          </span>
+                        </td>
+
+                        {/* Author */}
+                        <td className="py-4 px-3">
+                          <div className="space-y-0.5">
+                            <span className="font-bold text-ink text-xs block truncate" title={art.created_by_user?.full_name || "—"}>
+                              {art.created_by_user?.full_name || "—"}
+                            </span>
+                            {isAuthor && (
+                              <span className="text-[10px] font-bold text-gold-dark block">
+                                (أنت المؤلف)
+                              </span>
                             )}
                           </div>
+                        </td>
 
-                          <div className="space-y-1 min-w-0 max-w-md">
-                            <div className="flex items-center gap-2 flex-wrap">
+                        {/* Status */}
+                        <td className="py-4 px-3">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold border ${statusCfg.tone}`}
+                          >
+                            <span className={`size-1.5 rounded-full ${statusCfg.dot}`} />
+                            <span>{statusCfg.label}</span>
+                          </span>
+                        </td>
+
+                        {/* Published Date */}
+                        <td className="py-4 px-3 text-muted font-mono text-[11px] truncate">
+                          {formatDate(art.published_on || art.created_at)}
+                        </td>
+
+                        {/* Actions: Primary Action Button + Three-dot Menu */}
+                        <td className="py-4 pr-3 pl-6 sm:pl-8">
+                          <div className="flex items-center justify-center gap-2">
+                            {/* Primary Action Button based on status & role */}
+                            {art.status === "changes_requested" ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setReviewNotesArticle(art);
+                                  setIsReviewNotesModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100 hover:scale-105 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                                title="عرض التعديلات المطلوبة"
+                              >
+                                <MessageSquareText className="size-3.5 text-amber-700" />
+                                <span>عرض التعديلات</span>
+                              </button>
+                            ) : canReview ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setReviewArticle(art);
+                                  setIsReviewModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                                title="تدقيق واعتماد النشر"
+                              >
+                                <CheckCircle2 className="size-3.5" />
+                                <span>مراجعة</span>
+                              </button>
+                            ) : canSubmit && art.status === "draft" ? (
+                              <button
+                                type="button"
+                                disabled={actionInProgressId === art.id}
+                                onClick={() => handleSubmitForReview(art)}
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-gold-gradient px-3 py-1.5 text-xs font-bold text-ink shadow-btn hover:brightness-110 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+                                title="إرسال المقال للمراجعة والاعتماد"
+                              >
+                                {actionInProgressId === art.id ? (
+                                  <Spinner size="xs" color="ink" />
+                                ) : (
+                                  <Send className="size-3.5" />
+                                )}
+                                <span>إرسال للمراجعة</span>
+                              </button>
+                            ) : art.status === "pending_review" ? (
+                              <button
+                                type="button"
+                                onClick={() => handleSubmitForReview(art)}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 hover:bg-sky-100 transition-all shadow-2xs cursor-pointer"
+                                title="هذا المقال قيد المراجعة حالياً"
+                              >
+                                <Clock className="size-3.5 text-sky-600" />
+                                <span>قيد المراجعة</span>
+                              </button>
+                            ) : canEdit ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingArticle(art);
+                                  setIsEditorModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark hover:scale-105 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                                title="تعديل المقال"
+                              >
+                                <Pencil className="size-3.5" />
+                                <span>تعديل</span>
+                              </button>
+                            ) : (
                               <button
                                 type="button"
                                 onClick={() => {
                                   setDetailsArticle(art);
                                   setIsDetailsModalOpen(true);
                                 }}
-                                className="font-bold text-ink text-xs sm:text-sm hover:text-gold-dark text-right transition-colors line-clamp-1"
-                                title={art.title}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark hover:scale-105 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                                title="عرض تفاصيل المقال"
                               >
-                                {art.title}
+                                <Eye className="size-3.5" />
+                                <span>التفاصيل</span>
                               </button>
+                            )}
 
-                              {art.is_featured && (
-                                <span className="inline-flex items-center rounded-md bg-gold-tint border border-gold/40 px-1.5 py-0.2 text-[10px] font-black text-gold-dark shrink-0">
-                                  ★ مميز
-                                </span>
-                              )}
-                            </div>
-
-                            <div className="flex items-center gap-2 text-[11px] text-muted">
-                              <span className="font-mono truncate" dir="ltr">
-                                {art.slug}
-                              </span>
-                              {art.review_note && art.status === "changes_requested" && (
-                                <span className="text-rose-700 font-bold flex items-center gap-1">
-                                  <span>•</span>
-                                  <span>ملاحظة مراجعة متوفرة</span>
-                                </span>
-                              )}
-                            </div>
+                            {/* Secondary Actions Dropdown */}
+                            <ActionDropdown items={menuItems} label={`إجراءات المقال ${art.title}`} />
                           </div>
-                        </div>
-                      </td>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-                      {/* Source */}
-                      <td className="py-4 px-5">
-                        <span className="rounded-lg bg-page border border-line px-2.5 py-1 text-[11px] font-bold text-ink inline-block">
-                          {art.source_name || art.source?.name_ar || "—"}
-                        </span>
-                      </td>
+            {/* Mobile & Tablet Card Layout (block lg:hidden) - Zero horizontal scrolling */}
+            <div className="block lg:hidden p-4 sm:p-5 bg-page/30">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {articles.map((art) => {
+                  const statusCfg = STATUS_CONFIG[art.status] || {
+                    label: art.status,
+                    tone: "bg-page text-muted border-line",
+                    dot: "bg-muted",
+                  };
+                  const isAuthor = Boolean(user?.id && art.created_by === user.id);
+                  const canEdit =
+                    isSuperAdmin ||
+                    (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
+                  const canSubmit =
+                    isSuperAdmin ||
+                    (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
+                  const canReview =
+                    (isSuperAdmin || isReviewer) && art.status === "pending_review";
+                  const menuItems = getRowMenuItems(art);
 
-                      {/* Author */}
-                      <td className="py-4 px-5">
-                        <div className="space-y-0.5">
-                          <span className="font-bold text-ink text-xs block">
-                            {art.created_by_user?.full_name || "—"}
+                  return (
+                    <div
+                      key={art.id}
+                      className="group relative flex flex-col justify-between rounded-2xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:border-gold/50 transition-all duration-300"
+                    >
+                      {/* Card Top: Badges & Date */}
+                      <div className="flex items-center justify-between gap-2 border-b border-line/60 pb-3">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${statusCfg.tone}`}
+                          >
+                            <span className={`size-1.5 rounded-full ${statusCfg.dot}`} />
+                            {statusCfg.label}
                           </span>
-                          {isAuthor && (
-                            <span className="text-[10px] font-bold text-gold-dark block">
-                              (أنت المؤلف)
+                          {art.is_featured && (
+                            <span className="inline-flex items-center rounded-md bg-gold-tint border border-gold/40 px-1.5 py-0.2 text-[10px] font-black text-gold-dark">
+                              ★ مميز
                             </span>
                           )}
                         </div>
-                      </td>
 
-                      {/* Status */}
-                      <td className="py-4 px-5">
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold border ${statusCfg.tone}`}
-                        >
-                          <span className={`size-1.5 rounded-full ${statusCfg.dot}`} />
-                          <span>{statusCfg.label}</span>
+                        <span className="flex items-center gap-1 text-[11px] text-muted font-mono">
+                          <Calendar className="size-3" />
+                          <span>{formatDate(art.published_on || art.created_at)}</span>
                         </span>
-                      </td>
+                      </div>
 
-                      {/* Published Date */}
-                      <td className="py-4 px-5 text-muted font-mono text-[11px]">
-                        {formatDate(art.published_on)}
-                      </td>
+                      {/* Card Body: Thumbnail, Title, Source, Author */}
+                      <div className="my-3 space-y-3">
+                        <div className="flex gap-3 items-start">
+                          <div className="relative size-14 shrink-0 rounded-xl overflow-hidden border border-line bg-page flex items-center justify-center">
+                            {art.image_url ? (
+                              <Image
+                                src={art.image_url}
+                                alt={art.image_alt || art.title}
+                                width={56}
+                                height={56}
+                                className="w-full h-full object-cover"
+                                unoptimized
+                              />
+                            ) : (
+                              <Newspaper className="size-6 text-muted/60" />
+                            )}
+                          </div>
 
-                      {/* Actions */}
-                      <td className="py-4 px-5">
-                        <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                          {/* Quick Submit for Review Button */}
-                          {canSubmit && (
-                            <button
-                              type="button"
-                              disabled={actionInProgressId === art.id}
-                              onClick={() => handleSubmitForReview(art)}
-                              className="inline-flex items-center gap-1 rounded-xl bg-gold-gradient px-2.5 py-1.5 text-[11px] font-bold text-ink shadow-btn hover:brightness-110 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
-                              title="إرسال المقال للمراجعة والاعتماد"
-                            >
-                              {actionInProgressId === art.id ? (
-                                <Spinner size="xs" color="ink" />
-                              ) : (
-                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <line x1="22" y1="2" x2="11" y2="13" />
-                                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                                </svg>
-                              )}
-                              <span>إرسال للمراجعة</span>
-                            </button>
-                          )}
-
-                          {/* Quick Review & Publish Button */}
-                          {canReview && (
+                          <div className="min-w-0 flex-1 space-y-1">
                             <button
                               type="button"
                               onClick={() => {
-                                setReviewArticle(art);
-                                setIsReviewModalOpen(true);
+                                setDetailsArticle(art);
+                                setIsDetailsModalOpen(true);
                               }}
-                              className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-btn hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all"
-                              title="تدقيق واعتماد أو طلب تعديلات"
+                              className="text-right font-black text-sm text-ink group-hover:text-gold-dark transition-colors line-clamp-2 cursor-pointer"
                             >
-                              <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                              <span>مراجعة واعتماد</span>
+                              {art.title}
                             </button>
-                          )}
+                            <span className="block text-[11px] font-mono text-muted truncate" dir="ltr">
+                              {art.slug}
+                            </span>
+                          </div>
+                        </div>
 
-                          {/* Quick Unpublish Button */}
-                          {canUnpublish && (
-                            <button
-                              type="button"
-                              disabled={actionInProgressId === art.id}
-                              onClick={() => handleUnpublish(art)}
-                              className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-[11px] font-bold text-rose-700 hover:bg-rose-100 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
-                              title="سحب المقال وإعادته إلى المسودات"
-                            >
-                              {actionInProgressId === art.id ? (
-                                <Spinner size="xs" color="ink" />
-                              ) : (
-                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <circle cx="12" cy="12" r="10" />
-                                  <line x1="15" y1="9" x2="9" y2="15" />
-                                  <line x1="9" y1="9" x2="15" y2="15" />
-                                </svg>
-                              )}
-                              <span>سحب من النشر</span>
-                            </button>
-                          )}
+                        {/* Source and Author tags */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted pt-1 border-t border-line/40">
+                          <span className="rounded-md bg-page border border-line px-2 py-0.5 font-bold text-ink truncate max-w-[150px]">
+                            {art.source_name || art.source?.name_ar || "—"}
+                          </span>
 
-                          {/* Edit Button */}
-                          {canEdit && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditingArticle(art);
-                                setIsEditorModalOpen(true);
-                              }}
-                              className="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-muted hover:border-gold hover:text-ink hover:scale-105 active:scale-95 transition-all shadow-2xs"
-                              title="تعديل المقال"
-                            >
-                              <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-                              </svg>
-                              <span>تعديل</span>
-                            </button>
-                          )}
+                          <span className="flex items-center gap-1">
+                            <User className="size-3 text-gold-dark" />
+                            <span className="font-bold text-ink">
+                              {art.created_by_user?.full_name || "—"}
+                            </span>
+                          </span>
+                        </div>
 
-                          {/* Details Button */}
+                        {/* Prominent Review Notes Card Banner (for changes_requested) */}
+                        {art.status === "changes_requested" && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReviewNotesArticle(art);
+                              setIsReviewNotesModalOpen(true);
+                            }}
+                            className="w-full flex items-center justify-between gap-2 rounded-xl border border-amber-300 bg-amber-50/90 p-2.5 text-xs font-bold text-amber-900 hover:bg-amber-100 hover:scale-[1.02] active:scale-95 transition-all shadow-2xs cursor-pointer"
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <MessageSquareText className="size-4 text-amber-700" />
+                              <span>ملاحظات وتعديلات المراجع</span>
+                            </span>
+                            <span className="text-[10px] bg-white border border-amber-300 rounded-md px-2 py-0.5 font-black">
+                              عرض التعديلات ←
+                            </span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Card Footer: Primary Action & Dropdown */}
+                      <div className="flex items-center justify-end gap-2 border-t border-line/60 pt-3 mt-1">
+                        {/* Primary Action Button based on status & role */}
+                        {art.status === "changes_requested" ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReviewNotesArticle(art);
+                              setIsReviewNotesModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                          >
+                            <MessageSquareText className="size-3.5 text-amber-700" />
+                            <span>عرض التعديلات</span>
+                          </button>
+                        ) : canReview ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReviewArticle(art);
+                              setIsReviewModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 active:scale-95 transition-all shadow-2xs cursor-pointer"
+                          >
+                            <CheckCircle2 className="size-3.5" />
+                            <span>مراجعة</span>
+                          </button>
+                        ) : canSubmit && art.status === "draft" ? (
+                          <button
+                            type="button"
+                            disabled={actionInProgressId === art.id}
+                            onClick={() => handleSubmitForReview(art)}
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-gold-gradient px-3 py-1.5 text-xs font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+                          >
+                            {actionInProgressId === art.id ? (
+                              <Spinner size="xs" color="ink" />
+                            ) : (
+                              <Send className="size-3.5" />
+                            )}
+                            <span>إرسال للمراجعة</span>
+                          </button>
+                        ) : art.status === "pending_review" ? (
+                          <button
+                            type="button"
+                            onClick={() => handleSubmitForReview(art)}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 transition-all shadow-2xs cursor-pointer"
+                          >
+                            <Clock className="size-3.5 text-sky-600" />
+                            <span>قيد المراجعة</span>
+                          </button>
+                        ) : canEdit ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingArticle(art);
+                              setIsEditorModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark active:scale-95 transition-all shadow-2xs cursor-pointer"
+                          >
+                            <Pencil className="size-3.5" />
+                            <span>تعديل</span>
+                          </button>
+                        ) : (
                           <button
                             type="button"
                             onClick={() => {
                               setDetailsArticle(art);
                               setIsDetailsModalOpen(true);
                             }}
-                            className="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-[11px] font-bold text-muted hover:border-gold hover:text-ink hover:scale-105 active:scale-95 transition-all shadow-2xs"
-                            title="عرض تفاصيل المقال"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/50 hover:text-gold-dark active:scale-95 transition-all shadow-2xs cursor-pointer"
                           >
+                            <Eye className="size-3.5" />
                             <span>التفاصيل</span>
-                            <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <path d="M15 18l-6-6 6-6" />
-                            </svg>
                           </button>
+                        )}
 
-                          {/* Permanent Delete Button (super_admin only) */}
-                          {isSuperAdmin && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setTargetDeleteArticle(art);
-                                setIsDeleteModalOpen(true);
-                              }}
-                              className="inline-flex items-center justify-center size-8 rounded-xl border border-line bg-white text-muted hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 hover:scale-105 active:scale-95 transition-all shadow-2xs"
-                              title="حذف المقال نهائياً"
-                              aria-label="حذف المقال"
-                            >
-                              <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
+                        {/* Secondary Actions Dropdown */}
+                        <ActionDropdown items={menuItems} label={`إجراءات المقال ${art.title}`} />
+                      </div>
+                    </div>
                   );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                })}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* 6. Pagination Bar */}
         {!loading && pagination.total_pages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-line bg-page/30 px-6 py-4">
-            <span className="text-xs text-muted">
-              عرض الصفحة <strong>{toArabicDigits(pagination.page)}</strong> من إجمالي{" "}
-              <strong>{toArabicDigits(pagination.total_pages)}</strong> صفحة (إجمالي{" "}
-              <strong>{toArabicDigits(pagination.total)}</strong> مقال)
-            </span>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-line bg-page/30 px-6 py-4 text-xs font-bold text-muted">
+            <div>
+              <span>عرض </span>
+              <strong className="text-ink">
+                {toArabicDigits((pagination.page - 1) * pagination.page_size + 1)}
+              </strong>
+              <span> إلى </span>
+              <strong className="text-ink">
+                {toArabicDigits(
+                  Math.min(pagination.page * pagination.page_size, pagination.total),
+                )}
+              </strong>
+              <span> من أصل </span>
+              <strong className="text-gold-dark">{toArabicDigits(pagination.total)}</strong>
+              <span> مقال</span>
+            </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 disabled={pagination.page <= 1}
                 onClick={() => fetchArticles(pagination.page - 1)}
-                className="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-muted hover:border-gold hover:text-ink disabled:opacity-40 transition-all shadow-2xs"
+                className="flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted hover:border-gold hover:text-ink disabled:opacity-40 transition-colors shadow-2xs cursor-pointer"
+                title="الصفحة السابقة"
               >
-                <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-                <span>السابق</span>
+                <ChevronRight className="size-4" />
               </button>
 
-              <span className="px-2 text-xs font-mono font-bold text-ink">
-                {toArabicDigits(pagination.page)} / {toArabicDigits(pagination.total_pages)}
+              <span className="px-3 py-1 rounded-xl bg-white border border-line text-ink font-bold shadow-2xs">
+                صفحة {toArabicDigits(pagination.page)} من {toArabicDigits(pagination.total_pages)}
               </span>
 
               <button
                 type="button"
                 disabled={pagination.page >= pagination.total_pages}
                 onClick={() => fetchArticles(pagination.page + 1)}
-                className="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-bold text-muted hover:border-gold hover:text-ink disabled:opacity-40 transition-all shadow-2xs"
+                className="flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted hover:border-gold hover:text-ink disabled:opacity-40 transition-colors shadow-2xs cursor-pointer"
+                title="الصفحة التالية"
               >
-                <span>التالي</span>
-                <svg className="size-4 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
+                <ChevronLeft className="size-4" />
               </button>
             </div>
           </div>
@@ -947,6 +1299,20 @@ export default function NewsPage() {
       </div>
 
       {/* 7. Modals */}
+      {/* Review Notes Modal (for changes_requested) */}
+      <ReviewNotesModal
+        isOpen={isReviewNotesModalOpen}
+        article={reviewNotesArticle}
+        onClose={() => {
+          setIsReviewNotesModalOpen(false);
+          setReviewNotesArticle(null);
+        }}
+        onEdit={() => {
+          setEditingArticle(reviewNotesArticle);
+          setIsEditorModalOpen(true);
+        }}
+      />
+
       {/* Article Editor Modal */}
       <ArticleEditorModal
         key={editingArticle?.id || "new-article-modal"}

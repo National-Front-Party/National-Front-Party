@@ -148,6 +148,24 @@ function StatCard({ title, value, icon, delay, loading, sparklinePath }) {
   );
 }
 
+// Status configuration mapping
+const STATUS_CONFIG_MAP = {
+  new: { label: "جديد", tone: "bg-sky-50 text-sky-800 border-sky-200" },
+  under_review: { label: "قيد المراجعة", tone: "bg-gold-tint text-gold-dark border-gold/30" },
+  in_progress: { label: "قيد المراجعة", tone: "bg-gold-tint text-gold-dark border-gold/30" },
+  accepted: { label: "مقبول", tone: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  completed: { label: "مقبول", tone: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  rejected: { label: "مرفوض", tone: "bg-rose-50 text-rose-800 border-rose-200" },
+  closed: { label: "مرفوض", tone: "bg-rose-50 text-rose-800 border-rose-200" },
+};
+
+// Application kind label mapping
+const APP_KIND_LABELS = {
+  member: "عضوية عاملة",
+  volunteer: "عمل تطوعي",
+  follower: "مناصرة ومتابعة",
+};
+
 export default function AdminOverviewPage() {
   const { user } = useAdminAuth();
   const [loading, setLoading] = useState(true);
@@ -180,29 +198,48 @@ export default function AdminOverviewPage() {
       };
 
       const requestsList = [];
+      let acceptedApps = 0;
+      let completedSrv = 0;
 
       // 1. Applications API
       if (canAccess(user.role, "applications")) {
         try {
           const appRes = await adminFetch(
-            "/api/admin/applications?page=1&page_size=4",
+            "/api/admin/applications?page=1&page_size=6",
             { skipAuthRedirect: true },
           );
-          if (appRes?.pagination?.total !== undefined) {
-            nextStats.applicationsTotal = appRes.pagination.total;
+          const totalApps = appRes?.pagination?.total ?? appRes?.total;
+          if (typeof totalApps === "number") {
+            nextStats.applicationsTotal = totalApps;
           }
           if (Array.isArray(appRes?.applications)) {
             appRes.applications.forEach((app) => {
               requestsList.push({
                 id: `app-${app.id}`,
                 name: app.full_name,
-                type: "طلب انضمام",
-                status: app.status === "new" ? "جديد" : "قيد المراجعة",
+                type: APP_KIND_LABELS[app.type] || "طلب انضمام",
+                status: STATUS_CONFIG_MAP[app.status]?.label || "قيد المراجعة",
                 rawStatus: app.status,
                 createdAt: app.created_at,
                 href: "/admin/applications",
               });
             });
+          }
+
+          // Fetch accepted applications count dynamically for completion rate
+          if ((nextStats.applicationsTotal || 0) > 0) {
+            try {
+              const accRes = await adminFetch(
+                "/api/admin/applications?status=accepted&page=1&page_size=1",
+                { skipAuthRedirect: true },
+              );
+              const accTotal = accRes?.pagination?.total ?? accRes?.total;
+              if (typeof accTotal === "number") {
+                acceptedApps = accTotal;
+              }
+            } catch {
+              // Ignore
+            }
           }
         } catch {
           // Graceful fallback
@@ -213,24 +250,41 @@ export default function AdminOverviewPage() {
       if (canAccess(user.role, "service-requests")) {
         try {
           const srvRes = await adminFetch(
-            "/api/admin/service-requests?page=1&page_size=4",
+            "/api/admin/service-requests?page=1&page_size=6",
             { skipAuthRedirect: true },
           );
-          if (srvRes?.pagination?.total !== undefined) {
-            nextStats.serviceRequestsTotal = srvRes.pagination.total;
+          const totalSrv = srvRes?.pagination?.total ?? srvRes?.total;
+          if (typeof totalSrv === "number") {
+            nextStats.serviceRequestsTotal = totalSrv;
           }
           if (Array.isArray(srvRes?.service_requests)) {
             srvRes.service_requests.forEach((req) => {
               requestsList.push({
                 id: `srv-${req.id}`,
                 name: req.full_name,
-                type: "طلب خدمة مواطن",
-                status: req.status === "new" ? "جديد" : "قيد المراجعة",
+                type: req.sector?.name_ar || req.ministry?.name_ar || "طلب خدمة مواطن",
+                status: STATUS_CONFIG_MAP[req.status]?.label || "قيد المراجعة",
                 rawStatus: req.status,
                 createdAt: req.created_at,
                 href: "/admin/service-requests",
               });
             });
+          }
+
+          // Fetch completed service requests count dynamically for completion rate
+          if ((nextStats.serviceRequestsTotal || 0) > 0) {
+            try {
+              const compRes = await adminFetch(
+                "/api/admin/service-requests?status=completed&page=1&page_size=1",
+                { skipAuthRedirect: true },
+              );
+              const compTotal = compRes?.pagination?.total ?? compRes?.total;
+              if (typeof compTotal === "number") {
+                completedSrv = compTotal;
+              }
+            } catch {
+              // Ignore
+            }
           }
         } catch {
           // Graceful fallback
@@ -244,16 +298,18 @@ export default function AdminOverviewPage() {
             "/api/admin/news/articles?status=published&page=1&page_size=1",
             { skipAuthRedirect: true },
           );
-          if (newsRes?.pagination?.total !== undefined) {
-            nextStats.publishedNewsTotal = newsRes.pagination.total;
+          const totalNews = newsRes?.pagination?.total ?? newsRes?.total;
+          if (typeof totalNews === "number") {
+            nextStats.publishedNewsTotal = totalNews;
           }
         } catch {
           // Try public content news count if admin news filtered
           try {
             const pubNews = await fetch("/api/content/news?page=1&page_size=1");
             const data = await pubNews.json();
-            if (data?.pagination?.total !== undefined) {
-              nextStats.publishedNewsTotal = data.pagination.total;
+            const pubTotal = data?.pagination?.total ?? data?.total;
+            if (typeof pubTotal === "number") {
+              nextStats.publishedNewsTotal = pubTotal;
             }
           } catch {
             // Ignore
@@ -268,8 +324,9 @@ export default function AdminOverviewPage() {
             "/api/admin/staff?page=1&page_size=1",
             { skipAuthRedirect: true },
           );
-          if (staffRes?.pagination?.total !== undefined) {
-            nextStats.staffTotal = staffRes.pagination.total;
+          const totalStaff = staffRes?.total ?? staffRes?.pagination?.total;
+          if (typeof totalStaff === "number") {
+            nextStats.staffTotal = totalStaff;
           }
         } catch {
           // Graceful fallback
@@ -277,21 +334,37 @@ export default function AdminOverviewPage() {
       }
 
       if (mounted) {
-        // Sort merged requests newest first, take top 4
-        requestsList.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-        );
+        // Sort requests: prioritize pending requests needing review (new, under_review, in_progress),
+        // then newest created_at first, and take top 4
+        requestsList.sort((a, b) => {
+          const isPendingA =
+            a.rawStatus === "new" ||
+            a.rawStatus === "under_review" ||
+            a.rawStatus === "in_progress";
+          const isPendingB =
+            b.rawStatus === "new" ||
+            b.rawStatus === "under_review" ||
+            b.rawStatus === "in_progress";
+          if (isPendingA && !isPendingB) return -1;
+          if (!isPendingA && isPendingB) return 1;
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
         setRecentRequests(requestsList.slice(0, 4));
         setStats(nextStats);
 
-        // Approximate completion rate if requests exist
-        const totalReqs =
+        // Real dynamic completion rate calculated from database: (accepted + completed) / total
+        const totalCount =
           (nextStats.applicationsTotal || 0) +
           (nextStats.serviceRequestsTotal || 0);
-        if (totalReqs > 0) {
-          setCompletionRate(74); // Healthy week performance ratio
+        if (totalCount > 0) {
+          const completedCount = acceptedApps + completedSrv;
+          const rate = Math.min(
+            100,
+            Math.max(0, Math.round((completedCount / totalCount) * 100)),
+          );
+          setCompletionRate(rate);
         } else {
-          setCompletionRate(null);
+          setCompletionRate(0);
         }
 
         setLoading(false);
@@ -426,12 +499,12 @@ export default function AdminOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-6 items-start">
         {/* Requests Needing Review Card */}
         <div
-          className="rounded-3xl border border-line bg-white p-6 sm:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
+          className="rounded-3xl border border-line bg-white p-4 sm:p-6 lg:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
           style={{ animationDelay: "460ms" }}
         >
           {/* Card Header */}
-          <div className="mb-5 flex items-center justify-between border-b border-line pb-4">
-            <div>
+          <div className="mb-4 sm:mb-5 flex items-center justify-between gap-2 border-b border-line pb-3.5 sm:pb-4">
+            <div className="min-w-0">
               <h3 className="text-base sm:text-lg font-bold text-ink">
                 طلبات تحتاج مراجعتك
               </h3>
@@ -442,7 +515,7 @@ export default function AdminOverviewPage() {
 
             <Link
               href="/admin/applications"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-muted hover:text-gold-dark transition-colors"
+              className="inline-flex shrink-0 items-center gap-1.5 text-xs font-bold text-muted hover:text-gold-dark transition-colors"
             >
               <span>عرض الكل</span>
               <svg className="size-3.5 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -455,13 +528,18 @@ export default function AdminOverviewPage() {
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-3 py-2">
-                  <Skeleton width="40px" height="40px" rounded="rounded-xl" />
-                  <div className="flex-1 space-y-1.5">
-                    <Skeleton width="50%" height="16px" rounded="rounded-md" />
-                    <Skeleton width="30%" height="12px" rounded="rounded-md" />
+                <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 py-2.5">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <Skeleton width="40px" height="40px" rounded="rounded-xl" />
+                    <div className="flex-1 space-y-1.5">
+                      <Skeleton width="120px" height="16px" rounded="rounded-md" />
+                      <Skeleton width="80px" height="12px" rounded="rounded-md" />
+                    </div>
                   </div>
-                  <Skeleton width="60px" height="28px" rounded="rounded-xl" />
+                  <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                    <Skeleton width="70px" height="26px" rounded="rounded-lg" />
+                    <Skeleton width="60px" height="28px" rounded="rounded-xl" />
+                  </div>
                 </div>
               ))}
             </div>
@@ -480,33 +558,34 @@ export default function AdminOverviewPage() {
               {recentRequests.map((req) => (
                 <div
                   key={req.id}
-                  className="group flex items-center justify-between gap-3 py-3.5 transition-colors hover:bg-gold-tint/20 rounded-xl px-2"
+                  className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 py-3 sm:py-3.5 transition-colors hover:bg-gold-tint/20 rounded-2xl p-2 sm:px-2.5"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                     {/* Initials Avatar inside brackets [x] matching mockup */}
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-xs shadow-2xs group-hover:border-gold/40 transition-colors">
+                    <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-page/80 font-bold text-ink text-xs shadow-2xs group-hover:border-gold/40 transition-colors">
                       {req.name ? `[${req.name.trim().charAt(0)}]` : "[م]"}
                     </div>
 
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-xs sm:text-sm font-bold text-ink leading-tight">
                         {req.name}
                       </p>
                       <div className="mt-1 flex items-center gap-1.5 text-[11px] text-muted">
                         <span>{req.type}</span>
-                        <span>-</span>
+                        <span>•</span>
                         <span>{formatRelativeTime(req.createdAt)}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2.5 shrink-0">
+                  <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 pt-2 sm:pt-0 border-t border-line/40 sm:border-t-0">
                     {/* Status Badge */}
                     <span
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-bold ${
-                        req.rawStatus === "new"
+                        STATUS_CONFIG_MAP[req.rawStatus]?.tone ||
+                        (req.rawStatus === "new"
                           ? "bg-sky-50 text-sky-800 border border-sky-200"
-                          : "bg-gold-tint text-gold-dark border border-gold/30"
+                          : "bg-gold-tint text-gold-dark border border-gold/30")
                       }`}
                     >
                       {req.status}
@@ -515,7 +594,7 @@ export default function AdminOverviewPage() {
                     {/* Review Button */}
                     <Link
                       href={req.href}
-                      className="rounded-xl border border-line bg-white px-3.5 py-1.5 text-xs font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint hover:text-gold-dark group-hover:scale-105 shadow-2xs"
+                      className="inline-flex items-center justify-center rounded-xl border border-line bg-white px-3.5 py-1.5 text-xs font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint hover:text-gold-dark group-hover:scale-105 shadow-2xs active:scale-95"
                     >
                       مراجعة
                     </Link>
@@ -525,18 +604,18 @@ export default function AdminOverviewPage() {
             </div>
           )}
 
-          {/* Weekly Progress Bar matching mockup */}
-          <div className="mt-6 border-t border-line pt-4">
+          {/* Weekly Progress Bar dynamically calculated from database */}
+          <div className="mt-5 sm:mt-6 border-t border-line pt-4">
             <div className="mb-2 flex items-center justify-between text-xs font-bold">
               <span className="text-muted">نسبة إنجاز الطلبات هذا الأسبوع</span>
               <span className="text-gold-dark font-extrabold">
-                [ {completionRate !== null ? `${toArabicDigits(completionRate)}٪` : "%.."} ]
+                [ {completionRate !== null ? `${toArabicDigits(completionRate)}٪` : "٠٪"} ]
               </span>
             </div>
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-line/80">
               <div
                 className="h-full rounded-full bg-gold-gradient transition-all duration-1000 ease-out origin-right"
-                style={{ width: `${completionRate ?? 74}%` }}
+                style={{ width: `${completionRate ?? 0}%` }}
               />
             </div>
           </div>
@@ -544,7 +623,7 @@ export default function AdminOverviewPage() {
 
         {/* Quick Access Tiles Card (2x3 Grid) */}
         <div
-          className="rounded-3xl border border-line bg-white p-6 sm:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
+          className="rounded-3xl border border-line bg-white p-4 sm:p-6 lg:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
           style={{ animationDelay: "530ms" }}
         >
           {/* Card Header */}
