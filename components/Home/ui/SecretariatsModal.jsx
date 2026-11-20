@@ -20,21 +20,21 @@ export default function SecretariatsModal({
         <ul>
           {items.map((item, index) => (
             <li
-              key={item.name}
+              key={item.id ? `sec-${item.id}` : `${item.name || "sec"}-${index}`}
               className={
                 index < items.length - 1 ? "border-b border-line" : undefined
               }
             >
               <div className="flex min-w-0 flex-col gap-1 rounded-xl px-3 py-3 transition-colors duration-200 hover:bg-gold-tint sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <h3 className="min-w-0 break-words text-lg font-extrabold text-ink">
-                  {item.name}
+                  {item.name || item.title || item.name_ar || ""}
                 </h3>
                 <p className="min-w-0 break-words text-sm text-muted sm:text-left">
-                  {item.head}
-                  {item.source ? (
+                  {item.head || item.head_name || ""}
+                  {item.source || item.source_note ? (
                     <span className="text-xs text-gray-500">
                       {" "}
-                      ({item.source})
+                      ({item.source || item.source_note})
                     </span>
                   ) : null}
                 </p>
