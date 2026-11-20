@@ -12,6 +12,7 @@ const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp
 export default function ArticleEditorModal({
   isOpen,
   article,
+  sources = [],
   onClose,
   onSaved,
 }) {
@@ -22,9 +23,21 @@ export default function ArticleEditorModal({
   // Form states
   const [title, setTitle] = useState(article?.title || "");
   const [body, setBody] = useState(article?.body || "");
+  const [sourceId, setSourceId] = useState(() => {
+    if (article?.source_id) return String(article.source_id);
+    if (article?.source?.id) return String(article.source.id);
+    if (article?.source_name && Array.isArray(sources)) {
+      const match = sources.find(
+        (s) => s && s.is_active && s.name_ar === article.source_name,
+      );
+      if (match) return String(match.id);
+    }
+    return "";
+  });
   const [sourceName, setSourceName] = useState(
     article?.source_name || article?.source?.name_ar || "",
   );
+  const [internalSources, setInternalSources] = useState([]);
   const [sourceUrl, setSourceUrl] = useState(article?.source_url || "");
   const [imageAlt, setImageAlt] = useState(article?.image_alt || "");
   const [publishedOn, setPublishedOn] = useState(
@@ -75,6 +88,57 @@ export default function ArticleEditorModal({
     ],
     [],
   );
+
+  // Fetch active sources from backend if not supplied via props
+  useEffect(() => {
+    if (!isOpen) return;
+    if (sources && sources.length > 0) return;
+    let mounted = true;
+    adminFetch("/api/admin/news/sources?is_active=true&page_size=100")
+      .then((data) => {
+        if (mounted && Array.isArray(data?.sources)) {
+          const activeOnly = data.sources.filter((s) => s && s.is_active === true);
+          setInternalSources(activeOnly);
+          setSourceId((prevId) => {
+            if (prevId) return prevId;
+            const initialName = article?.source_name || article?.source?.name_ar;
+            if (initialName) {
+              const m = activeOnly.find((s) => s.name_ar === initialName);
+              return m ? String(m.id) : "";
+            }
+            return "";
+          });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, [isOpen, sources, article?.source_name, article?.source?.name_ar]);
+
+  // Strictly filter only active sources (is_active === true)
+  const effectiveSources = useMemo(() => {
+    const list = sources && sources.length > 0 ? sources : internalSources;
+    return (list || []).filter((s) => s && s.is_active === true);
+  }, [sources, internalSources]);
+
+  // Options for CustomSelect
+  const sourceOptions = useMemo(() => {
+    return effectiveSources.map((s) => ({
+      value: String(s.id),
+      label: s.name_ar,
+    }));
+  }, [effectiveSources]);
+
+  const handleSourceChange = (val) => {
+    setSourceId(val);
+    const selected = effectiveSources.find((s) => String(s.id) === String(val));
+    if (selected) {
+      setSourceName(selected.name_ar);
+    } else {
+      setSourceName("");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -147,7 +211,8 @@ export default function ArticleEditorModal({
 
     const trimmedTitle = title.trim();
     const trimmedBody = body.trim();
-    const trimmedSourceName = sourceName.trim();
+    const selectedOption = sourceOptions.find((o) => o.value === String(sourceId));
+    const finalSourceName = (sourceName.trim() || selectedOption?.label || "").trim();
 
     if (!trimmedTitle) {
       showError("عنوان المقال الصحفي مطلوب");
@@ -157,8 +222,8 @@ export default function ArticleEditorModal({
       showError("نص المقال الصحفي مطلوب");
       return;
     }
-    if (!trimmedSourceName) {
-      showError("يرجى إدخال مصدر الخبر المعتمد");
+    if (!sourceId && !finalSourceName) {
+      showError("يرجى اختيار مصدر الخبر المعتمد");
       return;
     }
     if (!publishedOn) {
@@ -233,7 +298,8 @@ export default function ArticleEditorModal({
       const payload = {
         title: trimmedTitle,
         body: trimmedBody,
-        source_name: trimmedSourceName,
+        source_name: finalSourceName,
+        ...(sourceId ? { source_id: Number(sourceId) } : {}),
         published_on: publishedOn,
         date_precision: datePrecision || "day",
         is_featured: Boolean(isFeatured),
@@ -355,23 +421,25 @@ export default function ArticleEditorModal({
             />
           </div>
 
-          {/* Grid: Source (Standard Text Input) & Publication Date */}
+          {/* Grid: Source (CustomSelect from DB) & Publication Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Source - Manual Text Input */}
+            {/* Source - CustomSelect Dropdown */}
             <div className="space-y-1.5">
-              <label htmlFor="article-source-name" className="block text-xs font-bold text-ink">
+              <label htmlFor="article-source-id" className="block text-xs font-bold text-ink">
                 مصدر الخبر المعتمد <span className="text-rose-600">*</span>
               </label>
-              <input
-                id="article-source-name"
-                type="text"
-                required
-                maxLength={200}
-                value={sourceName}
-                onChange={(e) => setSourceName(e.target.value)}
-                placeholder="مثال: اليوم السابع، جريدة الأهرام، رويترز، بيان صحفي..."
-                className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-xs sm:text-sm font-medium text-ink transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
+              <CustomSelect
+                id="article-source-id"
+                options={sourceOptions}
+                value={sourceId}
+                onChange={handleSourceChange}
+                placeholder="اختر مصدر الخبر المعتمد..."
               />
+              {sourceOptions.length === 0 && (
+                <p className="text-[11px] text-amber-700">
+                  لا توجد مصادر معتمدة نشطة حالياً. يرجى تفعيل أو إضافة مصادر من صفحة مصادر الأخبار.
+                </p>
+              )}
             </div>
 
             {/* Publication Date */}
