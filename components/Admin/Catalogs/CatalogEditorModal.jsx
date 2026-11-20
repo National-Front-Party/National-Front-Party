@@ -155,7 +155,7 @@ function CatalogForm({ item, type, onClose, onSaved }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-elem-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-modal-overlay-enter"
       onClick={(e) => {
         if (e.target === e.currentTarget && !submitting) {
           onClose();
@@ -163,7 +163,7 @@ function CatalogForm({ item, type, onClose, onSaved }) {
       }}
       dir="rtl"
     >
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-line animate-elem-scale-in">
+      <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-card-hover border border-line animate-modal-shell-enter">
         {/* Modal Header */}
         <div className="flex items-start justify-between gap-4 border-b border-line pb-5">
           <div className="flex items-center gap-3.5">

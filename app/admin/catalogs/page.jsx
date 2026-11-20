@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
+  Landmark,
   Building2,
   Layers,
   Plus,
@@ -11,6 +12,7 @@ import {
   CheckCircle2,
   XCircle,
   Hash,
+  Calendar,
   ShieldAlert,
   ChevronRight,
   ChevronLeft,
@@ -79,7 +81,7 @@ export default function CatalogsPage() {
     total_pages: 1,
   });
 
-  // Loading & State
+  // Loading & Refreshing States
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -87,7 +89,7 @@ export default function CatalogsPage() {
   const [statusFilter, setStatusFilter] = useState("all"); // 'all' | 'active' | 'inactive'
   const [searchInput, setSearchInput] = useState("");
 
-  // Modals & Active Actions
+  // Modals & Action loading
   const [editingItem, setEditingItem] = useState(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
@@ -200,7 +202,22 @@ export default function CatalogsPage() {
     setStatusFilter("all");
   };
 
-  // Status Counts
+  // Compact Summary Statistics (dynamically computed from state)
+  const summaryStats = useMemo(() => {
+    const totalMinistries = ministries.length;
+    const activeMinistries = ministries.filter((m) => m.is_active).length;
+    const totalSectors = sectors.length;
+    const activeSectors = sectors.filter((s) => s.is_active).length;
+
+    return {
+      totalMinistries,
+      activeMinistries,
+      totalSectors,
+      activeSectors,
+    };
+  }, [ministries, sectors]);
+
+  // Status Counts for active tab
   const { activeCount, inactiveCount } = useMemo(() => {
     let act = 0;
     let inact = 0;
@@ -271,7 +288,7 @@ export default function CatalogsPage() {
           : `تم تعطيل "${item.name_ar}" مؤقتاً`,
       );
     } catch (err) {
-      showError(err.message || "فشل تغيير حالة العنصر");
+      showError(err.message || "فشل تغيير حالة النشاط");
     } finally {
       setUpdatingStatusId(null);
     }
@@ -354,26 +371,26 @@ export default function CatalogsPage() {
     <div className="space-y-6" dir="rtl">
       {/* 1. Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-elem-fade-up">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex items-center gap-1.5 rounded-xl bg-gold-tint px-3 py-1 text-xs font-bold text-gold-dark border border-gold/30">
-              {isMinistry ? (
-                <Building2 className="size-3.5" />
-              ) : (
-                <Layers className="size-3.5" />
-              )}
-              <span>إدارة المرجعيات الخدمية</span>
-            </span>
+        <div className="flex items-start sm:items-center gap-3.5">
+          <div className="flex size-12 sm:size-14 items-center justify-center rounded-2xl sm:rounded-3xl bg-gold-tint border border-gold/30 text-gold-dark shadow-2xs shrink-0">
+            <Landmark className="size-6 sm:size-7" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-ink tracking-tight">
-            الوزارات والقطاعات الخدمية
-          </h1>
-          <p className="text-xs sm:text-sm text-muted mt-0.5">
-            إدارة كتالوج الوزارات والقطاعات المعتمدة لتوثيق وتوجيه طلبات المواطنين
-          </p>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-gold-tint/80 px-2.5 py-0.5 text-[11px] font-bold text-gold-dark border border-gold/30">
+                <span>الكتالوجات المرجعية الرسمية</span>
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-black text-ink tracking-tight">
+              الوزارات والقطاعات
+            </h1>
+            <p className="text-xs sm:text-sm text-muted mt-0.5">
+              إدارة وتوثيق الكتالوجات المرجعية المعتمدة لطلبات الخدمات والتنسيق الحكومي
+            </p>
+          </div>
         </div>
 
-        {/* Action Buttons: Refresh & Add */}
+        {/* Action Buttons: Refresh & Contextual Add */}
         <div className="flex items-center gap-2.5 self-start sm:self-auto">
           <button
             type="button"
@@ -397,19 +414,102 @@ export default function CatalogsPage() {
             className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs sm:text-sm font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)] hover:scale-[1.02] active:scale-95 cursor-pointer"
           >
             <Plus className="size-4 stroke-[2.5]" />
-            <span>{isMinistry ? "إضافة وزارة جديدة" : "إضافة قطاع جديد"}</span>
+            <span>{isMinistry ? "إضافة وزارة" : "إضافة قطاع"}</span>
           </button>
         </div>
       </div>
 
-      {/* 2. Primary Tabs: Ministries vs Request Sectors */}
+      {/* 2. Compact Summary Statistics Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 animate-elem-fade-up">
+        {/* Card 1: Total Ministries */}
+        <div className="group relative rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:-translate-y-0.5 hover:border-gold/50 transition-all duration-300">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <span className="text-xs font-bold text-muted">إجمالي الوزارات</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gold-tint border border-gold/30 text-gold-dark shadow-2xs group-hover:scale-105 transition-transform">
+              <Building2 className="size-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl sm:text-2xl font-black text-ink font-mono group-hover:text-gold-dark transition-colors">
+              {toArabicDigits(summaryStats.totalMinistries)}
+            </span>
+            <span className="text-[11px] text-muted">وزارة حكومية</span>
+          </div>
+          <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[11px] text-muted">
+            <span>الكتالوج المعتمد</span>
+            <span className="font-bold text-ink">حكومي</span>
+          </div>
+        </div>
+
+        {/* Card 2: Active Ministries */}
+        <div className="group relative rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:-translate-y-0.5 hover:border-gold/50 transition-all duration-300">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <span className="text-xs font-bold text-muted">الوزارات المعتمدة</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 shadow-2xs group-hover:scale-105 transition-transform">
+              <CheckCircle2 className="size-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl sm:text-2xl font-black text-ink font-mono group-hover:text-emerald-700 transition-colors">
+              {toArabicDigits(summaryStats.activeMinistries)}
+            </span>
+            <span className="text-[11px] text-emerald-700 font-bold">نشطة ومتاحة</span>
+          </div>
+          <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[11px] text-muted">
+            <span>تظهر للجمهور</span>
+            <span className="inline-flex size-2 rounded-full bg-emerald-500 animate-pulse" />
+          </div>
+        </div>
+
+        {/* Card 3: Total Sectors */}
+        <div className="group relative rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:-translate-y-0.5 hover:border-gold/50 transition-all duration-300">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <span className="text-xs font-bold text-muted">إجمالي القطاعات</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gold-tint border border-gold/30 text-gold-dark shadow-2xs group-hover:scale-105 transition-transform">
+              <Layers className="size-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl sm:text-2xl font-black text-ink font-mono group-hover:text-gold-dark transition-colors">
+              {toArabicDigits(summaryStats.totalSectors)}
+            </span>
+            <span className="text-[11px] text-muted">قطاع خدمي</span>
+          </div>
+          <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[11px] text-muted">
+            <span>ملفات الخدمة</span>
+            <span className="font-bold text-ink">تخصصي</span>
+          </div>
+        </div>
+
+        {/* Card 4: Active Sectors */}
+        <div className="group relative rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:-translate-y-0.5 hover:border-gold/50 transition-all duration-300">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <span className="text-xs font-bold text-muted">القطاعات المعتمدة</span>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 shadow-2xs group-hover:scale-105 transition-transform">
+              <CheckCircle2 className="size-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl sm:text-2xl font-black text-ink font-mono group-hover:text-emerald-700 transition-colors">
+              {toArabicDigits(summaryStats.activeSectors)}
+            </span>
+            <span className="text-[11px] text-emerald-700 font-bold">نشطة ومتاحة</span>
+          </div>
+          <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[11px] text-muted">
+            <span>متاحة للتقديم</span>
+            <span className="inline-flex size-2 rounded-full bg-emerald-500 animate-pulse" />
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Primary Segmented Tabs: Ministries vs Request Sectors */}
       <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full sm:w-auto sm:inline-flex animate-elem-fade-up">
         <button
           type="button"
           onClick={() => handleTabSwitch("ministries")}
-          className={`flex-1 sm:flex-initial flex items-center justify-center gap-2.5 rounded-xl px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none ${
+          className={`flex-1 sm:flex-initial flex items-center justify-center gap-2.5 rounded-xl px-5 sm:px-7 py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none ${
             isMinistry
-              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.02]"
+              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.02]"
               : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40"
           }`}
         >
@@ -427,9 +527,9 @@ export default function CatalogsPage() {
         <button
           type="button"
           onClick={() => handleTabSwitch("request_sectors")}
-          className={`flex-1 sm:flex-initial flex items-center justify-center gap-2.5 rounded-xl px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none ${
+          className={`flex-1 sm:flex-initial flex items-center justify-center gap-2.5 rounded-xl px-5 sm:px-7 py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none ${
             !isMinistry
-              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.02]"
+              ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] border border-gold/60 scale-[1.01] sm:scale-[1.02]"
               : "bg-white text-muted border border-line shadow-2xs hover:border-gold/50 hover:text-ink hover:bg-gold-tint/40"
           }`}
         >
@@ -445,7 +545,7 @@ export default function CatalogsPage() {
         </button>
       </div>
 
-      {/* 3. Toolbar: Status Filter Tabs + Search Input */}
+      {/* 4. Toolbar: Status Filter Tabs + Search Input */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 animate-elem-fade-up">
         {/* Status Filter Tabs */}
         <div className="flex sm:inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-page/80 border border-line shadow-2xs w-full sm:w-auto overflow-hidden">
@@ -513,7 +613,7 @@ export default function CatalogsPage() {
         </div>
       </div>
 
-      {/* 4. Main Records Container: Desktop Table & Mobile Cards */}
+      {/* 5. Main Records Container: Desktop Table & Mobile Cards */}
       <div className="rounded-3xl border border-line bg-white shadow-2xs overflow-hidden animate-elem-fade-up">
         {loading ? (
           <div className="p-6 space-y-4">
@@ -541,7 +641,7 @@ export default function CatalogsPage() {
             <p className="text-xs text-muted max-w-sm mx-auto mb-4">
               {searchInput || statusFilter !== "all"
                 ? "جرّب تغيير كلمات البحث أو إعادة ضبط فلتر الحالة لعرض كافة العناصر."
-                : `يمكنك البدء بإضافة أول ${isMinistry ? "وزارة حكومية" : "قطاع خدمي"} عبر الزر أدناه.`}
+                : `يمكنك البدء بإضافة أول ${isMinistry ? "وزارة حكومية" : "قطاع خدمي"} عبر الزر أعلاه.`}
             </p>
             {searchInput || statusFilter !== "all" ? (
               <button
@@ -575,15 +675,18 @@ export default function CatalogsPage() {
               <table className="w-full text-right text-xs">
                 <thead>
                   <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
-                    <th className="py-4 pr-6 pl-3 w-[10%]"># المعرف</th>
-                    <th className="py-4 px-3 w-[34%]">
+                    <th className="py-4 pr-6 pl-3 w-[8%]"># المعرف</th>
+                    <th className="py-4 px-3 w-[30%]">
                       {isMinistry ? "الوزارة الحكومية" : "القطاع الخدمي"}
                     </th>
-                    <th className="py-4 px-3 w-[22%]">
+                    <th className="py-4 px-3 w-[20%]">
                       {isMinistry ? "المعرف اللطيف (Slug)" : "كود القطاع (Code)"}
                     </th>
                     <th className="py-4 px-3 w-[12%] text-center">ترتيب العرض</th>
-                    <th className="py-4 px-3 w-[12%] text-center">حالة الاعتماد</th>
+                    {isMinistry && (
+                      <th className="py-4 px-3 w-[16%]">تاريخ التسجيل</th>
+                    )}
+                    <th className="py-4 px-3 w-[14%] text-center">حالة الاعتماد</th>
                     <th className="py-4 pr-3 pl-6 sm:pl-8 w-[10%] text-center">الإجراءات</th>
                   </tr>
                 </thead>
@@ -617,11 +720,9 @@ export default function CatalogsPage() {
                               <span className="block font-black text-ink group-hover:text-gold-dark transition-colors truncate">
                                 {item.name_ar}
                               </span>
-                              {isMinistry && item.created_at && (
-                                <span className="block text-[11px] text-muted truncate">
-                                  تم التسجيل: {formatDate(item.created_at)}
-                                </span>
-                              )}
+                              <span className="block text-[11px] text-muted truncate">
+                                {isMinistry ? "جهة حكومية معتمدة" : "ملف خدمي معتمد"}
+                              </span>
                             </div>
                           </div>
                         </td>
@@ -650,6 +751,20 @@ export default function CatalogsPage() {
                             <span>{toArabicDigits(item.sort_order ?? 0)}</span>
                           </span>
                         </td>
+
+                        {/* Registration Date (only when available for ministries) */}
+                        {isMinistry && (
+                          <td className="py-4 px-3 text-muted text-[11px]">
+                            {item.created_at ? (
+                              <span className="inline-flex items-center gap-1.5">
+                                <Calendar className="size-3 text-muted shrink-0" />
+                                <span>{formatDate(item.created_at)}</span>
+                              </span>
+                            ) : (
+                              <span>—</span>
+                            )}
+                          </td>
+                        )}
 
                         {/* Active Status Badge + Toggle */}
                         <td className="py-4 px-3 text-center">
@@ -735,6 +850,7 @@ export default function CatalogsPage() {
                         onClick={() => handleToggleStatus(item)}
                         disabled={isUpdating}
                         className="shrink-0 cursor-pointer"
+                        title="انقر لتبديل حالة النشاط"
                       >
                         {isUpdating ? (
                           <Spinner size="xs" color="gold" />
@@ -757,7 +873,8 @@ export default function CatalogsPage() {
                       <button
                         type="button"
                         onClick={() => handleCopyKey(keyVal)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-page/60 px-2 py-1 font-mono font-bold text-ink cursor-pointer"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-page/60 px-2.5 py-1 font-mono font-bold text-ink cursor-pointer"
+                        title="انقر لنسخ المعرف"
                       >
                         <span>{keyVal}</span>
                         {copiedKey === keyVal ? (
@@ -769,18 +886,18 @@ export default function CatalogsPage() {
 
                       <div className="inline-flex items-center gap-1 text-muted font-bold">
                         <span>الترتيب:</span>
-                        <span className="font-mono text-ink font-black">
+                        <span className="font-mono text-ink font-black bg-page/60 px-2 py-0.5 rounded border border-line">
                           {toArabicDigits(item.sort_order ?? 0)}
                         </span>
                       </div>
                     </div>
 
-                    {/* Bottom Row: Actions */}
+                    {/* Bottom Row: Date & Actions */}
                     <div className="flex items-center justify-between gap-2 pt-2 border-t border-line/50">
                       <span className="text-[10px] text-muted">
                         {isMinistry && item.created_at
-                          ? formatDate(item.created_at)
-                          : "كتالوج معتمد"}
+                          ? `تسجيل: ${formatDate(item.created_at)}`
+                          : "مرجعية معتمدة"}
                       </span>
 
                       <div className="flex items-center gap-1.5">
@@ -805,7 +922,7 @@ export default function CatalogsPage() {
           </>
         )}
 
-        {/* 5. Pagination Bar (if total_pages > 1) */}
+        {/* 6. Pagination Bar (if total_pages > 1) */}
         {activePagination.total_pages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t border-line bg-page/40 text-xs">
             <span className="text-muted font-bold">
@@ -847,7 +964,7 @@ export default function CatalogsPage() {
         )}
       </div>
 
-      {/* 6. Editor Modal (Create / Edit) */}
+      {/* 7. Editor Modal (Create / Edit) */}
       <CatalogEditorModal
         isOpen={isEditorOpen}
         onClose={() => {
