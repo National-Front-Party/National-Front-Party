@@ -1086,3 +1086,42 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق والاختبارات:**
   - `npx eslint`: خالي تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
   - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).
+
+---
+
+## مرحلة D5.10: التطبيق الوظيفي المتكامل لإدارة حسابات الموظفين (`/admin/staff`)
+- **الحالة:** مكتملة بنجاح (Functional Implementation Phase).
+- **الأهداف المنجزة:**
+  1. **حماية الصلاحيات والوصول الصارم (`staff:manage`):**
+     - تقييد وصول الصفحة حصراً لمدير النظام `super_admin` عبر نظام الصلاحيات المعتمد `hasPermission(user?.role, "staff:manage")`.
+  2. **لوحة الإحصائيات الفورية (KPIs):**
+     - احتساب مؤشرات الأداء الحقيقية عبر تجميع كافة سجلات الموظفين حتى لو تجاوزت 100 موظف عبر استدعاءات متوازية متعددة الصفحات.
+     - مؤشرات: إجمالي الموظفين، الحسابات النشطة، الحسابات المعطلة، توزيع الكادر حسب الأدوار الستة الرسمية.
+  3. **إضافة موظف جديد (`POST /api/admin/staff`):**
+     - نموذج إضافة متكامل يلتزم بالأدوار الستة القانونية المعتمدة في النظام (`super_admin`, `membership_officer`, `service_officer`, `content_editor`, `news_editor`, `news_reviewer`).
+     - توليد كلمة مرور مؤقتة آمنة تلقائياً (12 حرفاً تضم أحرفاً كبيرة وصغيرة وأرقاماً ورموزاً) مطابقة لمعايير Zod.
+     - نافذة أمان مخصصة لعرض كلمة المرور بعد تأكيد نجاح الـ API فقط مع زر نسخ سريع وتحذير بعدم تخزينها محلياً والتأكيد على إلزام الموظف بتغييرها عند أول تسجيل دخول.
+  4. **تعديل بيانات الموظف (`PATCH /api/admin/staff/[id]`):**
+     - إرسال الحقول المعدلة فقط لمنع أي تعديلات غير مقصودة، مع معالجة خطأ تكرار البريد وخطأ تجريد آخر مدير نظام.
+  5. **تفعيل وتعطيل الحسابات مع الإلغاء الفوري للجلسات (`PATCH /api/admin/staff/[id]/status`):**
+     - نافذة تأكيد تعطيل/تفعيل توضح الأثر الأمني.
+     - منع تعطيل الحساب الذاتي للمشرف المسجل حالياً، وتفسير خطأ `LAST_ACTIVE_SUPER_ADMIN` لمنع إغلاق لوحة التحكم.
+  6. **إعادة تعيين كلمة المرور (`POST /api/admin/staff/[id]/reset-password`):**
+     - توليد كلمة مرور مؤقتة وتحديثها عبر الـ API وعرضها في نافذة النجاح المؤقتة فقط.
+  7. **سجل تدقيق الموظف (`GET /api/admin/staff/audit-log?target_id=[id]`):**
+     - نافذة استعراض الأحداث الأمنية والعمليات الإدارية الخاصة بكل موظف وتفاصيل التغييرات ومسؤول التنفيذ.
+  8. **الاستجابة التامة للشاشات الصغيرة:**
+     - دعم التسميات المتجاوبة المصغرة (`shortLabel`) لتبويبات الفلترة على الموبايل لمنع أي كسر للنصوص أو التفاف.
+- **الملفات المضافة والمعدلة:**
+  - `app/admin/staff/page.jsx`
+  - `lib/admin/staff-utils.js`
+  - `components/Admin/Staff/StaffEditorModal.jsx`
+  - `components/Admin/Staff/StaffResetPasswordModal.jsx`
+  - `components/Admin/Staff/StaffStatusModal.jsx`
+  - `components/Admin/Staff/StaffSuccessPasswordModal.jsx`
+  - `components/Admin/Staff/StaffAuditModal.jsx`
+  - `app/admin/catalogs/page.jsx`
+  - `docs/BACKEND_PROGRESS.md`
+- **التحقق والاختبارات:**
+  - `npx eslint app/admin/catalogs/page.jsx app/admin/staff/page.jsx`: نجاح تام (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).

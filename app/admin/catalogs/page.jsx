@@ -660,7 +660,7 @@ export default function CatalogsPage() {
         <button
           type="button"
           onClick={() => handleTabSwitch("ministries")}
-          className={`group relative flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-5 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap min-w-0 active:scale-[0.98] ${
+          className={`group relative w-full sm:w-auto flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-6 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap min-w-0 active:scale-[0.98] ${
             isMinistry
               ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.30)] border border-gold/60 hover:brightness-105"
               : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50"
@@ -688,7 +688,7 @@ export default function CatalogsPage() {
         <button
           type="button"
           onClick={() => handleTabSwitch("request_sectors")}
-          className={`group relative flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-5 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap min-w-0 active:scale-[0.98] ${
+          className={`group relative w-full sm:w-auto flex items-center justify-between sm:justify-center gap-3 rounded-xl px-4 sm:px-6 py-3 sm:py-2.5 text-xs sm:text-sm font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap min-w-0 active:scale-[0.98] ${
             !isMinistry
               ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.30)] border border-gold/60 hover:brightness-105"
               : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50"
