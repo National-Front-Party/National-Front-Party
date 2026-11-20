@@ -359,7 +359,7 @@ export default function StaffPage() {
   }
 
   return (
-    <div className="space-y-6" dir="rtl">
+    <div className="space-y-6 min-w-0 w-full" dir="rtl">
       {/* 1. Header with Actions */}
       <PageHeader
         title="إدارة الموظفين"
@@ -519,7 +519,7 @@ export default function StaffPage() {
         {/* Right Search and Role Dropdown */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
           {/* Role Filter — CustomSelect matching site design */}
-          <div className="min-w-[200px]">
+            <div className="min-w-0 w-full sm:min-w-[200px] sm:w-auto">
             <CustomSelect
               id="staff-role-filter"
               placeholder="جميع الأدوار"
@@ -593,15 +593,15 @@ export default function StaffPage() {
         ) : (
           <>
             {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-right text-xs">
+            <div className="hidden lg:block w-full">
+              <table className="w-full text-right text-xs table-fixed">
                 <thead>
                   <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
-                    <th className="py-4 pr-6 pl-3 w-[26%]">الموظف</th>
-                    <th className="py-4 px-3 w-[24%]">البريد الإلكتروني</th>
-                    <th className="py-4 px-3 w-[18%]">الدور الوظيفي</th>
+                    <th className="py-4 pr-6 pl-3 w-[24%]">الموظف</th>
+                    <th className="py-4 px-3 w-[26%]">البريد الإلكتروني</th>
+                    <th className="py-4 px-3 w-[16%]">الدور الوظيفي</th>
                     <th className="py-4 px-3 w-[12%] text-center">حالة الحساب</th>
-                    <th className="py-4 px-3 w-[12%]">آخر تسجيل دخول</th>
+                    <th className="py-4 px-3 w-[14%]">آخر تسجيل دخول</th>
                     <th className="py-4 pr-3 pl-6 w-[8%] text-center">الإجراءات</th>
                   </tr>
                 </thead>
@@ -663,7 +663,7 @@ export default function StaffPage() {
                         {/* Active Status */}
                         <td className="py-4 px-3 text-center">
                           <span
-                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border select-none ${
+                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border select-none whitespace-nowrap ${
                               staff.is_active
                                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                                 : "bg-rose-50 text-rose-800 border-rose-200"
@@ -679,7 +679,7 @@ export default function StaffPage() {
                         </td>
 
                         {/* Last Login Date */}
-                        <td className="py-4 px-3 text-muted text-[11px]">
+                        <td className="py-4 px-3 text-muted text-[11px] truncate">
                           {formatStaffDate(staff.last_login_at)}
                         </td>
 
@@ -695,7 +695,7 @@ export default function StaffPage() {
             </div>
 
             {/* Mobile Cards View */}
-            <div className="block md:hidden divide-y divide-line/60">
+            <div className="block lg:hidden divide-y divide-line/60">
               {paginatedRecords.map((staff) => {
                 const isSelf = staff.id === user?.id;
                 const menuItems = getActionMenuItems(staff);
