@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { UserPlus, UserCog, Eye, EyeOff, RefreshCw, AlertCircle, X } from "lucide-react";
+import { UserPlus, UserCog, Eye, EyeOff, RefreshCw, AlertCircle } from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import Spinner from "@/components/Admin/ui/Spinner";
 import { ROLE_LABELS } from "@/lib/admin/permissions";
 import { generateTemporaryPassword, STAFF_ROLES } from "@/lib/admin/staff-utils";
+import CustomSelect from "@/components/Home/ui/CustomSelect";
 
 export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
   const { showSuccess, showError } = useToast();
@@ -191,9 +192,21 @@ export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
             disabled={submitting}
             onClick={onClose}
             aria-label="إغلاق النافذة"
-            className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-200 hover:border-gold hover:text-ink active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="group relative flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 disabled:opacity-50 cursor-pointer"
+            title="إغلاق"
           >
-            <X className="size-5" />
+            <svg
+              className="size-5 transition-transform duration-300 group-hover:rotate-90"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -214,9 +227,9 @@ export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
               }}
               placeholder="مثال: أحمد محمد علي"
               disabled={submitting}
-              className={`h-14 w-full rounded-2xl border px-4 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all placeholder:text-muted/60 disabled:opacity-50 ${
+              className={`h-14 w-full rounded-2xl border px-4 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out placeholder:text-muted/60 disabled:opacity-50 ${
                 errors.fullName
-                  ? "border-rose-500 bg-rose-50/20 focus:border-rose-500 focus:!outline-none"
+                  ? "border-rose-500 bg-rose-50/20 focus:border-rose-500 focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(244,63,94,0.35)]"
                   : "border-border bg-white hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
               }`}
               maxLength={200}
@@ -244,9 +257,9 @@ export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
               }}
               placeholder="name@example.com"
               disabled={submitting}
-              className={`h-14 w-full rounded-2xl border px-4 font-mono text-xs sm:text-sm font-medium text-ink shadow-none transition-all placeholder:text-muted/60 disabled:opacity-50 text-left dir-ltr ${
+              className={`h-14 w-full rounded-2xl border px-4 font-mono text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out placeholder:text-muted/60 disabled:opacity-50 text-left dir-ltr ${
                 errors.email
-                  ? "border-rose-500 bg-rose-50/20 focus:border-rose-500 focus:!outline-none"
+                  ? "border-rose-500 bg-rose-50/20 focus:border-rose-500 focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(244,63,94,0.35)]"
                   : "border-border bg-white hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
               }`}
               maxLength={254}
@@ -261,23 +274,19 @@ export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
 
           {/* Role Selection */}
           <div>
-            <label className="block text-xs sm:text-sm font-bold text-ink mb-2">
-              الدور الوظيفي والصلاحيات <span className="text-rose-500">*</span>
-            </label>
-            <div className="relative">
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                disabled={submitting}
-                className="h-14 w-full appearance-none rounded-2xl border border-border bg-white px-4 text-xs sm:text-sm font-bold text-ink shadow-none transition-all hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] cursor-pointer disabled:opacity-50"
-              >
-                {STAFF_ROLES.map((roleId) => (
-                  <option key={roleId} value={roleId}>
-                    {ROLE_LABELS[roleId]} ({roleId})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomSelect
+              id="staff-editor-role"
+              label="الدور الوظيفي والصلاحيات"
+              required
+              placeholder="اختر الدور الوظيفي"
+              options={STAFF_ROLES.map((roleId) => ({
+                value: roleId,
+                label: `${ROLE_LABELS[roleId]} (${roleId})`,
+              }))}
+              value={role}
+              onChange={(val) => setRole(val)}
+              disabled={submitting}
+            />
             <p className="text-[11px] text-muted/80 mt-1.5 mr-1">
               يحدد الصلاحيات الإدارية المتاحة لهذا الحساب في اللوحة.
             </p>
@@ -312,9 +321,9 @@ export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
                     }
                   }}
                   disabled={submitting}
-                  className={`h-14 w-full rounded-2xl border px-4 pl-12 font-mono text-xs sm:text-sm font-bold text-ink shadow-none transition-all placeholder:text-muted/60 disabled:opacity-50 text-left dir-ltr ${
+                  className={`h-14 w-full rounded-2xl border px-4 pl-12 font-mono text-xs sm:text-sm font-bold text-ink shadow-none transition-all duration-300 ease-in-out placeholder:text-muted/60 disabled:opacity-50 text-left dir-ltr ${
                     errors.tempPassword
-                      ? "border-rose-500 bg-rose-50/20 focus:border-rose-500 focus:!outline-none"
+                      ? "border-rose-500 bg-rose-50/20 focus:border-rose-500 focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(244,63,94,0.35)]"
                       : "border-border bg-white hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                   }`}
                   maxLength={128}
@@ -352,7 +361,7 @@ export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="h-11 px-5 rounded-2xl border border-line bg-white text-xs font-bold text-muted hover:border-gold hover:text-ink active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+            className="h-12 px-6 rounded-2xl border border-line bg-page text-xs font-bold text-muted hover:border-gold hover:text-ink hover:bg-gold-tint/30 hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
           >
             إلغاء
           </button>
@@ -360,7 +369,7 @@ export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="inline-flex h-12 items-center gap-2 rounded-2xl bg-gold-gradient px-7 text-xs font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-200 hover:brightness-110 hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
           >
             {submitting && <Spinner size="sm" color="ink" />}
             <span>{isEdit ? "حفظ التعديلات" : "إنشاء الحساب"}</span>

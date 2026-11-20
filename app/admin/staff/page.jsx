@@ -34,6 +34,7 @@ import StaffResetPasswordModal from "@/components/Admin/Staff/StaffResetPassword
 import StaffSuccessPasswordModal from "@/components/Admin/Staff/StaffSuccessPasswordModal";
 import StaffStatusModal from "@/components/Admin/Staff/StaffStatusModal";
 import StaffAuditModal from "@/components/Admin/Staff/StaffAuditModal";
+import CustomSelect from "@/components/Home/ui/CustomSelect";
 
 function getInitials(name) {
   if (!name) return "م";
@@ -182,6 +183,18 @@ export default function StaffPage() {
 
     return { total, active, inactive, roleCounts };
   }, [staffList, totalCount]);
+
+  // CustomSelect options for role filter
+  const roleOptions = useMemo(
+    () => [
+      { value: "all", label: `جميع الأدوار (${toArabicDigits(staffList.length)})` },
+      ...STAFF_ROLES.map((r) => ({
+        value: r,
+        label: `${ROLE_LABELS[r]} (${toArabicDigits(statistics.roleCounts[r] || 0)})`,
+      })),
+    ],
+    [staffList.length, statistics.roleCounts],
+  );
 
   // Filtered staff list
   const filteredStaff = useMemo(() => {
@@ -505,42 +518,34 @@ export default function StaffPage() {
 
         {/* Right Search and Role Dropdown */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
-          {/* Role Filter Select */}
-          <div className="relative min-w-[180px]">
-            <select
+          {/* Role Filter — CustomSelect matching site design */}
+          <div className="min-w-[200px]">
+            <CustomSelect
+              id="staff-role-filter"
+              placeholder="جميع الأدوار"
+              options={roleOptions}
               value={roleFilter}
-              onChange={(e) => handleRoleChange(e.target.value)}
-              className="h-12 w-full appearance-none rounded-2xl border border-line bg-white pr-4 pl-8 text-xs font-bold text-ink shadow-2xs hover:border-gold transition-colors focus:!border-gold focus:!outline-none cursor-pointer"
-            >
-              <option value="all">جميع الأدوار ({toArabicDigits(staffList.length)})</option>
-              {STAFF_ROLES.map((r) => (
-                <option key={r} value={r}>
-                  {ROLE_LABELS[r]} ({toArabicDigits(statistics.roleCounts[r] || 0)})
-                </option>
-              ))}
-            </select>
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xs">
-              ▼
-            </span>
+              onChange={(val) => handleRoleChange(val)}
+            />
           </div>
 
-          {/* Search Input */}
+          {/* Search Input — h-14, border-border, gold focus shadow */}
           <div className="relative w-full sm:w-72">
             <input
               type="text"
               value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="بحث بالاسم أو البريد..."
-              className="h-12 w-full rounded-2xl border border-line bg-white pr-4 pl-10 text-xs sm:text-sm font-medium text-ink shadow-2xs placeholder:text-muted/60 transition-all hover:border-gold focus:!border-gold focus:!outline-none"
+              className="h-14 w-full rounded-2xl border border-border bg-white pr-4 pl-12 text-right text-xs sm:text-sm font-medium text-ink shadow-none placeholder:text-muted/60 transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
             />
-            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
               <Search className="size-4" />
             </span>
             {searchInput && (
               <button
                 type="button"
                 onClick={() => handleSearchChange("")}
-                className="absolute left-9 top-1/2 -translate-y-1/2 flex size-5 items-center justify-center rounded-lg text-xs font-bold text-muted hover:text-ink cursor-pointer"
+                className="absolute left-10 top-1/2 -translate-y-1/2 flex size-5 items-center justify-center rounded-lg text-xs font-bold text-muted hover:text-ink hover:bg-page transition-colors duration-200 cursor-pointer"
               >
                 ✕
               </button>
@@ -577,7 +582,7 @@ export default function StaffPage() {
                       setRoleFilter("all");
                       setStatusFilter("all");
                     }}
-                    className="inline-flex items-center gap-2 rounded-xl bg-gold-tint border border-gold/40 px-4 py-2 text-xs font-bold text-gold-dark hover:bg-gold-tint/80 transition-all"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gold-tint border border-gold/40 px-4 py-2 text-xs font-bold text-gold-dark hover:bg-gold-tint/80 hover:border-gold hover:text-ink transition-all duration-200 cursor-pointer"
                   >
                     <span>إعادة ضبط الفلاتر</span>
                   </button>
@@ -763,7 +768,7 @@ export default function StaffPage() {
                     type="button"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    className="flex size-8 items-center justify-center rounded-xl border border-line bg-white text-muted hover:border-gold hover:text-ink disabled:opacity-40 cursor-pointer"
+                    className="flex size-8 items-center justify-center rounded-xl border border-line bg-white text-muted transition-all duration-200 hover:border-gold hover:text-ink hover:bg-gold-tint/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     title="الصفحة السابقة"
                   >
                     <ChevronRight className="size-4" />
@@ -777,7 +782,7 @@ export default function StaffPage() {
                     type="button"
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    className="flex size-8 items-center justify-center rounded-xl border border-line bg-white text-muted hover:border-gold hover:text-ink disabled:opacity-40 cursor-pointer"
+                    className="flex size-8 items-center justify-center rounded-xl border border-line bg-white text-muted transition-all duration-200 hover:border-gold hover:text-ink hover:bg-gold-tint/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     title="الصفحة التالية"
                   >
                     <ChevronLeft className="size-4" />

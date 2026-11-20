@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { History, Shield, User, X } from "lucide-react";
+import { History, Shield, User } from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import Spinner from "@/components/Admin/ui/Spinner";
 import EmptyState from "@/components/Admin/ui/EmptyState";
@@ -95,9 +95,21 @@ export default function StaffAuditModal({ isOpen, onClose, staffMember }) {
             type="button"
             onClick={onClose}
             aria-label="إغلاق النافذة"
-            className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-200 hover:border-gold hover:text-ink active:scale-95 cursor-pointer"
+            className="group relative flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 cursor-pointer"
+            title="إغلاق"
           >
-            <X className="size-5" />
+            <svg
+              className="size-5 transition-transform duration-300 group-hover:rotate-90"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -203,7 +215,7 @@ export default function StaffAuditModal({ isOpen, onClose, staffMember }) {
           <button
             type="button"
             onClick={onClose}
-            className="h-11 px-6 rounded-2xl bg-white border border-line text-xs font-bold text-muted hover:border-gold hover:text-ink active:scale-95 transition-all cursor-pointer"
+            className="h-12 px-6 rounded-2xl border border-line bg-page text-xs font-bold text-muted hover:border-gold hover:text-ink hover:bg-gold-tint/30 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
           >
             إغلاق
           </button>

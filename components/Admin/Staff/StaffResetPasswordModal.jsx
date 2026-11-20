@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { KeyRound, RefreshCw, Eye, EyeOff, AlertCircle, X } from "lucide-react";
+import { KeyRound, RefreshCw, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import Spinner from "@/components/Admin/ui/Spinner";
@@ -109,9 +109,21 @@ export default function StaffResetPasswordModal({
             disabled={submitting}
             onClick={onClose}
             aria-label="إغلاق النافذة"
-            className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-200 hover:border-gold hover:text-ink active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="group relative flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 disabled:opacity-50 cursor-pointer"
+            title="إغلاق"
           >
-            <X className="size-5" />
+            <svg
+              className="size-5 transition-transform duration-300 group-hover:rotate-90"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -203,7 +215,7 @@ export default function StaffResetPasswordModal({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="h-11 px-5 rounded-2xl border border-line bg-white text-xs font-bold text-muted hover:border-gold hover:text-ink active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+            className="h-12 px-6 rounded-2xl border border-line bg-page text-xs font-bold text-muted hover:border-gold hover:text-ink hover:bg-gold-tint/30 hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
           >
             إلغاء
           </button>
@@ -211,7 +223,7 @@ export default function StaffResetPasswordModal({
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-amber-600 px-6 text-xs font-bold text-white shadow-btn hover:bg-amber-700 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex h-12 items-center gap-2 rounded-2xl bg-amber-600 px-7 text-xs font-bold text-white shadow-btn hover:bg-amber-700 hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
           >
             {submitting && <Spinner size="sm" color="white" />}
             <span>تأكيد إعادة التعيين</span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Eye, EyeOff, ShieldCheck, X } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useToast } from "@/lib/admin/toast-context";
 import { RoleBadge } from "@/components/Admin/ui/Badge";
 
@@ -59,9 +59,21 @@ export default function StaffSuccessPasswordModal({
             type="button"
             onClick={onClose}
             aria-label="إغلاق النافذة"
-            className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-200 hover:border-gold hover:text-ink active:scale-95 cursor-pointer"
+            className="group relative flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 cursor-pointer"
+            title="إغلاق"
           >
-            <X className="size-5" />
+            <svg
+              className="size-5 transition-transform duration-300 group-hover:rotate-90"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -146,7 +158,7 @@ export default function StaffSuccessPasswordModal({
           <button
             type="button"
             onClick={handleCopy}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-line bg-white px-5 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/40 active:scale-95 transition-all cursor-pointer"
+            className="inline-flex h-12 items-center gap-2 rounded-2xl border border-line bg-white px-6 text-xs font-bold text-ink hover:border-gold hover:bg-gold-tint/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
           >
             {copied ? <Check className="size-4 text-emerald-700" /> : <Copy className="size-4" />}
             <span>{copied ? "تم النسخ" : "نسخ كلمة المرور"}</span>
@@ -155,7 +167,7 @@ export default function StaffSuccessPasswordModal({
           <button
             type="button"
             onClick={onClose}
-            className="h-11 px-6 rounded-2xl bg-gold-gradient text-xs font-black text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+            className="h-12 px-7 rounded-2xl bg-gold-gradient text-xs font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] hover:brightness-110 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
           >
             إغلاق ومتابعة
           </button>

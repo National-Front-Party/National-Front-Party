@@ -1125,3 +1125,5 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق والاختبارات:**
   - `npx eslint app/admin/catalogs/page.jsx app/admin/staff/page.jsx`: نجاح تام (0 errors, 0 warnings).
   - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).
+
+| 2026-11-20 | Staff Visual Refinement | تحسين بصري شامل لصفحة إدارة الموظفين: مطابقة زر الإغلاق الذهبي الدوار مع نمط Catalog في جميع النوافذ المنبثقة الخمس، وتوحيد أنماط hover للأزرار، وتعميق تطابق حقول الإدخال مع نظام التصميم المشترك (focus shadow + error states + duration-300)، وتحسين dropdown الفلترة مع focus shadow ذهبي، وتعزيز أزرار الإجراءات بـscale وduration متناسقة. | `app/admin/staff/page.jsx`؛ `components/Admin/Staff/StaffEditorModal.jsx`؛ `components/Admin/Staff/StaffAuditModal.jsx`؛ `components/Admin/Staff/StaffResetPasswordModal.jsx`؛ `components/Admin/Staff/StaffStatusModal.jsx`؛ `components/Admin/Staff/StaffSuccessPasswordModal.jsx` | لا تغييرات على الباك إند أو API أو الصلاحيات أو المنطق التجاري. `npm test`: 283 ناجحاً. ESLint: 3 أخطاء pre-existing (setState في useEffect) موجودة قبل هذه التعديلات؛ لا أخطاء جديدة. |
