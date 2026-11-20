@@ -233,6 +233,32 @@ h3 {
   animation: elem-scale-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+@keyframes float-blob-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(35px, -22px) scale(1.15);
+  }
+}
+
+@keyframes float-blob-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-30px, 25px) scale(0.9);
+  }
+}
+
+@utility animate-blob-1 {
+  animation: float-blob-1 9s ease-in-out infinite;
+}
+
+@utility animate-blob-2 {
+  animation: float-blob-2 9s ease-in-out infinite reverse;
+}
+
 @keyframes nav-item-enter {
   from {
     opacity: 0;
@@ -265,6 +291,8 @@ h3 {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .animate-blob-1,
+  .animate-blob-2,
   .request-error-enter,
   .animate-parliament-float,
   .animate-dash-rain,

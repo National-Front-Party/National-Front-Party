@@ -361,22 +361,23 @@ model news_articles {
   body            String
   image_url       String?
   image_alt       String?
-  source_id       Int          @db.SmallInt
+  source_name     String?
+  source_id       Int?          @db.SmallInt
   source_url      String?
-  published_on    DateTime     @db.Date
-  date_precision  String       @default("day")
-  is_featured     Boolean      @default(false)
-  sort_order      Int          @default(0) @db.SmallInt
-  is_published    Boolean      @default(false)
+  published_on    DateTime      @db.Date
+  date_precision  String        @default("day")
+  is_featured     Boolean       @default(false)
+  sort_order      Int           @default(0) @db.SmallInt
+  is_published    Boolean       @default(false)
   status          article_status
-  created_by      String?        @db.Uuid
-  reviewed_by     String?        @db.Uuid
-  reviewed_at     DateTime?      @db.Timestamp(6)
+  created_by      String?       @db.Uuid
+  reviewed_by     String?       @db.Uuid
+  reviewed_at     DateTime?     @db.Timestamp(6)
   review_note     String?
-  updated_by      String?      @db.Uuid
-  created_at      DateTime     @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime     @default(now()) @db.Timestamptz(6)
-  source          news_sources @relation(fields: [source_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  updated_by      String?       @db.Uuid
+  created_at      DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime      @default(now()) @db.Timestamptz(6)
+  source          news_sources? @relation(fields: [source_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   updated_by_user staff_users? @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
   created_by_user staff_users? @relation("news_articles_created_by", fields: [created_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
   reviewed_by_user staff_users? @relation("news_articles_reviewed_by", fields: [reviewed_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
