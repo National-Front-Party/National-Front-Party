@@ -357,7 +357,7 @@ const CustomSelect = forwardRef(function CustomSelect(
           <div
             ref={panelRef}
             dir="rtl"
-            className={`fixed z-[120] max-h-64 w-full overflow-y-auto rounded-2xl border border-border bg-white p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-[opacity,transform] duration-200 ease-out [scrollbar-color:var(--color-gold)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gold [&::-webkit-scrollbar-track]:bg-transparent motion-reduce:animate-none motion-reduce:transition-none ${
+            className={`fixed z-[120] max-h-64 w-full overflow-y-auto rounded-2xl border border-border bg-white p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-[opacity,transform] duration-200 ease-out [scrollbar-width:none] [&::-webkit-scrollbar]:hidden motion-reduce:animate-none motion-reduce:transition-none ${
               position.openUp ? "mb-2 origin-bottom" : "mt-2 origin-top"
             } ${
               open

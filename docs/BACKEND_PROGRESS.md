@@ -1482,6 +1482,59 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 
 ---
 
+## مرحلة D5.10: التطبيق الوظيفي المتكامل لإدارة حسابات الموظفين (`/admin/staff`)
+- **الحالة:** مكتملة بنجاح (Functional Implementation Phase).
+- **الأهداف المنجزة:**
+  1. **حماية الصلاحيات والوصول الصارم (`staff:manage`):**
+     - تقييد وصول الصفحة حصراً لمدير النظام `super_admin` عبر نظام الصلاحيات المعتمد `hasPermission(user?.role, "staff:manage")`.
+  2. **لوحة الإحصائيات الفورية (KPIs):**
+     - احتساب مؤشرات الأداء الحقيقية عبر تجميع كافة سجلات الموظفين حتى لو تجاوزت 100 موظف عبر استدعاءات متوازية متعددة الصفحات.
+     - مؤشرات: إجمالي الموظفين، الحسابات النشطة، الحسابات المعطلة، توزيع الكادر حسب الأدوار الستة الرسمية.
+  3. **إضافة موظف جديد (`POST /api/admin/staff`):**
+     - نموذج إضافة متكامل يلتزم بالأدوار الستة القانونية المعتمدة في النظام (`super_admin`, `membership_officer`, `service_officer`, `content_editor`, `news_editor`, `news_reviewer`).
+     - توليد كلمة مرور مؤقتة آمنة تلقائياً (12 حرفاً تضم أحرفاً كبيرة وصغيرة وأرقاماً ورموزاً) مطابقة لمعايير Zod.
+     - نافذة أمان مخصصة لعرض كلمة المرور بعد تأكيد نجاح الـ API فقط مع زر نسخ سريع وتحذير بعدم تخزينها محلياً والتأكيد على إلزام الموظف بتغييرها عند أول تسجيل دخول.
+  4. **تعديل بيانات الموظف (`PATCH /api/admin/staff/[id]`):**
+     - إرسال الحقول المعدلة فقط لمنع أي تعديلات غير مقصودة، مع معالجة خطأ تكرار البريد وخطأ تجريد آخر مدير نظام.
+  5. **تفعيل وتعطيل الحسابات مع الإلغاء الفوري للجلسات (`PATCH /api/admin/staff/[id]/status`):**
+     - نافذة تأكيد تعطيل/تفعيل توضح الأثر الأمني.
+     - منع تعطيل الحساب الذاتي للمشرف المسجل حالياً، وتفسير خطأ `LAST_ACTIVE_SUPER_ADMIN` لمنع إغلاق لوحة التحكم.
+  6. **إعادة تعيين كلمة المرور (`POST /api/admin/staff/[id]/reset-password`):**
+     - توليد كلمة مرور مؤقتة وتحديثها عبر الـ API وعرضها في نافذة النجاح المؤقتة فقط.
+  7. **سجل تدقيق الموظف (`GET /api/admin/staff/audit-log?target_id=[id]`):**
+     - نافذة استعراض الأحداث الأمنية والعمليات الإدارية الخاصة بكل موظف وتفاصيل التغييرات ومسؤول التنفيذ.
+  8. **الاستجابة التامة للشاشات الصغيرة:**
+     - دعم التسميات المتجاوبة المصغرة (`shortLabel`) لتبويبات الفلترة على الموبايل لمنع أي كسر للنصوص أو التفاف.
+- **الملفات المضافة والمعدلة:**
+  - `app/admin/staff/page.jsx`
+  - `lib/admin/staff-utils.js`
+  - `components/Admin/Staff/StaffEditorModal.jsx`
+  - `components/Admin/Staff/StaffResetPasswordModal.jsx`
+  - `components/Admin/Staff/StaffStatusModal.jsx`
+  - `components/Admin/Staff/StaffSuccessPasswordModal.jsx`
+  - `components/Admin/Staff/StaffAuditModal.jsx`
+  - `app/admin/catalogs/page.jsx`
+  - `docs/BACKEND_PROGRESS.md`
+- **التحقق والاختبارات:**
+  - `npx eslint app/admin/catalogs/page.jsx app/admin/staff/page.jsx`: نجاح تام (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).
+
+| 2026-11-20 | Staff Visual Refinement | تحسين بصري شامل لصفحة إدارة الموظفين: مطابقة زر الإغلاق الذهبي الدوار مع نمط Catalog في جميع النوافذ المنبثقة الخمس، وتوحيد أنماط hover للأزرار، وتعميق تطابق حقول الإدخال مع نظام التصميم المشترك (focus shadow + error states + duration-300)، وتحسين dropdown الفلترة مع focus shadow ذهبي، وتعزيز أزرار الإجراءات بـscale وduration متناسقة. | `app/admin/staff/page.jsx`؛ `components/Admin/Staff/StaffEditorModal.jsx`؛ `components/Admin/Staff/StaffAuditModal.jsx`؛ `components/Admin/Staff/StaffResetPasswordModal.jsx`؛ `components/Admin/Staff/StaffStatusModal.jsx`؛ `components/Admin/Staff/StaffSuccessPasswordModal.jsx` | لا تغييرات على الباك إند أو API أو الصلاحيات أو المنطق التجاري. `npm test`: 283 ناجحاً. ESLint: 3 أخطاء pre-existing (setState في useEffect) موجودة قبل هذه التعديلات؛ لا أخطاء جديدة. |
+
+## UI Phase — Audit Logs operation descriptions
+
+- Removed the affected filter and target displays from the Audit Logs page; the frontend request now keeps only executor and pagination filters.
+- Added Arabic operation descriptions for every current database audit action, the existing news action aliases, and an unknown-action fallback. Removed the modal changes list and affected card.
+- API and backend behavior were not changed. Operation descriptions and desktop/tablet/mobile source layouts were checked. A browser session and local server were unavailable; ESLint reports two issues in the page effects, which were not changed.
+
+## Backend Phase — Dynamic Audit Log Operation Type Filter
+
+- Added a database-backed distinct `action_type` query for the Audit Logs operation dropdown. Known values receive Arabic labels; unknown values receive a generic Arabic label without exposing the raw key.
+- Added optional `action_type` query validation and runtime support validation against the database-backed action list. Unsupported values return HTTP 400.
+- Applied executor and action type filters together to both the audit record query and total count. Pagination ordering and permissions are unchanged.
+- Added the searchable Operation Type selector to the Audit Logs page; options come from the API response, include an All Operations choice, and filter changes reset pagination to page 1.
+- No database schema, migration, audit writer, or unrelated page changes.
+- Verification: 18 focused tests passed. ESLint passed for backend and test files. The Audit Logs page lint command reports two pre-existing `react-hooks/set-state-in-effect` errors in its data-fetching effects.
 ## مرحلة D5.10: تبسيط وتحديث فورم إضافة وتعديل الكتالوجات وضمان التجاوب الكامل للنافذة المنبثقة
 - **الحالة:** مكتملة بنجاح (Form Simplification, Auto-Generated Keys & Fully Responsive Modal).
 - **الأهداف المنجزة دون المساس بالباك إند:**
@@ -1538,6 +1591,18 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - وفق دليل Next.js، app/not-found.jsx يعالج المسارات غير الموجودة ويُرجع حالة 404 قبل بدء البث.
 - التحقق: لم تُشغّل الاختبارات أو lint.
 
+## Backend + UI Phase — Archive Audit Log Records (Password Protected)
+
+- أُضيف حذف آمن لسجلات التدقيق من `/admin/audit-log`: زر `حذف الكل` في الترويسة، وزر `حذف السجل` لكل صف في عروض سطح المكتب والتابلت والجوال، ونافذة تأكيد تطلب `confirm: true` وكلمة مرور مدير النظام الحالي.
+- عقد API الجديد:
+  - `DELETE /api/admin/staff/audit-log` يحذف كل السجلات ويرجع `{ ok: true, deleted: n }`.
+  - `DELETE /api/admin/staff/audit-log/:id` يحذف سجلًا واحدًا ويرجع `{ ok: true, deleted: 1 }`.
+  - الجسم مطلوب بالشكل `{ "confirm": true, "password": "<current super_admin password>" }`.
+  - الحماية تستخدم `staff:manage` ثم في الخدمة تُعاد قراءة الموظف النشط والتحقق من دور `super_admin` وكلمة المرور بـ`scrypt`؛ لا تُسجل كلمة المرور ولا تُعرض في الاستجابات.
+  - الأخطاء: `400 INVALID_CURRENT_PASSWORD`، `400 VALIDATION`، `403 FORBIDDEN`، `404 NOT_FOUND`، `500 SERVER_ERROR`؛ دون stack trace وبـ`Cache-Control: no-store`.
+- لا توجد تغييرات على schema أو migration أو seed. عملية الحذف لا تكتب سجل تدقيق جديدًا، حتى يبقى `حذف الكل` فارغًا فعلًا. الملف المحذوف مسبقًا `public/uploads/news/news-970161c8-632e-4ec1-981c-e23ab3821ba2.jpg` لم يُلمس.
+- الملفات: `lib/validation/staff.js`، `lib/services/staff.js`، `lib/staff/handlers.js`، `app/api/admin/staff/audit-log/route.js`، `app/api/admin/staff/audit-log/[id]/route.js`، `app/admin/audit-log/page.jsx`، والاختبارات المرتبطة بها.
+- التحقق: `npm test` نجح بالكامل (338 pass / 0 fail). ESLint ناجح على جميع الملفات المعدّلة؛ الفحص الكامل يُظهر 3 أخطاء `react-hooks/set-state-in-effect` سابقة في ملفات لم تُعدّل: `StaffAuditModal.jsx`، `StaffEditorModal.jsx`، `StaffResetPasswordModal.jsx`. `npm run build` نجح في التجميع والـTypeScript لكنه فشل في prerender لصفحتين لم تُعدّلا (`/admin` و`/admin/news`) بسبب `Render in Browser` خارج Suspense مع `cacheComponents`؛ لم تُجرَ تعديلات Install/DB.
 
 ## Phase 18.1 — قاعدة بيانات الهيكل التنظيمي للوحدات الحزبية (قيد المراجعة)
 - أُضيفت نماذج Prisma: `centers`, `local_secretariats`, `party_units`, `party_unit_people` على Branch مستقل.
