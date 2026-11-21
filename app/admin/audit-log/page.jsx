@@ -7,7 +7,6 @@ import {
   ChevronRight,
   Clock,
   User,
-  Users,
   Eye,
   ShieldCheck,
   FileText,
@@ -43,6 +42,7 @@ const ACTION_META = {
   content_created:        { label: "إنشاء محتوى",               color: "blue",    icon: FileText   },
   content_updated:        { label: "تعديل محتوى",               color: "amber",   icon: FileText   },
   content_published:      { label: "نشر محتوى",                  color: "emerald", icon: FileText   },
+  content_unpublished:    { label: "إلغاء نشر محتوى",            color: "amber",   icon: FileText   },
   content_deleted:        { label: "حذف محتوى",                  color: "rose",    icon: FileText   },
   // News actions
   news_article_created:   { label: "إنشاء خبر",                 color: "blue",    icon: Newspaper  },
@@ -85,7 +85,7 @@ const COLOR_MAP = {
 };
 
 function getActionMeta(actionType) {
-  return ACTION_META[actionType] ?? { label: actionType, color: "gold", icon: History };
+  return ACTION_META[actionType] ?? { label: "عملية أخرى", color: "gold", icon: History };
 }
 
 /* ─────────────────────────── Formatters ─────────────────────────────── */
@@ -96,32 +96,91 @@ function formatRole(value) {
   return ROLE_LABELS_MAP[value] || value;
 }
 
-function formatActive(value) {
-  if (value === true) return "نشط";
-  if (value === false) return "معطل";
-  return String(value);
+const ENTITY_LABELS = {
+  panel: "القسم القيادي",
+  leader: "القيادي",
+  leadership_content: "الكلمة القيادية",
+  popup: "محتوى النافذة المنبثقة",
+  news_article: "الخبر",
+  news_source: "مصدر الأخبار",
+  central_secretariat: "الأمانة المركزية",
+  central_secretariat_person: "بيانات أحد أعضاء الأمانة المركزية",
+  governorate_secretariat_person: "بيانات أحد أعضاء أمانة المحافظة",
+  parliamentary_unit_item: "عنصر الهيئة البرلمانية",
+};
+
+const FIELD_LABELS = {
+  title: "العنوان",
+  subtitle: "العنوان الفرعي",
+  full_name: "الاسم",
+  email: "البريد الإلكتروني",
+  role: "الدور الوظيفي",
+  role_title: "الصفة الوظيفية",
+  badge_label: "شارة التعريف",
+  body: "المحتوى",
+  source_note: "ملاحظة المصدر",
+  sort_order: "ترتيب الظهور",
+  is_published: "حالة النشر",
+  is_active: "حالة الحساب",
+  photo_url: "الصورة الشخصية",
+  head_name: "اسم الأمين",
+  head_role: "صفة الأمين",
+  decision_date: "تاريخ القرار",
+};
+
+function formatFieldName(field) {
+  return FIELD_LABELS[field] ?? field.replace(/_/g, " ");
 }
 
-function formatValue(key, value) {
-  if (key.includes("role")) return formatRole(value);
-  if (key.includes("is_active")) return formatActive(value);
-  if (typeof value === "boolean") return value ? "نعم" : "لا";
-  if (value === null || value === undefined) return "—";
-  return String(value);
-}
+function getOperationDescription(record) {
+  const details = record?.details && typeof record.details === "object" ? record.details : {};
+  const targetName = typeof record?.target_name === "string" ? record.target_name.trim() : "";
+  const namedTarget = targetName ? `«${targetName}»` : "العنصر المعني";
+  const entity = ENTITY_LABELS[details.entity_type] ?? "المحتوى";
+  const changedFields = Array.isArray(details.changed_fields)
+    ? details.changed_fields.filter((field) => typeof field === "string" && field.trim())
+    : [];
 
-function translateKey(key) {
-  const map = {
-    previous_role:     "الدور السابق",
-    new_role:          "الدور الجديد",
-    previous_is_active:"الحالة السابقة",
-    new_is_active:     "الحالة الجديدة",
-    changed_fields:    "الحقول المعدلة",
-    slug:              "slug",
-    entity_id:         "entity id",
-    entity_type:       "entity type",
-  };
-  return map[key] ?? key.replace(/_/g, " ");
+  switch (record?.action_type) {
+    case "staff_created":
+      return `تم إنشاء حساب الموظف ${namedTarget}${details.new_role ? ` بدور ${formatRole(details.new_role)}` : ""}.`;
+    case "staff_profile_updated":
+      return `تم تحديث البيانات الشخصية للموظف ${namedTarget}.`;
+    case "staff_role_changed":
+      return `تم تغيير دور الموظف ${namedTarget}${details.previous_role || details.new_role
+        ? ` من ${formatRole(details.previous_role || "غير محدد")} إلى ${formatRole(details.new_role || "غير محدد")}`
+        : ""}.`;
+    case "staff_activated":
+      return `تم تفعيل حساب الموظف ${namedTarget}.`;
+    case "staff_deactivated":
+      return `تم تعطيل حساب الموظف ${namedTarget}.`;
+    case "staff_password_reset":
+      return `تمت إعادة تعيين كلمة مرور حساب الموظف ${namedTarget}.`;
+    case "content_created":
+      return `تم إنشاء ${entity} ${namedTarget}.`;
+    case "content_updated":
+      return `تم تحديث ${entity} ${namedTarget}${changedFields.length
+        ? `، وشملت الحقول: ${changedFields.map(formatFieldName).join("، ")}`
+        : ""}.`;
+    case "content_published":
+      return `تم نشر ${entity} ${namedTarget}.`;
+    case "content_unpublished":
+      return `تم إلغاء نشر ${entity} ${namedTarget}.`;
+    case "content_deleted":
+      return `تم حذف ${entity} ${namedTarget}.`;
+    case "news_article_created":
+      return `تم إنشاء الخبر ${namedTarget}.`;
+    case "news_article_updated":
+      return `تم تحديث الخبر ${namedTarget}.`;
+    case "news_article_published":
+      return `تم نشر الخبر ${namedTarget}.`;
+    case "news_article_deleted":
+      return `تم حذف الخبر ${namedTarget}.`;
+    default:
+      return targetName
+        ? `تم تنفيذ إجراء آخر على ${namedTarget}.`
+        : "تم تنفيذ إجراء آخر في النظام.";
+  }
 }
 
 function formatDateTimeLines(value) {
@@ -163,10 +222,7 @@ function DetailModal({ record, onClose }) {
   const colors = COLOR_MAP[meta.color] ?? COLOR_MAP.gold;
   const Icon = meta.icon;
   const [date, time] = formatDateTimeLines(record.occurred_at);
-  const detailEntries =
-    record.details && typeof record.details === "object"
-      ? Object.entries(record.details)
-      : [];
+  const operationDescription = getOperationDescription(record);
 
   return (
     <div
@@ -217,14 +273,17 @@ function DetailModal({ record, onClose }) {
             <div className={`flex size-9 shrink-0 items-center justify-center rounded-xl border ${colors.icon}`}>
               <Icon className="size-4" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="text-[11px] font-bold opacity-70 mb-0.5">نوع العملية</div>
               <div className="font-black text-sm">{meta.label}</div>
+              <p className="mt-1 text-sm leading-relaxed text-ink [overflow-wrap:anywhere]">
+                {operationDescription}
+              </p>
             </div>
           </div>
 
-          {/* Actor + Target cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Executor card */}
+          <div className="grid grid-cols-1 gap-3">
             <div className="rounded-2xl border border-line bg-page/50 p-4 space-y-1.5">
               <div className="flex items-center gap-2 mb-2">
                 <div className="flex size-7 items-center justify-center rounded-lg bg-gold-tint border border-gold/30 text-gold-dark">
@@ -238,18 +297,6 @@ function DetailModal({ record, onClose }) {
               )}
             </div>
 
-            <div className="rounded-2xl border border-line bg-page/50 p-4 space-y-1.5">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 border border-blue-200 text-blue-700">
-                  <Users className="size-3.5" />
-                </div>
-                <span className="text-[11px] font-black text-muted uppercase tracking-wide">المتأثر</span>
-              </div>
-              <div className="font-black text-sm text-ink">{record.target_name || "—"}</div>
-              {record.target_email && (
-                <div className="text-[11px] text-muted font-mono dir-ltr">{record.target_email}</div>
-              )}
-            </div>
           </div>
 
           {/* Timestamp */}
@@ -266,40 +313,6 @@ function DetailModal({ record, onClose }) {
             </div>
           </div>
 
-          {/* Details / Changes */}
-          {detailEntries.length > 0 ? (
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2">
-                <div className="flex size-7 items-center justify-center rounded-lg bg-violet-50 border border-violet-200 text-violet-700 shrink-0">
-                  <FileText className="size-3.5" />
-                </div>
-                <span className="text-[11px] font-black text-muted uppercase tracking-wide">التغييرات</span>
-              </div>
-              <ul className="space-y-2">
-                {detailEntries.map(([k, v]) => (
-                  <li
-                    key={k}
-                    className="flex items-start justify-between gap-4 rounded-xl border border-line bg-white px-4 py-3 shadow-2xs"
-                  >
-                    <span className="font-black text-xs text-ink shrink-0">{translateKey(k)}</span>
-                    <span
-                      className="text-muted text-xs font-mono break-all text-left max-w-[65%]"
-                      style={{ direction: "ltr" }}
-                    >
-                      {Array.isArray(v)
-                        ? v.map((x) => formatValue(k, x)).join("، ")
-                        : formatValue(k, v)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 text-sm text-muted rounded-xl border border-dashed border-line p-4">
-              <AlertTriangle className="size-4 shrink-0" />
-              <span>لا توجد تفاصيل تغييرات لهذه العملية.</span>
-            </div>
-          )}
         </div>
 
         {/* ── Modal Footer ── */}
@@ -331,7 +344,6 @@ export default function AuditLogPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
   const [actorId, setActorId] = useState("all");
-  const [targetId, setTargetId] = useState("all");
   const [selectedRecord, setSelectedRecord] = useState(null);
 
   const staffOptions = useMemo(() => {
@@ -355,7 +367,6 @@ export default function AuditLogPage() {
       params.set("page", String(page));
       params.set("page_size", String(pageSize));
       if (actorId && actorId !== "all") params.set("actor_id", actorId);
-      if (targetId && targetId !== "all") params.set("target_id", targetId);
       const res = await adminFetch(`/api/admin/staff/audit-log?${params.toString()}`);
       setRecords(Array.isArray(res?.items) ? res.items : []);
       setTotal(res?.total ?? 0);
@@ -364,7 +375,7 @@ export default function AuditLogPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, actorId, targetId, showError]);
+  }, [page, pageSize, actorId, showError]);
 
   useEffect(() => {
     if (status !== "loading" && isSuperAdmin) fetchStaff();
@@ -403,8 +414,8 @@ export default function AuditLogPage() {
 
       {/* ── Filters ── */}
       <div className="rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-2xs">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
+        <div className="grid grid-cols-1 gap-4">
+          <div className="w-full space-y-1.5 sm:max-w-xl">
             <label className="text-xs font-bold text-muted block">المنفذ — الموظف الذي نفّذ العملية</label>
             <CustomSelect
               id="audit-actor"
@@ -412,16 +423,6 @@ export default function AuditLogPage() {
               options={staffOptions}
               value={actorId}
               onChange={(v) => { setActorId(v); setPage(1); }}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-muted block">المتأثر — الموظف المتأثر بالعملية</label>
-            <CustomSelect
-              id="audit-target"
-              placeholder="جميع الموظفين"
-              options={staffOptions}
-              value={targetId}
-              onChange={(v) => { setTargetId(v); setPage(1); }}
             />
           </div>
         </div>
@@ -450,17 +451,15 @@ export default function AuditLogPage() {
             <div className="hidden lg:block">
               <table className="w-full text-right text-xs">
                 <colgroup>
+                  <col className="w-[28%]" />
+                  <col className="w-[27%]" />
+                  <col className="w-[23%]" />
                   <col className="w-[22%]" />
-                  <col className="w-[18%]" />
-                  <col className="w-[26%]" />
-                  <col className="w-[20%]" />
-                  <col className="w-[14%]" />
                 </colgroup>
                 <thead>
                   <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
                     <th className="py-4 pr-6 pl-3 text-right">العملية</th>
                     <th className="py-4 px-3 text-right">المنفذ</th>
-                    <th className="py-4 px-3 text-right">المتأثر</th>
                     <th className="py-4 px-3 text-right">التفاصيل</th>
                     <th className="py-4 pr-3 pl-6 text-right">الوقت</th>
                   </tr>
@@ -485,13 +484,6 @@ export default function AuditLogPage() {
                               {r.actor_name || "—"}
                             </span>
                           </div>
-                        </td>
-
-                        {/* Target */}
-                        <td className="py-4 px-3 max-w-0">
-                          <span className="font-medium text-ink text-xs block truncate">
-                            {r.target_name || "—"}
-                          </span>
                         </td>
 
                         {/* Details button */}
@@ -524,15 +516,13 @@ export default function AuditLogPage() {
             <div className="hidden md:block lg:hidden">
               <table className="w-full text-right text-xs">
                 <colgroup>
-                  <col className="w-[30%]" />
-                  <col className="w-[30%]" />
-                  <col className="w-[22%]" />
-                  <col className="w-[18%]" />
+                  <col className="w-[44%]" />
+                  <col className="w-[28%]" />
+                  <col className="w-[28%]" />
                 </colgroup>
                 <thead>
                   <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
                     <th className="py-3.5 pr-5 pl-3 text-right">العملية / المنفذ</th>
-                    <th className="py-3.5 px-3 text-right">المتأثر</th>
                     <th className="py-3.5 px-3 text-right">التفاصيل</th>
                     <th className="py-3.5 pr-3 pl-5 text-right">الوقت</th>
                   </tr>
@@ -552,9 +542,6 @@ export default function AuditLogPage() {
                               <span className="text-[11px] font-bold text-muted truncate">{r.actor_name || "—"}</span>
                             </div>
                           </div>
-                        </td>
-                        <td className="py-3.5 px-3 max-w-0">
-                          <span className="text-[11px] font-medium text-ink block truncate">{r.target_name || "—"}</span>
                         </td>
                         <td className="py-3.5 px-3">
                           <button
@@ -594,15 +581,11 @@ export default function AuditLogPage() {
                       </div>
                     </div>
 
-                    {/* Row 2: actor + target */}
-                    <div className="grid grid-cols-2 gap-2">
+                    {/* Executor */}
+                    <div className="grid grid-cols-1 gap-2">
                       <div className="rounded-xl border border-line bg-page/50 p-2.5">
                         <div className="text-[10px] font-black text-muted mb-1">المنفذ</div>
                         <div className="text-xs font-bold text-ink truncate">{r.actor_name || "—"}</div>
-                      </div>
-                      <div className="rounded-xl border border-line bg-page/50 p-2.5">
-                        <div className="text-[10px] font-black text-muted mb-1">المتأثر</div>
-                        <div className="text-xs font-medium text-ink truncate">{r.target_name || "—"}</div>
                       </div>
                     </div>
 

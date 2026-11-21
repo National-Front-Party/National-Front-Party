@@ -1127,3 +1127,9 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
   - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).
 
 | 2026-11-20 | Staff Visual Refinement | تحسين بصري شامل لصفحة إدارة الموظفين: مطابقة زر الإغلاق الذهبي الدوار مع نمط Catalog في جميع النوافذ المنبثقة الخمس، وتوحيد أنماط hover للأزرار، وتعميق تطابق حقول الإدخال مع نظام التصميم المشترك (focus shadow + error states + duration-300)، وتحسين dropdown الفلترة مع focus shadow ذهبي، وتعزيز أزرار الإجراءات بـscale وduration متناسقة. | `app/admin/staff/page.jsx`؛ `components/Admin/Staff/StaffEditorModal.jsx`؛ `components/Admin/Staff/StaffAuditModal.jsx`؛ `components/Admin/Staff/StaffResetPasswordModal.jsx`؛ `components/Admin/Staff/StaffStatusModal.jsx`؛ `components/Admin/Staff/StaffSuccessPasswordModal.jsx` | لا تغييرات على الباك إند أو API أو الصلاحيات أو المنطق التجاري. `npm test`: 283 ناجحاً. ESLint: 3 أخطاء pre-existing (setState في useEffect) موجودة قبل هذه التعديلات؛ لا أخطاء جديدة. |
+
+## UI Phase — Audit Logs operation descriptions
+
+- Removed the affected filter and target displays from the Audit Logs page; the frontend request now keeps only executor and pagination filters.
+- Added Arabic operation descriptions for every current database audit action, the existing news action aliases, and an unknown-action fallback. Removed the modal changes list and affected card.
+- API and backend behavior were not changed. Operation descriptions and desktop/tablet/mobile source layouts were checked. A browser session and local server were unavailable; ESLint reports two issues in the page effects, which were not changed.
