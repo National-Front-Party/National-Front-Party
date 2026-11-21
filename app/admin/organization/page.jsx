@@ -232,7 +232,7 @@ export default function OrganizationPage() {
     if (!personEditor || !selection.unit) return;
     setBusy(true);
     const { id, full_name, position_title, details, sort_order, is_published, member_id } = personEditor;
-    const payload = { full_name: member_id ? undefined : full_name?.trim(), member_id: member_id || null, position_title: position_title.trim(), details: details?.trim() || null, sort_order: Number(sort_order || 0), is_published: Boolean(is_published) };
+    const payload = { full_name: member_id ? undefined : full_name?.trim(), member_id: member_id || null, position_title: position_title.trim(), details: details?.trim() || "", sort_order: Number(sort_order || 0), is_published: Boolean(is_published) };
     if (payload.full_name === undefined) delete payload.full_name;
     try {
       const endpoint = "/api/admin/content/organization/party-units/" + selection.unit + "/people" + (id ? "/" + id : "");
