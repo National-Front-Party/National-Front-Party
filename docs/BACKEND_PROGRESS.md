@@ -1406,3 +1406,18 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - **التحقق والاختبارات:**
   - `npx eslint`: خالي تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
   - `npm test`: جميع الاختبارات الـ 276 ناجحة بنسبة 100% (276 pass, 0 fail).
+
+## UI Phase — Admin Organizational Content visual refinement
+
+- Applied page-scoped presentation styles to /admin/content using existing ink, gold, gold-gradient, page, and border tokens.
+- Standardized field focus/hover treatment, modal sizing and close-button hover, card borders, upload drop-zone hover, and small-screen modal constraints.
+- No API, database, validation, CRUD, authentication, authorization, routing, or business logic changes.
+- Browser visual verification was not available; viewport checks remain unverified.
+
+## UI Phase — Party Program section redesign
+
+- Updated only the Party Program manager, editor, published content card, preview modal, and publish/discard confirmation dialogs.
+- Used the existing dashboard gold gradient, card, field, button, and close-button conventions; changes are presentation-only.
+- Responsive verification was source-level only because no browser session is available.
+
+- Follow-up UI refinement: changed the Party Program accent to a solid gold top border and matched title/source/body field heights, borders, typography, and focus shadows to the News article editor.

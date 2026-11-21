@@ -25,7 +25,7 @@ export default function PublishedProgramCard({
 }) {
   if (!published) {
     return (
-      <div className="rounded-3xl border border-dashed border-amber-200 bg-amber-50/50 p-8 text-center" dir="rtl">
+      <div className="rounded-3xl border border-dashed border-gold/50 bg-gold-tint/50 p-6 text-center sm:p-10" dir="rtl">
         <AlertCircle className="mx-auto size-10 text-amber-500 mb-3" aria-hidden="true" />
         <h3 className="text-base font-bold text-amber-900 mb-1">
           لا يوجد محتوى منشور حالياً لبرنامج الحزب
@@ -44,7 +44,7 @@ export default function PublishedProgramCard({
   return (
     <div className="space-y-6" dir="rtl">
       {/* Published Status Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-emerald-200/80 bg-emerald-50/80 px-5 py-3.5">
+      <div className="flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex items-center gap-2.5">
           <span className="flex size-7 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
             <CheckCircle2 className="size-4" aria-hidden="true" />
@@ -69,7 +69,7 @@ export default function PublishedProgramCard({
       </div>
 
       {/* Main Content Card (Read-Only) */}
-      <div className="relative rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-card overflow-hidden">
+      <div className="group relative overflow-hidden rounded-3xl border border-line bg-white p-4 shadow-card transition-all duration-300 hover:border-gold/40 hover:shadow-card-hover sm:p-6 lg:p-8">
         {/* Protection Watermark & Badge */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-slate-100">
           <div className="flex items-center gap-3">
@@ -84,7 +84,7 @@ export default function PublishedProgramCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center">
             <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600">
               <ShieldCheck className="size-4 text-emerald-600" aria-hidden="true" />
               <span>محتوى محمي من التعديل المباشر</span>
@@ -93,7 +93,7 @@ export default function PublishedProgramCard({
               <button
                 type="button"
                 onClick={onStartDraftFromPublished}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-gold/15 px-3.5 py-1.5 text-xs font-bold text-gold-darker hover:bg-gold/25 transition-colors"
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-gold-gradient px-4 py-2 text-xs font-bold text-ink shadow-btn transition-all hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0"
               >
                 <FileEdit className="size-3.5" aria-hidden="true" />
                 <span>إنشاء مسودة من هذا المحتوى</span>
@@ -107,9 +107,9 @@ export default function PublishedProgramCard({
           <span className="text-xs font-bold text-slate-500 block mb-2">
             نص البرنامج ({paragraphs.length.toLocaleString("ar-EG")} فقرة):
           </span>
-          <div className="space-y-3.5 rounded-2xl bg-slate-50/70 p-5 sm:p-6 text-sm leading-relaxed sm:leading-loose text-slate-800 border border-slate-100">
+          <div className="space-y-4 rounded-2xl border border-line bg-page/70 p-4 text-sm leading-8 text-ink sm:p-6">
             {paragraphs.map((p, idx) => (
-              <p key={idx} className="text-justify">
+              <p key={idx} className="break-words text-justify">
                 {p}
               </p>
             ))}
@@ -117,7 +117,7 @@ export default function PublishedProgramCard({
         </div>
 
         {/* Source Note Footer */}
-        <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500">
+        <div className="flex flex-col gap-2 border-t border-line pt-4 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
           <div>
             <span className="font-semibold text-slate-700">ملاحظة المصدر: </span>
             <span>{published.source_note || "الموقع الرسمي للحزب"}</span>
