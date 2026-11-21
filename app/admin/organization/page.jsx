@@ -170,11 +170,15 @@ export default function OrganizationPage() {
   };
 
   const refreshAll = async () => {
-    await loadGovernorates();
-    if (selection.governorate) setCenters(await loadCenters(selection.governorate));
-    if (selection.center) setSecretariats(await loadSecretariats(selection.center));
-    if (selection.secretariat) setUnits(await loadUnits(selection.secretariat));
-    if (selection.unit) setPeople(await loadPeople(selection.unit));
+    try {
+      await loadGovernorates();
+      if (selection.governorate) setCenters(await loadCenters(selection.governorate));
+      if (selection.center) setSecretariats(await loadSecretariats(selection.center));
+      if (selection.secretariat) setUnits(await loadUnits(selection.secretariat));
+      if (selection.unit) setPeople(await loadPeople(selection.unit));
+    } catch (error) {
+      showError(error?.message || "تعذر تحديث بيانات الهيكل التنظيمي");
+    }
   };
 
   const saveLevel = async (event) => {
@@ -232,7 +236,7 @@ export default function OrganizationPage() {
     if (payload.full_name === undefined) delete payload.full_name;
     try {
       const endpoint = "/api/admin/content/organization/party-units/" + selection.unit + "/people" + (id ? "/" + id : "");
-      const result = await adminFetch(endpoint, { method: id ? "PATCH" : "POST", body: payload });
+      await adminFetch(endpoint, { method: id ? "PATCH" : "POST", body: payload });
       setPeople(await loadPeople(selection.unit));
       showSuccess(id ? "تم تحديث بيانات المسؤول" : "تمت إضافة المسؤول");
       setPersonEditor(null);
@@ -340,7 +344,7 @@ export default function OrganizationPage() {
           {filteredPeople.map((person) => (
             <article key={person.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-3"><span className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-gold/20 bg-gold-tint text-gold-dark"><UserRound className="size-5" /></span><div className="min-w-0"><h3 className="truncate text-sm font-black text-slate-900">{person.full_name}</h3><p className="text-xs font-semibold text-gold-dark">{person.position_title}</p>{person.details && <p className="mt-1 line-clamp-2 text-xs text-muted">{person.details}</p>}<div className="mt-1 flex flex-wrap gap-2 text-[10px] text-muted"><span>{person.member_id ? "عضو مرتبط" : "إضافة يدوية"}</span><span>•</span><span className={person.is_published ? "text-emerald-700" : "text-slate-500"}>{person.is_published ? "منشور" : "مسودة"}</span></div></div></div>
-              <div className="flex shrink-0 items-center gap-1 self-end sm:self-auto"><button type="button" onClick={()=>setPersonEditor({...person, sort_order:String(person.sort_order ?? 0)})} className="rounded-xl border border-line p-2 text-muted hover:border-gold hover:text-gold-dark" title="تعديل"><Pencil className="size-4" /></button><button type="button" onClick={()=>togglePerson(person)} className="rounded-xl border border-line p-2 text-muted hover:border-gold hover:text-gold-dark" title={person.is_published ? "إخفاء" : "نشر"}><Power className="size-4" /></button><button type="button" onClick={()=>deletePerson(person)} className="rounded-xl border border-rose-100 p-2 text-rose-500 hover:bg-rose-50" title="حذف"><Trash2 className="size-4" /></button></div>
+              <div className="flex shrink-0 items-center gap-1 self-end sm:self-auto"><button type="button" onClick={()=>{setMemberQuery("");setMemberResults([]);setPersonEditor({...person, sort_order:String(person.sort_order ?? 0)});}} className="rounded-xl border border-line p-2 text-muted hover:border-gold hover:text-gold-dark" title="تعديل"><Pencil className="size-4" /></button><button type="button" onClick={()=>togglePerson(person)} className="rounded-xl border border-line p-2 text-muted hover:border-gold hover:text-gold-dark" title={person.is_published ? "إخفاء" : "نشر"}><Power className="size-4" /></button><button type="button" onClick={()=>deletePerson(person)} className="rounded-xl border border-rose-100 p-2 text-rose-500 hover:bg-rose-50" title="حذف"><Trash2 className="size-4" /></button></div>
             </article>
           ))}
         </div>}
