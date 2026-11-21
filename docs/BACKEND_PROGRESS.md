@@ -1162,3 +1162,10 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - AppShell now uses exact login-path handling and replaces denied navigation history entries, preserving active-role route behavior without back-navigation redirect loops.
 - Added route coverage for every registered section, all three active roles, nested/dynamic paths, sibling prefixes, unknown paths, and unknown roles. No API authorization, roles, database, or workflow behavior changed.
 - Verification: focused role-route tests passed (6 tests, 0 failures); targeted ESLint passed (0 errors, 0 warnings); git diff --check passed.
+
+## 2026-11-21 - Stage 3B Admin access-control test coverage
+
+- Added focused DELETE-handler tests for Applications and Service Requests, verifying that super_admin reaches the delete service and Writer/Reviewer are rejected before service calls.
+- Extracted the existing Overview data loader into a testable frontend helper without changing its permission gates, API requests, fallback behavior, statistics, or recent-item ordering. Added role-scoped coverage for overview data and News-only fallback results.
+- Added Content and Audit Log route/API permission coverage; existing placeholder pages remain unchanged. No role definitions, permission assignments, database schema, News workflow, or business behavior changed.
+- Verification: focused authorization, route, content, staff, and read-handler tests passed (41 tests, 0 failures); targeted ESLint passed; `git diff --check` passed. The initial sandboxed Node test run was blocked by Windows `spawn EPERM`; the focused rerun with process-spawn permission passed.
