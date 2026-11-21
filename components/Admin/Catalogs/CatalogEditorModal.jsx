@@ -4,21 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import Spinner from "@/components/Admin/ui/Spinner";
-import { Building2, Layers, Hash, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
-
-/**
- * Normalizes input string into a valid slug / code:
- * lowercase a-z, 0-9, single hyphens only.
- */
-function normalizeIdentifier(str) {
-  return str
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+import { Building2, Layers, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { generateCatalogIdentifier } from "@/lib/admin/catalog-utils";
 
 function CatalogForm({ item, type, onClose, onSaved }) {
   const { showSuccess, showError } = useToast();
@@ -28,18 +15,13 @@ function CatalogForm({ item, type, onClose, onSaved }) {
   const entityTitle = isMinistry ? "الوزارة الحكومية" : "القطاع الخدمي";
   const endpointBase = isMinistry ? "/api/admin/ministries" : "/api/admin/request-sectors";
 
-  const initialKey = isMinistry ? item?.slug || "" : item?.code || "";
-
   const [nameAr, setNameAr] = useState(item?.name_ar || "");
-  const [identifier, setIdentifier] = useState(initialKey);
   const [sortOrder, setSortOrder] = useState(item?.sort_order ?? 0);
   const [isActive, setIsActive] = useState(item?.is_active ?? true);
-  const [manualKeyEdit, setManualKeyEdit] = useState(Boolean(item?.id));
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
   const nameInputRef = useRef(null);
-  const keyInputRef = useRef(null);
 
   // Close on Escape key
   useEffect(() => {
@@ -52,29 +34,11 @@ function CatalogForm({ item, type, onClose, onSaved }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [submitting, onClose]);
 
-  // Auto-generate identifier (slug/code) when creating unless manually edited
   const handleNameChange = (e) => {
     const newName = e.target.value;
     setNameAr(newName);
     if (errors.nameAr) {
       setErrors((prev) => ({ ...prev, nameAr: undefined }));
-    }
-    if (!isEdit && !manualKeyEdit) {
-      const generated = normalizeIdentifier(newName);
-      if (generated) {
-        setIdentifier(generated);
-        if (errors.identifier) {
-          setErrors((prev) => ({ ...prev, identifier: undefined }));
-        }
-      }
-    }
-  };
-
-  const handleIdentifierChange = (e) => {
-    setManualKeyEdit(true);
-    setIdentifier(normalizeIdentifier(e.target.value));
-    if (errors.identifier) {
-      setErrors((prev) => ({ ...prev, identifier: undefined }));
     }
   };
 
@@ -82,7 +46,6 @@ function CatalogForm({ item, type, onClose, onSaved }) {
     e.preventDefault();
 
     const trimmedName = nameAr.trim();
-    const trimmedKey = normalizeIdentifier(identifier);
     const parsedSort = Number(sortOrder);
     const validSortOrder = Number.isInteger(parsedSort)
       ? Math.max(-32768, Math.min(32767, parsedSort))
@@ -96,27 +59,10 @@ function CatalogForm({ item, type, onClose, onSaved }) {
       newErrors.nameAr = `اسم ${entityTitle} يجب ألا يقل عن حرفين`;
     }
 
-    if (!trimmedKey) {
-      newErrors.identifier = isMinistry
-        ? "المعرف اللطيف (Slug) مطلوب ويجب ألا يكون فارغاً"
-        : "كود القطاع (Code) مطلوب ويجب ألا يكون فارغاً";
-    } else {
-      const keyRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-      if (!keyRegex.test(trimmedKey)) {
-        newErrors.identifier = isMinistry
-          ? "يجب أن يتكون المعرف من أحرف إنجليزية صغيرة وأرقام مفصولة بشرطة (مثل health-ministry)"
-          : "يجب أن يتكون كود القطاع من أحرف إنجليزية صغيرة وأرقام مفصولة بشرطة (مثل public-housing)";
-      }
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       showError("يرجى ملء الحقول المطلوبة ومراجعة التنبيهات الموضحة");
-      if (newErrors.nameAr) {
-        nameInputRef.current?.focus();
-      } else if (newErrors.identifier) {
-        keyInputRef.current?.focus();
-      }
+      nameInputRef.current?.focus();
       return;
     }
 
@@ -127,14 +73,9 @@ function CatalogForm({ item, type, onClose, onSaved }) {
         sort_order: validSortOrder,
       };
 
-      if (isMinistry) {
-        payload.slug = trimmedKey;
-      } else {
-        payload.code = trimmedKey;
-      }
-
       let result;
       if (isEdit) {
+        // PATCH does NOT send slug or code - preserves existing database value
         result = await adminFetch(`${endpointBase}/${item.id}`, {
           method: "PATCH",
           body: JSON.stringify(payload),
@@ -149,6 +90,14 @@ function CatalogForm({ item, type, onClose, onSaved }) {
           result = statusResult;
         }
       } else {
+        // POST generates a clean, unique slug/code automatically for the backend
+        const generatedIdentifier = generateCatalogIdentifier(trimmedName, type);
+        if (isMinistry) {
+          payload.slug = generatedIdentifier;
+        } else {
+          payload.code = generatedIdentifier;
+        }
+
         result = await adminFetch(endpointBase, {
           method: "POST",
           body: JSON.stringify(payload),
@@ -179,19 +128,9 @@ function CatalogForm({ item, type, onClose, onSaved }) {
       onClose();
     } catch (err) {
       if (err.code === "DUPLICATE_SLUG") {
-        setErrors((prev) => ({
-          ...prev,
-          identifier: "المعرّف اللطيف مستخدم بالفعل، برجاء اختيار معرّف آخر.",
-        }));
-        keyInputRef.current?.focus();
-        showError("المعرّف المختصر مستخدم بالفعل، برجاء اختيار معرّف آخر.");
+        showError("حدث تعارض في المعرف المرجعي التلقائي، يرجى المحاولة مرة أخرى.");
       } else if (err.code === "DUPLICATE_CODE") {
-        setErrors((prev) => ({
-          ...prev,
-          identifier: "كود القطاع مستخدم بالفعل، برجاء إدخال كود مختلف.",
-        }));
-        keyInputRef.current?.focus();
-        showError("كود القطاع مستخدم بالفعل، برجاء إدخال كود مختلف.");
+        showError("حدث تعارض في كود القطاع التلقائي، يرجى المحاولة مرة أخرى.");
       } else if (err.code === "VALIDATION") {
         showError("يرجى التأكد من صحة البيانات المدخلة ومطابقتها للشروط.");
       } else {
@@ -204,7 +143,7 @@ function CatalogForm({ item, type, onClose, onSaved }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-xs animate-modal-overlay-enter"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/60 backdrop-blur-xs animate-modal-overlay-enter"
       onClick={(e) => {
         if (e.target === e.currentTarget && !submitting) {
           onClose();
@@ -212,9 +151,13 @@ function CatalogForm({ item, type, onClose, onSaved }) {
       }}
       dir="rtl"
     >
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-card-hover border border-line animate-modal-shell-enter">
-        {/* Modal Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-line pb-5">
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        className="relative w-full max-w-lg max-h-[90vh] sm:max-h-[85vh] flex flex-col rounded-[26px] bg-white shadow-card-hover border border-line overflow-hidden animate-modal-shell-enter"
+      >
+        {/* 1. Modal Header (shrink-0) */}
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line px-5 sm:px-7 py-4 sm:py-5 bg-white">
           <div className="flex items-center gap-3.5">
             <div className="flex size-11 items-center justify-center rounded-2xl bg-gold-tint border border-gold/30 text-gold-dark shadow-2xs">
               {isMinistry ? (
@@ -234,6 +177,7 @@ function CatalogForm({ item, type, onClose, onSaved }) {
               </p>
             </div>
           </div>
+
           {/* Golden Rotating Close Button */}
           <button
             type="button"
@@ -258,9 +202,9 @@ function CatalogForm({ item, type, onClose, onSaved }) {
           </button>
         </div>
 
-        {/* Modal Body Form */}
-        <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-5">
-          {/* 1. Arabic Name */}
+        {/* 2. Modal Body Form (flex-1 min-h-0 overflow-y-auto overscroll-contain) */}
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-7 space-y-4 sm:space-y-5">
+          {/* Arabic Name */}
           <div>
             <label className="block text-xs sm:text-sm font-bold text-ink mb-2">
               اسم {entityTitle} بالعربية <span className="text-rose-500">*</span>
@@ -293,50 +237,7 @@ function CatalogForm({ item, type, onClose, onSaved }) {
             )}
           </div>
 
-          {/* 2. Identifier: Slug (Ministry) or Code (Sector) */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs sm:text-sm font-bold text-ink">
-                {isMinistry ? "المعرف اللطيف (Slug)" : "كود القطاع (Code)"}{" "}
-                <span className="text-rose-500">*</span>
-              </label>
-              <span className="text-[11px] text-muted">
-                أحرف إنجليزية وأرقام وشرطة فقط
-              </span>
-            </div>
-            <div className="relative">
-              <input
-                ref={keyInputRef}
-                type="text"
-                value={identifier}
-                onChange={handleIdentifierChange}
-                placeholder={isMinistry ? "health, housing, education" : "treatment, housing, solidarity"}
-                disabled={submitting}
-                className={`h-14 w-full rounded-2xl border px-4 pl-10 text-left font-mono text-xs sm:text-sm font-semibold text-ink shadow-none transition-all duration-300 ease-in-out placeholder:text-muted/60 disabled:opacity-50 ${
-                  errors.identifier
-                    ? "border-rose-500 bg-rose-50/20 focus:border-rose-500 focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(244,63,94,0.35)]"
-                    : "border-border bg-white hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
-                }`}
-                style={{ direction: "ltr", textAlign: "left" }}
-                maxLength={100}
-              />
-              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted">
-                <Hash className="size-4" />
-              </span>
-            </div>
-            {errors.identifier ? (
-              <p className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-rose-600 animate-elem-fade-up">
-                <AlertCircle className="size-3.5 shrink-0" />
-                <span>{errors.identifier}</span>
-              </p>
-            ) : (
-              <p className="text-[11px] text-muted/80 mt-1.5 mr-1">
-                يُستخدم في الروابط والفرز المرجعي للطلبات ({isMinistry ? "Slug" : "Code"}).
-              </p>
-            )}
-          </div>
-
-          {/* 3. Display Order (sort_order) */}
+          {/* Display Order (sort_order) */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs sm:text-sm font-bold text-ink">
@@ -355,8 +256,8 @@ function CatalogForm({ item, type, onClose, onSaved }) {
             />
           </div>
 
-          {/* 4. Active Status Toggle */}
-          <div className="pt-2">
+          {/* Active Status Toggle */}
+          <div className="pt-1">
             <label className="block text-xs sm:text-sm font-bold text-ink mb-2">
               حالة الاعتماد في النظام
             </label>
@@ -397,28 +298,28 @@ function CatalogForm({ item, type, onClose, onSaved }) {
               العناصر المعطلة لن تظهر للمواطنين في نماذج التقديم العامة.
             </p>
           </div>
+        </div>
 
-          {/* Actions Footer */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-line">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={submitting}
-              className="h-12 px-6 rounded-2xl border border-line bg-page text-xs font-bold text-muted hover:border-gold hover:text-ink hover:bg-gold-tint/30 hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
-            >
-              إلغاء
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex h-12 items-center gap-2 rounded-2xl bg-gold-gradient px-7 text-xs font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-200 hover:brightness-110 hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
-            >
-              {submitting && <Spinner size="sm" color="ink" />}
-              <span>{isEdit ? "حفظ التعديلات" : `إضافة ${entityTitle}`}</span>
-            </button>
-          </div>
-        </form>
-      </div>
+        {/* 3. Modal Actions Footer (shrink-0 border-t border-line bg-page/50) */}
+        <div className="flex shrink-0 items-center justify-end gap-3 px-5 sm:px-7 py-3.5 sm:py-4 border-t border-line bg-page/50">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={submitting}
+            className="h-11 px-5 rounded-2xl border border-line bg-white text-xs font-bold text-muted hover:border-gold hover:text-ink hover:bg-gold-tint/30 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
+          >
+            {submitting && <Spinner size="sm" color="ink" />}
+            <span>{isEdit ? "حفظ التعديلات" : `إضافة ${entityTitle}`}</span>
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
