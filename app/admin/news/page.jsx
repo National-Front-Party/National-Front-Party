@@ -25,7 +25,7 @@ import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import { useAdminAuth } from "@/lib/admin/auth-context";
 import { canAccess } from "@/lib/admin/permissions";
-import { canEditNewsArticle, canSubmitNewsArticle, isNewsArticleAuthor } from "@/lib/news/ui-permissions.js";
+import { canEditNewsArticle, canReviewNewsArticle, canSubmitNewsArticle, isNewsArticleAuthor } from "@/lib/news/ui-permissions.js";
 import Spinner from "@/components/Admin/ui/Spinner";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import CustomSelect from "@/components/Home/ui/CustomSelect";
@@ -437,8 +437,7 @@ export default function NewsPage() {
       const isAuthor = isNewsArticleAuthor(art, user);
       const canEdit = canEditNewsArticle(role, isAuthor, art.status);
       const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
-      const canReview =
-        (isSuperAdmin || (isReviewer && !isAuthor)) && art.status === "pending_review";
+      const canReview = canReviewNewsArticle(role, isAuthor, art.status);
       const canUnpublish =
         isSuperAdmin && art.status === "published";
 
@@ -531,7 +530,7 @@ export default function NewsPage() {
 
       return items;
     },
-    [user, role, isSuperAdmin, isReviewer, handleSubmitForReview, handleUnpublish],
+    [user, role, isSuperAdmin, handleSubmitForReview, handleUnpublish],
   );
 
   // Unauthorized view
@@ -838,8 +837,7 @@ export default function NewsPage() {
                     const isAuthor = isNewsArticleAuthor(art, user);
                     const canEdit = canEditNewsArticle(role, isAuthor, art.status);
                     const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
-                    const canReview =
-                      (isSuperAdmin || (isReviewer && !isAuthor)) && art.status === "pending_review";
+                    const canReview = canReviewNewsArticle(role, isAuthor, art.status);
                     const menuItems = getRowMenuItems(art);
 
                     return (
@@ -949,7 +947,7 @@ export default function NewsPage() {
                         <td className="py-4 pr-3 pl-6 sm:pl-8">
                           <div className="flex items-center justify-center gap-2">
                             {/* Primary Action Button based on status & role */}
-                            {art.status === "changes_requested" && !(isEditor && canSubmit) ? (
+                            {art.status === "changes_requested" && !canReview ? (
                               <button
                                 type="button"
                                 onClick={() => {
@@ -1049,8 +1047,7 @@ export default function NewsPage() {
                   const isAuthor = isNewsArticleAuthor(art, user);
                   const canEdit = canEditNewsArticle(role, isAuthor, art.status);
                   const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
-                  const canReview =
-                    (isSuperAdmin || (isReviewer && !isAuthor)) && art.status === "pending_review";
+                  const canReview = canReviewNewsArticle(role, isAuthor, art.status);
                   const menuItems = getRowMenuItems(art);
 
                   return (
@@ -1153,7 +1150,7 @@ export default function NewsPage() {
                       {/* Card Footer: Primary Action & Dropdown */}
                       <div className="flex items-center justify-end gap-2 border-t border-line/60 pt-3 mt-1">
                         {/* Primary Action Button based on status & role */}
-                        {art.status === "changes_requested" && !(isEditor && canSubmit) ? (
+                        {art.status === "changes_requested" && !canReview ? (
                           <button
                             type="button"
                             onClick={() => {

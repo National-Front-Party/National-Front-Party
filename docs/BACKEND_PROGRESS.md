@@ -1198,3 +1198,10 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Verified the existing submit API and service already enforce Writer ownership and allow only `draft`/`changes_requested` transitions to `pending_review`; added regression coverage for other-author, invalid-status, Reviewer, and successful submissions. Existing Super Admin workflow and media upload permissions were unchanged.
 - No database schema or article status changes.
 - Verification: News service, handler, and UI permission tests passed (32/32); targeted ESLint and `git diff --check` passed.
+
+## 2026-11-22 - Phase 4 Super Admin direct article review
+
+- `publishArticle` and `requestArticleChanges` now allow `super_admin` to review their own `draft` and `changes_requested` articles directly. Own and other authors' `pending_review` review behavior remains available; non-pending articles by other authors remain ineligible. Request-changes still requires a non-empty note.
+- Added a shared UI review eligibility predicate and enabled the review modal actions for Super Admin's own eligible articles. Reviewer access remains limited to other authors' `pending_review` articles; Writers still cannot publish or request changes. Existing unpublish and delete behavior is unchanged.
+- Added service, API handler, and UI permission coverage for direct review eligibility, role restrictions, note validation, and existing review access. No schema or article status changes.
+- Verification: News service, API handler, and UI permission tests passed (34/34); targeted ESLint passed with 0 errors and 0 warnings; `git diff --check` passed.

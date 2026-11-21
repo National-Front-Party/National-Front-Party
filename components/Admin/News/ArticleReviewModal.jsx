@@ -5,6 +5,7 @@ import Image from "next/image";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import { useAdminAuth } from "@/lib/admin/auth-context";
+import { canReviewNewsArticle, isNewsArticleAuthor } from "@/lib/news/ui-permissions.js";
 import Spinner from "@/components/Admin/ui/Spinner";
 
 export default function ArticleReviewModal({
@@ -33,9 +34,10 @@ export default function ArticleReviewModal({
 
   if (!isOpen || !article) return null;
 
-  const isSelfAuthor = Boolean(user?.id && article?.created_by === user.id);
+  const isSelfAuthor = isNewsArticleAuthor(article, user);
   const isReviewer = user?.role === "news_reviewer";
   const cannotSelfReview = isReviewer && isSelfAuthor;
+  const canReviewArticle = canReviewNewsArticle(user?.role, isSelfAuthor, article.status);
 
   // Split body text into paragraphs
   const paragraphs = (article.body || "")
@@ -282,7 +284,7 @@ export default function ArticleReviewModal({
           </div>
 
           {/* Review Actions Form */}
-          {article.status === "pending_review" && !cannotSelfReview && (
+          {canReviewArticle && !cannotSelfReview && (
             <div className="space-y-4 pt-4 border-t border-line">
               <h4 className="text-xs font-bold text-ink">اتخاذ قرار المراجعة:</h4>
 
