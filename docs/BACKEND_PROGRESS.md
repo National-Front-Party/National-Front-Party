@@ -1452,3 +1452,10 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 
 - Follow-up: matched the active organizational tab hover lift and gold shadow to the Add New Secretariat action, while leaving the tab container styles unchanged. Organizational tabs now wrap instead of horizontally scrolling; secretariat and member tables switch to responsive cards below the wide-screen breakpoint, retaining their existing actions and status controls.
 - UI behavior and data handling remain unchanged. Responsive review was source-level only; no browser viewport was tested.
+
+## UI Phase — Parliamentary Unit polish
+
+- Refined Parliamentary Unit cards, responsive layouts, form fields, actions, and modal presentation using the existing News field treatment and project gold-gradient button styles.
+- Added an opt-in neutral-to-gold hover close-button style for the Admin Parliamentary preview; other shared modal users retain their default styling.
+- UI-only changes. API calls, data flow, validation, permissions, CRUD behavior, and backend logic were not changed. Responsive review was source-level only; no browser viewport was tested.
+- Follow-up: added a restrained lift, slight brightness increase, and stronger shadow on hover for the selected Parliamentary Unit icon card, matching the existing hover treatment of the unselected cards.

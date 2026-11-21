@@ -101,6 +101,10 @@ h3 {
   outline: none;
 }
 
+.parliamentary-form-field:focus-visible {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;

@@ -10,6 +10,7 @@ export default function ParliamentaryModal({
   personRole,
   paragraphs,
   source,
+  closeButtonVariant = "gold",
 }) {
   return (
     <ModalShell
@@ -17,6 +18,7 @@ export default function ParliamentaryModal({
       onClose={onClose}
       title={title}
       maxWidth="max-w-[800px]"
+      closeButtonVariant={closeButtonVariant}
     >
       <div dir="rtl" className="mt-5 text-right">
         {personName ? (

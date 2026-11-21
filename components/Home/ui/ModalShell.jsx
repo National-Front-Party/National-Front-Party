@@ -28,6 +28,7 @@ export default function ModalShell({
   title,
   maxWidth = "max-w-[800px]",
   hideScrollbar = true,
+  closeButtonVariant = "gold",
   children,
 }) {
   const portalRoot = useSyncExternalStore(
@@ -40,6 +41,10 @@ export default function ModalShell({
   const dialogRef = useRef(null);
   const titleId = useId();
   const onCloseRef = useRef(onClose);
+  const closeButtonClassName =
+    closeButtonVariant === "neutral-gold-hover"
+      ? "group flex size-11 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none"
+      : "group flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-gold-gradient text-ink shadow-[0_0_8px_rgba(201,162,74,0.25)] transition-all duration-300 ease-out hover:scale-110 hover:rotate-90 hover:shadow-[0_0_14px_rgba(201,162,74,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none";
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -144,7 +149,7 @@ export default function ModalShell({
               type="button"
               aria-label="إغلاق"
               onClick={onClose}
-              className="group flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/40 bg-gold-gradient text-ink shadow-[0_0_8px_rgba(201,162,74,0.25)] transition-all duration-300 ease-out hover:scale-110 hover:rotate-90 hover:shadow-[0_0_14px_rgba(201,162,74,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none"
+              className={closeButtonClassName}
             >
               <X
                 aria-hidden="true"
