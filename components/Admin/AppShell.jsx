@@ -428,7 +428,7 @@ export default function AppShell({ children }) {
                       collapsed ? "justify-center px-0" : ""
                     } ${
                       isActive
-                        ? "bg-gold-tint text-gold-dark border-r-4 border-gold shadow-xs"
+                        ? "bg-gold-tint text-gold-dark border border-gold/50 shadow-xs"
                         : "text-muted hover:bg-[#FBF6E9]/60 hover:text-ink hover:translate-x-[-3px]"
                     }`}
                   >
