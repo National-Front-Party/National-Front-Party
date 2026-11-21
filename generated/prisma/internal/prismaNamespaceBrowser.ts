@@ -69,7 +69,11 @@ export const ModelName = {
   service_requests: 'service_requests',
   news_sources: 'news_sources',
   news_articles: 'news_articles',
-  party_programs: 'party_programs'
+  party_programs: 'party_programs',
+  centers: 'centers',
+  local_secretariats: 'local_secretariats',
+  party_units: 'party_units',
+  party_unit_people: 'party_unit_people'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -408,6 +412,60 @@ export const Party_programsScalarFieldEnum = {
 } as const
 
 export type Party_programsScalarFieldEnum = (typeof Party_programsScalarFieldEnum)[keyof typeof Party_programsScalarFieldEnum]
+
+
+export const CentersScalarFieldEnum = {
+  id: 'id',
+  governorate_id: 'governorate_id',
+  name_ar: 'name_ar',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at'
+} as const
+
+export type CentersScalarFieldEnum = (typeof CentersScalarFieldEnum)[keyof typeof CentersScalarFieldEnum]
+
+
+export const Local_secretariatsScalarFieldEnum = {
+  id: 'id',
+  center_id: 'center_id',
+  name_ar: 'name_ar',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at'
+} as const
+
+export type Local_secretariatsScalarFieldEnum = (typeof Local_secretariatsScalarFieldEnum)[keyof typeof Local_secretariatsScalarFieldEnum]
+
+
+export const Party_unitsScalarFieldEnum = {
+  id: 'id',
+  secretariat_id: 'secretariat_id',
+  name_ar: 'name_ar',
+  description: 'description',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at'
+} as const
+
+export type Party_unitsScalarFieldEnum = (typeof Party_unitsScalarFieldEnum)[keyof typeof Party_unitsScalarFieldEnum]
+
+
+export const Party_unit_peopleScalarFieldEnum = {
+  id: 'id',
+  party_unit_id: 'party_unit_id',
+  member_id: 'member_id',
+  full_name: 'full_name',
+  position_title: 'position_title',
+  details: 'details',
+  sort_order: 'sort_order',
+  is_published: 'is_published',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Party_unit_peopleScalarFieldEnum = (typeof Party_unit_peopleScalarFieldEnum)[keyof typeof Party_unit_peopleScalarFieldEnum]
 
 
 export const SortOrder = {

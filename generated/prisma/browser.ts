@@ -112,3 +112,23 @@ export type news_articles = Prisma.news_articlesModel
  * 
  */
 export type party_programs = Prisma.party_programsModel
+/**
+ * Model centers
+ * 
+ */
+export type centers = Prisma.centersModel
+/**
+ * Model local_secretariats
+ * 
+ */
+export type local_secretariats = Prisma.local_secretariatsModel
+/**
+ * Model party_units
+ * 
+ */
+export type party_units = Prisma.party_unitsModel
+/**
+ * Model party_unit_people
+ * 
+ */
+export type party_unit_people = Prisma.party_unit_peopleModel

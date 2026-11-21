@@ -231,6 +231,7 @@ export type governoratesWhereInput = {
   members?: Prisma.MembersListRelationFilter
   membership_applications?: Prisma.Membership_applicationsListRelationFilter
   governorate_secretariats_info?: Prisma.Governorate_secretariats_infoListRelationFilter
+  centers?: Prisma.CentersListRelationFilter
 }
 
 export type governoratesOrderByWithRelationInput = {
@@ -243,6 +244,7 @@ export type governoratesOrderByWithRelationInput = {
   members?: Prisma.membersOrderByRelationAggregateInput
   membership_applications?: Prisma.membership_applicationsOrderByRelationAggregateInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoOrderByRelationAggregateInput
+  centers?: Prisma.centersOrderByRelationAggregateInput
 }
 
 export type governoratesWhereUniqueInput = Prisma.AtLeast<{
@@ -258,6 +260,7 @@ export type governoratesWhereUniqueInput = Prisma.AtLeast<{
   members?: Prisma.MembersListRelationFilter
   membership_applications?: Prisma.Membership_applicationsListRelationFilter
   governorate_secretariats_info?: Prisma.Governorate_secretariats_infoListRelationFilter
+  centers?: Prisma.CentersListRelationFilter
 }, "id" | "code">
 
 export type governoratesOrderByWithAggregationInput = {
@@ -295,6 +298,7 @@ export type governoratesCreateInput = {
   members?: Prisma.membersCreateNestedManyWithoutGovernorateInput
   membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutGovernorateInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoCreateNestedManyWithoutGovernorateInput
+  centers?: Prisma.centersCreateNestedManyWithoutGovernorateInput
 }
 
 export type governoratesUncheckedCreateInput = {
@@ -307,6 +311,7 @@ export type governoratesUncheckedCreateInput = {
   members?: Prisma.membersUncheckedCreateNestedManyWithoutGovernorateInput
   membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutGovernorateInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedCreateNestedManyWithoutGovernorateInput
+  centers?: Prisma.centersUncheckedCreateNestedManyWithoutGovernorateInput
 }
 
 export type governoratesUpdateInput = {
@@ -318,6 +323,7 @@ export type governoratesUpdateInput = {
   members?: Prisma.membersUpdateManyWithoutGovernorateNestedInput
   membership_applications?: Prisma.membership_applicationsUpdateManyWithoutGovernorateNestedInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUpdateManyWithoutGovernorateNestedInput
+  centers?: Prisma.centersUpdateManyWithoutGovernorateNestedInput
 }
 
 export type governoratesUncheckedUpdateInput = {
@@ -330,6 +336,7 @@ export type governoratesUncheckedUpdateInput = {
   members?: Prisma.membersUncheckedUpdateManyWithoutGovernorateNestedInput
   membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutGovernorateNestedInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedUpdateManyWithoutGovernorateNestedInput
+  centers?: Prisma.centersUncheckedUpdateManyWithoutGovernorateNestedInput
 }
 
 export type governoratesCreateManyInput = {
@@ -442,6 +449,20 @@ export type governoratesUpdateOneRequiredWithoutGovernorate_secretariats_infoNes
   update?: Prisma.XOR<Prisma.XOR<Prisma.governoratesUpdateToOneWithWhereWithoutGovernorate_secretariats_infoInput, Prisma.governoratesUpdateWithoutGovernorate_secretariats_infoInput>, Prisma.governoratesUncheckedUpdateWithoutGovernorate_secretariats_infoInput>
 }
 
+export type governoratesCreateNestedOneWithoutCentersInput = {
+  create?: Prisma.XOR<Prisma.governoratesCreateWithoutCentersInput, Prisma.governoratesUncheckedCreateWithoutCentersInput>
+  connectOrCreate?: Prisma.governoratesCreateOrConnectWithoutCentersInput
+  connect?: Prisma.governoratesWhereUniqueInput
+}
+
+export type governoratesUpdateOneRequiredWithoutCentersNestedInput = {
+  create?: Prisma.XOR<Prisma.governoratesCreateWithoutCentersInput, Prisma.governoratesUncheckedCreateWithoutCentersInput>
+  connectOrCreate?: Prisma.governoratesCreateOrConnectWithoutCentersInput
+  upsert?: Prisma.governoratesUpsertWithoutCentersInput
+  connect?: Prisma.governoratesWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.governoratesUpdateToOneWithWhereWithoutCentersInput, Prisma.governoratesUpdateWithoutCentersInput>, Prisma.governoratesUncheckedUpdateWithoutCentersInput>
+}
+
 export type governoratesCreateWithoutMembership_applicationsInput = {
   name_ar: string
   code: string
@@ -450,6 +471,7 @@ export type governoratesCreateWithoutMembership_applicationsInput = {
   created_at?: Date | string
   members?: Prisma.membersCreateNestedManyWithoutGovernorateInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoCreateNestedManyWithoutGovernorateInput
+  centers?: Prisma.centersCreateNestedManyWithoutGovernorateInput
 }
 
 export type governoratesUncheckedCreateWithoutMembership_applicationsInput = {
@@ -461,6 +483,7 @@ export type governoratesUncheckedCreateWithoutMembership_applicationsInput = {
   created_at?: Date | string
   members?: Prisma.membersUncheckedCreateNestedManyWithoutGovernorateInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedCreateNestedManyWithoutGovernorateInput
+  centers?: Prisma.centersUncheckedCreateNestedManyWithoutGovernorateInput
 }
 
 export type governoratesCreateOrConnectWithoutMembership_applicationsInput = {
@@ -487,6 +510,7 @@ export type governoratesUpdateWithoutMembership_applicationsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.membersUpdateManyWithoutGovernorateNestedInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUpdateManyWithoutGovernorateNestedInput
+  centers?: Prisma.centersUpdateManyWithoutGovernorateNestedInput
 }
 
 export type governoratesUncheckedUpdateWithoutMembership_applicationsInput = {
@@ -498,6 +522,7 @@ export type governoratesUncheckedUpdateWithoutMembership_applicationsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.membersUncheckedUpdateManyWithoutGovernorateNestedInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedUpdateManyWithoutGovernorateNestedInput
+  centers?: Prisma.centersUncheckedUpdateManyWithoutGovernorateNestedInput
 }
 
 export type governoratesCreateWithoutMembersInput = {
@@ -508,6 +533,7 @@ export type governoratesCreateWithoutMembersInput = {
   created_at?: Date | string
   membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutGovernorateInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoCreateNestedManyWithoutGovernorateInput
+  centers?: Prisma.centersCreateNestedManyWithoutGovernorateInput
 }
 
 export type governoratesUncheckedCreateWithoutMembersInput = {
@@ -519,6 +545,7 @@ export type governoratesUncheckedCreateWithoutMembersInput = {
   created_at?: Date | string
   membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutGovernorateInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedCreateNestedManyWithoutGovernorateInput
+  centers?: Prisma.centersUncheckedCreateNestedManyWithoutGovernorateInput
 }
 
 export type governoratesCreateOrConnectWithoutMembersInput = {
@@ -545,6 +572,7 @@ export type governoratesUpdateWithoutMembersInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   membership_applications?: Prisma.membership_applicationsUpdateManyWithoutGovernorateNestedInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUpdateManyWithoutGovernorateNestedInput
+  centers?: Prisma.centersUpdateManyWithoutGovernorateNestedInput
 }
 
 export type governoratesUncheckedUpdateWithoutMembersInput = {
@@ -556,6 +584,7 @@ export type governoratesUncheckedUpdateWithoutMembersInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutGovernorateNestedInput
   governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedUpdateManyWithoutGovernorateNestedInput
+  centers?: Prisma.centersUncheckedUpdateManyWithoutGovernorateNestedInput
 }
 
 export type governoratesCreateWithoutGovernorate_secretariats_infoInput = {
@@ -566,6 +595,7 @@ export type governoratesCreateWithoutGovernorate_secretariats_infoInput = {
   created_at?: Date | string
   members?: Prisma.membersCreateNestedManyWithoutGovernorateInput
   membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutGovernorateInput
+  centers?: Prisma.centersCreateNestedManyWithoutGovernorateInput
 }
 
 export type governoratesUncheckedCreateWithoutGovernorate_secretariats_infoInput = {
@@ -577,6 +607,7 @@ export type governoratesUncheckedCreateWithoutGovernorate_secretariats_infoInput
   created_at?: Date | string
   members?: Prisma.membersUncheckedCreateNestedManyWithoutGovernorateInput
   membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutGovernorateInput
+  centers?: Prisma.centersUncheckedCreateNestedManyWithoutGovernorateInput
 }
 
 export type governoratesCreateOrConnectWithoutGovernorate_secretariats_infoInput = {
@@ -603,6 +634,7 @@ export type governoratesUpdateWithoutGovernorate_secretariats_infoInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.membersUpdateManyWithoutGovernorateNestedInput
   membership_applications?: Prisma.membership_applicationsUpdateManyWithoutGovernorateNestedInput
+  centers?: Prisma.centersUpdateManyWithoutGovernorateNestedInput
 }
 
 export type governoratesUncheckedUpdateWithoutGovernorate_secretariats_infoInput = {
@@ -614,6 +646,69 @@ export type governoratesUncheckedUpdateWithoutGovernorate_secretariats_infoInput
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.membersUncheckedUpdateManyWithoutGovernorateNestedInput
   membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutGovernorateNestedInput
+  centers?: Prisma.centersUncheckedUpdateManyWithoutGovernorateNestedInput
+}
+
+export type governoratesCreateWithoutCentersInput = {
+  name_ar: string
+  code: string
+  sort_order?: number
+  is_active?: boolean
+  created_at?: Date | string
+  members?: Prisma.membersCreateNestedManyWithoutGovernorateInput
+  membership_applications?: Prisma.membership_applicationsCreateNestedManyWithoutGovernorateInput
+  governorate_secretariats_info?: Prisma.governorate_secretariats_infoCreateNestedManyWithoutGovernorateInput
+}
+
+export type governoratesUncheckedCreateWithoutCentersInput = {
+  id?: number
+  name_ar: string
+  code: string
+  sort_order?: number
+  is_active?: boolean
+  created_at?: Date | string
+  members?: Prisma.membersUncheckedCreateNestedManyWithoutGovernorateInput
+  membership_applications?: Prisma.membership_applicationsUncheckedCreateNestedManyWithoutGovernorateInput
+  governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedCreateNestedManyWithoutGovernorateInput
+}
+
+export type governoratesCreateOrConnectWithoutCentersInput = {
+  where: Prisma.governoratesWhereUniqueInput
+  create: Prisma.XOR<Prisma.governoratesCreateWithoutCentersInput, Prisma.governoratesUncheckedCreateWithoutCentersInput>
+}
+
+export type governoratesUpsertWithoutCentersInput = {
+  update: Prisma.XOR<Prisma.governoratesUpdateWithoutCentersInput, Prisma.governoratesUncheckedUpdateWithoutCentersInput>
+  create: Prisma.XOR<Prisma.governoratesCreateWithoutCentersInput, Prisma.governoratesUncheckedCreateWithoutCentersInput>
+  where?: Prisma.governoratesWhereInput
+}
+
+export type governoratesUpdateToOneWithWhereWithoutCentersInput = {
+  where?: Prisma.governoratesWhereInput
+  data: Prisma.XOR<Prisma.governoratesUpdateWithoutCentersInput, Prisma.governoratesUncheckedUpdateWithoutCentersInput>
+}
+
+export type governoratesUpdateWithoutCentersInput = {
+  name_ar?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.membersUpdateManyWithoutGovernorateNestedInput
+  membership_applications?: Prisma.membership_applicationsUpdateManyWithoutGovernorateNestedInput
+  governorate_secretariats_info?: Prisma.governorate_secretariats_infoUpdateManyWithoutGovernorateNestedInput
+}
+
+export type governoratesUncheckedUpdateWithoutCentersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name_ar?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.membersUncheckedUpdateManyWithoutGovernorateNestedInput
+  membership_applications?: Prisma.membership_applicationsUncheckedUpdateManyWithoutGovernorateNestedInput
+  governorate_secretariats_info?: Prisma.governorate_secretariats_infoUncheckedUpdateManyWithoutGovernorateNestedInput
 }
 
 
@@ -625,12 +720,14 @@ export type GovernoratesCountOutputType = {
   members: number
   membership_applications: number
   governorate_secretariats_info: number
+  centers: number
 }
 
 export type GovernoratesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | GovernoratesCountOutputTypeCountMembersArgs
   membership_applications?: boolean | GovernoratesCountOutputTypeCountMembership_applicationsArgs
   governorate_secretariats_info?: boolean | GovernoratesCountOutputTypeCountGovernorate_secretariats_infoArgs
+  centers?: boolean | GovernoratesCountOutputTypeCountCentersArgs
 }
 
 /**
@@ -664,6 +761,13 @@ export type GovernoratesCountOutputTypeCountGovernorate_secretariats_infoArgs<Ex
   where?: Prisma.governorate_secretariats_infoWhereInput
 }
 
+/**
+ * GovernoratesCountOutputType without action
+ */
+export type GovernoratesCountOutputTypeCountCentersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.centersWhereInput
+}
+
 
 export type governoratesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -675,6 +779,7 @@ export type governoratesSelect<ExtArgs extends runtime.Types.Extensions.Internal
   members?: boolean | Prisma.governorates$membersArgs<ExtArgs>
   membership_applications?: boolean | Prisma.governorates$membership_applicationsArgs<ExtArgs>
   governorate_secretariats_info?: boolean | Prisma.governorates$governorate_secretariats_infoArgs<ExtArgs>
+  centers?: boolean | Prisma.governorates$centersArgs<ExtArgs>
   _count?: boolean | Prisma.GovernoratesCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["governorates"]>
 
@@ -710,6 +815,7 @@ export type governoratesInclude<ExtArgs extends runtime.Types.Extensions.Interna
   members?: boolean | Prisma.governorates$membersArgs<ExtArgs>
   membership_applications?: boolean | Prisma.governorates$membership_applicationsArgs<ExtArgs>
   governorate_secretariats_info?: boolean | Prisma.governorates$governorate_secretariats_infoArgs<ExtArgs>
+  centers?: boolean | Prisma.governorates$centersArgs<ExtArgs>
   _count?: boolean | Prisma.GovernoratesCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type governoratesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -721,6 +827,7 @@ export type $governoratesPayload<ExtArgs extends runtime.Types.Extensions.Intern
     members: Prisma.$membersPayload<ExtArgs>[]
     membership_applications: Prisma.$membership_applicationsPayload<ExtArgs>[]
     governorate_secretariats_info: Prisma.$governorate_secretariats_infoPayload<ExtArgs>[]
+    centers: Prisma.$centersPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1126,6 +1233,7 @@ export interface Prisma__governoratesClient<T, Null = never, ExtArgs extends run
   members<T extends Prisma.governorates$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.governorates$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$membersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   membership_applications<T extends Prisma.governorates$membership_applicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.governorates$membership_applicationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$membership_applicationsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   governorate_secretariats_info<T extends Prisma.governorates$governorate_secretariats_infoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.governorates$governorate_secretariats_infoArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$governorate_secretariats_infoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  centers<T extends Prisma.governorates$centersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.governorates$centersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$centersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1623,6 +1731,30 @@ export type governorates$governorate_secretariats_infoArgs<ExtArgs extends runti
   take?: number
   skip?: number
   distinct?: Prisma.Governorate_secretariats_infoScalarFieldEnum | Prisma.Governorate_secretariats_infoScalarFieldEnum[]
+}
+
+/**
+ * governorates.centers
+ */
+export type governorates$centersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the centers
+   */
+  select?: Prisma.centersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the centers
+   */
+  omit?: Prisma.centersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.centersInclude<ExtArgs> | null
+  where?: Prisma.centersWhereInput
+  orderBy?: Prisma.centersOrderByWithRelationInput | Prisma.centersOrderByWithRelationInput[]
+  cursor?: Prisma.centersWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CentersScalarFieldEnum | Prisma.CentersScalarFieldEnum[]
 }
 
 /**

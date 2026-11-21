@@ -2452,3 +2452,44 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
 * **المعاملات:** `id` (smallint).
 * **الرد الناجح (200 OK):** `{ "popup": { ...بيانات النافذة المنبثقة } }`.
 * **الأخطاء المحتملة:** `404 Not Found`: `{ "error": "NOT_FOUND" }`.
+
+
+## Phase 18 — Party organization and geographic search
+
+### Public search APIs
+
+- `GET /api/organization/governorates` → `{ governorates: [{ id, name_ar }] }`
+- `GET /api/organization/centers?governorate_id=<id>` → `{ centers: [{ id, name_ar, governorate_id }] }`
+- `GET /api/organization/party-units?center_id=<id>` → `{ party_units: [{ id, name_ar, secretariat_id, secretariat }] }`
+- `GET /api/organization/party-units/<id>` → `{ party_unit: { id, name_ar, governorate, center, local_secretariat, people } }`
+
+The public selector intentionally has three levels only: governorate, center, and party unit. The local secretariat is returned as contextual data, not as a fourth search selector. Public people records include only published names, position titles, details, and ordering. They never expose member IDs, membership numbers, phone numbers, national IDs, birth dates, or internal member data.
+
+### Admin organization APIs
+
+All routes below require a staff session and the `organization:manage` permission (currently granted only to `super_admin`). Mutations also require same-origin requests.
+
+- `GET/POST /api/admin/content/organization/centers` (optional `governorate_id` filter)
+- `PATCH/DELETE /api/admin/content/organization/centers/<id>`
+- `PATCH /api/admin/content/organization/centers/<id>/status`
+- `GET/POST /api/admin/content/organization/local-secretariats` (optional `center_id` filter)
+- `PATCH/DELETE /api/admin/content/organization/local-secretariats/<id>`
+- `PATCH /api/admin/content/organization/local-secretariats/<id>/status`
+- `GET/POST /api/admin/content/organization/party-units` (optional `secretariat_id` filter)
+- `PATCH/DELETE /api/admin/content/organization/party-units/<id>`
+- `PATCH /api/admin/content/organization/party-units/<id>/status`
+- `GET/POST /api/admin/content/organization/party-units/<id>/people`
+- `PATCH/DELETE /api/admin/content/organization/party-units/<id>/people/<personId>`
+- `PATCH /api/admin/content/organization/party-units/<id>/people/<personId>/status`
+- `GET /api/admin/content/organization/members?q=<name>` searches active members only and returns safe selection fields.
+
+For destructive requests, send `{ "confirm": true }`. Center, local-secretariat, and party-unit deletion is rejected while children exist. Deactivating any ancestor removes its descendants from public search. A person can be linked to an active `members` row or entered manually; linked member names are always read from the related membership application.
+
+
+### Admin dashboard UI
+
+- Page: `/admin/organization`
+- Navigation label: `الهيكل التنظيمي` under the administration group.
+- Visibility: `super_admin` only, enforced by the dashboard section access rules and the page's `organization:manage` permission check.
+- The UI uses the existing admin design system (gold accents, white cards, RTL layout, responsive grids, shared page header, skeletons, and empty states).
+- The page consumes the organization admin APIs above to manage centers, local secretariats, party units, and each unit's people. Existing governorates are loaded from the current admin governorates endpoint.
