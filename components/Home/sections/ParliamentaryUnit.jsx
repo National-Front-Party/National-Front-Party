@@ -25,14 +25,16 @@ export default function ParliamentaryUnit({ data }) {
         const response = await fetch("/api/content/parliamentary-unit");
         if (!response.ok) return;
         const result = await response.json();
-        if (
-          !ignore &&
-          Array.isArray(result?.parliamentary_units) &&
-          result.parliamentary_units.length > 0
-        ) {
+        const rawItems = Array.isArray(result?.parliamentary_items)
+          ? result.parliamentary_items
+          : Array.isArray(result?.parliamentary_units)
+            ? result.parliamentary_units
+            : null;
+
+        if (!ignore && Array.isArray(rawItems)) {
           setItems(
-            result.parliamentary_units.map((p) => ({
-              id: p.slug,
+            rawItems.map((p, idx) => ({
+              id: p.slug || (p.id ? `parl-${p.id}` : `parl-idx-${idx}`),
               title: p.title,
               subtitle: p.subtitle || "",
               icon: p.icon || "landmark",
@@ -40,7 +42,9 @@ export default function ParliamentaryUnit({ data }) {
                 title: p.title,
                 personName: p.head_name || null,
                 personRole: p.head_role || null,
-                paragraphs: p.body ? p.body.split("\n\n") : [],
+                paragraphs: p.body
+                  ? p.body.split(/\r?\n+/).filter((line) => line.trim().length > 0)
+                  : [],
                 source: p.source_note || null,
               },
             })),
@@ -65,8 +69,8 @@ export default function ParliamentaryUnit({ data }) {
         title="الوحدة البرلمانية"
         footer={
           <NextArrowFooter
-            onClick={() => setActive("senate")}
-            ariaLabel="عرض الهيئة البرلمانية بمجلس الشيوخ"
+            onClick={() => setActive(items[0]?.id || "senate")}
+            ariaLabel="عرض الهيئة البرلمانية"
           />
         }
       >
@@ -77,7 +81,7 @@ export default function ParliamentaryUnit({ data }) {
 
               return (
                 <li
-                  key={item.id}
+                  key={item.id ? `parl-${item.id}` : `parl-idx-${index}`}
                   className="relative pb-11 animate-elem-fade-up motion-reduce:animate-none"
                   style={{ animationDelay: `${index * 90 + 120}ms` }}
                 >

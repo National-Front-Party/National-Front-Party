@@ -796,6 +796,398 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 
 ---
 
+## المرحلة P06.1: بناء وضبط المكونات المشتركة لإدارة المحتوى التنظيمي (Shared Content Management Components)
+- **الحالة:** مكتملة بنجاح (Frontend Shared Components & Integration).
+- **الأهداف المنجزة والتصحيحات الدقيقة:**
+  1. **مكون رفع الصور `ImageUploadField.jsx`:**
+     - بناء مكون متجاوب يدعم رفع صور المحتوى التنظيمي عبر السحب والإفلات أو اختيار الملفات.
+     - ربط حصري بنقطة النهاية المعتمدة `POST /api/admin/content/upload` مع حقل `file` والاعتماد التلقائي لكوكي الجلسة `credentials: "include"`.
+     - تطبيق مطابقة حازمة بين الامتداد ونوع MIME (`MIME_EXTENSION_MAP`) ترفض التوليفات غير المتطابقة.
+     - عند غياب نوع MIME من بيئة المتصفح/النظام، يُسمح بالتحقق الأولي بناءً على الامتدادات المصرح بها (`jpg`, `jpeg`, `png`, `webp`) مع بقاء تحقق الخادم من الـ magic bytes حاسماً ونهائياً.
+     - الرفض الصارم لملفات SVG والملفات التي تتجاوز 5 ميجابايت.
+     - إدارة دورة حياة كائنات Object URL بشكل آمن وتفادي أي استدعاء مكرر لـ `revokeObjectURL` وتنظيفها نهائياً عند إلغاء التحميل (unmount).
+     - منع اختيار أو سحب ملف جديد أو الحذف أثناء سريان عملية الرفع (`uploading`).
+  2. **نافذة تأكيد الحذف `DeleteConfirmModal.jsx`:**
+     - بناء نافذة تأكيد حذف متوافقة بالكامل مع معايير إمكانية الوصول (WAI-ARIA Dialog Modal).
+     - إغلاق النافذة عند النقر على الخلفية المعتمة الخارجية (Backdrop click) دون إغلاقها عند النقر داخل بطاقة الحوار، مع حجب الإغلاق أثناء المعالجة (`submitting`).
+     - إدارة بؤرة التركيز (Focus Management): حفظ العنصر النشط السابق `previousFocusRef` قبل الفتح، وتوجيه التركيز فور الفتح لزر الإلغاء الآمن (`Cancel`).
+     - حصر بؤرة التركيز (Focus Trap): استمرار انتقال التركيز عبر Tab وShift+Tab داخل عناصر النافذة فقط أثناء فتحها.
+     - استعادة التركيز التلقائي إلى العنصر السابق فور إغلاق النافذة.
+     - الحفاظ على حمولة الحذف الإلزامية `{ confirm: true }` ومعالجة الخطأ 409 `PANEL_HAS_LEADERS` وفحص صلاحية `records:delete`.
+  3. **ألسنة التبويب وصفحة المحتوى `ContentTabs.jsx` و `app/admin/content/page.jsx`:**
+     - مواءمة معايير إمكانية الوصول: كل لسان تبويب يرتبط بخاصية `aria-controls={`tabpanel-${tab.id}`}` مع لوحة فعلية في الـ DOM تحمل `role="tabpanel"` و `id={`tabpanel-${activeTabId}`}` و `aria-labelledby={`tab-${activeTabId}`}`.
+     - التحقق الصارم من مدخل `activeTab` وتوافقه مع معرفات التبويبات الستة المعتمدة والرجوع لـ `DEFAULT_CONTENT_TAB` عند عدم الصلاحية.
+     - مزامنة المعلمة `?tab=...` في عنوان الصفحة (URL) بأمان ودون إنشاء أي حلقات تنقل لا نهائية (Loop-free URL sync).
+     - دمج المكونات داخل صفحة المحتوى التنظيمي مع تغليف `<Suspense>` لضمان دعم SSR وClient-side Navigation.
+- **الملفات المعدلة والمضافة:**
+  - `components/Admin/Content/ImageUploadField.jsx` (جديد)
+  - `components/Admin/Content/DeleteConfirmModal.jsx` (جديد)
+  - `components/Admin/Content/ContentTabs.jsx` (جديد)
+  - `app/admin/content/page.jsx` (محدث)
+  - `docs/BACKEND_PROGRESS.md` (محدث)
+- **التحقق والاختبارات:**
+  - `npx eslint components/Admin/Content/ app/admin/content/page.jsx`: خالٍ تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: جميع اختبارات الباك إند (279/279) ناجحة بنسبة 100%.
+
+---
+
+## المرحلة P06.2-C: تنفيذ واجهات برمجة إدارة برنامج الحزب باللوحة (Party Program Admin Backend Exception)
+- **الحالة:** مكتملة بنجاح (Backend Implementation & Comprehensive Unit Tests).
+- **الأهداف والقرارات المنفذة:**
+  1. **استثناء معزول ومحدد بدقة (Narrow Backend Exception):**
+     - تمكين إدارة بطاقة "برنامج الحزب" بالصفحة الرئيسية من خلال لوحة التحكم بالاعتماد على جدول `party_programs` القائم.
+     - الالتزام التام بعدم إنشاء أي migrations جديدة أو المساس بـ `prisma/schema.prisma` (Zero Migrations).
+  2. **حفظ العقد البرمجي للواجهة العامة:**
+     - الإبقاء على نقطة النهاية العامة `GET /api/content/party-program` وسلوكها وعقدها كما هو دون أي تعديل.
+  3. **نمط السجل المنشور والمسودة المفردة (Singleton Pair Pattern):**
+     - سجل واحد منشور (`is_published: true`) ومسودة عمل واحدة كحد أقصى (`is_published: false`).
+     - استرجاع كلا السجلين مع تفكيك الفقرات ومؤشر وجود المسودة `has_draft` عبر `GET /api/admin/content/party-program`.
+     - إنشاء أو تحديث المسودة عبر `PUT /api/admin/content/party-program/draft` مع الحفاظ على السجل المنشور دون أي مساس.
+  4. **الترقية والنشر الذري (Atomic Promotion):**
+     - النشر الذري للمسودة عبر `POST /api/admin/content/party-program/publish` حيث يتم تحديث السجل المنشور بمحتوى المسودة وحذف سجل المسودة تماماً ضمن معاملة ذرية واحدة (`withTransaction`).
+     - منع نشر المسودة في حال عدم وجود مسودة نشطة وإرجاع خطأ `400 { "error": "NO_DRAFT_TO_PUBLISH" }`.
+     - إهمال وحذف المسودة بأمان عبر `DELETE /api/admin/content/party-program/draft` بشرط تأكيد `{ "confirm": true }` دون المساس بالسجل المنشور.
+  5. **الصلاحيات وسجل التدقيق (Permissions & Staff Audit Logging):**
+     - اشتراط صلاحية `content:manage` لجميع العمليات الإدارية (قراءة، حفظ، نشر، إهمال المسودة).
+     - تسجيل كافة التغييرات ذرياً في `staff_audit_log` بالأنواع المعتمدة (`content_created`, `content_updated`, `content_published`, `content_deleted`).
+- **الملفات المنشأة:**
+  - `lib/validation/content/party-program.js`
+  - `lib/services/content-party-program.js`
+  - `lib/content/handlers/party-program.js`
+  - `app/api/admin/content/party-program/route.js`
+  - `app/api/admin/content/party-program/draft/route.js`
+  - `app/api/admin/content/party-program/publish/route.js`
+  - `lib/services/content-party-program.test.js`
+- **التحقق والاختبارات:**
+  - `npx eslint .`: فحص كامل للمشروع خالٍ تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: اجتياز جميع الاختبارات الـ 292 بنجاح 100% (بإضافة 13 اختبار وحدي جديد لتغطية خدمات ومناولات وتحقق وصلاحيات وتدقيق برنامج الحزب).
+
+---
+
+## المرحلة P06.2-C.1: معالجة وقفل التزامن لبرنامج الحزب (Fix Party Program Concurrency)
+- **الحالة:** مكتملة بنجاح (Concurrency Row-Locking & Expanded Concurrency Tests).
+- **التعديلات والقرارات المنفذة:**
+  1. **قفل الصف المنشور الصريح `lockPartyProgram(tx)`:**
+     - بناء دالة مساعدة مشتركة تنفذ `SELECT "id", "title" FROM "party_programs" WHERE "is_published" = true LIMIT 1 FOR UPDATE` عبر عميل المعاملة `tx.$queryRaw`.
+     - حجز القفل في بداية المعاملة وقبل قراءة أو كتابة أي مسودة في العمليات الثلاث: `savePartyProgramDraft` و `publishPartyProgramDraft` و `discardPartyProgramDraft`.
+     - المعالجة الصريحة لغياب السجل المنشور برمي خطأ صريح `500 NO_PUBLISHED_PARTY_PROGRAM` دون التجاوز الصامت.
+  2. **حماية التزامن:**
+     - منع إنشاء مسودات مكررة عند تزامن أول حفظ للمسودة (`PUT /draft`)؛ فالمعاملة الثانية تنتظر القفل وتقوم بتحديث المسودة المنشأة حديثاً بدلاً من تكرارها.
+     - منع التضارب عند تزامن طلبات النشر (`POST /publish`)؛ فالطلب الأول ينشر بنجاح والطلب الثاني المنتظر يرمي `400 NO_DRAFT_TO_PUBLISH` دون أي audit مكرر.
+  3. **الملفات المعدلة حصراً:**
+     - `lib/services/content-party-program.js`
+     - `lib/services/content-party-program.test.js`
+- **التحقق والاختبارات:**
+  - `npx eslint lib/services/content-party-program.js lib/services/content-party-program.test.js`: خالٍ تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: اجتياز جميع الاختبارات الـ 301 بنجاح 100% (22 اختباراً في ملف `content-party-program.test.js`).
+
+---
+
+## المرحلة P06.2-D: تنفيذ واجهة إدارة برنامج الحزب باللوحة (Party Program Admin UI Implementation)
+- **الحالة:** مكتملة بنجاح (Frontend UI Implementation & Integration).
+- **المكونات والوظائف المنفذة:**
+  1. **مكونات الإدارة المخصصة `components/Admin/Content/PartyProgram/`:**
+     - `PartyProgramManager.jsx`: الحاوية الرئيسية لإدارة برنامج الحزب؛ تجلب البيانات عبر `GET /api/admin/content/party-program`، وتعالج حالات التحميل والهيكل العظمي (Skeleton)، والأخطاء (401، 403، 500)، وتدير التبديل بين محرر المسودة والنسخة المنشورة.
+     - `PublishedProgramCard.jsx`: بطاقة قراءة فقط تعرض النسخة المنشورة حالياً مع شارة "مباشر للجمهور"، وتاريخ آخر تحديث، والفقرات المنسقة، وملاحظة المصدر؛ وتمنع التعديل المباشر تماماً مع توفير زر لإنشاء مسودة من المنشور في حال عدم وجود مسودة.
+     - `DraftEditor.jsx`: محرر المسودة المتكامل؛ يدعم حقول العنوان (بحد أقصى 200 حرف)، والنص الطويل (حتى 50,000 حرف مع دعم RTL وحفظ الفواصل والفقرات)، وملاحظة المصدر (حتى 500 حرف)؛ مع كاشف التعديلات غير المحفوظة (Unsaved Changes Indicator)، وزر الحفظ عبر `PUT /draft`، وزر استيراد المنشور.
+     - `PublishConfirmModal.jsx`: نافذة تأكيد النشر المتوافقة مع معايير WAI-ARIA Dialog؛ تمنع النشر غير المقصود وتشترط تأكيداً صريحاً لاعتماد المسودة المحفوظة عبر `POST /publish`.
+     - `DiscardConfirmModal.jsx`: نافذة تأكيد إهمال المسودة عبر `DELETE /draft` بحمولة `{ "confirm": true }` دون المساس بالنسخة المنشورة.
+     - `ProgramPreviewModal.jsx`: نافذة معاينة تحاكي بدقة شكل بطاقة ونافذة برنامج الحزب في الصفحة الرئيسية مع شارة تمييز للمسودة.
+  2. **الدمج في صفحة المحتوى `app/admin/content/page.jsx`:**
+     - دمج قسم إدارة برنامج الحزب بشكل بارز كأول قسم لإدارة محتوى الصفحة الرئيسية.
+     - الإبقاء الكامل على ألسنة التبويب التنظيمية الستة (`CONTENT_TABS`) وعناصر `tabpanel` ومزامنة عناوين URL دون أدنى مساس.
+- **التحقق:**
+  - `npx eslint components/Admin/Content/PartyProgram/ app/admin/content/page.jsx`: خالٍ تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 301 ناجحة بنسبة 100%.
+
+---
+
+## المرحلة P06.2-D.1: تشخيص وإصلاح خطأ حفظ المسودة وقيد تدقيق الموظفين (Fix Draft Save & Audit Log Constraint)
+- **الحالة:** مكتملة ومختبرة بنجاح (Bug Fixed & Verified).
+- **التشخيص وسبب المشكلة (Root Cause):**
+  1. عند الضغط على "حفظ التعديلات كمسودة" في لوحة التحكم، كانت الدالة `savePartyProgramDraft` في `lib/services/content-party-program.js` تمرر كائن التفاصيل التالي لسجل التدقيق: `{ entity_type: "party_program", entity_id: String(draft.id), is_draft: true }`.
+  2. جدول `staff_audit_log` في قاعدة بيانات PostgreSQL محمي بقيد تحقق صارم `staff_audit_log_details_safe_keys_check` يسمح فقط بمفاتيح محددة (`'previous_role'`, `'new_role'`, `'previous_is_active'`, `'new_is_active'`, `'changed_fields'`, `'entity_type'`, `'entity_id'`, `'slug'`, `'cascade_deleted_people_count'`, `'deleted_people_count'`).
+  3. تمرير مفاتيح غير مسموحة مثل `is_draft` أو `action` أدى لانتهاك قيد قاعدة البيانات وإلغاء المعاملة (Rollback) وإرجاع خطأ `500 SERVER_ERROR`، مما تسبب بظهور رسالة "حدث خطأ غير متوقع، حاول مرة أخرى" في واجهة المستخدم.
+  4. بالإضافة لذلك، مخطط التحقق `partyProgramDraftSchema` كان يرفض قيمة `null` لملاحظة المصدر (`source_note`) عند تفريغها من الفرونت.
+- **الإصلاحات المنفذة:**
+  1. **تنظيف كائنات سجل التدقيق في `lib/services/content-party-program.js`:**
+     - إزالة المفاتيح غير المسموحة (`is_draft` و `action`) من تفاصيل عمليات `savePartyProgramDraft` و `publishPartyProgramDraft` و `discardPartyProgramDraft`.
+     - قصر التفاصيل حصراً على `{ entity_type: "party_program", entity_id: String(...) }` المعتمدة والمطابقة 100% لقيد قاعدة البيانات.
+  2. **تحديث مخطط التحقق `lib/validation/content/party-program.js`:**
+     - دعم `null` و `undefined` والسلاسل الفارغة لحقل `source_note` مع تحويلها بأمان إلى `null`.
+  3. **تعزيز الاختبارات والـ Mock في `lib/services/content-party-program.test.js`:**
+     - إضافة فحص محاكاة دقيق لقيد PostgreSQL `staff_audit_log_details_safe_keys_check` داخل دالة `makeDb` لمنع أي خرق مستقبلي للمفاتيح المسموحة في بيئة الاختبار.
+     - إضافة اختبارات وحدية للتأكد من قبول `source_note: null` و `source_note: ""`.
+  4. **تحسين أداء التزامن في مكونات React:**
+     - إزالة مزامنة `useEffect` الزائدة في `DraftEditor.jsx` وتعيين مفتاح `key={draft?.updated_at}` لضمان تحديث القيم بسلاسة مع تجنب تحذيرات دورة حياة React.
+- **التحقق والاختبارات:**
+  - `node --test lib/services/content-party-program.test.js`: نجاح 22/22 اختباراً بنسبة 100%.
+  - `npm test`: نجاح جميع اختبارات المشروع الـ 301 اختباراً بنسبة 100%.
+  - `npx eslint lib/services/content-party-program.js lib/validation/content/party-program.js lib/services/content-party-program.test.js components/Admin/Content/PartyProgram/`: خالٍ تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+
+---
+
+## المرحلة P06.3: تنفيذ واجهة إدارة محتوى الصفحة الرئيسية (Homepage Main Content Management UI)
+- **الحالة:** مكتملة بنجاح (UI Implementation & Blocker Report Documented).
+- **المكونات والوظائف المنفذة:**
+  1. **مكونات الإدارة المخصصة `components/Admin/Content/Popups/`:**
+     - `HomepagePopupsManager.jsx`: الحاوية الرئيسية لإدارة محتوى عناصر العمود الأول بالصفحة الرئيسية؛ تجلب البيانات عبر `GET /api/admin/content/popups`، وتدير حالات التحميل والخطأ والحالة الفارغة والإحصائيات السريعة، وتنسق النوافذ المنبثقة للتعديل والمعاينة والحذف وتغيير الحالة والترتيب.
+     - `PopupCardList.jsx`: عرض البطاقات التفاعلية للعناصر؛ يعرض العنوان، المعرف (slug)، الأيقونة المعتمدة، شارة حالة النشر، ترتيب العرض، عدد الفقرات، ملاحظة المصدر، وتاريخ آخر تحديث؛ مع أزرار المعاينة، والتعديل، والنشر/إلغاء النشر، والترتيب لأعلى/لأسفل، والحذف.
+     - `PopupFormModal.jsx`: نافذة إضافة وتعديل العناصر؛ تدعم حقول العنوان (بحد أقصى 200 حرف)، المعرف المختصر slug (بحد أقصى 120 حرفاً بنمط regex محدد)، اختيار الأيقونة من الأيقونات الخمس المعتمدة (`user`, `target`, `eye`, `send`, `message`)، نص المحتوى (حتى 10,000 حرف)، ملاحظة المصدر (حتى 500 حرف)، ترتيب العرض، والتحقق قبل الإرسال.
+     - `PopupPreviewModal.jsx`: نافذة معاينة مطابقة تماماً لنافذة `InfoModal` في واجهة الموقع العامة لعرض النص والفقرات والأيقونة وشارة الحالة وملاحظة المصدر للزوار.
+     - `PopupStatusModal.jsx`: نافذة تأكيد تغيير حالة النشر للجمهور (نشر / إيقاف نشر) متوافقة مع معايير الوصولية WAI-ARIA.
+     - استخدام `DeleteConfirmModal.jsx` المشترك للحذف النهائي عبر `DELETE /api/admin/content/popups/[id]` مع شرط صلاحية `records:delete` وتأكيد صريح `{ "confirm": true }`.
+  2. **الدمج في صفحة المحتوى وتبويب Popups:**
+     - تحديث تسمية التبويب في `ContentTabs.jsx` إلى «محتوى الصفحة الرئيسية» مع الحفاظ على المعرف `popups` لتفادي كسر الروابط والتوجيه.
+     - دمج `HomepagePopupsManager` في `app/admin/content/page.jsx` داخل لوحة التبويب المخصصة `tabpanel-popups` مع الإبقاء على كافة الألواح الستة مركبة ومطابقة لمعايير ARIA.
+- **حماية المحتوى المنشور وتقرير القيد (Draft Workflow Blocker):**
+  - **التحقق:** الـ APIs الحالية لجدول `info_items` لا تدعم نظام المسودات المستقلة (Draft/Publish Workflow)؛ إذ يتم التعديل عبر `PATCH /api/admin/content/popups/[id]` مباشرة على السجل المنشور دون وجود جدول أو أعمدة مسودة، كما أن قيد `@unique` على عمود `slug` يمنع تكرار السجل كمسودة.
+  - **التنفيذ الصارم لسياسة الحماية:** تم إيقاف التعديل المباشر على العناصر المنشورة (`is_published: true`) وعرض تنبيه حاجز صريح (Blocker Banner) داخل نافذة التعديل يشرح القيد للمستخدم، مع توفير خيار «إلغاء النشر للتعديل بأمان» لتحويل السجل لوضع الإيقاف أولاً قبل تعديله، دون ابتكار حلول وهمية في الفرونت أو تعديل الـ Backend تلقائياً.
+- **التحقق والاختبارات:**
+  - `npx eslint components/Admin/Content/ContentTabs.jsx app/admin/content/page.jsx components/Admin/Content/Popups/`: خالٍ تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: اجتياز جميع اختبارات المشروع الـ 301 اختباراً بنسبة 100%.
+
+---
+
+## المرحلة P07.2: تنفيذ واجهة إدارة رئيس وقيادات الحزب باللوحة (Party President & Leadership Admin UI)
+- **الحالة:** مكتملة بنجاح (Frontend UI Implementation & Integration).
+- **المكونات والوظائف المنفذة:**
+  1. **مكونات الإدارة المخصصة `components/Admin/Content/Leadership/`:**
+     - `PartyLeadershipManager.jsx`: الحاوية الرئيسية لإدارة رئيس الحزب وقياداته؛ تجلب لوح القيادة المركزية `central-leadership` عبر `GET /api/admin/content/leadership/panels` ثم تجلب القيادات عبر `GET /api/admin/content/leadership/leaders?panel_id=...`، وتفرز رئيس الحزب (`is_head: true`) وبقية القيادات (`is_head: false`). وتدير عمليات الحفظ والتعديل ورفع الصور وتغيير الترتيب وإيقاف/تفعيل النشر وحالات التحميل والخطأ.
+     - `PresidentCard.jsx`: بطاقة مخصصة لرئيس الحزب تعكس هوية القيادة العليا؛ تعرض الصورة الشخصية الكبيرة، والاسم، والصفة الحزبية، والشارة التكريمية، وشارة النشر بالصفحة الرئيسية، مع زر التعديل المباشر أو إضافة رئيس حزب في حال عدم وجود سجل.
+     - `PresidentEditModal.jsx`: نافذة تعديل بيانات وصورة رئيس الحزب؛ تدعم حقول الاسم (حتى 200 حرف)، والصفة (حتى 200 حرف)، والشارة (حتى 50 حرفاً)، ورفع ومعاينة واستبدال الصورة عبر `ImageUploadField.jsx` و `POST /api/admin/content/upload`.
+     - `LeaderCardList.jsx`: قائمة بطاقات قيادات الحزب غير الرئيسية؛ تعرض الصورة والاسم والصفة والشارة ورقم الترتيب وشارة حالة النشر، مع أزرار التحريك لأعلى ولأسفل، وتغيير حالة النشر، والتعديل، والحذف.
+     - `LeaderFormModal.jsx`: نافذة إضافة وتعديل قيادي جديد؛ تدعم الاسم، والصفة، والشارة، ورقم الترتيب، وتحديد حالة النشر (دون حقل صورة لأن القيادات لا تعرض صوراً بالصفحة الرئيسية)، مع نظام تحقق دقيق يحدد الحقل وسبب الخطأ تفصيلياً مع إبراز الحقل غير الصالح وتوجيه التركيز إليه.
+     - `LeaderCardList.jsx`: بطاقات القيادات تعرض الاسم والصفة والشارة والترتيب وأزرار التحكم دون مساحة صورة غير مستخدمة.
+     - استخدام `DeleteConfirmModal.jsx` المشترك للحذف النهائي للقيادي عبر `DELETE /api/admin/content/leadership/leaders/[id]` مع شرط صلاحية `records:delete` وتأكيد صريح `{ "confirm": true }`.
+  2. **الدمج في صفحة المحتوى وتبويب Leadership:**
+     - دمج `PartyLeadershipManager` في `app/admin/content/page.jsx` داخل لوحة التبويب المخصصة `tabpanel-leadership` تحت التبويب النشط «قيادات الحزب».
+     - الحفاظ التام على معايير الوصولية WAI-ARIA ودعم لوحة المفاتيح وحصر بؤرة التركيز (Focus Trap).
+  3. **سلوك الحفظ والنشر المباشر:**
+     - الالتزام بالتعديل المباشر الصريح عبر `PATCH` دون اختراع آليات Draft وهمية غير مدعومة من الـ Backend، مع تنبيه المستخدم بوضوح أن التعديل ينعكس مباشرة على الموقع العام.
+- **الملفات المنشأة والمعدلة:**
+  - `components/Admin/Content/Leadership/PresidentCard.jsx` (جديد)
+  - `components/Admin/Content/Leadership/PresidentEditModal.jsx` (جديد)
+  - `components/Admin/Content/Leadership/LeaderFormModal.jsx` (جديد)
+  - `components/Admin/Content/Leadership/LeaderCardList.jsx` (جديد)
+  - `components/Admin/Content/Leadership/PartyLeadershipManager.jsx` (جديد)
+  - `app/admin/content/page.jsx` (محدث للربط)
+  - `docs/BACKEND_PROGRESS.md` (محدث)
+- **التحقق والاختبارات:**
+  - `eslint components/Admin/Content/Leadership/ app/admin/content/page.jsx`: خالٍ تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: جميع اختبارات المشروع الـ 301 اختباراً ناجحة بنسبة 100%.
+
+---
+
+## المرحلة P07.2-Fix: تشخيص وإصلاح خطأ التحقق في إضافة القيادي وتبسيط الواجهة
+- **الحالة:** مكتملة ومختبرة بنجاح (Bug Fixed & Verified).
+- **التشخيص وسبب المشكلة (Root Cause):**
+  1. في صورة الخطأ عند إضافة قيادي جديد («محمد السيد»، «نائب رسمي متضمن»، الترتيب 1)، ظهرت رسالة تنبيه حمراء: `يرجى التأكد من صحة البيانات المدخلة` دون تحديد الحقل المتسبب.
+  2. بالتحليل، وجد أن حقل «الشارة (اختياري)» عند تركه فارغاً كان يتم إرساله من الفورم كـ `null` (`badge_label: null`) بسبب الصيغة `badgeLabel.trim() || null`.
+  3. في الـ Backend، مخطط التحقق `lib/validation/content/common.js` لدالة `optionalText` يستخدم `z.string().trim().max(max).optional()` وهو يقبل السلاسل النصية أو `undefined`، ولكنه يرفض صراحة القيمة `null` مما تسبب في إرجاع السيرفر لخطأ `400 VALIDATION`.
+  4. لعدم إرجاع السيرفر لتفاصيل الحقول في كائن التحقق، كانت دالة `adminFetch` تعرض رسالة الخطأ الافتراضية العامة.
+- **الإصلاحات المنفذة:**
+  1. **تعديل `LeaderFormModal.jsx` و `PresidentEditModal.jsx`:**
+     - إرسال الحقول النصية الفارغة كسلسلة نصية فارغة `""` بدلاً من `null` ليقوم السيرفر بتحويلها تلقائياً بأمان إلى `null` في قاعدة البيانات.
+     - إضافة نظام تحقق تفصيلي يحدد الحقل وسبب المشكلة أسفل كل حقل مع التركيز المباشر (Auto Focus) على أول حقل غير صالح عند الإرسال.
+  2. **تحصين معالج الحفظ في `PartyLeadershipManager.jsx`:**
+     - تطهير بيانات الحفظ (`sanitization`) وضمان تحويل الحقول النصية الفارغة إلى `""` بدلاً من `null`، وتحويل `sort_order` إلى رقم صحيح `Number` و `is_published` إلى `Boolean`.
+  3. **تبسيط واجهة قائمة القيادات `LeaderCardList.jsx` وإزالة إشعار الحذف المكرر:**
+     - تحويل عرض القيادات إلى جدول صفوف أنيق وبسيط واحترافي بدلاً من البطاقات المزدحمة، وحذف حقل الصورة من نموذج القيادات لعدم عرض صور لهم في الصفحة الرئيسية وقصرها على رئيس الحزب فقط.
+     - إزالة استدعاء `showSuccess` الزائد في `handleDeleteSuccess` داخل `PartyLeadershipManager.jsx` لمنع تكرار ظهور إشعارين Toast في نفس الوقت، حيث تتولى نافذة `DeleteConfirmModal` إطلاق الإشعار المعتمد تلقائياً.
+- **التحقق والاختبارات:**
+  - `eslint components/Admin/Content/Leadership/`: خالٍ تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 301 ناجحة بنسبة 100%.
+
+---
+
+## المرحلة P07.3 + P07.4: تنفيذ واجهات كلمات القيادة والأمانات المركزية وكوادرها
+- **الحالة:** مكتملة ومختبرة بنجاح (Full Implementation & Integration).
+- **المكونات والوظائف المنفذة:**
+  1. **إدارة كلمات القيادة الرسمية (P07.3):**
+     - `components/Admin/Content/Leadership/Speeches/LeadershipSpeechesManager.jsx`: الحاوية المنظمة لإدارة الكلمات الثلاث («كلمة رئيس الحزب»، «كلمة النائب الأول»، «كلمة نائب رئيس الحزب»). تدعم الجلب عبر `GET /api/admin/content/leadership/contents` والإضافة والتعديل والحذف وتغيير حالة النشر.
+     - `SpeechCardList.jsx`: عرض الكلمات الثلاث في بطاقات احترافية توضح اسم الزر، عنوان الكلمة، اسم المتحدث وصفته، وعدد الفقرات وحالة النشر.
+     - `SpeechPreviewModal.jsx`: نافذة معاينة مطابقة 100% لنافذة `SpeechModal` في الموقع العام لعرض الفقرات والمصدر.
+     - `SpeechFormModal.jsx`: نموذج إضافة وتعديل الكلمة مع التحقق الميداني والتركيز التلقائي على الأخطاء.
+     - دمج منظم وسلس كقسم فرعي داخل `PartyLeadershipManager.jsx` عبر تبويب مقسم يتيح التنقل السريع بين «رئيس وقيادات الحزب» و«كلمات القيادة الرسمية (3)».
+  2. **إدارة الأمانات المركزية وكوادرها (P07.4):**
+     - `components/Admin/Content/CentralSecretariats/CentralSecretariatsManager.jsx`: الحاوية الرئيسية المدمجة في تبويب `central-secretariats` في `app/admin/content/page.jsx`.
+     - `SecretariatList.jsx`: جدول منظم للأمانات المركزية يوضح اسم الأمانة، اسم الأمين، عدد الكوادر، الترتيب، وحالة النشر مع البحث السريع وإمكانية التعديل والحذف.
+     - `CentralSecretariatFormModal.jsx`: نموذج إضافة وتعديل الأمانة المركزية (اسم الأمانة، اسم الأمين، المصدر، الترتيب، حالة النشر).
+     - `SecretariatPeopleManager.jsx`: شاشة عرض وإدارة كوادر وأعضاء الأمانة المختارة، تدعم التنقل السلس وعرض الصور والمنصب والتفاصيل.
+     - `SecretariatPersonFormModal.jsx`: نموذج إضافة وتعديل العضو/الكادر ورفع الصورة الشخصية عبر `ImageUploadField.jsx` والربط بـ `POST /api/admin/content/upload`.
+  3. **عقود الـ APIs والتكامل:**
+     - استخدام المعالجات الحالية فقط:
+       - `leadership/contents` (GET, POST, PATCH, DELETE, status).
+       - `central-secretariats` (GET, POST, PATCH, DELETE, status).
+       - `central-secretariats/[id]/people` (POST, PATCH, DELETE, status).
+       - `upload` (POST).
+- **التحقق والاختبارات:**
+  - `eslint components/Admin/Content/ app/admin/content/page.jsx`: 0 errors, 0 warnings.
+  - `npm test`: جميع اختبارات المشروع الـ 301 اختباراً ناجحة بنسبة 100%.
+
+---
+
+## المرحلة P07.4-Fix: تشخيص وإصلاح مشاكل واجهة أزرار وكلمات القيادة والصفحة الرئيسية
+- **الحالة:** مكتملة ومختبرة بنجاح (Full Fixes & Integration Verified).
+- **المشاكل التي تم حلها والتشخيص (Root Causes & Resolutions):**
+  1. **مشكلة التصميم وعدادات الأحرف وانقطاع رأس النافذة المنبثقة (UI & RTL Counter Fix):**
+     - في `SpeechFormModal.jsx`، تم تثبيت رأس النافذة المنبثقة (Fixed Header) وأزرار الحفظ والإلغاء في الأسفل (Pinned Footer) مع جعل محتوى النموذج قابلاً للتمرير الداخلي السلس (`max-h-[90vh]` و `overflow-y-auto`) لمنع انقطاع العنوان أو اختفاء زر الإغلاق عند فتح النافذة على الشاشات المختلفة.
+     - تم إصلاح انعكاس أرقام عدادات الأحرف في اللغة العربية (`200 / 0` و `50 / 0`) بضبط اتجاه الأرقام الصريح `dir="ltr"` في `SpeechFormModal.jsx` و `LeaderFormModal.jsx` و `PresidentEditModal.jsx` لتظهر بالترتيب الطبيعي السليم (`0 / 200` و `0 / 50`).
+  2. **خطأ React في نافذة الأمانات المركزية بالصفحة الرئيسية (SecretariatsModal Key Warning):**
+     - في `components/Home/sections/CentralSecretariats.jsx`، تم تصحيح ربط بيانات الأمانات المركزية القادمة من API لتشمل `name: s.name_ar` و `head: s.head_name` و `source: s.source_note` بدلاً من `title: s.title` التي كانت ترجع `undefined`.
+     - في `components/Home/ui/SecretariatsModal.jsx`، تم تحصين المفتاح ليصبح `key={item.id ?? item.name ?? index}` ودعم بدائل التسمية (`item.name || item.title || item.name_ar`) مما قضى تماماً على خطأ الكونسول واختفاء أسماء الأمانات.
+  3. **إتاحة وتخصيص زر الأمانات المركزية الرابع (Button 4 Management):**
+     - إتاحة إدارة الزر الرابع في عمود الأمانات المركزية («الأمانات المركزية» ذو المعرف `central-secretariats`) مباشرة من واجهة التحكم، مع ضبط تسمية الزر في الصفحة الرئيسية، وعنوان النافذة المنبثقة، وملاحظة المصدر/الهامش.
+     - ربط الصفحة الرئيسية `CentralSecretariats.jsx` و `lib/home-data.js` بقراءة نصوص وهوامش الزر الرابع من `contents` المحدثة بواسطة الأدمن.
+  4. **ظهور الكلمات المضافة حديثاً بالصفحة الرئيسية (Speech Binding & Heuristics):**
+     - تم توسيع دالة الربط `findSpeech` في `CentralSecretariats.jsx` و `lib/home-data.js` لتدعم مرونة المطابقة لمعرفات الـ Slugs الشائعة (مثل `speech-president` و `speech`) والكلمات المفتاحية للصفة الحزبية، واستخراج اسم المتحدث وصفته ونص الكلمة وتقسيم الفقرات بدقة على أسطر الإدخال (`/\r?\n+/`).
+     - إضافة قائمة اختيار للزر المستهدف في `SpeechFormModal.jsx` تتيح للأدمن بنقرة واحدة ربط الكلمة بالزر المطلوب وضبط الـ Slug تلقائياً لمنع أي أخطاء إدخال.
+  5. **التحكم الديناميكي الكامل في أزرار العمود الثاني (Dynamic Buttons Architecture):**
+     - تم إلغاء القيود السابقة التي كانت تقصر العمود الثاني على 4 أزرار ثابتة فقط، وأصبحت الصفحة الرئيسية (`CentralSecretariats.jsx` و `lib/home-data.js`) تعرض كافة الأزرار المنشورة ديناميكياً وحسب ترتيب `sort_order` الفعلي المسجل في قاعدة البيانات (1، 2، 3، 4، 5، أو أي عدد يريده الأدمن).
+     - كل زر يفتح نافذته المخصصة بحسب نوعه (نافذة كلمة أو نافذة الأمانات المركزية)، مع الحفاظ على التناوب اللوني الجذاب لأزرار الموقع.
+  6. **إصلاح خطأ حفظ الزر الجديد وخطأ المفاتيح المكررة (Key Collision & Duplicate Slug Fix):**
+     - حل خطأ `Encountered two children with the same key, '15'` في `SpeechCardList.jsx` بتحويل العرض إلى قائمة ديناميكية حقيقية ترندر كل زر بمعرفه الفريد `item.id` دون تكرار أو محاكاة خانات ثابتة.
+     - حل خطأ «حدث خطأ غير متوقع» عند إنشاء زر جديد بتفعيل حقل الـ `slug` ليصبح قابلاً للتعديل تماماً مع اقتراح معرفات فريدة تلقائياً ومنع إرسال معرف مكرر، وإضافة رسالة خطأ صريحة في `lib/admin/errors.js` لكود `DUPLICATE_SLUG` لتنبيه الأدمن بدقة حال وجود تكرار.
+- **التحقق والاختبارات:**
+  - `node node_modules/eslint/bin/eslint.js`: 0 أخطاء و 0 تحذيرات في كافة الملفات المحدثة.
+  - `node --test`: جميع اختبارات المشروع الـ 301 اختباراً ناجحة بنسبة 100%.
+
+---
+
+## المرحلة P07.4-Refine: إزالة المعرف البرمجي من الفورم وإصلاح تصميم وإضافة عضو الأمانات المركزية
+- **الحالة:** مكتملة ومختبرة بنجاح (Fully Implemented & Verified).
+- **التعديلات والتحسينات المنفذة:**
+  1. **إزالة المعرف البرمجي (Slug) نهائياً من الفورم ومن واجهة الأدمن:**
+     - تم حذف حقل إدخال المعرف البرمجي (`Slug`) وتنبيهاته وأخطائه تماماً من واجهة النموذج في `components/Admin/Content/Leadership/Speeches/SpeechFormModal.jsx`.
+     - أصبحت إدارة الـ Slug تتم بنسبة 100% في الخلفية بصورة تلقائية وصامتة:
+       - عند التعديل: يتم الاحتفاظ بالـ Slug الأصلي للسجل دون تغييره.
+       - عند إضافة زر جديد: يتم توليد Slug فريد وصالح برمجياً يتوافق مع قواعد الخادم (`/^[a-z0-9]+(?:-[a-z0-9]+)*$/`) استناداً إلى اسم الزر وقائمة المعرفات الحالية والوقت، دون أي تدخل من الأدمن.
+       - إزالة التحقق اليدوي المربك للمعرف البرمجي، وحال حدوث أي تعارض بالخادم يتم توليد بديل فريد تلقائياً.
+     - إعادة تنظيم وتنسيق عناصر النموذج في شبكة متناسقة (اسم الزر + عنوان النافذة في صف، واسم المتحدث + صفته الحزبية في صف).
+     - إخفاء عرض الـ Slug التقني (`/{sp.slug}`) في بطاقات الأزرار في `SpeechCardList.jsx` واستبداله بملاحظة المصدر وعدد الفقرات.
+  2. **إصلاح تصميم نافذة إضافة وتعديل عضو الأمانة المركزية (Fixed Header / Footer Layout):**
+     - في `components/Admin/Content/CentralSecretariats/SecretariatPersonFormModal.jsx` (وكذلك `CentralSecretariatFormModal.jsx`):
+       - حل مشكلة انقطاع رأس النافذة المنبثقة واختفاء العنوان وزر الإغلاق والأزرار السفلية الناتجة عن التوسيط الرأسي في الشاشات العادية.
+       - اعتماد هيكلية الحاوية المحصنة: رأس نافذة ثابت بالأعلى (Pinned Header) يحتوي الأيقونة والعنوان وزر الإغلاق، وجسم قابل للتمرير السلس (`max-h-[90vh]` و `overflow-y-auto`)، وتذييل ثابت بالأسفل (Pinned Footer) يحتوي زري الحفظ والإلغاء مع ربط نموذج الإرسال عبر `form="person-form"`.
+       - إصلاح اتجاه عدادات الأحرف `dir="ltr"` لمنع انعكاس الأرقام العربية (`14 / 200` بدلاً من `200 / 14`).
+  3. **تحصين عملية إضافة وتعديل عضو الأمانة المركزية (Member Creation & Edit Robustness):**
+     - تأمين جميع دوال التهيئة والتحقق والقص الميداني (`trim()`) ضد القيم الخالية (`null` أو `undefined`) لكافة الحقول (`fullName`, `positionTitle`, `imageUrl`, `details`, `sortOrder`).
+     - تمرير مفتاح فريد ديناميكي `key={personModalState.person?.id || ...}` عند فتح النافذة في `CentralSecretariatsManager.jsx` لضمان تفريغ وتهيئة حقول النموذج دائماً بشكل نظيف وتلقائي عند كل فتح جديد.
+     - منع ازدواجية رسائل الخطأ (عدم إطلاق Toast خطأ مكرر عند وجود تنبيه تفصيلي داخل النافذة).
+- **التحقق والاختبارات:**
+  - `node node_modules/eslint/bin/eslint.js`: 0 أخطاء و 0 تحذيرات في كافة ملفات `Speeches` و `CentralSecretariats`.
+  - `node --test`: نجاح جميع اختبارات الباك إند الـ 301 اختباراً بنسبة 100%.
+
+---
+
+## المرحلة P07.4-PresidentUI: إعادة تصميم واجهة فورم رئيس الحزب (UI Only)
+- **الحالة:** مكتملة ومختبرة بنجاح (UI Overhaul Verified).
+- **التعديلات المنفذة (UI Design & Layout):**
+  1. **هيكلية الحاوية المحصنة (Pinned Header & Footer Layout):**
+     - في `components/Admin/Content/Leadership/PresidentEditModal.jsx`:
+       - حل مشكلة انقطاع رأس النافذة المنبثقة واختفاء العنوان وزر الإغلاق في الأعلى، واختفاء أزرار الحفظ والإلغاء في الأسفل الناتجة عن التوسيط التلقائي.
+       - اعتماد هيكلية الحاوية المحصنة: رأس نافذة ثابت بالأعلى (Pinned Header) يحتوي أيقونة التاج والعنوان وزر الإغلاق (X) يظل مرئياً دائماً، وجسم نموذج قابل للتمرير الداخلي السلس (`max-h-[90vh]` و `overflow-y-auto`)، وتذييل ثابت بالأسفل (Pinned Footer) يحتوي زري «إلغاء» و«حفظ التعديلات» مع ربط الإرسال عبر `form="president-edit-form"`.
+  2. **تحسين وتنسيق عناصر النموذج (Compact & Modern Grid):**
+     - دمج حقلي «الصفة الحزبية / المسمى» و«الشارة التكريمية» في شبكة متناسقة ثنائية الأعمدة (`grid grid-cols-1 sm:grid-cols-2`) لاختصار الارتفاع الرأسي ومنع التزاحم.
+     - تبسيط نصوص التعليمات والهوامش واستبدال التنبيهات الكبيرة بإرشادات مدمجة وأنيقة.
+     - ضبط عدادات الأحرف برمجياً `dir="ltr"` لتظهر بصورة صحيحة وبسيطة.
+- **التحقق والاختبارات:**
+  - `eslint components/Admin/Content/Leadership/PresidentEditModal.jsx`: 0 أخطاء و 0 تحذيرات.
+  - `node --test`: نجاح جميع اختبارات الباك إند الـ 301 بنسبة 100%.
+
+---
+
+## المرحلة P08.2: واجهة إدارة أمانات المحافظات (Governorate Secretariats Management UI)
+- **الحالة:** مكتملة ومختبرة بنجاح (Fully Implemented & Verified).
+- **التعديلات والمكونات المنفذة:**
+  1. **مكون مدير أمانات المحافظات (`GovernorateSecretariatsManager.jsx`):**
+     - جلب قائمة الـ 27 محافظة السيادية الثابتة من `GET /api/governorates`.
+     - بناء شريط جانبي يمين الشاشة (`lg:col-span-4`) يعرض المحافظات الـ 27 مع كود كل محافظة والترتيب مع إمكانية البحث الفوري باسم أو كود المحافظة.
+     - تحديد المحافظة النشطة بوضوح وتحديث كوادرها فور الاختيار.
+     - عرض كوادر أمانة المحافظة المختارة من خلال `GET /api/admin/content/governorate-secretariats?page=1&page_size=100&governorate_id={id}`.
+     - إتاحة التبديل السريع لحالة النشر بنقرة واحدة `PATCH .../status` وحذف العضو بعد التأكيد عبر `DeleteConfirmModal`.
+     - معالجة حالات التحميل (`Skeleton`) والخطأ (`Retry`) والبيانات الفارغة (`EmptyState`).
+  2. **نموذج إضافة وتعديل عضو الأمانة (`GovernoratePersonFormModal.jsx`):**
+     - نموذج متكامل يعتمد هيكلية الحاوية المحصنة: رأس ثابت وتذييل ثابت وجسم قابل للتمرير الداخلي `max-h-[90vh]`.
+     - الحقول: الاسم بالكامل (إلزامي)، الصفة/المنصب (اختياري)، ترتيب الظهور (رقم صحيح)، وحالة النشر.
+     - رفع ومعاينة وحذف الصورة الشخصية اختيارية تماماً 100% باستخدام `ImageUploadField.jsx` ومسار `POST /api/admin/content/upload`، مع إمكانية الحفظ دون صورة دون أي خطأ.
+     - دعم عدادات الأحرف `dir="ltr"` وتنبيهات الأخطاء المباشرة لكل حقل.
+  3. **الربط مع صفحة إدارة المحتوى (`app/admin/content/page.jsx`):**
+     - ربط التبويب `governorate-secretariats` لعرض المكون عند اختياره بسلاسة.
+- **التحقق والاختبارات:**
+  - `eslint`: 0 أخطاء و 0 تحذيرات في كافة ملفات المرحلة.
+  - `node --test lib/content/phase13-handlers.test.js lib/services/content-phase13.test.js`: نجاح 22/22 اختباراً بنسبة 100%.
+  - `node --test` العام: نجاح 284/284 اختباراً بنسبة 100%.
+
+---
+
+## المرحلة P08.3: إدارة المحافظات والتحكم في الظهور بالموقع (Governorates Management & Visibility Control)
+- **الحالة:** مكتملة ومختبرة بنجاح (Fully Implemented & Verified).
+- **التعديلات والمكونات المنفذة:**
+  1. **خدمات الباك إند (`lib/services/governorates.js`):**
+     - إضافة وظائف CRUD متكاملة للمحافظات:
+       - `listGovernoratesAdmin`: جلب المحافظات مرتبة تصاعدياً مع إحصائيات عدد الكوادر والأعضاء وطلبات الانضمام التابعة لها.
+       - `createGovernorate`: إضافة محافظة جديدة مع توحيد كود المحافظة بحروف كبيرة وتوثيق العملية في سجل التدقيق.
+       - `updateGovernorate`: تعديل بيانات المحافظة (الاسم، الكود، الترتيب، حالة الظهور).
+       - `setGovernorateActive`: تبديل حالة الظهور في الموقع العام (`is_active: true/false`).
+       - `deleteGovernorate`: حذف المحافظة مع فحص تكامل صارم يمنع الحذف في حال وجود بيانات أو طلبات مرتبطة (`GOVERNORATE_HAS_DATA`) وتوثيق الحذف.
+  2. **واجهات ومسارات الـ Admin APIs:**
+     - `GET /api/admin/content/governorates`: قائمة المحافظات الإدارية.
+     - `POST /api/admin/content/governorates`: إضافة محافظة.
+     - `PATCH /api/admin/content/governorates/[id]`: تعديل بيانات المحافظة.
+     - `PATCH /api/admin/content/governorates/[id]/status`: تفعيل أو إخفاء المحافظة.
+     - `DELETE /api/admin/content/governorates/[id]`: حذف المحافظة بشرط التأكيد وعدم وجود بيانات مرتبطة.
+  3. **واجهة لوحة التحكم:**
+     - بناء نافذة `GovernorateFormModal.jsx` لإضافة وتعديل بيانات وترتيب وظهور المحافظة.
+     - دمج عناصر التحكم في شريط المحافظات بـ `GovernorateSecretariatsManager.jsx`:
+       - زر «+ إضافة محافظة جديدة».
+       - إظهار مؤشر ملون لكل محافظة (معروضة بالموقع أو مخفية).
+       - زر إخفاء/إظهار سريع بنقرة واحدة (Eye toggle).
+       - زر تعديل المحافظة وزر الحذف مع نافذة التأكيد وحماية العلاقات.
+  4. **ربط الموقع العام (`GovernoratesSecretariats.jsx`):**
+     - رندرة المحافظات النشطة فقط وتحديث القائمة الرئيسية والفرعية ديناميكياً استناداً إلى بيانات السيرفر دون الاعتماد على القوائم الثابتة، بحيث تختفي أي محافظة معطلة مباشرة من عمود الموقع ومن نافذة تصفح المحافظات.
+- **التحقق والاختبارات:**
+  - `eslint`: 0 أخطاء و 0 تحذيرات في كافة ملفات المرحلة.
+  - `node --test lib/content/governorates-admin.test.js`: نجاح 12/12 اختباراً بنسبة 100%.
+  - `node --test` العام: نجاح 313/313 اختباراً بنسبة 100%.
+  - معالجة كافة تحذيرات المفاتيح المتكررة (Duplicate React Keys) في `GovernoratesSecretariats.jsx` و `SecretariatsModal.jsx`.
+
+---
+
+## المرحلة P09.2: واجهة إدارة الوحدة البرلمانية (Parliamentary Unit Admin Management)
+- **الحالة:** مكتملة ومختبرة بنجاح (Fully Implemented & Verified).
+- **التعديلات والمكونات المنفذة:**
+  1. **مدير الوحدة البرلمانية (`ParliamentaryUnitManager.jsx`):**
+     - جلب قائمة عناصر الوحدة البرلمانية من `GET /api/admin/content/parliamentary-unit?page=1&page_size=100`.
+     - عرض بطاقات العناصر البرلمانية بشكل منظم يشمل: شارة الترتيب، زر التفعيل السريع للنشر بنقرة واحدة، الأيقونة المذهبة، العنوان والعنوان الفرعي، صندوق ملخص محتوى الـ Popup (المسؤول، الصفة، مقتطف الكلمة، والمصدر).
+     - توفير أزرار الإجراءات: «معاينة النافذة»، «تعديل»، و«حذف» بعد التأكيد عبر `DeleteConfirmModal`.
+     - معالجة حالات التحميل (`Skeleton`)، الخطأ مع إعادة المحاولة، والقائمة الفارغة (`EmptyState`).
+  2. **نموذج إضافة وتعديل العنصر ومحتوى النافذة (`ParliamentaryItemFormModal.jsx`):**
+     - دمج بيانات العنصر في العمود مع محتوى الـ Popup في نموذج موحد عالي التنظيم وسهل الاستخدام.
+     - توليد المعرف البرمجي (`slug`) تلقائياً في الخلفية بطريقة متوافقة مع قواعد الباك إند دون إرباك المشرف.
+     - منتقي بصري للأيقونات الثلاث المدعومة فعلياً في الصفحة الرئيسية (`landmark`, `church`, `house`) مع معاينة حية للأيقونة.
+     - حقول: العنوان الرئيسي (إلزامي)، العنوان الفرعي، ترتيب الظهور، حالة النشر، اسم المسؤول، الصفة، نص الكلمة (حتى 10,000 حرف مع دعم تقسيم الفقرات)، والمصدر.
+     - زر معاينة فورية مستقلة للنافذة المنبثقة من داخل النموذج دون حفظ أو نشر.
+  3. **معاينة النافذة المنبثقة (`ParliamentaryPreviewModal.jsx`):**
+     - معاينة مطابقة 100% للنافذة المنبثقة الحقيقية بالاعتماد على مكون `ParliamentaryModal.jsx`.
+  4. **إصلاح تزامن الموقع العام (`ParliamentaryUnit.jsx`):**
+     - استيعاب الاستجابة الفعلية للـ API (`parliamentary_items` بجانب `parliamentary_units`).
+     - تحصين المفاتيح ضد التكرار: `key={item.id ? parl-${item.id} : parl-idx-${index}}`.
+     - تحديث زر التذييل لاستهداف أول عنصر متوفر ديناميكياً بدلاً من التثبيت على `senate`.
+  5. **ربط صفحة إدارة المحتوى (`app/admin/content/page.jsx`):**
+     - تفعيل التبويب `parliamentary-unit` لعرض `ParliamentaryUnitManager`.
+- **التحقق والاختبارات:**
+  - `eslint`: 0 أخطاء و 0 تحذيرات في كافة ملفات المرحلة.
+  - `node --test lib/content/phase13-handlers.test.js lib/services/content-phase13.test.js lib/validation/content/content.test.js`: نجاح 27/27 اختباراً بنسبة 100%.
+  - `node --test` العام: نجاح 313/313 اختباراً بنسبة 100%.
+
+
+
+
+
+
+
 ## المرحلة D5.1: إعادة تصميم وتطوير واجهة إدارة الأخبار وعارض ملاحظات المراجعة (News Management UI/UX Redesign & Review Workflow)
 - **الحالة:** مكتملة بنجاح (Frontend & Editorial Workflow).
 - **الأهداف المنجزة:**
@@ -1127,3 +1519,28 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
   - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).
 
 | 2026-11-20 | Staff Visual Refinement | تحسين بصري شامل لصفحة إدارة الموظفين: مطابقة زر الإغلاق الذهبي الدوار مع نمط Catalog في جميع النوافذ المنبثقة الخمس، وتوحيد أنماط hover للأزرار، وتعميق تطابق حقول الإدخال مع نظام التصميم المشترك (focus shadow + error states + duration-300)، وتحسين dropdown الفلترة مع focus shadow ذهبي، وتعزيز أزرار الإجراءات بـscale وduration متناسقة. | `app/admin/staff/page.jsx`؛ `components/Admin/Staff/StaffEditorModal.jsx`؛ `components/Admin/Staff/StaffAuditModal.jsx`؛ `components/Admin/Staff/StaffResetPasswordModal.jsx`؛ `components/Admin/Staff/StaffStatusModal.jsx`؛ `components/Admin/Staff/StaffSuccessPasswordModal.jsx` | لا تغييرات على الباك إند أو API أو الصلاحيات أو المنطق التجاري. `npm test`: 283 ناجحاً. ESLint: 3 أخطاء pre-existing (setState في useEffect) موجودة قبل هذه التعديلات؛ لا أخطاء جديدة. |
+## مرحلة D5.10: تبسيط وتحديث فورم إضافة وتعديل الكتالوجات وضمان التجاوب الكامل للنافذة المنبثقة
+- **الحالة:** مكتملة بنجاح (Form Simplification, Auto-Generated Keys & Fully Responsive Modal).
+- **الأهداف المنجزة دون المساس بالباك إند:**
+  1. **إزالة حقلي `slug` و `code` من الواجهة المرئية للمودال (`components/Admin/Catalogs/CatalogEditorModal.jsx`):**
+     - تم إزالة حقل إدخال الـ `slug` الخاص بالوزارات وحقل الـ `code` الخاص بالقطاعات بالكامل من واجهة المستخدم المرئية، بما في ذلك رسائل التحقق والنصوص الإرشادية.
+     - الفورم أصبح مقتصراً فقط على الحقول الجوهرية: اسم الجهة بالعربية (إلزامي)، ترتيب العرض (اختياري)، وحالة الاعتماد في النظام (نشط / معطل).
+  2. **توليد الـ `slug` والـ `code` تلقائياً في الخلفية عند الإضافة (`POST`):**
+     - بناء أداة مساعدة معيارية `generateCatalogIdentifier(name, type)` في `lib/admin/catalog-utils.js` تقوم بالتعريب الصوتي (Transliteration) للأحرف العربية إلى نص لاتيني صالح وودود للرابط، متبوعاً بمقطع إنتروبيا عشوائي فريد `crypto.randomUUID().slice(0, 8)` يمنع أي احتمالية للتصادم أو التكرار.
+     - في حال كان الاسم فارغاً أو رموزاً فقط، يتم استخدام بادئة بديلة آمنة (`min-` أو `sec-`).
+     - إرسال المعرف المولد تلقائياً في طلب الـ `POST` لإرضاء شروط الباك إند والـ Schema الإلزامية (`slugSchema`).
+  3. **الحفاظ على المعرفات الحالية عند التعديل (`PATCH`):**
+     - في طلبات التعديل (`PATCH`)، يتم إسقاط الـ `slug` والـ `code` تماماً من كائن التعديل، مما يضمن احتفاظ قاعدة البيانات بالمعرفات الأصلية دون مساس أو تغيير.
+  4. **إعادة هيكلة المودال ليكون متجاوباً بالكامل بنمط 3-Tier Flexbox Shell:**
+     - تحديد الحد الأقصى للارتفاع بـ `max-h-[90vh] sm:max-h-[85vh]` لمنع تجاوز النافذة لارتفاع الشاشة.
+     - ترويسة ثابتة في الأعلى (`shrink-0`) مع زر الإغلاق الدوار الذهبي.
+     - جسم فورم داخلي مستقل التمرير (`flex-1 min-h-0 overflow-y-auto overscroll-contain`) لحماية الشاشات القصيرة ومود الـ Landscape.
+     - شريط أزرار ثابت دائماً في الأسفل (`shrink-0 border-t border-line bg-page/50`) يضمن بقاء زري "حفظ" و "إلغاء" في متناول يد المستخدم على كافة الأجهزة.
+- **الملفات المضافة والمعدلة:**
+  - `lib/admin/catalog-utils.js` (توليد المعرفات الفريدة والتعريب الصوتي).
+  - `components/Admin/Catalogs/CatalogEditorModal.jsx` (تحديث الفورم، إزالة الحقول، وتطبيق الهيكل المتجاوب).
+  - `components/Admin/Catalogs/catalogs-verification.test.js` (إضافة 8 اختبارات شاملة لتوليد المعرفات والـ payload).
+  - `docs/BACKEND_PROGRESS.md` (توثيق المرحلة).
+- **التحقق والاختبارات:**
+  - `npx eslint`: خالي تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 284 ناجحة بنسبة 100% (284 pass, 0 fail).
