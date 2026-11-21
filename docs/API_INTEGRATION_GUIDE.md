@@ -2484,3 +2484,12 @@ All routes below require a staff session and the `organization:manage` permissio
 - `GET /api/admin/content/organization/members?q=<name>` searches active members only and returns safe selection fields.
 
 For destructive requests, send `{ "confirm": true }`. Center, local-secretariat, and party-unit deletion is rejected while children exist. Deactivating any ancestor removes its descendants from public search. A person can be linked to an active `members` row or entered manually; linked member names are always read from the related membership application.
+
+
+### Admin dashboard UI
+
+- Page: `/admin/organization`
+- Navigation label: `الهيكل التنظيمي` under the administration group.
+- Visibility: `super_admin` only, enforced by the dashboard section access rules and the page's `organization:manage` permission check.
+- The UI uses the existing admin design system (gold accents, white cards, RTL layout, responsive grids, shared page header, skeletons, and empty states).
+- The page consumes the organization admin APIs above to manage centers, local secretariats, party units, and each unit's people. Existing governorates are loaded from the current admin governorates endpoint.
