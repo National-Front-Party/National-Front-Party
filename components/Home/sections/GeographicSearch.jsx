@@ -53,6 +53,7 @@ export default function GeographicSearch() {
   useEffect(() => {
     if (!filters.governorate) {
       setCenters([]);
+      setLoadingCenters(false);
       return;
     }
     const controller = new AbortController();
@@ -78,6 +79,7 @@ export default function GeographicSearch() {
   useEffect(() => {
     if (!filters.center) {
       setPartyUnits([]);
+      setLoadingUnits(false);
       return;
     }
     let active = true;
