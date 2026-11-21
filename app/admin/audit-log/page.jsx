@@ -21,7 +21,8 @@ import {
 import { adminFetch } from "@/lib/admin/api";
 import { useAdminAuth } from "@/lib/admin/auth-context";
 import { useToast } from "@/lib/admin/toast-context";
-import { hasPermission, ROLE_LABELS } from "@/lib/admin/permissions";
+import { hasPermission } from "@/lib/admin/permissions";
+import { getOperationDescription } from "@/lib/admin/audit-descriptions";
 import PageHeader from "@/components/Admin/ui/PageHeader";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import EmptyState from "@/components/Admin/ui/EmptyState";
@@ -89,99 +90,6 @@ function getActionMeta(actionType) {
 }
 
 /* ─────────────────────────── Formatters ─────────────────────────────── */
-
-const ROLE_LABELS_MAP = ROLE_LABELS;
-
-function formatRole(value) {
-  return ROLE_LABELS_MAP[value] || value;
-}
-
-const ENTITY_LABELS = {
-  panel: "القسم القيادي",
-  leader: "القيادي",
-  leadership_content: "الكلمة القيادية",
-  popup: "محتوى النافذة المنبثقة",
-  news_article: "الخبر",
-  news_source: "مصدر الأخبار",
-  central_secretariat: "الأمانة المركزية",
-  central_secretariat_person: "بيانات أحد أعضاء الأمانة المركزية",
-  governorate_secretariat_person: "بيانات أحد أعضاء أمانة المحافظة",
-  parliamentary_unit_item: "عنصر الهيئة البرلمانية",
-};
-
-const FIELD_LABELS = {
-  title: "العنوان",
-  subtitle: "العنوان الفرعي",
-  full_name: "الاسم",
-  email: "البريد الإلكتروني",
-  role: "الدور الوظيفي",
-  role_title: "الصفة الوظيفية",
-  badge_label: "شارة التعريف",
-  body: "المحتوى",
-  source_note: "ملاحظة المصدر",
-  sort_order: "ترتيب الظهور",
-  is_published: "حالة النشر",
-  is_active: "حالة الحساب",
-  photo_url: "الصورة الشخصية",
-  head_name: "اسم الأمين",
-  head_role: "صفة الأمين",
-  decision_date: "تاريخ القرار",
-};
-
-function formatFieldName(field) {
-  return FIELD_LABELS[field] ?? field.replace(/_/g, " ");
-}
-
-function getOperationDescription(record) {
-  const details = record?.details && typeof record.details === "object" ? record.details : {};
-  const targetName = typeof record?.target_name === "string" ? record.target_name.trim() : "";
-  const namedTarget = targetName ? `«${targetName}»` : "العنصر المعني";
-  const entity = ENTITY_LABELS[details.entity_type] ?? "المحتوى";
-  const changedFields = Array.isArray(details.changed_fields)
-    ? details.changed_fields.filter((field) => typeof field === "string" && field.trim())
-    : [];
-
-  switch (record?.action_type) {
-    case "staff_created":
-      return `تم إنشاء حساب الموظف ${namedTarget}${details.new_role ? ` بدور ${formatRole(details.new_role)}` : ""}.`;
-    case "staff_profile_updated":
-      return `تم تحديث البيانات الشخصية للموظف ${namedTarget}.`;
-    case "staff_role_changed":
-      return `تم تغيير دور الموظف ${namedTarget}${details.previous_role || details.new_role
-        ? ` من ${formatRole(details.previous_role || "غير محدد")} إلى ${formatRole(details.new_role || "غير محدد")}`
-        : ""}.`;
-    case "staff_activated":
-      return `تم تفعيل حساب الموظف ${namedTarget}.`;
-    case "staff_deactivated":
-      return `تم تعطيل حساب الموظف ${namedTarget}.`;
-    case "staff_password_reset":
-      return `تمت إعادة تعيين كلمة مرور حساب الموظف ${namedTarget}.`;
-    case "content_created":
-      return `تم إنشاء ${entity} ${namedTarget}.`;
-    case "content_updated":
-      return `تم تحديث ${entity} ${namedTarget}${changedFields.length
-        ? `، وشملت الحقول: ${changedFields.map(formatFieldName).join("، ")}`
-        : ""}.`;
-    case "content_published":
-      return `تم نشر ${entity} ${namedTarget}.`;
-    case "content_unpublished":
-      return `تم إلغاء نشر ${entity} ${namedTarget}.`;
-    case "content_deleted":
-      return `تم حذف ${entity} ${namedTarget}.`;
-    case "news_article_created":
-      return `تم إنشاء الخبر ${namedTarget}.`;
-    case "news_article_updated":
-      return `تم تحديث الخبر ${namedTarget}.`;
-    case "news_article_published":
-      return `تم نشر الخبر ${namedTarget}.`;
-    case "news_article_deleted":
-      return `تم حذف الخبر ${namedTarget}.`;
-    default:
-      return targetName
-        ? `تم تنفيذ إجراء آخر على ${namedTarget}.`
-        : "تم تنفيذ إجراء آخر في النظام.";
-  }
-}
 
 function formatDateTimeLines(value) {
   if (!value) return ["—", ""];
