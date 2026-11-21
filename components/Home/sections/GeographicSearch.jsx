@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CustomSelect, { inputBase } from "@/components/Home/ui/CustomSelect";
+import CustomSelect from "@/components/Home/ui/CustomSelect";
 import Reveal from "@/components/Home/ui/Reveal";
 import { Search, Users, AlertCircle } from "lucide-react";
 import "./GeographicSearch.css";
 
 const emptyFilters = { governorate: "", center: "", partyUnit: "" };
 
-async function fetchJson(url) {
-  const response = await fetch(url, { headers: { Accept: "application/json" } });
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, { headers: { Accept: "application/json" }, ...options });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     const error = new Error(payload?.error || "تعذر تحميل البيانات المطلوبة");
@@ -59,7 +59,7 @@ export default function GeographicSearch() {
     let active = true;
     setLoadingCenters(true);
     setCenters([]);
-    fetchJson("/api/organization/centers?governorate_id=" + encodeURIComponent(filters.governorate))
+    fetchJson("/api/organization/centers?governorate_id=" + encodeURIComponent(filters.governorate), { signal: controller.signal })
       .then((data) => {
         if (active) setCenters(data.centers ?? []);
       })
