@@ -1176,3 +1176,11 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Made the status update conditional on the status read to prevent concurrent requests from applying conflicting transitions. Invalid and stale transitions return INVALID_TRANSITION; no status values or schema changed.
 - Added focused service tests for valid, invalid, terminal, and concurrent transitions, plus the API error response.
 - Verification: Service Request service, admin read-handler, and public-handler tests passed (26 tests, 0 failures); targeted ESLint and git diff --check passed.
+
+
+## 2026-11-21 - Organizational Content Admin interface
+
+- Connected /admin/content to the existing Admin CRUD APIs for Central Secretariats and nested people, Governorate Secretariats, Parliamentary Unit, Party Leadership panels/leaders/button content, and Pop-up Content. Added responsive resource lists, pagination, search, edit/create dialogs, publish controls, delete confirmation, lookup choices, and loading/error/empty/success feedback.
+- Kept party_programs read-only unsupported in Admin: the only existing route is a public GET for published content; no Admin API/service supports list/create/update/delete.
+- No database, API, authorization, or unrelated Admin section changes.
+- Verification: focused content handler/service/validation tests passed (27 tests); targeted ESLint passed; git diff --check passed. Initial sandboxed test execution was blocked by Windows spawn EPERM; rerun with process-spawn permission passed.
