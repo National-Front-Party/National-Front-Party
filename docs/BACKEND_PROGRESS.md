@@ -1169,3 +1169,10 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Extracted the existing Overview data loader into a testable frontend helper without changing its permission gates, API requests, fallback behavior, statistics, or recent-item ordering. Added role-scoped coverage for overview data and News-only fallback results.
 - Added Content and Audit Log route/API permission coverage; existing placeholder pages remain unchanged. No role definitions, permission assignments, database schema, News workflow, or business behavior changed.
 - Verification: focused authorization, route, content, staff, and read-handler tests passed (41 tests, 0 failures); targeted ESLint passed; `git diff --check` passed. The initial sandboxed Node test run was blocked by Windows `spawn EPERM`; the focused rerun with process-spawn permission passed.
+
+## 2026-11-21 - Service Request status transition enforcement
+
+- Enforced the existing UI transition graph in the service layer: new to in_progress; in_progress to completed or rejected; completed, rejected, and closed remain terminal.
+- Made the status update conditional on the status read to prevent concurrent requests from applying conflicting transitions. Invalid and stale transitions return INVALID_TRANSITION; no status values or schema changed.
+- Added focused service tests for valid, invalid, terminal, and concurrent transitions, plus the API error response.
+- Verification: Service Request service, admin read-handler, and public-handler tests passed (26 tests, 0 failures); targeted ESLint and git diff --check passed.
