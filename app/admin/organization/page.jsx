@@ -278,6 +278,7 @@ export default function OrganizationPage() {
             </Field>
           ))}
         </div>
+        {loadingChildren && <p className="mt-3 text-xs font-semibold text-gold-dark">جاري تحميل المستوى التنظيمي التالي...</p>}
         <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted">
           <span className="rounded-lg bg-page px-3 py-1.5">{governorates.find(x=>String(x.id)===selection.governorate)?.name_ar || "لم يتم اختيار محافظة"}</span><span>←</span><span className="rounded-lg bg-page px-3 py-1.5">{selectedCenter?.name_ar || "المركز"}</span><span>←</span><span className="rounded-lg bg-page px-3 py-1.5">{selectedSecretariat?.name_ar || "الأمانة المحلية"}</span>
         </div>
