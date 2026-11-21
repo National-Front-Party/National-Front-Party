@@ -332,14 +332,14 @@ export default function SpeechFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-xs flex min-h-full items-start sm:items-center justify-center py-6 sm:py-10"
+      className="fixed inset-0 z-50 flex min-h-full items-start justify-center overflow-y-auto bg-slate-950/60 p-3 py-5 backdrop-blur-xs sm:items-center sm:p-5 sm:py-8"
       role="dialog"
       aria-modal="true"
       aria-labelledby="speech-form-modal-title"
     >
       <div
         ref={modalCardRef}
-        className="relative my-auto w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl border border-slate-200 bg-white shadow-2xl transition-all overflow-hidden"
+        className="relative my-auto flex max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-card sm:max-h-[90vh]"
         dir="rtl"
       >
         {/* Modal Header (Pinned at top) */}
@@ -369,7 +369,7 @@ export default function SpeechFormModal({
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="inline-flex size-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors disabled:opacity-50"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-105 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
             aria-label="إغلاق النافذة"
           >
             <X className="size-5" aria-hidden="true" />
@@ -377,7 +377,7 @@ export default function SpeechFormModal({
         </div>
 
         {/* Scrollable Form Body */}
-        <form id="speech-form" onSubmit={handleSubmit} className="overflow-y-auto flex-1 p-6 sm:p-8 space-y-4">
+        <form id="speech-form" onSubmit={handleSubmit} className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-7">
           {/* Quick Templates Bar (For New Buttons) */}
           {!isEditing && (
             <div className="rounded-2xl border border-gold/30 bg-gold-tint/40 p-3.5 space-y-2">
@@ -421,7 +421,7 @@ export default function SpeechFormModal({
             {/* Button Label */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="speech-button-label" className="text-xs font-bold text-slate-800">
+                <label htmlFor="speech-button-label" className="text-sm font-bold text-ink">
                   اسم الزر في الصفحة الرئيسية <span className="text-red-500">*</span>
                 </label>
                 <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -436,10 +436,10 @@ export default function SpeechFormModal({
                 onChange={(e) => handleFieldChange("buttonLabel", setButtonLabel, e.target.value)}
                 disabled={busy}
                 placeholder="مثال: كلمة النائب الثاني"
-                className={`w-full h-11 rounded-2xl border px-4 text-sm font-semibold transition-all focus:outline-hidden focus:ring-2 ${
+                className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm font-semibold transition-all focus:outline-hidden focus:ring-2 ${
                   errors.buttonLabel
                     ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
               />
               {errors.buttonLabel && (
@@ -453,7 +453,7 @@ export default function SpeechFormModal({
             {/* Popup Title */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="speech-title" className="text-xs font-bold text-slate-800">
+                <label htmlFor="speech-title" className="text-sm font-bold text-ink">
                   عنوان النافذة المنبثقة <span className="text-red-500">*</span>
                 </label>
                 <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -467,10 +467,10 @@ export default function SpeechFormModal({
                 onChange={(e) => handleFieldChange("title", setTitle, e.target.value)}
                 disabled={busy}
                 placeholder="مثال: كلمة النائب الثاني لرئيس الحزب"
-                className={`w-full h-11 rounded-2xl border px-4 text-sm font-semibold transition-all focus:outline-hidden focus:ring-2 ${
+                className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm font-semibold transition-all focus:outline-hidden focus:ring-2 ${
                   errors.title
                     ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
               />
               {errors.title && (
@@ -486,7 +486,7 @@ export default function SpeechFormModal({
             {/* Person Name */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="speech-person-name" className="text-xs font-bold text-slate-800">
+                <label htmlFor="speech-person-name" className="text-sm font-bold text-ink">
                   اسم المتحدث / الجهة <span className="text-red-500">*</span>
                 </label>
                 <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -500,10 +500,10 @@ export default function SpeechFormModal({
                 onChange={(e) => handleFieldChange("personName", setPersonName, e.target.value)}
                 disabled={busy}
                 placeholder="مثال: سيف الدين"
-                className={`w-full h-11 rounded-2xl border px-4 text-sm transition-all focus:outline-hidden focus:ring-2 ${
+                className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm transition-all focus:outline-hidden focus:ring-2 ${
                   errors.personName
                     ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
               />
               {errors.personName && (
@@ -517,7 +517,7 @@ export default function SpeechFormModal({
             {/* Person Role Title */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="speech-person-role" className="text-xs font-bold text-slate-800">
+                <label htmlFor="speech-person-role" className="text-sm font-bold text-ink">
                   الصفة الحزبية للمتحدث <span className="text-red-500">*</span>
                 </label>
                 <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -531,10 +531,10 @@ export default function SpeechFormModal({
                 onChange={(e) => handleFieldChange("personRoleTitle", setPersonRoleTitle, e.target.value)}
                 disabled={busy}
                 placeholder="مثال: النائب الثاني لرئيس الحزب"
-                className={`w-full h-11 rounded-2xl border px-4 text-sm transition-all focus:outline-hidden focus:ring-2 ${
+                className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm transition-all focus:outline-hidden focus:ring-2 ${
                   errors.personRoleTitle
                     ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
               />
               {errors.personRoleTitle && (
@@ -549,7 +549,7 @@ export default function SpeechFormModal({
           {/* Body Content */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label htmlFor="speech-body" className="text-xs font-bold text-slate-800">
+              <label htmlFor="speech-body" className="text-sm font-bold text-ink">
                 نص ومحاور الكلمة <span className="text-red-500">*</span>
               </label>
               <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -566,10 +566,10 @@ export default function SpeechFormModal({
               onChange={(e) => handleFieldChange("body", setBody, e.target.value)}
               disabled={busy}
               placeholder="اكتب نص الكلمة هنا..."
-              className={`w-full rounded-2xl border p-4 text-sm leading-relaxed transition-all focus:outline-hidden focus:ring-2 ${
+              className={`w-full min-h-32 resize-y rounded-2xl border p-4 text-xs leading-relaxed shadow-none transition-all duration-300 ease-in-out sm:text-sm ${
                 errors.body
                   ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                  : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                  : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
               }`}
             />
             {errors.body && (
@@ -584,7 +584,7 @@ export default function SpeechFormModal({
             {/* Source Note */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="speech-source-note" className="text-xs font-bold text-slate-800">
+                <label htmlFor="speech-source-note" className="text-sm font-bold text-ink">
                   ملاحظة المصدر (الهامش)
                 </label>
                 <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -598,14 +598,14 @@ export default function SpeechFormModal({
                 onChange={(e) => handleFieldChange("sourceNote", setSourceNote, e.target.value)}
                 disabled={busy}
                 placeholder="الموقع الرسمي للحزب"
-                className="w-full h-11 rounded-2xl border border-slate-200 bg-slate-50/50 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-2 focus:ring-gold/20 focus:outline-hidden"
+                className="w-full h-14 rounded-2xl border border-border bg-white px-4 text-xs text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] sm:text-sm"
               />
             </div>
 
             {/* Sort Order */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="speech-sort-order" className="text-xs font-bold text-slate-800">
+                <label htmlFor="speech-sort-order" className="text-sm font-bold text-ink">
                   ترتيب الظهور بالعمود
                 </label>
               </div>
@@ -615,7 +615,7 @@ export default function SpeechFormModal({
                 value={sortOrder}
                 onChange={(e) => handleFieldChange("sortOrder", setSortOrder, e.target.value)}
                 disabled={busy}
-                className="w-full h-11 rounded-2xl border border-slate-200 bg-slate-50/50 px-4 text-sm text-slate-900 focus:border-gold focus:bg-white focus:ring-2 focus:ring-gold/20 focus:outline-hidden"
+                className="w-full h-14 rounded-2xl border border-border bg-white px-4 text-xs text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] sm:text-sm"
               />
               <p className="text-[11px] text-slate-400">الأصغر يظهر أولاً (مثال: 10، 20، 30...).</p>
             </div>
@@ -629,9 +629,9 @@ export default function SpeechFormModal({
                 checked={isPublished}
                 onChange={(e) => setIsPublished(e.target.checked)}
                 disabled={busy}
-                className="size-4.5 rounded-lg border-slate-300 text-gold-darker focus:ring-gold"
+                className="size-4.5 rounded-lg border-slate-300 accent-gold focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
               />
-              <span className="text-xs font-bold text-slate-800">
+              <span className="text-sm font-bold text-ink">
                 نشر هذا الزر وتفعيله للظهور مباشرة في عمود الصفحة الرئيسية
               </span>
             </label>
@@ -639,12 +639,12 @@ export default function SpeechFormModal({
         </form>
 
         {/* Modal Footer (Pinned at bottom) */}
-        <div className="flex items-center justify-end gap-3 p-4 sm:px-8 border-t border-slate-100 shrink-0 bg-slate-50/70">
+        <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-end sm:gap-3 sm:px-8">
           <button
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="h-11 px-5 rounded-2xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-bold transition-colors disabled:opacity-50"
+            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-line bg-white px-5 text-sm font-bold text-muted transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
           >
             إلغاء
           </button>
@@ -652,7 +652,7 @@ export default function SpeechFormModal({
             type="submit"
             form="speech-form"
             disabled={busy}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gold-gradient px-6 text-sm font-bold text-ink shadow-md hover:brightness-105 active:scale-95 transition-all disabled:opacity-50"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-sm font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {busy ? (
               <>

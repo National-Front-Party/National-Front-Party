@@ -1459,3 +1459,10 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Added an opt-in neutral-to-gold hover close-button style for the Admin Parliamentary preview; other shared modal users retain their default styling.
 - UI-only changes. API calls, data flow, validation, permissions, CRUD behavior, and backend logic were not changed. Responsive review was source-level only; no browser viewport was tested.
 - Follow-up: added a restrained lift, slight brightness increase, and stronger shadow on hover for the selected Parliamentary Unit icon card, matching the existing hover treatment of the unselected cards.
+
+## UI Phase — Party Leadership polish
+
+- Refined the Party Leadership president card, leader table and mobile rows, speech cards, management tabs, form fields, modal layouts, action controls, and preview close control using the existing News field and project gold button styles.
+- Responsive checks were source-level only; browser viewport testing was not performed.
+- UI-only changes. API calls, data flow, validation, permissions, CRUD behavior, upload behavior, and backend logic were not changed.
+- Follow-up: removed the president form's helper text beneath the name, role, and badge fields, plus the upload-field format hint at the top of the photo section. Validation errors and the upload drop-zone's own guidance remain intact.

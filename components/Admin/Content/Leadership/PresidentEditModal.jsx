@@ -189,7 +189,7 @@ export default function PresidentEditModal({
     >
       <div
         ref={modalCardRef}
-        className="relative my-auto w-full max-w-lg max-h-[90vh] flex flex-col rounded-3xl border border-slate-200 bg-white shadow-2xl transition-all overflow-hidden"
+        className="relative my-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-card sm:max-h-[90vh]"
         dir="rtl"
       >
         {/* Pinned Modal Header */}
@@ -215,7 +215,7 @@ export default function PresidentEditModal({
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="inline-flex size-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors disabled:opacity-50"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-105 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
             aria-label="إغلاق النافذة"
           >
             <X className="size-5" aria-hidden="true" />
@@ -263,7 +263,7 @@ export default function PresidentEditModal({
           {/* Full Name Field */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label htmlFor="president-fullname" className="text-xs font-bold text-slate-800 flex items-center gap-1">
+              <label htmlFor="president-fullname" className="text-sm font-bold text-ink flex items-center gap-1">
                 <span>اسم رئيس الحزب بالكامل</span>
                 <span className="text-red-500">*</span>
               </label>
@@ -285,22 +285,18 @@ export default function PresidentEditModal({
               disabled={busy}
               maxLength={200}
               placeholder="مثال: المستشار / فلان الفلاني"
-              className={`w-full h-11 rounded-2xl border px-4 text-sm font-semibold transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+              className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm font-semibold transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
                 errors.fullName
                   ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                  : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                  : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
               }`}
               aria-invalid={Boolean(errors.fullName)}
               aria-describedby={errors.fullName ? "president-fullname-error" : undefined}
             />
-            {errors.fullName ? (
+            {errors.fullName && (
               <p id="president-fullname-error" className="text-xs text-red-600 flex items-center gap-1.5 mt-1 font-medium">
                 <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
                 <span>{errors.fullName}</span>
-              </p>
-            ) : (
-              <p className="text-[11px] text-slate-400">
-                الاسم الرسمي مع اللقب، يظهر كعنوان رئيسي لبطاقة رئيس الحزب.
               </p>
             )}
           </div>
@@ -310,7 +306,7 @@ export default function PresidentEditModal({
             {/* Role Title Field */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="president-role" className="text-xs font-bold text-slate-800">
+                <label htmlFor="president-role" className="text-sm font-bold text-ink">
                   الصفة الحزبية / المسمى
                 </label>
                 <span
@@ -330,22 +326,18 @@ export default function PresidentEditModal({
                 disabled={busy}
                 maxLength={200}
                 placeholder="مثال: رئيس الحزب"
-                className={`w-full h-11 rounded-2xl border px-4 text-sm transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+                className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
                   errors.roleTitle
                     ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
                 aria-invalid={Boolean(errors.roleTitle)}
                 aria-describedby={errors.roleTitle ? "president-role-error" : undefined}
               />
-              {errors.roleTitle ? (
+              {errors.roleTitle && (
                 <p id="president-role-error" className="text-xs text-red-600 flex items-center gap-1.5 mt-1 font-medium">
                   <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
                   <span>{errors.roleTitle}</span>
-                </p>
-              ) : (
-                <p className="text-[11px] text-slate-400">
-                  المعروض أسفل الاسم (افتراضياً: رئيس الحزب).
                 </p>
               )}
             </div>
@@ -353,7 +345,7 @@ export default function PresidentEditModal({
             {/* Badge Label Field */}
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label htmlFor="president-badge" className="text-xs font-bold text-slate-800">
+                <label htmlFor="president-badge" className="text-sm font-bold text-ink">
                   الشارة التكريمية (اختياري)
                 </label>
                 <span
@@ -373,22 +365,18 @@ export default function PresidentEditModal({
                 disabled={busy}
                 maxLength={50}
                 placeholder="مثال: المؤسس"
-                className={`w-full h-11 rounded-2xl border px-4 text-sm transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+                className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
                   errors.badgeLabel
                     ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
                 aria-invalid={Boolean(errors.badgeLabel)}
                 aria-describedby={errors.badgeLabel ? "president-badge-error" : undefined}
               />
-              {errors.badgeLabel ? (
+              {errors.badgeLabel && (
                 <p id="president-badge-error" className="text-xs text-red-600 flex items-center gap-1.5 mt-1 font-medium">
                   <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
                   <span>{errors.badgeLabel}</span>
-                </p>
-              ) : (
-                <p className="text-[11px] text-slate-400">
-                  تظهر كشارة بارزة بجانب الصفة.
                 </p>
               )}
             </div>
@@ -397,7 +385,7 @@ export default function PresidentEditModal({
           {/* Photo Upload Section */}
           <div className="pt-2 border-t border-slate-100 space-y-2">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+              <div className="flex items-center gap-1.5 text-sm font-bold text-ink">
                 <ImageIcon className="size-4 text-gold-darker" aria-hidden="true" />
                 <span>الصورة الشخصية الرسمية</span>
                 <span className="text-red-500">*</span>
@@ -439,7 +427,7 @@ export default function PresidentEditModal({
                 onChange={(url) => handleFieldChange("photoUrl", setPhotoUrl, url || "")}
                 disabled={busy}
                 label=""
-                hint="الصيغ المدعومة: JPG، PNG، WebP (حجم أقصى 5 ميجابايت). تظهر بدقة كصورة مربعة بارزة لرئيس الحزب."
+                hint=""
               />
             </div>
 
@@ -453,12 +441,12 @@ export default function PresidentEditModal({
         </form>
 
         {/* Pinned Modal Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 sm:px-7 border-t border-slate-100 shrink-0 bg-slate-50/70">
+        <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-end sm:gap-3 sm:px-7">
           <button
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-xs font-bold text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all disabled:opacity-50"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-line bg-white px-5 text-xs font-bold text-muted transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50 sm:w-auto"
           >
             إلغاء
           </button>
@@ -467,7 +455,7 @@ export default function PresidentEditModal({
             type="submit"
             form="president-edit-form"
             disabled={busy}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-bold text-ink shadow-btn hover:brightness-105 active:scale-[0.99] transition-all disabled:opacity-50"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {busy ? (
               <>

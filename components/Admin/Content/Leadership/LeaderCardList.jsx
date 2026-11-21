@@ -51,7 +51,7 @@ export default function LeaderCardList({
             type="button"
             onClick={onAddNew}
             disabled={isBusy}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-4.5 text-xs font-bold text-ink shadow-btn hover:brightness-105 active:scale-[0.99] transition-all self-start sm:self-auto disabled:opacity-50"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-4 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 self-start sm:self-auto disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Plus className="size-4" aria-hidden="true" />
             <span>إضافة قيادي جديد</span>
@@ -61,7 +61,7 @@ export default function LeaderCardList({
 
       {/* Empty State */}
       {leaders.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-xs">
+        <div className="rounded-3xl border border-dashed border-line bg-page/50 p-8 text-center shadow-xs sm:p-10">
           <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-3">
             <Users className="size-6" aria-hidden="true" />
           </div>
@@ -76,7 +76,7 @@ export default function LeaderCardList({
               type="button"
               onClick={onAddNew}
               disabled={isBusy}
-              className="mt-4 inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 text-xs font-bold text-white hover:bg-slate-800 transition-all disabled:opacity-50"
+              className="mt-4 inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-gold-gradient px-4 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus className="size-4" aria-hidden="true" />
               <span>إضافة أول قيادي</span>
@@ -85,7 +85,7 @@ export default function LeaderCardList({
         </div>
       ) : (
         /* Clean, Uncluttered Professional Table/List Container */
-        <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs">
+        <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-card">
           {/* Desktop Table View */}
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-right text-xs" dir="rtl">
@@ -108,7 +108,7 @@ export default function LeaderCardList({
                   return (
                     <tr
                       key={leader.id}
-                      className="hover:bg-slate-50/80 transition-colors"
+                      className="transition-colors hover:bg-gold-tint/20"
                     >
                       {/* Sort Order */}
                       <td className="py-3 px-4 text-center text-slate-400 font-bold">
@@ -143,7 +143,7 @@ export default function LeaderCardList({
                           onClick={() => onToggleStatus(leader)}
                           disabled={!canManage || isBusy}
                           title={leader.is_published ? "انقر لإيقاف العرض" : "انقر للنشر"}
-                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold border transition-colors disabled:opacity-50 ${
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50 ${
                             leader.is_published
                               ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                               : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
@@ -173,7 +173,7 @@ export default function LeaderCardList({
                               onClick={() => onMoveUp(leader, index)}
                               disabled={isFirst || isBusy}
                               title="تحريك لأعلى"
-                              className="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                              className="inline-flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
                               aria-label={`تحريك ${leader.full_name} لأعلى`}
                             >
                               <ArrowUp className="size-3.5" aria-hidden="true" />
@@ -185,7 +185,7 @@ export default function LeaderCardList({
                               onClick={() => onMoveDown(leader, index)}
                               disabled={isLast || isBusy}
                               title="تحريك لأسفل"
-                              className="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                              className="inline-flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
                               aria-label={`تحريك ${leader.full_name} لأسفل`}
                             >
                               <ArrowDown className="size-3.5" aria-hidden="true" />
@@ -197,7 +197,7 @@ export default function LeaderCardList({
                               onClick={() => onEdit(leader)}
                               disabled={isBusy}
                               title="تعديل بيانات القيادي"
-                              className="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-50"
+                              className="inline-flex size-9 items-center justify-center rounded-xl border border-line bg-white text-ink transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-gold-darker focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
                               aria-label={`تعديل ${leader.full_name}`}
                             >
                               <Edit3 className="size-3.5" aria-hidden="true" />
@@ -210,7 +210,7 @@ export default function LeaderCardList({
                                 onClick={() => onDelete(leader)}
                                 disabled={isBusy}
                                 title="حذف القيادي"
-                                className="inline-flex size-7 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors disabled:opacity-50"
+                                className="inline-flex size-9 items-center justify-center rounded-xl border border-red-200 bg-white text-red-600 transition-all hover:border-red-300 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2 disabled:opacity-50"
                                 aria-label={`حذف ${leader.full_name}`}
                               >
                                 <Trash2 className="size-3.5" aria-hidden="true" />
@@ -233,7 +233,7 @@ export default function LeaderCardList({
               const isLast = index === leaders.length - 1;
 
               return (
-                <div key={leader.id} className="p-3.5 space-y-2">
+                <div key={leader.id} className="space-y-2.5 p-4 transition-colors hover:bg-gold-tint/15">
                   <div className="flex items-start justify-between gap-2">
                     <div className="space-y-0.5 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -278,7 +278,7 @@ export default function LeaderCardList({
                           type="button"
                           onClick={() => onMoveUp(leader, index)}
                           disabled={isFirst || isBusy}
-                          className="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30"
+                          className="inline-flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-30"
                           aria-label={`تحريك ${leader.full_name} لأعلى`}
                         >
                           <ArrowUp className="size-3.5" aria-hidden="true" />
@@ -287,7 +287,7 @@ export default function LeaderCardList({
                           type="button"
                           onClick={() => onMoveDown(leader, index)}
                           disabled={isLast || isBusy}
-                          className="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30"
+                          className="inline-flex size-9 items-center justify-center rounded-xl border border-line bg-white text-muted transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-30"
                           aria-label={`تحريك ${leader.full_name} لأسفل`}
                         >
                           <ArrowDown className="size-3.5" aria-hidden="true" />
@@ -296,7 +296,7 @@ export default function LeaderCardList({
                           type="button"
                           onClick={() => onEdit(leader)}
                           disabled={isBusy}
-                          className="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700"
+                          className="inline-flex size-9 items-center justify-center rounded-xl border border-line bg-white text-ink transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-gold-darker focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
                           aria-label={`تعديل ${leader.full_name}`}
                         >
                           <Edit3 className="size-3.5" aria-hidden="true" />
@@ -306,7 +306,7 @@ export default function LeaderCardList({
                             type="button"
                             onClick={() => onDelete(leader)}
                             disabled={isBusy}
-                            className="inline-flex size-7 items-center justify-center rounded-lg border border-red-200 bg-white text-red-600"
+                            className="inline-flex size-9 items-center justify-center rounded-xl border border-red-200 bg-white text-red-600 transition-all hover:border-red-300 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2"
                             aria-label={`حذف ${leader.full_name}`}
                           >
                             <Trash2 className="size-3.5" aria-hidden="true" />

@@ -341,14 +341,14 @@ export default function PartyLeadershipManager() {
   return (
     <div className="space-y-6" dir="rtl">
       {/* Sub-Section Segmented Navigation */}
-      <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-white p-2 shadow-xs">
         <button
           type="button"
           onClick={() => setActiveSection("leaders")}
-          className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all ${
+          className={`inline-flex min-h-11 items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 ${
             activeSection === "leaders"
-              ? "bg-slate-900 text-white shadow-xs"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              ? "bg-gold-gradient text-ink shadow-btn hover:brightness-105 hover:shadow-[0_6px_16px_rgba(201,162,74,0.28)]"
+              : "bg-page text-muted hover:bg-gold-tint/50 hover:text-ink hover:shadow-sm"
           }`}
         >
           <Users className="size-4" aria-hidden="true" />
@@ -367,10 +367,10 @@ export default function PartyLeadershipManager() {
         <button
           type="button"
           onClick={() => setActiveSection("speeches")}
-          className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all ${
+          className={`inline-flex min-h-11 items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold transition-all focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 ${
             activeSection === "speeches"
-              ? "bg-slate-900 text-white shadow-xs"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              ? "bg-gold-gradient text-ink shadow-btn hover:brightness-105 hover:shadow-[0_6px_16px_rgba(201,162,74,0.28)]"
+              : "bg-page text-muted hover:bg-gold-tint/50 hover:text-ink hover:shadow-sm"
           }`}
         >
           <Mic2 className="size-4" aria-hidden="true" />
