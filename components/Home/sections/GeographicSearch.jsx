@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import CustomSelect from "@/components/Home/ui/CustomSelect";
 import Reveal from "@/components/Home/ui/Reveal";
 import { Search, Users, AlertCircle } from "lucide-react";
@@ -30,7 +30,6 @@ export default function GeographicSearch() {
   const [loadingUnits, setLoadingUnits] = useState(false);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
-  const exitTimerRef = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -46,7 +45,6 @@ export default function GeographicSearch() {
       });
     return () => {
       active = false;
-      if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
     };
   }, []);
 
@@ -101,7 +99,6 @@ export default function GeographicSearch() {
   }, [filters.center]);
 
   function hideResult() {
-    if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
     setResult(null);
     setError("");
   }
