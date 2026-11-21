@@ -135,7 +135,7 @@ export default function OrganizationPage() {
   }, [selection.unit, loadPeople, showError]);
 
   useEffect(() => {
-    if (!personEditor || personEditor.member_id !== undefined || memberQuery.trim().length < 2) { setMemberResults([]); return; }
+    if (!personEditor || personEditor.member_id || memberQuery.trim().length < 2) { setMemberResults([]); return; }
     let active = true;
     const controller = new AbortController();
     setMemberLoading(true);
