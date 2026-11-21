@@ -16,8 +16,7 @@ export async function DELETE(request, context) {
 
   const canDelete =
     hasPermission(staff.role, "records:delete") ||
-    staff.role === "super_admin" ||
-    staff.role === "service_officer";
+    staff.role === "super_admin";
 
   if (!canDelete) {
     return jsonResponse({ error: "FORBIDDEN" }, 403);

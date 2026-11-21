@@ -39,24 +39,24 @@
 | **9** | `PATCH` | `/api/admin/staff/[id]/status` | Admin Staff | Protected | `super_admin` (`staff:manage`) | [تفاصيل](#25-تعديل-حالة-نشاط-الموظف-patch-apiadminstaffidstatus) |
 | **10** | `POST` | `/api/admin/staff/[id]/reset-password` | Admin Staff | Protected | `super_admin` (`staff:manage`) | [تفاصيل](#26-إعادة-تعيين-كلمة-مرور-موظف-post-apiadminstaffidreset-password) |
 | **11** | `GET` | `/api/admin/staff/audit-log` | Admin Staff | Protected | `super_admin` (`staff:manage`) | [تفاصيل](#27-سجل-تدقيق-إجراءات-الموظفين-get-apiadminstaffaudit-log) |
-| **12** | `GET` | `/api/admin/applications` | Admin Applications | Protected | `super_admin`, `membership_officer` | [تفاصيل](#31-قائمة-طلبات-الانضمام-get-apiadminapplications) |
-| **13** | `GET` | `/api/admin/applications/[id]` | Admin Applications | Protected | `super_admin`, `membership_officer` | [تفاصيل](#32-تفاصيل-طلب-انضمام-get-apiadminapplicationsid) |
-| **14** | `PATCH` | `/api/admin/applications/[id]/status` | Admin Applications | Protected | `super_admin`, `membership_officer` | [تفاصيل](#33-تحديث-حالة-طلب-الانضمام-patch-apiadminapplicationsidstatus) |
-| **15** | `POST` | `/api/admin/applications/[id]/notes` | Admin Applications | Protected | `super_admin`, `membership_officer` | [تفاصيل](#34-إضافة-ملاحظة-داخلية-post-apiadminapplicationsidnotes) |
-| **16** | `PATCH` | `/api/admin/applications/[id]/assignment` | Admin Applications | Protected | `super_admin`, `membership_officer` | [تفاصيل](#35-إسناد-طلب-الانضمام-لموظف-patch-apiadminapplicationsidassignment) |
+| **12** | `GET` | `/api/admin/applications` | Admin Applications | Protected | `super_admin` | [تفاصيل](#31-قائمة-طلبات-الانضمام-get-apiadminapplications) |
+| **13** | `GET` | `/api/admin/applications/[id]` | Admin Applications | Protected | `super_admin` | [تفاصيل](#32-تفاصيل-طلب-انضمام-get-apiadminapplicationsid) |
+| **14** | `PATCH` | `/api/admin/applications/[id]/status` | Admin Applications | Protected | `super_admin` | [تفاصيل](#33-تحديث-حالة-طلب-الانضمام-patch-apiadminapplicationsidstatus) |
+| **15** | `POST` | `/api/admin/applications/[id]/notes` | Admin Applications | Protected | `super_admin` | [تفاصيل](#34-إضافة-ملاحظة-داخلية-post-apiadminapplicationsidnotes) |
+| **16** | `PATCH` | `/api/admin/applications/[id]/assignment` | Admin Applications | Protected | `super_admin` | [تفاصيل](#35-إسناد-طلب-الانضمام-لموظف-patch-apiadminapplicationsidassignment) |
 | **17** | `GET` | `/api/admin/applications/export` | Admin Applications | Protected | `super_admin` (`applications:export`) | [تفاصيل](#36-تصدير-طلبات-الانضمام-csv-get-apiadminapplicationsexport) |
-| **18** | `GET` | `/api/admin/ministries` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#41-قائمة-الوزارات-get-apiadminministries) |
-| **19** | `POST` | `/api/admin/ministries` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#42-إنشاء-وزارة-post-apiadminministries) |
-| **20** | `GET` | `/api/admin/ministries/[id]` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#43-جلب-وزارة-get-apiadminministriesid) |
-| **21** | `PATCH` | `/api/admin/ministries/[id]` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#44-تحديث-وزارة-patch-apiadminministriesid) |
-| **22** | `PATCH` | `/api/admin/ministries/[id]/status` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#45-تعديل-حالة-نشاط-وزارة-patch-apiadminministriesidstatus) |
-| **23** | `GET` | `/api/admin/request-sectors` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#46-قائمة-القطاعات-get-apiadminrequest-sectors) |
-| **24** | `POST` | `/api/admin/request-sectors` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#47-إنشاء-قطاع-خدمي-post-apiadminrequest-sectors) |
-| **25** | `GET` | `/api/admin/request-sectors/[id]` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#48-جلب-قطاع-خدمي-get-apiadminrequest-sectorsid) |
-| **26** | `PATCH` | `/api/admin/request-sectors/[id]` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#49-تحديث-قطاع-خدمي-patch-apiadminrequest-sectorsid) |
-| **27** | `PATCH` | `/api/admin/request-sectors/[id]/status` | Admin Catalogs | Protected | `super_admin`, `service_officer` | [تفاصيل](#410-تعديل-حالة-نشاط-قطاع-patch-apiadminrequest-sectorsidstatus) |
-| **28** | `GET` | `/api/admin/service-requests` | Admin Services | Protected | `super_admin`, `service_officer` | [تفاصيل](#411-قائمة-طلبات-المواطنين-get-apiadminservice-requests) |
-| **29** | `GET` | `/api/admin/service-requests/[id]` | Admin Services | Protected | `super_admin`, `service_officer` | [تفاصيل](#412-تفاصيل-طلب-مواطن-get-apiadminservice-requestsid) |
+| **18** | `GET` | `/api/admin/ministries` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#41-قائمة-الوزارات-get-apiadminministries) |
+| **19** | `POST` | `/api/admin/ministries` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#42-إنشاء-وزارة-post-apiadminministries) |
+| **20** | `GET` | `/api/admin/ministries/[id]` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#43-جلب-وزارة-get-apiadminministriesid) |
+| **21** | `PATCH` | `/api/admin/ministries/[id]` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#44-تحديث-وزارة-patch-apiadminministriesid) |
+| **22** | `PATCH` | `/api/admin/ministries/[id]/status` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#45-تعديل-حالة-نشاط-وزارة-patch-apiadminministriesidstatus) |
+| **23** | `GET` | `/api/admin/request-sectors` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#46-قائمة-القطاعات-get-apiadminrequest-sectors) |
+| **24** | `POST` | `/api/admin/request-sectors` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#47-إنشاء-قطاع-خدمي-post-apiadminrequest-sectors) |
+| **25** | `GET` | `/api/admin/request-sectors/[id]` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#48-جلب-قطاع-خدمي-get-apiadminrequest-sectorsid) |
+| **26** | `PATCH` | `/api/admin/request-sectors/[id]` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#49-تحديث-قطاع-خدمي-patch-apiadminrequest-sectorsid) |
+| **27** | `PATCH` | `/api/admin/request-sectors/[id]/status` | Admin Catalogs | Protected | `super_admin` | [تفاصيل](#410-تعديل-حالة-نشاط-قطاع-patch-apiadminrequest-sectorsidstatus) |
+| **28** | `GET` | `/api/admin/service-requests` | Admin Services | Protected | `super_admin` | [تفاصيل](#411-قائمة-طلبات-المواطنين-get-apiadminservice-requests) |
+| **29** | `GET` | `/api/admin/service-requests/[id]` | Admin Services | Protected | `super_admin` | [تفاصيل](#412-تفاصيل-طلب-مواطن-get-apiadminservice-requestsid) |
 | **30** | `GET` | `/api/admin/news/articles` | Admin News | Protected | `super_admin`, `news_reviewer`, `news_editor` (الخاص به فقط) | [تفاصيل](#51-قائمة-مقالات-الأخبار-get-apiadminnewsarticles) |
 | **31** | `POST` | `/api/admin/news/articles` | Admin News | Protected | `super_admin`, `news_editor` | [تفاصيل](#52-إنشاء-مقال-جديد-post-apiadminnewsarticles) |
 | **32** | `GET` | `/api/admin/news/articles/[id]` | Admin News | Protected | `super_admin`, `news_reviewer`, `news_editor` (الخاص به فقط) | [تفاصيل](#53-جلب-مقال-محدد-get-apiadminnewsarticlesid) |
@@ -71,53 +71,53 @@
 | **41** | `GET` | `/api/admin/news/sources/[id]` | Admin News | Protected | `super_admin` فقط | [تفاصيل](#512-جلب-مصدر-أخبار-get-apiadminnewssourcesid) |
 | **42** | `PATCH` | `/api/admin/news/sources/[id]` | Admin News | Protected | `super_admin` فقط | [تفاصيل](#513-تعديل-مصدر-أخبار-patch-apiadminnewssourcesid) |
 | **43** | `PATCH` | `/api/admin/news/sources/[id]/status` | Admin News | Protected | `super_admin` فقط | [تفاصيل](#514-تعديل-حالة-مصدر-أخبار-patch-apiadminnewssourcesidstatus) |
-| **44** | `GET` | `/api/admin/content/central-secretariats` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#61-قائمة-الأمانات-المركزية-get-apiadmincontentcentral-secretariats) |
-| **45** | `POST` | `/api/admin/content/central-secretariats` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#62-إنشاء-أمانة-مركزية-post-apiadmincontentcentral-secretariats) |
-| **46** | `GET` | `/api/admin/content/central-secretariats/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#63-جلب-أمانة-مركزية-get-apiadmincontentcentral-secretariatsid) |
-| **47** | `PATCH` | `/api/admin/content/central-secretariats/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#64-تحديث-أمانة-مركزية-patch-apiadmincontentcentral-secretariatsid) |
+| **44** | `GET` | `/api/admin/content/central-secretariats` | Admin Content | Protected | `super_admin` | [تفاصيل](#61-قائمة-الأمانات-المركزية-get-apiadmincontentcentral-secretariats) |
+| **45** | `POST` | `/api/admin/content/central-secretariats` | Admin Content | Protected | `super_admin` | [تفاصيل](#62-إنشاء-أمانة-مركزية-post-apiadmincontentcentral-secretariats) |
+| **46** | `GET` | `/api/admin/content/central-secretariats/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#63-جلب-أمانة-مركزية-get-apiadmincontentcentral-secretariatsid) |
+| **47** | `PATCH` | `/api/admin/content/central-secretariats/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#64-تحديث-أمانة-مركزية-patch-apiadmincontentcentral-secretariatsid) |
 | **48** | `DELETE` | `/api/admin/content/central-secretariats/[id]` | Admin Content | Protected | `super_admin` (`records:delete`) | [تفاصيل](#65-حذف-أمانة-مركزية-delete-apiadmincontentcentral-secretariatsid) |
-| **49** | `PATCH` | `/api/admin/content/central-secretariats/[id]/status` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#66-نشرإخفاء-أمانة-مركزية-patch-apiadmincontentcentral-secretariatsidstatus) |
-| **50** | `POST` | `/api/admin/content/central-secretariats/[id]/people` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#67-إضافة-عضو-للأمانة-المركزية-post-apiadmincontentcentral-secretariatsidpeople) |
-| **51** | `GET` | `/api/admin/content/central-secretariats/[id]/people/[personId]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#68-جلب-عضو-بالأمانة-المركزية-get-apiadmincontentcentral-secretariatsidpeoplepersonid) |
-| **52** | `PATCH` | `/api/admin/content/central-secretariats/[id]/people/[personId]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#69-تعديل-عضو-بالأمانة-المركزية-patch-apiadmincontentcentral-secretariatsidpeoplepersonid) |
+| **49** | `PATCH` | `/api/admin/content/central-secretariats/[id]/status` | Admin Content | Protected | `super_admin` | [تفاصيل](#66-نشرإخفاء-أمانة-مركزية-patch-apiadmincontentcentral-secretariatsidstatus) |
+| **50** | `POST` | `/api/admin/content/central-secretariats/[id]/people` | Admin Content | Protected | `super_admin` | [تفاصيل](#67-إضافة-عضو-للأمانة-المركزية-post-apiadmincontentcentral-secretariatsidpeople) |
+| **51** | `GET` | `/api/admin/content/central-secretariats/[id]/people/[personId]` | Admin Content | Protected | `super_admin` | [تفاصيل](#68-جلب-عضو-بالأمانة-المركزية-get-apiadmincontentcentral-secretariatsidpeoplepersonid) |
+| **52** | `PATCH` | `/api/admin/content/central-secretariats/[id]/people/[personId]` | Admin Content | Protected | `super_admin` | [تفاصيل](#69-تعديل-عضو-بالأمانة-المركزية-patch-apiadmincontentcentral-secretariatsidpeoplepersonid) |
 | **53** | `DELETE` | `/api/admin/content/central-secretariats/[id]/people/[personId]` | Admin Content | Protected | `super_admin` (`records:delete`) | [تفاصيل](#610-حذف-عضو-بالأمانة-المركزية-delete-apiadmincontentcentral-secretariatsidpeoplepersonid) |
-| **54** | `PATCH` | `/api/admin/content/central-secretariats/[id]/people/[personId]/status` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#611-نشرإخفاء-عضو-بالأمانة-المركزية-patch-apiadmincontentcentral-secretariatsidpeoplepersonidstatus) |
-| **55** | `GET` | `/api/admin/content/governorate-secretariats` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#612-قائمة-أمانات-المحافظات-get-apiadmincontentgovernorate-secretariats) |
-| **56** | `POST` | `/api/admin/content/governorate-secretariats` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#613-إنشاء-أمانة-محافظة-post-apiadmincontentgovernorate-secretariats) |
-| **57** | `GET` | `/api/admin/content/governorate-secretariats/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#614-جلب-أمانة-محافظة-get-apiadmincontentgovernorate-secretariatsid) |
-| **58** | `PATCH` | `/api/admin/content/governorate-secretariats/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#615-تحديث-أمانة-محافظة-patch-apiadmincontentgovernorate-secretariatsid) |
+| **54** | `PATCH` | `/api/admin/content/central-secretariats/[id]/people/[personId]/status` | Admin Content | Protected | `super_admin` | [تفاصيل](#611-نشرإخفاء-عضو-بالأمانة-المركزية-patch-apiadmincontentcentral-secretariatsidpeoplepersonidstatus) |
+| **55** | `GET` | `/api/admin/content/governorate-secretariats` | Admin Content | Protected | `super_admin` | [تفاصيل](#612-قائمة-أمانات-المحافظات-get-apiadmincontentgovernorate-secretariats) |
+| **56** | `POST` | `/api/admin/content/governorate-secretariats` | Admin Content | Protected | `super_admin` | [تفاصيل](#613-إنشاء-أمانة-محافظة-post-apiadmincontentgovernorate-secretariats) |
+| **57** | `GET` | `/api/admin/content/governorate-secretariats/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#614-جلب-أمانة-محافظة-get-apiadmincontentgovernorate-secretariatsid) |
+| **58** | `PATCH` | `/api/admin/content/governorate-secretariats/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#615-تحديث-أمانة-محافظة-patch-apiadmincontentgovernorate-secretariatsid) |
 | **59** | `DELETE` | `/api/admin/content/governorate-secretariats/[id]` | Admin Content | Protected | `super_admin` (`records:delete`) | [تفاصيل](#616-حذف-أمانة-محافظة-delete-apiadmincontentgovernorate-secretariatsid) |
-| **60** | `PATCH` | `/api/admin/content/governorate-secretariats/[id]/status` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#617-نشرإخفاء-أمانة-محافظة-patch-apiadmincontentgovernorate-secretariatsidstatus) |
-| **61** | `GET` | `/api/admin/content/leadership/panels` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#618-قائمة-هيئات-القيادة-get-apiadmincontentleadershippanels) |
-| **62** | `POST` | `/api/admin/content/leadership/panels` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#619-إنشاء-هيئة-قيادية-post-apiadmincontentleadershippanels) |
-| **63** | `GET` | `/api/admin/content/leadership/panels/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#620-جلب-هيئة-قيادية-get-apiadmincontentleadershippanelsid) |
-| **64** | `PATCH` | `/api/admin/content/leadership/panels/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#621-تحديث-هيئة-قيادية-patch-apiadmincontentleadershippanelsid) |
+| **60** | `PATCH` | `/api/admin/content/governorate-secretariats/[id]/status` | Admin Content | Protected | `super_admin` | [تفاصيل](#617-نشرإخفاء-أمانة-محافظة-patch-apiadmincontentgovernorate-secretariatsidstatus) |
+| **61** | `GET` | `/api/admin/content/leadership/panels` | Admin Content | Protected | `super_admin` | [تفاصيل](#618-قائمة-هيئات-القيادة-get-apiadmincontentleadershippanels) |
+| **62** | `POST` | `/api/admin/content/leadership/panels` | Admin Content | Protected | `super_admin` | [تفاصيل](#619-إنشاء-هيئة-قيادية-post-apiadmincontentleadershippanels) |
+| **63** | `GET` | `/api/admin/content/leadership/panels/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#620-جلب-هيئة-قيادية-get-apiadmincontentleadershippanelsid) |
+| **64** | `PATCH` | `/api/admin/content/leadership/panels/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#621-تحديث-هيئة-قيادية-patch-apiadmincontentleadershippanelsid) |
 | **65** | `DELETE` | `/api/admin/content/leadership/panels/[id]` | Admin Content | Protected | `super_admin` (`records:delete`) | [تفاصيل](#622-حذف-هيئة-قيادية-delete-apiadmincontentleadershippanelsid) |
-| **66** | `PATCH` | `/api/admin/content/leadership/panels/[id]/status` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#623-نشرإخفاء-هيئة-قيادية-patch-apiadmincontentleadershippanelsidstatus) |
-| **67** | `GET` | `/api/admin/content/leadership/leaders` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#624-قائمة-القادة-get-apiadmincontentleadershipleaders) |
-| **68** | `POST` | `/api/admin/content/leadership/leaders` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#625-إضافة-قائد-جديد-post-apiadmincontentleadershipleaders) |
-| **69** | `GET` | `/api/admin/content/leadership/leaders/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#626-جلب-قائد-محدد-get-apiadmincontentleadershipleadersid) |
-| **70** | `PATCH` | `/api/admin/content/leadership/leaders/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#627-تحديث-بيانات-قائد-patch-apiadmincontentleadershipleadersid) |
+| **66** | `PATCH` | `/api/admin/content/leadership/panels/[id]/status` | Admin Content | Protected | `super_admin` | [تفاصيل](#623-نشرإخفاء-هيئة-قيادية-patch-apiadmincontentleadershippanelsidstatus) |
+| **67** | `GET` | `/api/admin/content/leadership/leaders` | Admin Content | Protected | `super_admin` | [تفاصيل](#624-قائمة-القادة-get-apiadmincontentleadershipleaders) |
+| **68** | `POST` | `/api/admin/content/leadership/leaders` | Admin Content | Protected | `super_admin` | [تفاصيل](#625-إضافة-قائد-جديد-post-apiadmincontentleadershipleaders) |
+| **69** | `GET` | `/api/admin/content/leadership/leaders/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#626-جلب-قائد-محدد-get-apiadmincontentleadershipleadersid) |
+| **70** | `PATCH` | `/api/admin/content/leadership/leaders/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#627-تحديث-بيانات-قائد-patch-apiadmincontentleadershipleadersid) |
 | **71** | `DELETE` | `/api/admin/content/leadership/leaders/[id]` | Admin Content | Protected | `super_admin` (`records:delete`) | [تفاصيل](#628-حذف-قائد-نهائيا-delete-apiadmincontentleadershipleadersid) |
-| **72** | `PATCH` | `/api/admin/content/leadership/leaders/[id]/status` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#629-نشرإخفاء-قائد-patch-apiadmincontentleadershipleadersidstatus) |
-| **73** | `GET` | `/api/admin/content/leadership/contents` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#630-قائمة-قرارات-ومحتوى-القيادة-get-apiadmincontentleadershipcontents) |
-| **74** | `POST` | `/api/admin/content/leadership/contents` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#631-إنشاء-قرارمحتوى-قيادة-post-apiadmincontentleadershipcontents) |
-| **75** | `GET` | `/api/admin/content/leadership/contents/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#632-جلب-قرارمحتوى-قيادة-get-apiadmincontentleadershipcontentsid) |
-| **76** | `PATCH` | `/api/admin/content/leadership/contents/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#633-تحديث-قرارمحتوى-قيادة-patch-apiadmincontentleadershipcontentsid) |
+| **72** | `PATCH` | `/api/admin/content/leadership/leaders/[id]/status` | Admin Content | Protected | `super_admin` | [تفاصيل](#629-نشرإخفاء-قائد-patch-apiadmincontentleadershipleadersidstatus) |
+| **73** | `GET` | `/api/admin/content/leadership/contents` | Admin Content | Protected | `super_admin` | [تفاصيل](#630-قائمة-قرارات-ومحتوى-القيادة-get-apiadmincontentleadershipcontents) |
+| **74** | `POST` | `/api/admin/content/leadership/contents` | Admin Content | Protected | `super_admin` | [تفاصيل](#631-إنشاء-قرارمحتوى-قيادة-post-apiadmincontentleadershipcontents) |
+| **75** | `GET` | `/api/admin/content/leadership/contents/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#632-جلب-قرارمحتوى-قيادة-get-apiadmincontentleadershipcontentsid) |
+| **76** | `PATCH` | `/api/admin/content/leadership/contents/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#633-تحديث-قرارمحتوى-قيادة-patch-apiadmincontentleadershipcontentsid) |
 | **77** | `DELETE` | `/api/admin/content/leadership/contents/[id]` | Admin Content | Protected | `super_admin` (`records:delete`) | [تفاصيل](#634-حذف-قرارمحتوى-قيادة-delete-apiadmincontentleadershipcontentsid) |
-| **78** | `PATCH` | `/api/admin/content/leadership/contents/[id]/status` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#635-نشرإخفاء-قرارمحتوى-قيادة-patch-apiadmincontentleadershipcontentsidstatus) |
-| **79** | `GET` | `/api/admin/content/parliamentary-unit` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#636-قائمة-بنود-الهيئة-البرلمانية-get-apiadmincontentparliamentary-unit) |
-| **80** | `POST` | `/api/admin/content/parliamentary-unit` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#637-إنشاء-بند-برلماني-post-apiadmincontentparliamentary-unit) |
-| **81** | `GET` | `/api/admin/content/parliamentary-unit/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#638-جلب-بند-برلماني-get-apiadmincontentparliamentary-unitid) |
-| **82** | `PATCH` | `/api/admin/content/parliamentary-unit/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#639-تحديث-بند-برلماني-patch-apiadmincontentparliamentary-unitid) |
+| **78** | `PATCH` | `/api/admin/content/leadership/contents/[id]/status` | Admin Content | Protected | `super_admin` | [تفاصيل](#635-نشرإخفاء-قرارمحتوى-قيادة-patch-apiadmincontentleadershipcontentsidstatus) |
+| **79** | `GET` | `/api/admin/content/parliamentary-unit` | Admin Content | Protected | `super_admin` | [تفاصيل](#636-قائمة-بنود-الهيئة-البرلمانية-get-apiadmincontentparliamentary-unit) |
+| **80** | `POST` | `/api/admin/content/parliamentary-unit` | Admin Content | Protected | `super_admin` | [تفاصيل](#637-إنشاء-بند-برلماني-post-apiadmincontentparliamentary-unit) |
+| **81** | `GET` | `/api/admin/content/parliamentary-unit/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#638-جلب-بند-برلماني-get-apiadmincontentparliamentary-unitid) |
+| **82** | `PATCH` | `/api/admin/content/parliamentary-unit/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#639-تحديث-بند-برلماني-patch-apiadmincontentparliamentary-unitid) |
 | **83** | `DELETE` | `/api/admin/content/parliamentary-unit/[id]` | Admin Content | Protected | `super_admin` (`records:delete`) | [تفاصيل](#640-حذف-بند-برلماني-delete-apiadmincontentparliamentary-unitid) |
-| **84** | `PATCH` | `/api/admin/content/parliamentary-unit/[id]/status` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#641-نشرإخفاء-بند-برلماني-patch-apiadmincontentparliamentary-unitidstatus) |
-| **85** | `GET` | `/api/admin/content/popups` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#642-قائمة-النوافذ-المنبثقة-get-apiadmincontentpopups) |
-| **86** | `POST` | `/api/admin/content/popups` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#643-إنشاء-نافذة-منبثقة-post-apiadmincontentpopups) |
-| **87** | `GET` | `/api/admin/content/popups/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#644-جلب-نافذة-منبثقة-get-apiadmincontentpopupsid) |
-| **88** | `PATCH` | `/api/admin/content/popups/[id]` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#645-تحديث-نافذة-منبثقة-patch-apiadmincontentpopupsid) |
+| **84** | `PATCH` | `/api/admin/content/parliamentary-unit/[id]/status` | Admin Content | Protected | `super_admin` | [تفاصيل](#641-نشرإخفاء-بند-برلماني-patch-apiadmincontentparliamentary-unitidstatus) |
+| **85** | `GET` | `/api/admin/content/popups` | Admin Content | Protected | `super_admin` | [تفاصيل](#642-قائمة-النوافذ-المنبثقة-get-apiadmincontentpopups) |
+| **86** | `POST` | `/api/admin/content/popups` | Admin Content | Protected | `super_admin` | [تفاصيل](#643-إنشاء-نافذة-منبثقة-post-apiadmincontentpopups) |
+| **87** | `GET` | `/api/admin/content/popups/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#644-جلب-نافذة-منبثقة-get-apiadmincontentpopupsid) |
+| **88** | `PATCH` | `/api/admin/content/popups/[id]` | Admin Content | Protected | `super_admin` | [تفاصيل](#645-تحديث-نافذة-منبثقة-patch-apiadmincontentpopupsid) |
 | **89** | `DELETE` | `/api/admin/content/popups/[id]` | Admin Content | Protected | `super_admin` (`records:delete`) | [تفاصيل](#646-حذف-نافذة-منبثقة-delete-apiadmincontentpopupsid) |
-| **90** | `PATCH` | `/api/admin/content/popups/[id]/status` | Admin Content | Protected | `super_admin`, `content_editor` | [تفاصيل](#647-نشرإخفاء-نافذة-منبثقة-patch-apiadmincontentpopupsidstatus) |
+| **90** | `PATCH` | `/api/admin/content/popups/[id]/status` | Admin Content | Protected | `super_admin` | [تفاصيل](#647-نشرإخفاء-نافذة-منبثقة-patch-apiadmincontentpopupsidstatus) |
 | **91** | `POST` | `/api/applications` | Public Portal | Public | متاح للجمهور (تقديم طلب عضوية) | [تفاصيل](#71-تقديم-طلب-انضمام-post-apiapplications) |
 | **92** | `POST` | `/api/service-requests` | Public Portal | Public | متاح للجمهور (طلب خدمة مواطن) | [تفاصيل](#72-تقديم-طلب-خدمة-post-apiservice-requests) |
 | **93** | `GET` | `/api/governorates` | Public Portal | Public | متاح للجمهور (قائمة المحافظات) | [تفاصيل](#73-قائمة-المحافظات-النشطة-get-apigovernorates) |
@@ -187,23 +187,20 @@
 ---
 
 ### 3.3 مصفوفة الأدوار والصلاحيات (Role-Based Access Control - RBAC)
-يحتوي النظام على **6 أدوار وظيفية** صارمة للموظفين (مخزنة في حقل `staff_users.role`):
+يحتوي النظام على **3 active staff roles** (stored in `staff_users.role`):
 
 1. `super_admin`: المطور والمسؤول العام، يمتلك كامل الصلاحيات دون قيود، وهو الوحيد المخول بحذف السجلات نهائياً (`records:delete`)، وإدارة الموظفين (`staff:manage`)، وتصدير طلبات العضوية (`applications:export`)، وإدارة مصادر الأخبار.
-2. `membership_officer`: مسؤول العضوية، مخول بعرض وتحديث وإسناد طلبات الانضمام وإضافة الملاحظات الداخلية. لا يملك صلاحية تصدير البيانات (CSV).
-3. `service_officer`: مسؤول الخدمات، مخول بالاطلاع على طلبات المواطنين الخدمية وإدارة كتالوجات الوزارات والقطاعات الخدمية.
-4. `content_editor`: محرر المحتوى الحزبي، مخول بإدارة وإنشاء ونشر وتعديل النوافذ المنبثقة، الهيئات القيادية، القادة، الأمانات المركزية وأعضائها، أمانات المحافظات، والوحدة البرلمانية.
-5. `news_editor`: محرر الأخبار، مخول بإنشاء مسودات المقالات وتعديل مقالاته الخاصة فقط وإرسالها للمراجعة. لا يملك صلاحية النشر، ولا يرى مقالات زملائه.
-6. `news_reviewer`: مراجع الأخبار، مخول بالاطلاع على جميع المقالات، وطلب التعديلات، ونشر المقالات أو إلغاء نشرها. **يحظر عليه نشر مقالاته الخاصة ذاتياً**.
+2. `news_editor`: محرر الأخبار، مخول بإنشاء مسودات المقالات وتعديل مقالاته الخاصة فقط وإرسالها للمراجعة. لا يملك صلاحية النشر، ولا يرى مقالات زملائه.
+3. `news_reviewer`: مراجع الأخبار، مخول بالاطلاع على جميع المقالات، وطلب التعديلات، ونشر المقالات أو إلغاء نشرها. **يحظر عليه نشر مقالاته الخاصة ذاتياً**.
 
 #### مصفوفة الصلاحيات المطبقة في الـ Backend:
 | الصلاحية البرمجية (Permission) | الأدوار المسموح لها | الوصف البرمجي |
 | :--- | :--- | :--- |
-| `applications:read` | `super_admin`, `membership_officer` | عرض طلبات الانضمام وتفاصيلها |
-| `applications:update` | `super_admin`, `membership_officer` | تغيير الحالة والإسناد وإضافة الملاحظات |
+| `applications:read` | `super_admin` | عرض طلبات الانضمام وتفاصيلها |
+| `applications:update` | `super_admin` | تغيير الحالة والإسناد وإضافة الملاحظات |
 | `applications:export` | `super_admin` | تصدير طلبات الانضمام بصيغة CSV |
-| `services:manage` | `super_admin`, `service_officer` | قراءة طلبات المواطنين وإدارة الوزارات والقطاعات |
-| `content:manage` | `super_admin`, `content_editor` | إدارة ونشر وإخفاء جميع أقسام المحتوى التنظيمي |
+| `services:manage` | `super_admin` | قراءة طلبات المواطنين وإدارة الوزارات والقطاعات |
+| `content:manage` | `super_admin` | إدارة ونشر وإخفاء جميع أقسام المحتوى التنظيمي |
 | `news:write` | `super_admin`, `news_editor`, `news_reviewer` | إنشاء المقالات وتعديلها في مسودة |
 | `news:submit` | `super_admin`, `news_editor` | إرسال المقال من مسودة إلى قيد المراجعة |
 | `news:read_all` | `super_admin`, `news_reviewer` | قراءة وعرض مقالات جميع المحررين |
@@ -395,7 +392,7 @@
    * يتحقق السيرفر من وجود الوزارة والقطاع وأنهما في حالة نشطة (`is_active = true`).
    * يتم حفظ الطلب بنجاح وإرجاع `{ "success": true }` برمز الحالة `201`.
 3. **طبيعة المعالجة في الإدارة:**
-   * يطلع موظف الخدمات (`service_officer` أو `super_admin`) على طلبات المواطنين عبر `GET /api/admin/service-requests` مع الفلترة بالهاتف والوزارة والقطاع والتواريخ.
+   * The `super_admin` role can view citizen service requests through `GET /api/admin/service-requests`, with the existing phone, ministry, sector, and date filters.
    * **قاعدة معمارية هامة:** لا توجد دورة تغيير حالة (Accept/Reject) لطلبات الخدمات؛ السجلات تُحفظ كطلبات واردة للمتابعة فقط.
 
 ---
@@ -531,7 +528,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
     {
       "fullName": "أحمد محمود",
       "email": "a.mahmoud@party.eg",
-      "role": "membership_officer",
+      "role": "super_admin",
       "mustChangePassword": false
     }
     ```
@@ -599,7 +596,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
           "id": "c1f7a834-56b9-4f7d-bc23-112233445566",
           "full_name": "سارة إبراهيم",
           "email": "s.ibrahim@party.eg",
-          "role": "membership_officer",
+          "role": "super_admin",
           "is_active": true,
           "must_change_password": false,
           "created_at": "2026-11-10T12:00:00.000Z",
@@ -624,14 +621,14 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
 * **جسم الطلب (Request Body):**
   * `full_name` (string, إلزامي): من 1 إلى 200 حرف.
   * `email` (string, إلزامي): بريد إلكتروني فريد، بحد أقصى 254 حرفاً.
-  * `role` (string, إلزامي): أحد الأدوار الستة: `super_admin`, `membership_officer`, `service_officer`, `content_editor`, `news_editor`, `news_reviewer`.
+  * `role` (string, required): one of `super_admin`, `news_editor`, `news_reviewer`.
   * `temporary_password` (string, إلزامي): كلمة مرور مؤقتة تحقق معايير القوة (10 أحرف على الأقل، حرف ورقم).
   * مثال واقعي للطلب:
     ```json
     {
       "full_name": "محمد علي القاضي",
       "email": "m.elkadi@party.eg",
-      "role": "content_editor",
+      "role": "super_admin",
       "temporary_password": "TempPassword2026"
     }
     ```
@@ -644,7 +641,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
         "id": "d2f8a945-67c0-4e8e-cd34-223344556677",
         "full_name": "محمد علي القاضي",
         "email": "m.elkadi@party.eg",
-        "role": "content_editor",
+        "role": "super_admin",
         "is_active": true,
         "must_change_password": true,
         "created_at": "2026-11-18T16:00:00.000Z",
@@ -730,7 +727,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
         "id": "c1f7a834-56b9-4f7d-bc23-112233445566",
         "full_name": "سارة إبراهيم",
         "email": "s.ibrahim@party.eg",
-        "role": "membership_officer",
+        "role": "super_admin",
         "is_active": true,
         "must_change_password": true,
         "created_at": "2026-11-10T12:00:00.000Z",
@@ -783,7 +780,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
 
 ### المجال الثالث: إدارة طلبات الانضمام (Admin Membership Applications) — 6 معالجات
 
-> **ملاحظة الصلاحيات:** معالجات العرض والتعديل متاحة لـ `super_admin` و `membership_officer` (صلاحيتي `applications:read` و `applications:update`). مسار التصدير فقط مقتصر على `super_admin` (`applications:export`).
+> Permission note: all application handlers, including read, update, assignment, notes, and export, are available to `super_admin`.
 
 #### 3.1 قائمة طلبات الانضمام (`GET /api/admin/applications`)
 * **ملف المسار:** `app/api/admin/applications/route.js`.
@@ -980,7 +977,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
 
 ### المجال الرابع: الكتالوجات وطلبات الخدمات (Admin Services & Catalogs) — 12 معالجاً
 
-> **ملاحظة الصلاحيات:** جميع معالجات إدارة الوزارات والقطاعات وعرض طلبات الخدمات تتطلب صلاحية `services:manage` الممنوحة لكل من: `super_admin` و `service_officer`.
+> Permission note: service request and catalog handlers require `services:manage`, which is granted to `super_admin`.
 
 #### 4.1 قائمة الوزارات (`GET /api/admin/ministries`)
 * **ملف المسار:** `app/api/admin/ministries/route.js`.
@@ -1526,7 +1523,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
 ### المجال السادس: المحتوى الحزبي والتنظيمي (Admin Organizational Content) — 47 معالجاً
 
 > **قواعد الصلاحيات الموحدة للمحتوى التنظيمي:**
-> * **عمليات العرض والإنشاء والتعديل والنشر/الإخفاء:** متاحة لدوري: `super_admin` و `content_editor` (صلاحية `content:manage`).
+> Permission note: organizational content handlers require `content:manage`, which is granted to `super_admin`.
 > * **عمليات الحذف النهائي (`DELETE`):** مقتصرة حصرياً على `super_admin` (صلاحية `records:delete`).
 > * **تأكيد الحذف:** جميع معالجات `DELETE` تشترط إرسال جسم طلب `{ "confirm": true }` بصيغة JSON، وترد عند النجاح دائماً بـ: `{ "deleted": true }`.
 

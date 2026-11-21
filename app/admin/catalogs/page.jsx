@@ -59,7 +59,6 @@ export default function CatalogsPage() {
 
   const canManage =
     user?.role === "super_admin" ||
-    user?.role === "service_officer" ||
     canAccess(user?.role, "catalogs") ||
     canAccess(user?.role, "services:manage");
 

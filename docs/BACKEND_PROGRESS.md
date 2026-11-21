@@ -1127,3 +1127,13 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
   - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).
 
 | 2026-11-20 | Staff Visual Refinement | تحسين بصري شامل لصفحة إدارة الموظفين: مطابقة زر الإغلاق الذهبي الدوار مع نمط Catalog في جميع النوافذ المنبثقة الخمس، وتوحيد أنماط hover للأزرار، وتعميق تطابق حقول الإدخال مع نظام التصميم المشترك (focus shadow + error states + duration-300)، وتحسين dropdown الفلترة مع focus shadow ذهبي، وتعزيز أزرار الإجراءات بـscale وduration متناسقة. | `app/admin/staff/page.jsx`؛ `components/Admin/Staff/StaffEditorModal.jsx`؛ `components/Admin/Staff/StaffAuditModal.jsx`؛ `components/Admin/Staff/StaffResetPasswordModal.jsx`؛ `components/Admin/Staff/StaffStatusModal.jsx`؛ `components/Admin/Staff/StaffSuccessPasswordModal.jsx` | لا تغييرات على الباك إند أو API أو الصلاحيات أو المنطق التجاري. `npm test`: 283 ناجحاً. ESLint: 3 أخطاء pre-existing (setState في useEffect) موجودة قبل هذه التعديلات؛ لا أخطاء جديدة. |
+
+
+## 2026-11-21 - Stage 1 staff role consolidation
+
+- Active staff roles are now limited to `super_admin`, `news_editor`, and `news_reviewer` across role permissions, role labels, staff role options/statistics, navigation visibility, and validation.
+- `super_admin` retains every existing Admin section and all existing permission grants. Writer and Reviewer retain their existing News permissions and account access.
+- Removed legacy direct authorization branches for membership application and service request deletion. Service catalog access is now limited to `super_admin`.
+- Updated role documentation, API integration role references, and affected authorization/validation tests. The only remaining retired-role identifiers in active source are negative validation test cases confirming those values are rejected; earlier progress entries retain historical descriptions.
+- No schema or database changes were made. A prior read-only check of the workspace database found zero staff accounts assigned to retired roles.
+- Verification: focused Node tests passed (110 tests, 0 failures). Targeted ESLint passed with exit code 0.

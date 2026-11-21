@@ -1,39 +1,25 @@
-# الأدوار والصلاحيات
+# Staff Roles and Permissions
 
-هذا الملف هو المرجع الثابت لأدوار الموظفين وصلاحياتهم. قيم الدور مخزنة في `staff_users.role`.
+This document defines the active staff roles stored in `staff_users.role`. The application accepts exactly three roles.
 
-## الأدوار
+## Active roles
 
-- `super_admin`: جميع الصلاحيات. يمكن وجود أكثر من موظف بهذا الدور.
-- `membership_officer`: إدارة طلبات الانضمام.
-- `service_officer`: إدارة طلبات الخدمات والوزارات.
-- `content_editor`: إدارة النوافذ المنبثقة والقيادات والأمانات المركزية وأمانات المحافظات والوحدة البرلمانية، مع النشر المباشر.
-- `news_editor`: كتابة المقالات وتعديل مقالاته وإرسالها للمراجعة؛ لا يملك صلاحية النشر.
-- `news_reviewer`: مراجعة المقالات والموافقة عليها ونشرها، أو إرجاعها بملاحظة، أو إلغاء نشر مقال منشور.
+- `super_admin` - System Administrator with full access to every existing Admin dashboard section: membership applications, service requests, service catalogs, organizational content, news management, staff management, and audit logs.
+- `news_editor` - Writer with the existing News permissions to create and edit their own articles and submit them for review.
+- `news_reviewer` - Reviewer with the existing News permissions to read all articles, review them, request revisions, and publish or unpublish them.
 
-## الصلاحيات
+## Permission boundaries
 
-| الصلاحية | الأدوار المسموح لها |
+| Feature | Roles |
 |---|---|
-| عرض طلبات الانضمام، بما فيها الرقم القومي ورقم الموبايل كاملين، وتغيير الحالة والملاحظات الداخلية والإسناد | `super_admin`، `membership_officer` |
-| تصدير طلبات الانضمام | `super_admin` |
-| إدارة طلبات الخدمات | `super_admin`، `service_officer` |
-| إدارة الوزارات | `super_admin`، `service_officer` |
-| تعديل المحتوى ونشره أو إخفاؤه | `super_admin`، `content_editor` |
-| كتابة المقالات وتعديلها قبل النشر | `super_admin`، `news_editor`، `news_reviewer` |
-| إرسال المقالات للمراجعة | `super_admin`، `news_editor` |
-| رؤية جميع المقالات | `super_admin`، `news_reviewer` |
-| رؤية مقالات الموظف نفسه | `news_editor` |
-| الموافقة على المقالات ونشرها أو إرجاعها أو إلغاء نشرها | `super_admin`، `news_reviewer` |
-| إدارة الموظفين والأدوار | `super_admin` |
-| الحذف النهائي لأي سجل | `super_admin` |
+| Membership applications and export | `super_admin` |
+| Service requests and catalogs | `super_admin` |
+| Organizational content | `super_admin` |
+| News writing | `super_admin`, `news_editor`, `news_reviewer` |
+| Submit articles for review | `super_admin`, `news_editor` |
+| Read own articles | `news_editor` |
+| Read all articles and review/publish | `super_admin`, `news_reviewer` |
+| Staff management and audit logs | `super_admin` |
+| Account page | All three active roles |
 
-## قواعد التنفيذ
-
-- لكل موظف دور واحد.
-- تُعرّف الصلاحيات في الكود كخريطة من الدور إلى الصلاحيات، ويجب التحقق منها في كل API؛ إخفاء عناصر الواجهة وحده لا يفرض الصلاحيات.
-- يُمنع الموظف فورًا عند `is_active = false`، حتى لو كانت جلسته ما زالت فعالة.
-- يُسجل التعديل في `updated_by` للسجلات التي تحتوي هذا الحقل. لا يحتوي `staff_users` على حقل `updated_by`؛ تُسجل هوية الموظف المنفذ لتعديل الموظف في `staff_audit_log` عبر `actor_id`، مع لقطتي الاسم والبريد `actor_name` و`actor_email`.
-- يُسجل كل تغيير لحالة طلب في `application_status_history`.
-- لا توجد صلاحيات محددة على مستوى المحافظة.
-- مسار المقال: `draft` ← `pending_review` ← `published` أو `changes_requested`. المقال المعاد بـ`changes_requested` يرجع للمحرر ويمكن إرساله للمراجعة مجددًا.
+News permissions and article workflow rules are unchanged by this role consolidation.
