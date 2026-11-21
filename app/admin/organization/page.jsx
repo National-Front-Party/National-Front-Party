@@ -3,13 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Building2, MapPin, Network, Users, Plus, Pencil, Trash2, RefreshCw,
-  Search, ChevronDown, Power, X, Save, UserRound, ShieldCheck, AlertCircle,
-  CheckCircle2, Layers3, Landmark,
+  Search, ChevronDown, Power, X, Save, UserRound, ShieldCheck, Landmark,
 } from "lucide-react";
 import PageHeader from "@/components/Admin/ui/PageHeader";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import EmptyState from "@/components/Admin/ui/EmptyState";
-import Spinner from "@/components/Admin/ui/Spinner";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import { useAdminAuth } from "@/lib/admin/auth-context";
@@ -75,7 +73,7 @@ export default function OrganizationPage() {
   const loadGovernorates = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await adminFetch("/api/organization/governorates");
+      const result = await adminFetch("/api/admin/content/governorates");
       setGovernorates(result?.governorates ?? []);
     } catch (error) {
       showError(error?.message || "تعذر تحميل المحافظات");
