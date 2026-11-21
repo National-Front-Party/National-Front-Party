@@ -1184,3 +1184,17 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Kept party_programs read-only unsupported in Admin: the only existing route is a public GET for published content; no Admin API/service supports list/create/update/delete.
 - No database, API, authorization, or unrelated Admin section changes.
 - Verification: focused content handler/service/validation tests passed (27 tests); targeted ESLint passed; git diff --check passed. Initial sandboxed test execution was blocked by Windows spawn EPERM; rerun with process-spawn permission passed.
+
+## 2026-11-22 - Phase 2 Reviewer article read scope
+
+- Restricted `listArticlesAdmin` reviewers to other authors' `pending_review` articles, irrespective of client filters; contradictory status filters and requests for the reviewer's own author ID return an empty page. Restricted `getArticle` to the same scope with the existing `NOT_FOUND` result for ineligible reads.
+- Preserved Super Admin and Writer reads. No UI, API shape, schema, or workflow status changes.
+- Verification at completion: News service and handler tests passed (29/29); targeted ESLint and `git diff --check` passed.
+
+## 2026-11-22 - Phase 3 Writer article submission workflow
+
+- Root cause: `/api/admin/auth/me` and `AdminAuthContext` provide the Writer's email and role but no `id`; News UI author checks depended only on `user.id`, so Writer edit/submit actions were hidden. In addition, the primary action for `changes_requested` articles showed review notes instead of resubmit.
+- Added UI author matching using article author email when a session ID is unavailable. The News UI now shows submit/resubmit for Writer-owned `draft` and `changes_requested` articles, updates the local status to `pending_review` on success, reports request errors, and guards repeated submissions while a request is in progress.
+- Verified the existing submit API and service already enforce Writer ownership and allow only `draft`/`changes_requested` transitions to `pending_review`; added regression coverage for other-author, invalid-status, Reviewer, and successful submissions. Existing Super Admin workflow and media upload permissions were unchanged.
+- No database schema or article status changes.
+- Verification: News service, handler, and UI permission tests passed (32/32); targeted ESLint and `git diff --check` passed.

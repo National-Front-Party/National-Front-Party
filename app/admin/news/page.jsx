@@ -25,7 +25,7 @@ import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import { useAdminAuth } from "@/lib/admin/auth-context";
 import { canAccess } from "@/lib/admin/permissions";
-import { canEditNewsArticle, canSubmitNewsArticle } from "@/lib/news/ui-permissions.js";
+import { canEditNewsArticle, canSubmitNewsArticle, isNewsArticleAuthor } from "@/lib/news/ui-permissions.js";
 import Spinner from "@/components/Admin/ui/Spinner";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import CustomSelect from "@/components/Home/ui/CustomSelect";
@@ -434,7 +434,7 @@ export default function NewsPage() {
   const getRowMenuItems = useCallback(
     (art) => {
       const items = [];
-      const isAuthor = Boolean(user?.id && art.created_by === user.id);
+      const isAuthor = isNewsArticleAuthor(art, user);
       const canEdit = canEditNewsArticle(role, isAuthor, art.status);
       const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
       const canReview =
@@ -835,7 +835,7 @@ export default function NewsPage() {
                       tone: "bg-page text-muted border-line",
                       dot: "bg-muted",
                     };
-                    const isAuthor = Boolean(user?.id && art.created_by === user.id);
+                    const isAuthor = isNewsArticleAuthor(art, user);
                     const canEdit = canEditNewsArticle(role, isAuthor, art.status);
                     const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
                     const canReview =
@@ -949,7 +949,7 @@ export default function NewsPage() {
                         <td className="py-4 pr-3 pl-6 sm:pl-8">
                           <div className="flex items-center justify-center gap-2">
                             {/* Primary Action Button based on status & role */}
-                            {art.status === "changes_requested" ? (
+                            {art.status === "changes_requested" && !(isEditor && canSubmit) ? (
                               <button
                                 type="button"
                                 onClick={() => {
@@ -975,7 +975,7 @@ export default function NewsPage() {
                                 <CheckCircle2 className="size-3.5" />
                                 <span>مراجعة</span>
                               </button>
-                            ) : canSubmit && art.status === "draft" ? (
+                            ) : canSubmit && (art.status === "draft" || art.status === "changes_requested") ? (
                               <button
                                 type="button"
                                 disabled={actionInProgressId === art.id}
@@ -1046,7 +1046,7 @@ export default function NewsPage() {
                     tone: "bg-page text-muted border-line",
                     dot: "bg-muted",
                   };
-                  const isAuthor = Boolean(user?.id && art.created_by === user.id);
+                  const isAuthor = isNewsArticleAuthor(art, user);
                   const canEdit = canEditNewsArticle(role, isAuthor, art.status);
                   const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
                   const canReview =
@@ -1153,7 +1153,7 @@ export default function NewsPage() {
                       {/* Card Footer: Primary Action & Dropdown */}
                       <div className="flex items-center justify-end gap-2 border-t border-line/60 pt-3 mt-1">
                         {/* Primary Action Button based on status & role */}
-                        {art.status === "changes_requested" ? (
+                        {art.status === "changes_requested" && !(isEditor && canSubmit) ? (
                           <button
                             type="button"
                             onClick={() => {
@@ -1177,7 +1177,7 @@ export default function NewsPage() {
                             <CheckCircle2 className="size-3.5" />
                             <span>مراجعة</span>
                           </button>
-                        ) : canSubmit && art.status === "draft" ? (
+                        ) : canSubmit && (art.status === "draft" || art.status === "changes_requested") ? (
                           <button
                             type="button"
                             disabled={actionInProgressId === art.id}
