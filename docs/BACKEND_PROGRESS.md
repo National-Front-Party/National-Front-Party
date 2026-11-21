@@ -1577,3 +1577,13 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - إضافة اختبارات وحدات للـOrganization handlers والـServices وValidation، مع حقن الاعتماديات في handlers لتسهيل اختبار الصلاحيات وعقود الاستجابات.
 - مراجعة Phase 13 audit JSON CHECK: المفاتيح المستخدمة (`entity_type`, `entity_id`, `changed_fields`) مسموح بها وأنواعها متوافقة؛ لم يتم توسيع القيود أو الـenum.
 - لا تزال اختبارات Node وESLint وNext build وPrisma generate غير مشغّلة في بيئة محلية ضمن هذه الجلسة؛ لا تعتبر نتائجها ناجحة قبل تشغيلها.
+
+## إصلاحات lint وbuild والتحقق العام (فرع test)
+- أعيد تنظيم Effects في صفحة إدارة الهيكل التنظيمي والبحث الجغرافي: أصبحت حالات مسح القوائم التابعة تتغير مع أحداث الاختيار، وأُضيف إلغاء الطلبات القديمة مع إبقاء حواجز منع النتائج المتأخرة.
+- حُذفت متغيرات المحافظة والمركز غير المستخدمة في GeographicSearch.
+- استُبدل تحميل IBM Plex Sans Arabic من Google Fonts بملفات WOFF2 محلية للأوزان 400/500/600/700 من حزمة IBM الرسمية، وأُدرج ملف ترخيص OFL.
+- أُضيفت حدود مسار موحدة لمجلد public/uploads/org، مع تعليمات Turbopack لتجاوز التتبع الديناميكي لملفات الرفع وقت التشغيل. اختفى تحذير تتبع المشروع من build.
+- أُحيط غلاف لوحة الإدارة بحد Suspense مع شاشة انتظار من نفس الهوية لمعالجة CSR bailout في prerender.
+- نتائج التحقق: lint ناجح بلا تحذيرات؛ build ناجح؛ Prisma validate ناجح؛ Prisma generate ناجح إلى مجلد مؤقت للحفاظ على تغييرات generated/prisma الموجودة؛ npm test ناجح (338/338).
+- سجّل build استثناءات Prisma P2021 أثناء توليد صفحات، لأن بعض الجداول غير متاحة في قاعدة البيانات الحالية؛ استخدمت الصفحة بيانات fallback وأكمل البناء. لم تُجرَ أي عملية كتابة أو migration لقاعدة البيانات.
+- ظهرت تحذيرات Node MODULE_TYPELESS_PACKAGE_JSON أثناء الاختبارات، ولم تؤثر على النتائج.

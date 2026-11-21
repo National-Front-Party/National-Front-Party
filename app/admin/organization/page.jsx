@@ -81,64 +81,85 @@ export default function OrganizationPage() {
     } finally { setLoading(false); }
   }, [showError]);
 
-  const loadCenters = useCallback(async (governorateId) => {
-    if (!governorateId) { setCenters([]); return; }
-    const result = await adminFetch("/api/admin/content/organization/centers?governorate_id=" + governorateId);
+  const loadCenters = useCallback(async (governorateId, signal) => {
+    if (!governorateId) return [];
+    const result = await adminFetch("/api/admin/content/organization/centers?governorate_id=" + governorateId, { signal });
     return result?.items ?? [];
   }, []);
 
-  const loadSecretariats = useCallback(async (centerId) => {
-    if (!centerId) { setSecretariats([]); return; }
-    const result = await adminFetch("/api/admin/content/organization/local-secretariats?center_id=" + centerId);
+  const loadSecretariats = useCallback(async (centerId, signal) => {
+    if (!centerId) return [];
+    const result = await adminFetch("/api/admin/content/organization/local-secretariats?center_id=" + centerId, { signal });
     return result?.items ?? [];
   }, []);
 
-  const loadUnits = useCallback(async (secretariatId) => {
-    if (!secretariatId) { setUnits([]); return; }
-    const result = await adminFetch("/api/admin/content/organization/party-units?secretariat_id=" + secretariatId);
+  const loadUnits = useCallback(async (secretariatId, signal) => {
+    if (!secretariatId) return [];
+    const result = await adminFetch("/api/admin/content/organization/party-units?secretariat_id=" + secretariatId, { signal });
     return result?.items ?? [];
   }, []);
 
-  const loadPeople = useCallback(async (unitId) => {
-    if (!unitId) { setPeople([]); return; }
-    const result = await adminFetch("/api/admin/content/organization/party-units/" + unitId + "/people");
+  const loadPeople = useCallback(async (unitId, signal) => {
+    if (!unitId) return [];
+    const result = await adminFetch("/api/admin/content/organization/party-units/" + unitId + "/people", { signal });
     return result?.people ?? [];
   }, []);
 
-  useEffect(() => { loadGovernorates(); }, [loadGovernorates]);
   useEffect(() => {
     let active = true;
-    if (!selection.governorate) { setCenters([]); return; }
-    setLoadingChildren(true);
-    loadCenters(selection.governorate).then((items) => active && setCenters(items)).catch((e) => active && showError(e?.message || "تعذر تحميل المراكز")).finally(() => active && setLoadingChildren(false));
-    return () => { active = false; };
+    const controller = new AbortController();
+    adminFetch("/api/admin/content/governorates", { signal: controller.signal })
+      .then((result) => {
+        if (active) setGovernorates((result?.governorates ?? []).filter((item) => item.is_active));
+      })
+      .catch((error) => {
+        if (active) showError(error?.message || "تعذر تحميل المحافظات");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [showError]);
+
+  useEffect(() => {
+    let active = true;
+    if (!selection.governorate) return undefined;
+    const controller = new AbortController();
+    loadCenters(selection.governorate, controller.signal).then((items) => active && setCenters(items)).catch((e) => active && showError(e?.message || "تعذر تحميل المراكز")).finally(() => active && setLoadingChildren(false));
+    return () => { active = false; controller.abort(); };
   }, [selection.governorate, loadCenters, showError]);
+
   useEffect(() => {
     let active = true;
-    if (!selection.center) { setSecretariats([]); return; }
-    setLoadingChildren(true);
-    loadSecretariats(selection.center).then((items) => active && setSecretariats(items)).catch((e) => active && showError(e?.message || "تعذر تحميل الأمانات المحلية")).finally(() => active && setLoadingChildren(false));
-    return () => { active = false; };
+    if (!selection.center) return undefined;
+    const controller = new AbortController();
+    loadSecretariats(selection.center, controller.signal).then((items) => active && setSecretariats(items)).catch((e) => active && showError(e?.message || "تعذر تحميل الأمانات المحلية")).finally(() => active && setLoadingChildren(false));
+    return () => { active = false; controller.abort(); };
   }, [selection.center, loadSecretariats, showError]);
+
   useEffect(() => {
     let active = true;
-    if (!selection.secretariat) { setUnits([]); return; }
-    setLoadingChildren(true);
-    loadUnits(selection.secretariat).then((items) => active && setUnits(items)).catch((e) => active && showError(e?.message || "تعذر تحميل الوحدات الحزبية")).finally(() => active && setLoadingChildren(false));
-    return () => { active = false; };
+    if (!selection.secretariat) return undefined;
+    const controller = new AbortController();
+    loadUnits(selection.secretariat, controller.signal).then((items) => active && setUnits(items)).catch((e) => active && showError(e?.message || "تعذر تحميل الوحدات الحزبية")).finally(() => active && setLoadingChildren(false));
+    return () => { active = false; controller.abort(); };
   }, [selection.secretariat, loadUnits, showError]);
+
   useEffect(() => {
     let active = true;
-    if (!selection.unit) { setPeople([]); return; }
-    loadPeople(selection.unit).then((items) => active && setPeople(items)).catch((e) => active && showError(e?.message || "تعذر تحميل مسؤولي الوحدة"));
-    return () => { active = false; };
+    if (!selection.unit) return undefined;
+    const controller = new AbortController();
+    loadPeople(selection.unit, controller.signal).then((items) => active && setPeople(items)).catch((e) => active && showError(e?.message || "تعذر تحميل مسؤولي الوحدة"));
+    return () => { active = false; controller.abort(); };
   }, [selection.unit, loadPeople, showError]);
 
   useEffect(() => {
-    if (!personEditor || personEditor.member_id || memberQuery.trim().length < 2) { setMemberResults([]); return; }
+    if (!personEditor || personEditor.member_id || memberQuery.trim().length < 2) return undefined;
     let active = true;
     const controller = new AbortController();
-    setMemberLoading(true);
     adminFetch("/api/admin/content/organization/members?q=" + encodeURIComponent(memberQuery.trim()), { signal: controller.signal })
       .then((res) => active && setMemberResults(res?.members ?? []))
       .catch(() => active && setMemberResults([]))
@@ -154,6 +175,25 @@ export default function OrganizationPage() {
       : level === "secretariat"
       ? { ...prev, secretariat: value, unit: "" }
       : { ...prev, unit: value });
+
+    if (level === "governorate") {
+      setCenters([]);
+      setSecretariats([]);
+      setUnits([]);
+      setPeople([]);
+      setLoadingChildren(Boolean(value));
+    } else if (level === "center") {
+      setSecretariats([]);
+      setUnits([]);
+      setPeople([]);
+      setLoadingChildren(Boolean(value));
+    } else if (level === "secretariat") {
+      setUnits([]);
+      setPeople([]);
+      setLoadingChildren(Boolean(value));
+    } else {
+      setPeople([]);
+    }
     setSearch("");
   };
 
@@ -177,7 +217,7 @@ export default function OrganizationPage() {
       if (selection.secretariat) setUnits(await loadUnits(selection.secretariat));
       if (selection.unit) setPeople(await loadPeople(selection.unit));
     } catch (error) {
-      showError(error?.message || "تعذر تحديث بيانات الهيكل التنظيمي");
+      showError(error?.message || "تعذر تحديث بيانات إدارة البحث");
     }
   };
 
@@ -268,7 +308,7 @@ export default function OrganizationPage() {
   };
 
   if (!canManage) {
-    return <EmptyState icon={ShieldCheck} title="غير مصرح بالوصول" description="إدارة الهيكل التنظيمي متاحة لمدير النظام فقط." />;
+    return <EmptyState icon={ShieldCheck} title="غير مصرح بالوصول" description="إدارة البحث متاحة لمدير النظام فقط." />;
   }
 
   if (loading) return <div className="space-y-4" dir="rtl"><Skeleton className="h-24 rounded-3xl" /><Skeleton className="h-16 rounded-2xl" /><div className="grid gap-4 md:grid-cols-3"><Skeleton className="h-64 rounded-3xl" /><Skeleton className="h-64 rounded-3xl" /><Skeleton className="h-64 rounded-3xl" /></div></div>;
@@ -281,7 +321,7 @@ export default function OrganizationPage() {
 
   return (
     <div className="space-y-6" dir="rtl">
-      <PageHeader title="إدارة الهيكل التنظيمي" description="إدارة التسلسل التنظيمي للحزب من المحافظات والمراكز حتى الوحدات الحزبية وقياداتها." badge={<span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold-tint px-3 py-1 text-xs font-bold text-gold-dark"><ShieldCheck className="size-3.5" /> مدير النظام</span>} actions={<button type="button" onClick={refreshAll} className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-ink hover:bg-page"><RefreshCw className="size-4" /> تحديث البيانات</button>} />
+      <PageHeader title="إدارة البحث" description="إدارة التسلسل التنظيمي للحزب من المحافظات والمراكز حتى الوحدات الحزبية وقياداتها." badge={<span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold-tint px-3 py-1 text-xs font-bold text-gold-dark"><ShieldCheck className="size-3.5" /> مدير النظام</span>} actions={<button type="button" onClick={refreshAll} className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-ink hover:bg-page"><RefreshCw className="size-4" /> تحديث البيانات</button>} />
 
       <section className="rounded-3xl border border-line bg-white p-5 shadow-xs">
         <div className="mb-4 flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-gold-tint text-gold-dark"><MapPin className="size-5" /></span><div><h2 className="text-sm font-black text-ink">اختيار النطاق التنظيمي</h2><p className="text-xs text-muted">اختار المحافظة ثم المركز ثم الأمانة المحلية لعرض الوحدات التابعة ليها</p></div></div>
@@ -335,7 +375,7 @@ export default function OrganizationPage() {
           <div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-xl bg-gold-tint text-gold-dark"><Users className="size-5" /></span><div><h2 className="text-sm font-black text-ink">قيادات ومسؤولو الوحدة الحزبية</h2><p className="text-xs text-muted">{selectedUnit?.name_ar || "اختار وحدة حزبية لعرض الأشخاص المرتبطين بيها"}</p></div></div>
           <div className="flex flex-wrap gap-2">
             <div className="relative"><Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted" /><input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="بحث بالاسم أو المنصب..." className={inputClass+" w-full pr-9 sm:w-56"} /></div>
-            <button type="button" disabled={!selection.unit} onClick={() => { setPersonEditor({ full_name: "", position_title: "", details: "", sort_order: String(people.length), is_published: false, member_id: null }); setMemberQuery(""); }} className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-4 py-2.5 text-xs font-black text-ink disabled:opacity-40"><Plus className="size-4" /> إضافة مسؤول</button>
+            <button type="button" disabled={!selection.unit} onClick={() => { setPersonEditor({ full_name: "", position_title: "", details: "", sort_order: String(people.length), is_published: false, member_id: null }); setMemberQuery(""); setMemberResults([]); setMemberLoading(false); }} className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-4 py-2.5 text-xs font-black text-ink disabled:opacity-40"><Plus className="size-4" /> إضافة مسؤول</button>
           </div>
         </header>
         {!selection.unit ? <EmptyState icon={Users} title="اختار وحدة حزبية" description="بعد اختيار الوحدة هتقدر تدير المسؤولين والقيادات المرتبطين بيها." className="m-4" /> :
@@ -362,7 +402,7 @@ export default function OrganizationPage() {
       {personEditor && <Modal title={personEditor.id ? "تعديل بيانات المسؤول" : "إضافة مسؤول جديد"} onClose={()=>!busy && setPersonEditor(null)}>
         <form onSubmit={savePerson} className="space-y-4">
           <div className="rounded-xl border border-gold/20 bg-gold-tint/60 p-3 text-xs leading-6 text-gold-dark">تقدر تربط المسؤول بعضو نشط موجود في قاعدة بيانات الحزب، أو تضيف بياناته يدويًا.</div>
-          {!personEditor.member_id && <Field label="البحث عن عضو نشط"><input className={inputClass} value={memberQuery} onChange={(e)=>{setMemberQuery(e.target.value);setPersonEditor((p)=>({...p,member_id:null,full_name:""}));}} placeholder="اكتب اسم العضو (حرفين على الأقل)" />{memberLoading && <span className="text-xs text-muted">جاري البحث...</span>}{memberResults.length>0 && <div className="max-h-36 overflow-y-auto rounded-xl border border-line">{memberResults.map((m)=><button type="button" key={m.id} onClick={()=>{setPersonEditor((p)=>({...p,member_id:m.id,full_name:m.full_name}));setMemberQuery(m.full_name);setMemberResults([]);}} className="block w-full border-b border-line px-3 py-2 text-right text-xs hover:bg-gold-tint"><span className="font-bold">{m.full_name}</span><span className="mr-2 text-muted">{m.governorate_name}</span></button>)}</div>}</Field>}
+          {!personEditor.member_id && <Field label="البحث عن عضو نشط"><input className={inputClass} value={memberQuery} onChange={(e)=>{const query=e.target.value;setMemberQuery(query);setMemberResults([]);setMemberLoading(query.trim().length >= 2);setPersonEditor((p)=>({...p,member_id:null,full_name:""}));}} placeholder="اكتب اسم العضو (حرفين على الأقل)" />{memberLoading && <span className="text-xs text-muted">جاري البحث...</span>}{memberQuery.trim().length >= 2 && memberResults.length>0 && <div className="max-h-36 overflow-y-auto rounded-xl border border-line">{memberResults.map((m)=><button type="button" key={m.id} onClick={()=>{setPersonEditor((p)=>({...p,member_id:m.id,full_name:m.full_name}));setMemberQuery(m.full_name);setMemberResults([]);setMemberLoading(false);}} className="block w-full border-b border-line px-3 py-2 text-right text-xs hover:bg-gold-tint"><span className="font-bold">{m.full_name}</span><span className="mr-2 text-muted">{m.governorate_name}</span></button>)}</div>}</Field>}
           {(!personEditor.member_id) && <Field label="الاسم بالكامل"><input required className={inputClass} value={personEditor.full_name || ""} onChange={(e)=>setPersonEditor((p)=>({...p,full_name:e.target.value}))} placeholder="اسم المسؤول" /></Field>}
           {personEditor.member_id && <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"><span>تم اختيار العضو: <b>{personEditor.full_name}</b></span><button type="button" onClick={()=>{setPersonEditor((p)=>({...p,member_id:null,full_name:""}));setMemberQuery("");}} className="font-bold underline">فك الربط</button></div>}
           <Field label="المنصب"><input required maxLength={200} className={inputClass} value={personEditor.position_title} onChange={(e)=>setPersonEditor((p)=>({...p,position_title:e.target.value}))} placeholder="مثال: أمين الوحدة الحزبية" /></Field>

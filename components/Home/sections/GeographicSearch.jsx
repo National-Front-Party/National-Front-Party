@@ -33,7 +33,8 @@ export default function GeographicSearch() {
 
   useEffect(() => {
     let active = true;
-    fetchJson("/api/organization/governorates")
+    const controller = new AbortController();
+    fetchJson("/api/organization/governorates", { signal: controller.signal })
       .then((data) => {
         if (active) setGovernorates(data.governorates ?? []);
       })
@@ -45,19 +46,14 @@ export default function GeographicSearch() {
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, []);
 
   useEffect(() => {
-    if (!filters.governorate) {
-      setCenters([]);
-      setLoadingCenters(false);
-      return;
-    }
+    if (!filters.governorate) return undefined;
     const controller = new AbortController();
     let active = true;
-    setLoadingCenters(true);
-    setCenters([]);
     fetchJson("/api/organization/centers?governorate_id=" + encodeURIComponent(filters.governorate), { signal: controller.signal })
       .then((data) => {
         if (active) setCenters(data.centers ?? []);
@@ -75,15 +71,10 @@ export default function GeographicSearch() {
   }, [filters.governorate]);
 
   useEffect(() => {
-    if (!filters.center) {
-      setPartyUnits([]);
-      setLoadingUnits(false);
-      return;
-    }
+    if (!filters.center) return undefined;
+    const controller = new AbortController();
     let active = true;
-    setLoadingUnits(true);
-    setPartyUnits([]);
-    fetchJson("/api/organization/party-units?center_id=" + encodeURIComponent(filters.center))
+    fetchJson("/api/organization/party-units?center_id=" + encodeURIComponent(filters.center), { signal: controller.signal })
       .then((data) => {
         if (active) setPartyUnits(data.party_units ?? []);
       })
@@ -95,6 +86,7 @@ export default function GeographicSearch() {
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [filters.center]);
 
@@ -113,6 +105,15 @@ export default function GeographicSearch() {
       }
       return { ...current, partyUnit: value };
     });
+    if (field === "governorate") {
+      setCenters([]);
+      setPartyUnits([]);
+      setLoadingCenters(Boolean(value));
+      setLoadingUnits(false);
+    } else if (field === "center") {
+      setPartyUnits([]);
+      setLoadingUnits(Boolean(value));
+    }
     hideResult();
   }
 
@@ -152,9 +153,6 @@ export default function GeographicSearch() {
     value: String(item.id),
     label: item.name_ar + (item.secretariat?.name_ar ? " — " + item.secretariat.name_ar : ""),
   }));
-
-  const selectedGovernorate = governorates.find((item) => String(item.id) === filters.governorate);
-  const selectedCenter = centers.find((item) => String(item.id) === filters.center);
 
   return (
     <section
