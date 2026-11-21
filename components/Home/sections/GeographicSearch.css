@@ -2,10 +2,6 @@
   width: 100%;
 }
 
-.geo-governorate > div > label {
-  display: none;
-}
-
 .geo-governorate button {
   height: 44px;
   min-height: 44px;
@@ -209,4 +205,45 @@
   .geo-result-card-exit {
     opacity: 0;
   }
+}
+
+
+/* The three organization selectors share the homepage search-bar style. */
+.geo-search-bar .geo-governorate > div > label,
+.geo-search-bar .geo-center > div > label,
+.geo-search-bar .geo-party-unit > div > label {
+  display: block;
+  margin-bottom: 7px;
+  color: #fff;
+}
+
+.geo-search-bar .geo-governorate button,
+.geo-search-bar .geo-center button,
+.geo-search-bar .geo-party-unit button {
+  height: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  padding-inline: 14px;
+  background: #fff;
+  color: #15171c;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.geo-search-bar .geo-governorate button:hover,
+.geo-search-bar .geo-center button:hover,
+.geo-search-bar .geo-party-unit button:hover,
+.geo-search-bar .geo-governorate button:focus-visible,
+.geo-search-bar .geo-center button:focus-visible,
+.geo-search-bar .geo-party-unit button:focus-visible {
+  border: 1px solid #c9a24b;
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.2);
+}
+
+.geo-search-bar .geo-governorate button:disabled,
+.geo-search-bar .geo-center button:disabled,
+.geo-search-bar .geo-party-unit button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
