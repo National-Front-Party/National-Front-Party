@@ -1146,3 +1146,11 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Updated the News list and review modal so reviewer self-review controls are hidden and the pending status is non-interactive.
 - Added service, handler, permissions, and upload tests; updated role/API documentation. No schema, database, API shape, or workflow status changes were made.
 - Verification: focused News/auth/validation suite passed (49 tests, 0 failures); targeted ESLint passed (exit code 0); git diff --check passed. The initial sandboxed test run was blocked before execution by Windows spawn EPERM; the same suite passed when run with process-spawn permission.
+
+
+## 2026-11-21 - Stage 2 News permission corrections
+
+- Restricted News UI edit and submit actions to System Administrators and Writers, with Writer ownership and eligible-status checks; Reviewers no longer see these controls for legacy authored drafts.
+- Restricted article unpublishing to super_admin in both the route authorization and service, and in the News UI. Reviewer review, revision requests, and publishing remain available.
+- Updated News permission documentation and focused UI predicate, route, and service tests. No statuses or database schema changed.
+- Verification: focused News/auth/validation tests passed (41 tests, 0 failures); targeted ESLint passed (0 errors, 0 warnings); git diff --check passed.

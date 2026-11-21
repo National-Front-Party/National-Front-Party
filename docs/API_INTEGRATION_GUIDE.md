@@ -65,7 +65,7 @@
 | **35** | `POST` | `/api/admin/news/articles/[id]/submit` | Admin News | Protected | `super_admin`, `news_editor` (الخاص به) | [تفاصيل](#56-إرسال-المقال-للمراجعة-post-apiadminnewsarticlesidsubmit) |
 | **36** | `POST` | `/api/admin/news/articles/[id]/request-changes` | Admin News | Protected | `super_admin`, `news_reviewer` | [تفاصيل](#57-طلب-تعديلات-على-المقال-post-apiadminnewsarticlesidrequest-changes) |
 | **37** | `POST` | `/api/admin/news/articles/[id]/publish` | Admin News | Protected | `super_admin`, `news_reviewer` (يحظر النشر الذاتي للـ Reviewer) | [تفاصيل](#58-نشر-المقال-post-apiadminnewsarticlesidpublish) |
-| **38** | `POST` | `/api/admin/news/articles/[id]/unpublish` | Admin News | Protected | `super_admin`, `news_reviewer` | [تفاصيل](#59-إلغاء-نشر-المقال-post-apiadminnewsarticlesidunpublish) |
+| **38** | `POST` | `/api/admin/news/articles/[id]/unpublish` | Admin News | Protected | `super_admin` | [تفاصيل](#59-إلغاء-نشر-المقال-post-apiadminnewsarticlesidunpublish) |
 | **39** | `GET` | `/api/admin/news/sources` | Admin News | Protected | `super_admin` فقط | [تفاصيل](#510-قائمة-مصادر-الأخبار-get-apiadminnewssources) |
 | **40** | `POST` | `/api/admin/news/sources` | Admin News | Protected | `super_admin` فقط | [تفاصيل](#511-إنشاء-مصدر-أخبار-post-apiadminnewssources) |
 | **41** | `GET` | `/api/admin/news/sources/[id]` | Admin News | Protected | `super_admin` فقط | [تفاصيل](#512-جلب-مصدر-أخبار-get-apiadminnewssourcesid) |
@@ -205,7 +205,7 @@
 | `news:submit` | `super_admin`, `news_editor` | إرسال المقال من مسودة إلى قيد المراجعة |
 | `news:read_all` | `super_admin`, `news_reviewer` | قراءة وعرض مقالات جميع المحررين |
 | `news:read_own` | `news_editor` | قراءة وعرض المقالات التي أنشأها الموظف فقط |
-| `news:review` | `super_admin`, `news_reviewer` | مراجعة ونشر وإلغاء نشر وطلب تعديلات على المقالات |
+| `news:review` | `super_admin`, `news_reviewer` | Review, publish, and request article revisions |
 | `staff:manage` | `super_admin` | إنشاء وتعديل وإعادة تعيين كلمات مرور وسجل الموظفين |
 | `records:delete` | `super_admin` | الحذف النهائي للسجلات (Hard Delete) مع تأكيد صريح |
 
@@ -433,8 +433,8 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
    * **النشر (`POST .../publish`):** ينقل المقال إلى `published` ويجعل `is_published = true`.
      * Reviewer self-review is prohibited for both publication and revision requests. The publish endpoint returns `403 SELF_PUBLISHING_PROHIBITED`; the request-changes endpoint returns `403 SELF_REVIEW_PROHIBITED`. `super_admin` may review and publish their own articles.
 4. **إلغاء النشر (`POST .../unpublish`):**
-   * يعيد المقال المنشور إلى حالة مسودة `draft` ويجعل `is_published = false`.
-   * متاح لكل من `super_admin` و `news_reviewer`.
+   * Moves a published article back to `draft` and sets `is_published = false`.
+   * Available only to `super_admin`.
 5. **تاريخ النشر الأصلي مقابل النشر على الموقع:**
    * حقل `published_on` هو تاريخ الخبر الحقيقي (الذي حدثت فيه الواقعة أو نشر في الصحيفة الأصلية)، ويحدده المحرر.
    * حقل `published_at` هو تاريخ وقت اعتماد ونشر المقال على موقع الحزب، ويولده النظام تلقائياً.
@@ -1231,8 +1231,8 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
 > * إدارة مصادر الأخبار (`sources`): مقتصرة حصرياً على `super_admin`.
 > * حذف المقالات نهائياً (`DELETE articles`): مقتصر حصرياً على `super_admin` (`records:delete`).
 > * إنشاء وتعديل وإرسال المقالات للمراجعة: متاح لـ `news_editor` و `super_admin`.
-> * مراجعة، وطلب تعديلات، ونشر، وإلغاء نشر المقالات: متاح لـ `news_reviewer` و `super_admin`.
-> * استعراض المقالات: `super_admin` و `news_reviewer` يريان جميع المقالات، بينما `news_editor` يرى مقالاته التي أنشأها فقط.
+> * Review, request revisions, and publish: `news_reviewer` and `super_admin`; unpublishing: `super_admin` only.
+> * Article visibility: `super_admin` and `news_reviewer` see all articles; `news_editor` sees their own.
 
 #### 5.1 قائمة مقالات الأخبار (`GET /api/admin/news/articles`)
 * **ملف المسار:** `app/api/admin/news/articles/route.js`.
@@ -1433,7 +1433,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
 #### 5.9 إلغاء نشر المقال (`POST /api/admin/news/articles/[id]/unpublish`)
 * **ملف المسار:** `app/api/admin/news/articles/[id]/unpublish/route.js`.
 * **الهدف:** سحب مقال منشور وإعادته إلى حالة `draft` وإخفائه فوراً من الموقع العام.
-* **الأدوار المسموحة:** `super_admin`, `news_reviewer`.
+* **Allowed roles:** `super_admin` only.
 * **الرد الناجح:**
   * **رمز الحالة:** `200 OK`.
   * **جسم الرد:** `{ "article": { ...البيانات مع status: "draft" و is_published: false } }`.

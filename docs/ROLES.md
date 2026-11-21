@@ -6,7 +6,7 @@ This document defines the active staff roles stored in `staff_users.role`. The a
 
 - `super_admin` - System Administrator with full access to every existing Admin dashboard section: membership applications, service requests, service catalogs, organizational content, news management, staff management, and audit logs.
 - `news_editor` - Writer with the existing News permissions to create and edit their own articles and submit them for review.
-- `news_reviewer` - Reviewer with the existing News permissions to read all articles, review other authors' articles, request revisions, and publish or unpublish them. Reviewers cannot create, edit, or upload article media.
+- `news_reviewer` - Reviewer with the existing News permissions to read all articles, review other authors' articles, request revisions, and publish them. Only System Administrators may unpublish articles. Reviewers cannot create, edit, or upload article media.
 
 ## Permission boundaries
 
