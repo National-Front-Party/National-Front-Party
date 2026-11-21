@@ -12,9 +12,13 @@ const buttonBase =
   "group/item relative flex h-12 w-full items-center justify-center rounded-2xl px-4 text-sm font-bold ring-1 ring-transparent transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-8px_rgba(201,162,74,0.55)] hover:brightness-110 hover:ring-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 active:scale-[0.98] motion-reduce:transition-none motion-reduce:transform-none";
 
 export default function CentralSecretariats({ data }) {
-  const [active, setActive] = useState(null);
+  const [activeSpeech, setActiveSpeech] = useState(null);
+  const [isSecretariatsOpen, setIsSecretariatsOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const [secData, setSecData] = useState(data);
+  const [publishedContents, setPublishedContents] = useState(
+    Array.isArray(data?.buttonsContents) ? data.buttonsContents : null
+  );
 
   useEffect(() => {
     let ignore = false;
@@ -30,6 +34,10 @@ export default function CentralSecretariats({ data }) {
         const secJson = secRes.ok ? await secRes.json() : null;
         if (ignore) return;
 
+        if (Array.isArray(leadJson?.contents)) {
+          setPublishedContents(leadJson.contents);
+        }
+
         setSecData((prev) => {
           const next = { ...prev };
           if (Array.isArray(secJson?.central_secretariats) && secJson.central_secretariats.length > 0) {
@@ -37,13 +45,13 @@ export default function CentralSecretariats({ data }) {
               ...next.secretariats,
               items: secJson.central_secretariats.map((s) => ({
                 id: s.id,
-                title: s.title,
-                subtitle: s.subtitle,
-                icon: s.icon,
+                name: s.name_ar || s.name || s.title || "",
+                head: s.head_name || s.head || "",
+                source: s.source_note || s.source || "",
                 members: (s.people || []).map((p) => ({
                   name: p.full_name,
-                  role: p.role_title,
-                  photo: p.photo_url || "/avatars/avatar-fallback.svg",
+                  role: p.position_title || p.role_title || "",
+                  photo: p.image_url || p.photo_url || "/avatars/avatar-fallback.svg",
                 })),
               })),
             };
@@ -57,14 +65,30 @@ export default function CentralSecretariats({ data }) {
             const headLeader = leaders.find((l) => l.is_head) || leaders[0];
             const otherLeaders = leaders.filter((l) => l !== headLeader);
 
-            function findSpeech(slug, fallbackBtn, fallbackRole) {
-              const item = contents.find((c) => c.slug === slug);
+            function findSpeech(candidateSlugs, fallbackKeywords, fallbackBtn, fallbackRole) {
+              let item = contents.find((c) => candidateSlugs.includes(c.slug));
+              if (!item) {
+                item = contents.find((c) => candidateSlugs.some((s) => c.slug?.includes(s)));
+              }
+              if (!item && fallbackKeywords.length > 0) {
+                item = contents.find((c) =>
+                  fallbackKeywords.some(
+                    (kw) =>
+                      c.person_role_title?.includes(kw) ||
+                      c.button_label?.includes(kw) ||
+                      c.title?.includes(kw)
+                  )
+                );
+              }
+
               return {
                 buttonLabel: item?.button_label || fallbackBtn,
                 modalTitle: item?.title || fallbackBtn,
-                personName: item?.title || "",
-                personRole: fallbackRole,
-                paragraphs: item?.body ? item.body.split("\n\n") : [],
+                personName: item?.person_name || headLeader?.full_name || "",
+                personRole: item?.person_role_title || fallbackRole,
+                paragraphs: item?.body
+                  ? item.body.split(/\r?\n+/).map((p) => p.trim()).filter(Boolean)
+                  : [],
                 note: item?.source_note || "",
               };
             }
@@ -76,7 +100,8 @@ export default function CentralSecretariats({ data }) {
                 title: headLeader.role_title || "رئيس الحزب",
                 image: headLeader.photo_url || "/president.jpg",
                 speech: findSpeech(
-                  "speech-president",
+                  ["speech-president", "speech"],
+                  ["رئيس الحزب", "الرئيس"],
                   "كلمة رئيس الحزب",
                   "رئيس الحزب",
                 ),
@@ -84,15 +109,34 @@ export default function CentralSecretariats({ data }) {
             }
 
             next.viceSpeech = findSpeech(
-              "speech-vice-president",
+              ["speech-vice-president", "speech-vice"],
+              ["النائب الأول", "نائب أول"],
               "كلمة النائب الأول",
               "النائب الأول لرئيس الحزب والأمين العام",
             );
             next.secretaryGeneralSpeech = findSpeech(
-              "speech-secretary-general",
+              ["speech-secretary-general", "speech-general"],
+              ["الأمين العام", "أمين عام", "نائب رئيس الحزب"],
               "كلمة نائب رئيس الحزب",
               "نائب رئيس الحزب",
             );
+
+            // Button 4: Central Secretariats button customizer
+            const secBtnItem = contents.find(
+              (c) =>
+                c.slug === "central-secretariats" ||
+                c.slug === "secretariats" ||
+                c.button_label?.includes("الأمانات المركزية")
+            );
+            if (secBtnItem) {
+              next.secretariats = {
+                ...next.secretariats,
+                buttonLabel: secBtnItem.button_label || next.secretariats.buttonLabel,
+                modalTitle: secBtnItem.title || next.secretariats.modalTitle,
+                footnote: secBtnItem.source_note || next.secretariats.footnote,
+              };
+            }
+
             next.leadership = {
               title: panelWithLeaders.leaders_heading || "قيادة الحزب",
               leaders: otherLeaders.map((l) => ({
@@ -116,41 +160,76 @@ export default function CentralSecretariats({ data }) {
     };
   }, []);
 
-  const activeSpeech =
-    active === "president"
-      ? secData.president.speech
-      : active === "vice"
-        ? secData.viceSpeech
-        : active === "general"
-          ? secData.secretaryGeneralSpeech
-          : null;
+  // Dynamic buttons list
+  const displayButtons = (Array.isArray(publishedContents) && publishedContents.length > 0)
+    ? publishedContents.map((c, index) => {
+        const isSecretariat =
+          c.slug === "central-secretariats" ||
+          c.slug === "secretariats" ||
+          c.button_label?.includes("الأمانات المركزية");
 
-  const buttons = [
-    {
-      id: "president",
-      label: secData.president.speech.buttonLabel,
-      style: "bg-ink text-gold-light",
-      arrowStyle: "text-gold-light",
-    },
-    {
-      id: "vice",
-      label: secData.viceSpeech.buttonLabel,
-      style: "bg-gold text-ink",
-      arrowStyle: "text-ink",
-    },
-    {
-      id: "general",
-      label: secData.secretaryGeneralSpeech.buttonLabel,
-      style: "bg-gold text-ink",
-      arrowStyle: "text-ink",
-    },
-    {
-      id: "secretariats",
-      label: secData.secretariats.buttonLabel,
-      style: "bg-ink text-gold-light",
-      arrowStyle: "text-gold-light",
-    },
-  ];
+        const isEven = index % 2 === 0;
+        return {
+          id: String(c.id ?? c.slug ?? index),
+          label: c.button_label || c.title,
+          style: isEven ? "bg-ink text-gold-light" : "bg-gold text-ink",
+          arrowStyle: isEven ? "text-gold-light" : "text-ink",
+          type: isSecretariat ? "secretariats" : "speech",
+          speechData: isSecretariat
+            ? null
+            : {
+                modalTitle: c.title || c.button_label,
+                personName: c.person_name || "",
+                personRole: c.person_role_title || "",
+                paragraphs: c.body
+                  ? c.body.split(/\r?\n+/).map((p) => p.trim()).filter(Boolean)
+                  : [],
+                note: c.source_note || "",
+              },
+        };
+      })
+    : [
+        {
+          id: "president",
+          label: secData.president.speech.buttonLabel,
+          style: "bg-ink text-gold-light",
+          arrowStyle: "text-gold-light",
+          type: "speech",
+          speechData: secData.president.speech,
+        },
+        {
+          id: "vice",
+          label: secData.viceSpeech.buttonLabel,
+          style: "bg-gold text-ink",
+          arrowStyle: "text-ink",
+          type: "speech",
+          speechData: secData.viceSpeech,
+        },
+        {
+          id: "general",
+          label: secData.secretaryGeneralSpeech.buttonLabel,
+          style: "bg-gold text-ink",
+          arrowStyle: "text-ink",
+          type: "speech",
+          speechData: secData.secretaryGeneralSpeech,
+        },
+        {
+          id: "secretariats",
+          label: secData.secretariats.buttonLabel,
+          style: "bg-ink text-gold-light",
+          arrowStyle: "text-gold-light",
+          type: "secretariats",
+          speechData: null,
+        },
+      ];
+
+  const handleButtonClick = (btn) => {
+    if (btn.type === "secretariats") {
+      setIsSecretariatsOpen(true);
+    } else if (btn.speechData) {
+      setActiveSpeech(btn.speechData);
+    }
+  };
 
   return (
     <>
@@ -158,7 +237,7 @@ export default function CentralSecretariats({ data }) {
         title={secData.secretariats.buttonLabel}
         footer={
           <NextArrowFooter
-            onClick={() => setActive("secretariats")}
+            onClick={() => setIsSecretariatsOpen(true)}
             ariaLabel="عرض الأمانات المركزية"
           />
         }
@@ -192,11 +271,11 @@ export default function CentralSecretariats({ data }) {
           </div>
 
           <div className="mt-1 flex w-full flex-col gap-2.5">
-            {buttons.map((button, index) => (
+            {displayButtons.map((button, index) => (
               <button
                 key={button.id}
                 type="button"
-                onClick={() => setActive(button.id)}
+                onClick={() => handleButtonClick(button)}
                 className={`${buttonBase} ${button.style} animate-elem-fade-up motion-reduce:animate-none`}
                 style={{ animationDelay: `${index * 60 + 160}ms` }}
               >
@@ -244,7 +323,7 @@ export default function CentralSecretariats({ data }) {
 
       <SpeechModal
         open={Boolean(activeSpeech)}
-        onClose={() => setActive(null)}
+        onClose={() => setActiveSpeech(null)}
         title={activeSpeech?.modalTitle ?? ""}
         personName={activeSpeech?.personName ?? ""}
         personRole={activeSpeech?.personRole ?? ""}
@@ -252,8 +331,8 @@ export default function CentralSecretariats({ data }) {
         note={activeSpeech?.note ?? null}
       />
       <SecretariatsModal
-        open={active === "secretariats"}
-        onClose={() => setActive(null)}
+        open={isSecretariatsOpen}
+        onClose={() => setIsSecretariatsOpen(false)}
         title={secData.secretariats.modalTitle}
         items={secData.secretariats.items}
         footnote={secData.secretariats.footnote}
