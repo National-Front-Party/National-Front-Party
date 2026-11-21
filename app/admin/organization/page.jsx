@@ -75,7 +75,7 @@ export default function OrganizationPage() {
     setLoading(true);
     try {
       const result = await adminFetch("/api/admin/content/governorates");
-      setGovernorates(result?.governorates ?? []);
+      setGovernorates((result?.governorates ?? []).filter((item) => item.is_active));
     } catch (error) {
       showError(error?.message || "تعذر تحميل المحافظات");
     } finally { setLoading(false); }
