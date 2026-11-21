@@ -191,7 +191,7 @@
 
 1. `super_admin`: المطور والمسؤول العام، يمتلك كامل الصلاحيات دون قيود، وهو الوحيد المخول بحذف السجلات نهائياً (`records:delete`)، وإدارة الموظفين (`staff:manage`)، وتصدير طلبات العضوية (`applications:export`)، وإدارة مصادر الأخبار.
 2. `news_editor`: محرر الأخبار، مخول بإنشاء مسودات المقالات وتعديل مقالاته الخاصة فقط وإرسالها للمراجعة. لا يملك صلاحية النشر، ولا يرى مقالات زملائه.
-3. `news_reviewer`: مراجع الأخبار، مخول بالاطلاع على جميع المقالات، وطلب التعديلات، ونشر المقالات أو إلغاء نشرها. **يحظر عليه نشر مقالاته الخاصة ذاتياً**.
+3. `news_reviewer`: Reviews and publishes articles submitted by other authors, and may request revisions with a review note. Reviewers cannot create, edit, or upload article media and cannot review or request changes on their own articles.
 
 #### مصفوفة الصلاحيات المطبقة في الـ Backend:
 | الصلاحية البرمجية (Permission) | الأدوار المسموح لها | الوصف البرمجي |
@@ -201,7 +201,7 @@
 | `applications:export` | `super_admin` | تصدير طلبات الانضمام بصيغة CSV |
 | `services:manage` | `super_admin` | قراءة طلبات المواطنين وإدارة الوزارات والقطاعات |
 | `content:manage` | `super_admin` | إدارة ونشر وإخفاء جميع أقسام المحتوى التنظيمي |
-| `news:write` | `super_admin`, `news_editor`, `news_reviewer` | إنشاء المقالات وتعديلها في مسودة |
+| `news:write` | `super_admin`, `news_editor` | إنشاء المقالات وتعديلها في مسودة ورفع صورها |
 | `news:submit` | `super_admin`, `news_editor` | إرسال المقال من مسودة إلى قيد المراجعة |
 | `news:read_all` | `super_admin`, `news_reviewer` | قراءة وعرض مقالات جميع المحررين |
 | `news:read_own` | `news_editor` | قراءة وعرض المقالات التي أنشأها الموظف فقط |
@@ -431,7 +431,7 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
    * يراجع المقال `news_reviewer` أو `super_admin`.
    * **طلب تعديلات (`POST .../request-changes`):** ينقل المقال إلى `changes_requested` مع إرفاق ملاحظة مراجعة إلزامية `review_note` توضح التعديلات المطلوبة، ليعود المقال قابلاً للتعديل من قبل محرره.
    * **النشر (`POST .../publish`):** ينقل المقال إلى `published` ويجعل `is_published = true`.
-     * **قاعدة حظر النشر الذاتي (Self-Publishing Prohibition):** يحظر على `news_reviewer` نشر مقال قام هو بكتابته (`author_id === staff.id`). يُرجع الخادم رمز `403 SELF_PUBLISHING_PROHIBITED`. فقط مراجع آخر أو `super_admin` يمكنه نشره.
+     * Reviewer self-review is prohibited for both publication and revision requests. The publish endpoint returns `403 SELF_PUBLISHING_PROHIBITED`; the request-changes endpoint returns `403 SELF_REVIEW_PROHIBITED`. `super_admin` may review and publish their own articles.
 4. **إلغاء النشر (`POST .../unpublish`):**
    * يعيد المقال المنشور إلى حالة مسودة `draft` ويجعل `is_published = false`.
    * متاح لكل من `super_admin` و `news_reviewer`.
@@ -1411,7 +1411,8 @@ draft  ──(submit)──>  pending_review  ──(publish)──>  published
   * **رمز الحالة:** `200 OK`.
   * **جسم الرد:** `{ "article": { ...البيانات مع status: "changes_requested" و review_note } }`.
 * **الأخطاء المحتملة:**
-  * `400 Bad Request`: `{ "error": "REVIEW_NOTE_REQUIRED" }` أو `{ "error": "INVALID_STATUS_TRANSITION" }`.
+  * `400 Bad Request`: `{ "error": "REVIEW_NOTE_REQUIRED" }` or `{ "error": "INVALID_STATUS_TRANSITION" }`.
+  * `403 Forbidden`: `{ "error": "SELF_REVIEW_PROHIBITED" }` when a Reviewer attempts to review their own article.
 
 ---
 

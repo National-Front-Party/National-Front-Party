@@ -1137,3 +1137,12 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Updated role documentation, API integration role references, and affected authorization/validation tests. The only remaining retired-role identifiers in active source are negative validation test cases confirming those values are rejected; earlier progress entries retain historical descriptions.
 - No schema or database changes were made. A prior read-only check of the workspace database found zero staff accounts assigned to retired roles.
 - Verification: focused Node tests passed (110 tests, 0 failures). Targeted ESLint passed with exit code 0.
+
+
+## 2026-11-21 - Stage 2 News article review workflow
+
+- Restricted news:write to super_admin and news_editor, preventing Reviewers from creating/editing articles or using the media upload endpoint.
+- Enforced that Reviewers cannot request changes on articles they authored; retained the existing backend self-publish restriction for Reviewers and the System Administrator self-review exception.
+- Updated the News list and review modal so reviewer self-review controls are hidden and the pending status is non-interactive.
+- Added service, handler, permissions, and upload tests; updated role/API documentation. No schema, database, API shape, or workflow status changes were made.
+- Verification: focused News/auth/validation suite passed (49 tests, 0 failures); targeted ESLint passed (exit code 0); git diff --check passed. The initial sandboxed test run was blocked before execution by Windows spawn EPERM; the same suite passed when run with process-spawn permission.

@@ -441,7 +441,7 @@ export default function NewsPage() {
         isSuperAdmin ||
         (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
       const canReview =
-        (isSuperAdmin || isReviewer) && art.status === "pending_review";
+        (isSuperAdmin || (isReviewer && !isAuthor)) && art.status === "pending_review";
       const canUnpublish =
         (isSuperAdmin || isReviewer) && art.status === "published";
 
@@ -846,7 +846,7 @@ export default function NewsPage() {
                       isSuperAdmin ||
                       (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
                     const canReview =
-                      (isSuperAdmin || isReviewer) && art.status === "pending_review";
+                      (isSuperAdmin || (isReviewer && !isAuthor)) && art.status === "pending_review";
                     const menuItems = getRowMenuItems(art);
 
                     return (
@@ -998,15 +998,13 @@ export default function NewsPage() {
                                 <span>إرسال للمراجعة</span>
                               </button>
                             ) : art.status === "pending_review" ? (
-                              <button
-                                type="button"
-                                onClick={() => handleSubmitForReview(art)}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 hover:bg-sky-100 transition-all shadow-2xs cursor-pointer"
-                                title="هذا المقال قيد المراجعة حالياً"
+                              <span
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 shadow-2xs"
+                                role="status"
                               >
                                 <Clock className="size-3.5 text-sky-600" />
                                 <span>قيد المراجعة</span>
-                              </button>
+                              </span>
                             ) : canEdit ? (
                               <button
                                 type="button"
@@ -1063,7 +1061,7 @@ export default function NewsPage() {
                     isSuperAdmin ||
                     (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
                   const canReview =
-                    (isSuperAdmin || isReviewer) && art.status === "pending_review";
+                    (isSuperAdmin || (isReviewer && !isAuthor)) && art.status === "pending_review";
                   const menuItems = getRowMenuItems(art);
 
                   return (
@@ -1205,14 +1203,13 @@ export default function NewsPage() {
                             <span>إرسال للمراجعة</span>
                           </button>
                         ) : art.status === "pending_review" ? (
-                          <button
-                            type="button"
-                            onClick={() => handleSubmitForReview(art)}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 transition-all shadow-2xs cursor-pointer"
+                          <span
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 shadow-2xs"
+                            role="status"
                           >
                             <Clock className="size-3.5 text-sky-600" />
                             <span>قيد المراجعة</span>
-                          </button>
+                          </span>
                         ) : canEdit ? (
                           <button
                             type="button"

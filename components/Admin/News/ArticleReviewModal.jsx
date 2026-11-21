@@ -35,7 +35,7 @@ export default function ArticleReviewModal({
 
   const isSelfAuthor = Boolean(user?.id && article?.created_by === user.id);
   const isReviewer = user?.role === "news_reviewer";
-  const cannotSelfPublish = isReviewer && isSelfAuthor;
+  const cannotSelfReview = isReviewer && isSelfAuthor;
 
   // Split body text into paragraphs
   const paragraphs = (article.body || "")
@@ -45,8 +45,8 @@ export default function ArticleReviewModal({
 
   // Publish Article
   const handlePublish = async () => {
-    if (cannotSelfPublish) {
-      showError("تمنع لوائح الحزب قيام المراجع بنشر مقالاته بنفسه؛ يجب أن يقوم مراجع آخر أو مدير النظام باعتماد النشر.");
+    if (cannotSelfReview) {
+      showError("لا يمكن للمراجع مراجعة مقال كتبه بنفسه. يرجى إسناده إلى مراجع آخر.");
       return;
     }
 
@@ -59,8 +59,13 @@ export default function ArticleReviewModal({
       if (onUpdated) onUpdated();
       onClose();
     } catch (err) {
-      if (err.message && err.message.includes("SELF_PUBLISHING_PROHIBITED")) {
-        showError("يحظر النشر الذاتي: لا يمكن للكاتب اعتماد ونشر مقالاته الخاصة بنفسه.");
+      if (
+        err.message?.includes("SELF_PUBLISHING_PROHIBITED") ||
+        err.message?.includes("SELF_REVIEW_PROHIBITED") ||
+        err.error === "SELF_PUBLISHING_PROHIBITED" ||
+        err.error === "SELF_REVIEW_PROHIBITED"
+      ) {
+        showError("لا يمكن للمراجع مراجعة مقال كتبه بنفسه. يرجى إسناده إلى مراجع آخر.");
       } else {
         showError(err.message || "تعذر اعتماد ونشر المقال");
       }
@@ -72,6 +77,10 @@ export default function ArticleReviewModal({
   // Request Changes with Review Note
   const handleRequestChanges = async (e) => {
     e.preventDefault();
+    if (cannotSelfReview) {
+      showError("لا يمكن للمراجع مراجعة مقال كتبه بنفسه. يرجى إسناده إلى مراجع آخر.");
+      return;
+    }
     const trimmedNote = reviewNote.trim();
     if (!trimmedNote) {
       showError("يرجى كتابة الملاحظات والتعديلات المطلوبة لإرسالها للكاتب");
@@ -88,7 +97,11 @@ export default function ArticleReviewModal({
       if (onUpdated) onUpdated();
       onClose();
     } catch (err) {
-      showError(err.message || "تعذر إرجاع المقال بطلب تعديلات");
+      if (err.message?.includes("SELF_REVIEW_PROHIBITED") || err.error === "SELF_REVIEW_PROHIBITED") {
+        showError("لا يمكن للمراجع مراجعة مقال كتبه بنفسه. يرجى إسناده إلى مراجع آخر.");
+      } else {
+        showError(err.message || "\u062a\u0639\u0630\u0631 \u0625\u0631\u062c\u0627\u0639 \u0627\u0644\u0645\u0642\u0627\u0644 \u0628\u0637\u0644\u0628 \u062a\u0639\u062f\u064a\u0644\u0627\u062a");
+      }
     } finally {
       setActionLoading(false);
     }
@@ -175,14 +188,12 @@ export default function ArticleReviewModal({
         {/* Modal Content */}
         <div className="p-6 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto">
           {/* Self-Publishing Prohibition Warning Banner */}
-          {cannotSelfPublish && (
+          {cannotSelfReview && (
             <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-xs font-bold text-amber-900 flex items-start gap-3">
               <span className="text-lg">⚠️</span>
               <div>
-                <p className="font-black text-sm">حظر النشر الذاتي (Self-Publishing Prohibition):</p>
-                <p className="mt-1 font-medium text-amber-800 leading-relaxed">
-                  أنت كاتب هذا المقال؛ ووفقاً للسياسات التحريرية وقواعد الأمان بالنظام، لا يمكن للمراجع اعتماد أو نشر المقالات التي قام بتحريرها بنفسه. يرجى انتظار قيام مراجع آخر أو مدير النظام باعتماد ونشر المقال.
-                </p>
+                <p className="font-black text-sm">منع المراجع من مراجعة مقاله الخاص:</p>
+                <p className="mt-1 font-medium text-amber-800 leading-relaxed">لا يمكنك مراجعة أو طلب تعديلات أو نشر مقال كتبته بنفسك. يرجى إسناد المقال إلى مراجع آخر.</p>
               </div>
             </div>
           )}
@@ -271,7 +282,7 @@ export default function ArticleReviewModal({
           </div>
 
           {/* Review Actions Form */}
-          {article.status === "pending_review" && (
+          {article.status === "pending_review" && !cannotSelfReview && (
             <div className="space-y-4 pt-4 border-t border-line">
               <h4 className="text-xs font-bold text-ink">اتخاذ قرار المراجعة:</h4>
 
@@ -280,7 +291,7 @@ export default function ArticleReviewModal({
                   {/* Publish Button */}
                   <button
                     type="button"
-                    disabled={actionLoading || cannotSelfPublish}
+                    disabled={actionLoading}
                     onClick={handlePublish}
                     className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-xs font-bold text-white shadow-btn hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
                   >
