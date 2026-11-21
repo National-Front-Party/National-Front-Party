@@ -61,6 +61,7 @@ export default function OrganizationPage() {
   const [memberResults, setMemberResults] = useState([]);
   const [memberLoading, setMemberLoading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [personDeleteTarget, setPersonDeleteTarget] = useState(null);
 
   const selectedUnit = units.find((item) => String(item.id) === selection.unit);
   const selectedCenter = centers.find((item) => String(item.id) === selection.center);
@@ -240,13 +241,18 @@ export default function OrganizationPage() {
     } catch (error) { showError(error?.message || "تعذر تغيير حالة النشر"); }
   };
 
-  const deletePerson = async (person) => {
-    if (!window.confirm("متأكد إنك عايز تحذف " + person.full_name + " نهائيًا؟")) return;
+  const deletePerson = (person) => setPersonDeleteTarget(person);
+
+  const confirmPersonDelete = async () => {
+    if (!personDeleteTarget) return;
+    setBusy(true);
     try {
-      await adminFetch("/api/admin/content/organization/party-units/" + selection.unit + "/people/" + person.id, { method: "DELETE", body: { confirm: true } });
+      await adminFetch("/api/admin/content/organization/party-units/" + selection.unit + "/people/" + personDeleteTarget.id, { method: "DELETE", body: { confirm: true } });
       await loadPeople(selection.unit);
       showSuccess("تم حذف المسؤول نهائيًا");
+      setPersonDeleteTarget(null);
     } catch (error) { showError(error?.message || "تعذر حذف المسؤول"); }
+    finally { setBusy(false); }
   };
 
   if (!canManage) {
@@ -352,6 +358,19 @@ export default function OrganizationPage() {
           <div className="grid grid-cols-2 gap-3"><Field label="ترتيب الظهور"><input type="number" className={inputClass} value={personEditor.sort_order} onChange={(e)=>setPersonEditor((p)=>({...p,sort_order:e.target.value}))} /></Field><label className="flex items-end gap-2 pb-3 text-xs font-bold text-slate-700"><input type="checkbox" checked={personEditor.is_published} onChange={(e)=>setPersonEditor((p)=>({...p,is_published:e.target.checked}))} /> نشر على الموقع العام</label></div>
           <div className="flex justify-end gap-2 border-t border-line pt-4"><button type="button" onClick={()=>setPersonEditor(null)} className="rounded-xl border border-line px-4 py-2 text-xs font-bold text-muted">إلغاء</button><button disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-5 py-2 text-xs font-black text-ink disabled:opacity-50"><Save className="size-4" />{busy?"جارٍ الحفظ...":"حفظ المسؤول"}</button></div>
         </form>
+      </Modal>}
+
+
+      {personDeleteTarget && <Modal title="تأكيد حذف المسؤول" onClose={()=>!busy && setPersonDeleteTarget(null)}>
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm leading-7 text-rose-900">
+            هل أنت متأكد من حذف المسؤول <b>«{personDeleteTarget.full_name}»</b> نهائيًا من الوحدة الحزبية؟ لا يمكن التراجع عن العملية.
+          </div>
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={()=>setPersonDeleteTarget(null)} disabled={busy} className="rounded-xl border border-line px-4 py-2 text-xs font-bold">إلغاء</button>
+            <button type="button" disabled={busy} onClick={confirmPersonDelete} className="rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white disabled:opacity-50">{busy?"جارٍ الحذف...":"تأكيد الحذف النهائي"}</button>
+          </div>
+        </div>
       </Modal>}
 
       {deleteTarget && <Modal title="تأكيد الحذف النهائي" onClose={()=>!busy && setDeleteTarget(null)}>
