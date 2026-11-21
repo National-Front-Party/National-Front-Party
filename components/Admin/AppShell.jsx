@@ -184,7 +184,7 @@ export default function AppShell({ children }) {
     if (status === "loading") return;
 
     if (status === "anonymous") {
-      if (pathname && !pathname.startsWith("/admin/login")) {
+      if (pathname && pathname !== "/admin/login") {
         const nextParam = encodeURIComponent(pathname);
         router.push(`/admin/login?next=${nextParam}&reason=expired`);
       }
@@ -199,7 +199,7 @@ export default function AppShell({ children }) {
 
       if (!canAccessPath(user.role, pathname)) {
         showError("ليس لديك صلاحية للوصول إلى هذه الصفحة");
-        router.push("/admin");
+        router.replace("/admin");
       }
     }
   }, [status, user, pathname, router, showError]);

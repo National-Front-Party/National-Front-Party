@@ -1154,3 +1154,11 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Restricted article unpublishing to super_admin in both the route authorization and service, and in the News UI. Reviewer review, revision requests, and publishing remain available.
 - Updated News permission documentation and focused UI predicate, route, and service tests. No statuses or database schema changed.
 - Verification: focused News/auth/validation tests passed (41 tests, 0 failures); targeted ESLint passed (0 errors, 0 warnings); git diff --check passed.
+
+
+## 2026-11-21 - Stage 3A Admin route access protection
+
+- Changed Admin pathname authorization to fail closed for unregistered routes and to inherit access from the longest segment-bounded registered section route. Explicitly retained the public login route and role-protected password-change route.
+- AppShell now uses exact login-path handling and replaces denied navigation history entries, preserving active-role route behavior without back-navigation redirect loops.
+- Added route coverage for every registered section, all three active roles, nested/dynamic paths, sibling prefixes, unknown paths, and unknown roles. No API authorization, roles, database, or workflow behavior changed.
+- Verification: focused role-route tests passed (6 tests, 0 failures); targeted ESLint passed (0 errors, 0 warnings); git diff --check passed.
