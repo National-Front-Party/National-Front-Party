@@ -244,7 +244,7 @@ export default function OrganizationPage() {
   const togglePerson = async (person) => {
     try {
       await adminFetch("/api/admin/content/organization/party-units/" + selection.unit + "/people/" + person.id + "/status", { method: "PATCH", body: { is_published: !person.is_published } });
-      await loadPeople(selection.unit);
+      setPeople(await loadPeople(selection.unit));
       showSuccess(person.is_published ? "تم إخفاء المسؤول من الموقع العام" : "تم نشر المسؤول");
     } catch (error) { showError(error?.message || "تعذر تغيير حالة النشر"); }
   };
@@ -256,7 +256,7 @@ export default function OrganizationPage() {
     setBusy(true);
     try {
       await adminFetch("/api/admin/content/organization/party-units/" + selection.unit + "/people/" + personDeleteTarget.id, { method: "DELETE", body: { confirm: true } });
-      await loadPeople(selection.unit);
+      setPeople(await loadPeople(selection.unit));
       showSuccess("تم حذف المسؤول نهائيًا");
       setPersonDeleteTarget(null);
     } catch (error) { showError(error?.message || "تعذر حذف المسؤول"); }
