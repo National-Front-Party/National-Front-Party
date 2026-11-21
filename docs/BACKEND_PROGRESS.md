@@ -1421,3 +1421,23 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Responsive verification was source-level only because no browser session is available.
 
 - Follow-up UI refinement: changed the Party Program accent to a solid gold top border and matched title/source/body field heights, borders, typography, and focus shadows to the News article editor.
+
+## UI Phase — Central Secretariats section polish
+
+- Updated organizational content tab active and inactive visual states, and refined Central Secretariats search, forms, tables, actions, and modal presentation.
+- Matched text, number, search, and textarea controls to the News editor field dimensions, border, typography, and gold focus treatment while preserving validation styling.
+- Responsive review was source-level only; no browser viewport was tested.
+- No API, data flow, validation rules, permissions, CRUD behavior, or backend logic changed.
+
+- Follow-up: Central Secretariat form focus styling now stays aligned with the resting field border, retaining keyboard-visible focus; both publication checkboxes use the gold accent.
+
+- Follow-up: removed the elevated shadow and scale from the active organizational tab so its gold gradient sits cleanly within the tab container.
+
+- Follow-up: aligned Central Secretariat form field grouping with the News editor by arranging the name/head and sort/source pairs in responsive two-column rows that stack on narrow screens.
+
+- Follow-up: restored the News editor's gold focus shadow on Central Secretariat inputs and textarea, and equalized sort/source label row height for aligned controls.
+
+- Follow-up: added a restrained gold-tinted hover shadow to the active Organizational Content tab without scaling or lifting it.
+
+- Follow-up: matched the active organizational tab hover lift and gold shadow to the Add New Secretariat action, while leaving the tab container styles unchanged. Organizational tabs now wrap instead of horizontally scrolling; secretariat and member tables switch to responsive cards below the wide-screen breakpoint, retaining their existing actions and status controls.
+- UI behavior and data handling remain unchanged. Responsive review was source-level only; no browser viewport was tested.

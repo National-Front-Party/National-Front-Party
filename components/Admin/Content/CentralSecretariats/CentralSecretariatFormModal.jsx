@@ -175,18 +175,18 @@ export default function CentralSecretariatFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-xs flex min-h-full items-start sm:items-center justify-center py-6 sm:py-10"
+      className="fixed inset-0 z-50 flex min-h-full items-start justify-center overflow-y-auto bg-black/60 p-3 py-4 backdrop-blur-sm sm:items-center sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="sec-form-modal-title"
     >
       <div
         ref={modalCardRef}
-        className="relative my-auto w-full max-w-lg max-h-[90vh] flex flex-col rounded-3xl border border-slate-200 bg-white shadow-2xl transition-all overflow-hidden"
+        className="relative my-auto flex max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-card-hover transition-all sm:max-h-[90dvh]"
         dir="rtl"
       >
         {/* Pinned Modal Header */}
-        <div className="flex items-center justify-between p-6 sm:px-8 sm:py-5 border-b border-slate-100 shrink-0 bg-white">
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-line bg-page/40 p-4 sm:px-6 sm:py-5">
           <div className="flex items-center gap-3">
             <div className="flex size-11 items-center justify-center rounded-2xl bg-gold/15 text-gold-darker shadow-xs">
               {isEditing ? (
@@ -196,7 +196,7 @@ export default function CentralSecretariatFormModal({
               )}
             </div>
             <div>
-              <h2 id="sec-form-modal-title" className="text-lg font-bold text-slate-900">
+              <h2 id="sec-form-modal-title" className="text-lg font-bold text-ink">
                 {isEditing ? `تعديل «${secretariat?.name_ar}»` : "إضافة أمانة مركزية جديدة"}
               </h2>
               <p className="text-xs text-slate-500">
@@ -209,7 +209,7 @@ export default function CentralSecretariatFormModal({
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="inline-flex size-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors disabled:opacity-50"
+            className="group inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
             aria-label="إغلاق النافذة"
           >
             <X className="size-5" aria-hidden="true" />
@@ -217,7 +217,7 @@ export default function CentralSecretariatFormModal({
         </div>
 
         {/* Scrollable Form Body */}
-        <form id="sec-form" onSubmit={handleSubmit} className="overflow-y-auto flex-1 p-6 sm:p-8 space-y-4">
+        <form id="sec-form" onSubmit={handleSubmit} className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-6">
           {/* Notice of Immediate Publish */}
           <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs text-amber-900 flex items-center gap-2">
             <AlertCircle className="size-4 shrink-0 text-amber-600" aria-hidden="true" />
@@ -234,10 +234,11 @@ export default function CentralSecretariatFormModal({
             </div>
           )}
 
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Name Ar */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label htmlFor="sec-name-ar" className="text-xs font-bold text-slate-800">
+              <label htmlFor="sec-name-ar" className="text-xs font-bold text-ink">
                 اسم الأمانة المركزية <span className="text-red-500">*</span>
               </label>
               <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -252,10 +253,10 @@ export default function CentralSecretariatFormModal({
               onChange={(e) => handleFieldChange("nameAr", setNameAr, e.target.value)}
               disabled={busy}
               placeholder="مثال: أمانة الشئون الدستورية والتشريعية"
-              className={`w-full h-11 rounded-2xl border px-4 text-sm transition-all focus:outline-hidden focus:ring-2 ${
+              className={`h-14 w-full rounded-2xl border px-4 text-xs font-medium text-ink transition-all duration-300 ease-in-out placeholder:text-muted/60 focus:outline-none focus:ring-0 sm:text-sm ${
                 errors.nameAr
-                  ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                  : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                  ? "border-red-400 bg-red-50/30 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]"
+                  : "border-border bg-white hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
               }`}
             />
             {errors.nameAr && (
@@ -269,7 +270,7 @@ export default function CentralSecretariatFormModal({
           {/* Head Name */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <label htmlFor="sec-head-name" className="text-xs font-bold text-slate-800">
+              <label htmlFor="sec-head-name" className="text-xs font-bold text-ink">
                 اسم أمين الأمانة (اختياري)
               </label>
               <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -283,14 +284,15 @@ export default function CentralSecretariatFormModal({
               onChange={(e) => handleFieldChange("headName", setHeadName, e.target.value)}
               disabled={busy}
               placeholder="مثال: المستشار / عادل علي السعيد"
-              className="w-full h-11 rounded-2xl border border-slate-200 bg-slate-50/50 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-2 focus:ring-gold/20 focus:outline-hidden"
+              className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-xs font-medium text-ink transition-all duration-300 ease-in-out placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] sm:text-sm"
             />
+          </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Sort Order */}
             <div className="space-y-1">
-              <label htmlFor="sec-sort-order" className="text-xs font-bold text-slate-800">
+              <label htmlFor="sec-sort-order" className="flex min-h-5 items-center text-xs font-bold text-ink">
                 ترتيب الظهور
               </label>
               <input
@@ -299,7 +301,7 @@ export default function CentralSecretariatFormModal({
                 value={sortOrder}
                 onChange={(e) => handleFieldChange("sortOrder", setSortOrder, e.target.value)}
                 disabled={busy}
-                className="w-full h-11 rounded-2xl border border-slate-200 bg-slate-50/50 px-4 text-sm text-slate-900 focus:border-gold focus:bg-white focus:ring-2 focus:ring-gold/20 focus:outline-hidden"
+                className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-xs font-medium text-ink transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] sm:text-sm"
               />
               {errors.sortOrder && (
                 <p className="text-xs text-red-600 flex items-center gap-1 mt-1 font-medium">
@@ -311,8 +313,8 @@ export default function CentralSecretariatFormModal({
 
             {/* Source Note */}
             <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <label htmlFor="sec-source-note" className="text-xs font-bold text-slate-800">
+              <div className="flex min-h-5 items-center justify-between gap-2">
+                <label htmlFor="sec-source-note" className="text-xs font-bold text-ink">
                   ملاحظة المصدر (اختياري)
                 </label>
                 <span dir="ltr" className="inline-block text-[11px] font-medium text-slate-400">
@@ -326,7 +328,7 @@ export default function CentralSecretariatFormModal({
                 onChange={(e) => handleFieldChange("sourceNote", setSourceNote, e.target.value)}
                 disabled={busy}
                 placeholder="الموقع الرسمي للحزب"
-                className="w-full h-11 rounded-2xl border border-slate-200 bg-slate-50/50 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-2 focus:ring-gold/20 focus:outline-hidden"
+                className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-xs font-medium text-ink transition-all duration-300 ease-in-out placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] sm:text-sm"
               />
             </div>
           </div>
@@ -339,7 +341,7 @@ export default function CentralSecretariatFormModal({
                 checked={isPublished}
                 onChange={(e) => setIsPublished(e.target.checked)}
                 disabled={busy}
-                className="size-4.5 rounded-lg border-slate-300 text-gold-darker focus:ring-gold"
+                className="size-4.5 cursor-pointer rounded-lg border-border accent-gold focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
               />
               <span className="text-xs font-bold text-slate-800">
                 نشر الأمانة في قائمة الأمانات المركزية بالموقع العام
@@ -349,12 +351,12 @@ export default function CentralSecretariatFormModal({
         </form>
 
         {/* Pinned Modal Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 sm:px-8 border-t border-slate-100 shrink-0 bg-slate-50/70">
+        <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-line bg-page/40 p-4 sm:flex-row sm:justify-end sm:gap-3 sm:px-6">
           <button
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="h-11 px-5 rounded-2xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-sm font-bold transition-colors disabled:opacity-50"
+            className="h-12 w-full rounded-2xl border border-line bg-white px-5 text-xs font-bold text-muted transition-all duration-200 hover:border-gold hover:bg-gold-tint/50 hover:text-ink active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50 sm:w-auto sm:text-sm"
           >
             إلغاء
           </button>
@@ -362,7 +364,7 @@ export default function CentralSecretariatFormModal({
             type="submit"
             form="sec-form"
             disabled={busy}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gold-gradient px-6 text-sm font-bold text-ink shadow-md hover:brightness-105 active:scale-95 transition-all disabled:opacity-50"
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-bold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_10px_24px_rgba(201,162,74,0.3)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:text-sm"
           >
             {busy ? (
               <>
