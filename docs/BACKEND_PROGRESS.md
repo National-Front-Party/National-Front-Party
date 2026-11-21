@@ -1133,3 +1133,12 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Removed the affected filter and target displays from the Audit Logs page; the frontend request now keeps only executor and pagination filters.
 - Added Arabic operation descriptions for every current database audit action, the existing news action aliases, and an unknown-action fallback. Removed the modal changes list and affected card.
 - API and backend behavior were not changed. Operation descriptions and desktop/tablet/mobile source layouts were checked. A browser session and local server were unavailable; ESLint reports two issues in the page effects, which were not changed.
+
+## Backend Phase — Dynamic Audit Log Operation Type Filter
+
+- Added a database-backed distinct `action_type` query for the Audit Logs operation dropdown. Known values receive Arabic labels; unknown values receive a generic Arabic label without exposing the raw key.
+- Added optional `action_type` query validation and runtime support validation against the database-backed action list. Unsupported values return HTTP 400.
+- Applied executor and action type filters together to both the audit record query and total count. Pagination ordering and permissions are unchanged.
+- Added the searchable Operation Type selector to the Audit Logs page; options come from the API response, include an All Operations choice, and filter changes reset pagination to page 1.
+- No database schema, migration, audit writer, or unrelated page changes.
+- Verification: 18 focused tests passed. ESLint passed for backend and test files. The Audit Logs page lint command reports two pre-existing `react-hooks/set-state-in-effect` errors in its data-fetching effects.

@@ -344,12 +344,19 @@ export default function AuditLogPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
   const [actorId, setActorId] = useState("all");
+  const [actionType, setActionType] = useState("all");
+  const [operationTypes, setOperationTypes] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
 
   const staffOptions = useMemo(() => {
     const base = [{ value: "all", label: "جميع الموظفين" }];
     return base.concat(staffList.map((s) => ({ value: s.id, label: s.full_name })));
   }, [staffList]);
+
+  const operationTypeOptions = useMemo(() => [
+    { value: "all", label: "كل العمليات" },
+    ...operationTypes,
+  ], [operationTypes]);
 
   const fetchStaff = useCallback(async () => {
     try {
@@ -367,15 +374,17 @@ export default function AuditLogPage() {
       params.set("page", String(page));
       params.set("page_size", String(pageSize));
       if (actorId && actorId !== "all") params.set("actor_id", actorId);
+      if (actionType && actionType !== "all") params.set("action_type", actionType);
       const res = await adminFetch(`/api/admin/staff/audit-log?${params.toString()}`);
       setRecords(Array.isArray(res?.items) ? res.items : []);
       setTotal(res?.total ?? 0);
+      setOperationTypes(Array.isArray(res?.operation_types) ? res.operation_types : []);
     } catch (err) {
       showError(err.message || "تعذر تحميل سجل التدقيق");
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, actorId, showError]);
+  }, [page, pageSize, actorId, actionType, showError]);
 
   useEffect(() => {
     if (status !== "loading" && isSuperAdmin) fetchStaff();
@@ -414,7 +423,7 @@ export default function AuditLogPage() {
 
       {/* ── Filters ── */}
       <div className="rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-2xs">
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="w-full space-y-1.5 sm:max-w-xl">
             <label className="text-xs font-bold text-muted block">المنفذ — الموظف الذي نفّذ العملية</label>
             <CustomSelect
@@ -423,6 +432,16 @@ export default function AuditLogPage() {
               options={staffOptions}
               value={actorId}
               onChange={(v) => { setActorId(v); setPage(1); }}
+            />
+          </div>
+          <div className="w-full space-y-1.5">
+            <label className="text-xs font-bold text-muted block">نوع العملية</label>
+            <CustomSelect
+              id="audit-action-type"
+              placeholder="كل العمليات"
+              options={operationTypeOptions}
+              value={actionType}
+              onChange={(v) => { setActionType(v); setPage(1); }}
             />
           </div>
         </div>
