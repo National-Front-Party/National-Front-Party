@@ -459,8 +459,11 @@ export default function GovernoratesSecretariats({ data }) {
                   >
                     <div className={styles.panelContent}>
                       <div className={styles.peopleList}>
-                        {people.map((person) => (
-                          <div key={`${name}-${person.name}`} className={styles.personRow}>
+                        {people.map((person, index) => (
+                          <div
+                            key={`${name}-${person.name}-${index}`}
+                            className={styles.personRow}
+                          >
                             {person.photo ? (
                               <Image
                                 src={person.photo}
