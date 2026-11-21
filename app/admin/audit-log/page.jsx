@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   History,
   ChevronLeft,
@@ -17,6 +17,9 @@ import {
   UserX,
   KeyRound,
   Newspaper,
+  Trash2,
+  Loader2,
+  LockKeyhole,
 } from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useAdminAuth } from "@/lib/admin/auth-context";
@@ -24,6 +27,7 @@ import { useToast } from "@/lib/admin/toast-context";
 import { hasPermission } from "@/lib/admin/permissions";
 import { getOperationDescription } from "@/lib/admin/audit-descriptions";
 import PageHeader from "@/components/Admin/ui/PageHeader";
+import Field from "@/components/Admin/ui/Field";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import EmptyState from "@/components/Admin/ui/EmptyState";
 import CustomSelect from "@/components/Home/ui/CustomSelect";
@@ -238,11 +242,130 @@ function DetailModal({ record, onClose }) {
   );
 }
 
+function DeleteAuditModal({
+  target,
+  password,
+  busy,
+  error,
+  onPasswordChange,
+  onSubmit,
+  onClose,
+}) {
+  if (!target) return null;
+
+  const isAll = target.type === "all";
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/60 backdrop-blur-xs animate-modal-overlay-enter"
+      dir="rtl"
+      onClick={(event) => {
+        if (event.target === event.currentTarget && !busy) onClose();
+      }}
+    >
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSubmit();
+        }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="audit-delete-title"
+        className="relative w-full max-w-lg rounded-[26px] bg-white border border-line shadow-card-hover overflow-hidden animate-modal-shell-enter"
+      >
+        <div className="flex items-center justify-between gap-4 border-b border-line px-5 sm:px-7 py-4 sm:py-5">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs">
+              <Trash2 className="size-5" />
+            </div>
+            <div>
+              <h2 id="audit-delete-title" className="text-base sm:text-lg font-black text-ink">
+                {isAll ? "حذف كل سجلات التدقيق" : "حذف السجل"}
+              </h2>
+              <p className="text-[11px] text-muted mt-0.5">تأكيد كلمة مرور مدير النظام مطلوب</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={busy}
+            aria-label="إغلاق النافذة"
+            className="group relative flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <svg
+              className="size-5 transition-transform duration-300 group-hover:rotate-90"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-5 sm:p-7 space-y-5">
+          <div className="flex gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-800">
+            <AlertTriangle className="size-5 shrink-0 mt-0.5" />
+            <div className="text-sm leading-relaxed">
+              {isAll
+                ? "سيتم حذف كل سجلات التدقيق في النظام نهائيًا. لا يمكن التراجع عن هذا الإجراء."
+                : "سيتم حذف هذا السجل نهائيًا من سجل التدقيق. لا يمكن التراجع عن هذا الإجراء."}
+            </div>
+          </div>
+
+          <Field
+            id="audit-delete-password"
+            name="password"
+            label="كلمة مرور مدير النظام"
+            type="password"
+            value={password}
+            onChange={(event) => onPasswordChange(event.target.value)}
+            placeholder="أدخل كلمة المرور الحالية"
+            autoComplete="current-password"
+            autoFocus
+            dir="ltr"
+            error={error}
+            disabled={busy}
+          />
+
+          <div className="flex items-center gap-2 rounded-2xl border border-line bg-page/50 p-3 text-[11px] text-muted">
+            <LockKeyhole className="size-4 shrink-0 text-gold-dark" />
+            يتم التحقق من كلمة المرور على الخادم قبل تنفيذ الحذف.
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 px-5 sm:px-7 py-3.5 sm:py-4 border-t border-line bg-page/50">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={busy}
+            className="h-10 px-6 rounded-2xl border border-line bg-white text-xs font-bold text-muted hover:border-gold hover:text-ink hover:bg-gold-tint/30 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            disabled={busy || !password}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-rose-600 px-6 text-xs font-bold text-white shadow-btn transition-all duration-200 hover:bg-rose-700 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {busy && <Loader2 className="size-4 animate-spin" />}
+            تأكيد الحذف
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 /* ─────────────────────────── Main Page ─────────────────────────────── */
 
 export default function AuditLogPage() {
   const { user, status } = useAdminAuth();
-  const { showError } = useToast();
+  const { showError, showSuccess } = useToast();
   const isSuperAdmin = user?.role === "super_admin" || hasPermission(user?.role, "staff:manage");
 
   const [staffList, setStaffList] = useState([]);
@@ -255,6 +378,10 @@ export default function AuditLogPage() {
   const [actionType, setActionType] = useState("all");
   const [operationTypes, setOperationTypes] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const staffOptions = useMemo(() => {
     const base = [{ value: "all", label: "جميع الموظفين" }];
@@ -266,20 +393,43 @@ export default function AuditLogPage() {
     ...operationTypes,
   ], [operationTypes]);
 
-  const fetchStaff = useCallback(async () => {
-    try {
-      const res = await adminFetch("/api/admin/staff?page=1&page_size=100");
-      if (Array.isArray(res?.items)) setStaffList(res.items);
-    } catch (err) {
-      showError(err.message || "تعذر تحميل قائمة الموظفين");
-    }
-  }, [showError]);
+  useEffect(() => {
+    if (status === "loading" || !isSuperAdmin) return;
+    adminFetch("/api/admin/staff?page=1&page_size=100")
+      .then((res) => {
+        if (Array.isArray(res?.items)) setStaffList(res.items);
+      })
+      .catch((err) => {
+        showError(err.message || "تعذر تحميل قائمة الموظفين");
+      });
+  }, [status, isSuperAdmin, showError]);
 
-  const fetchAudit = useCallback(async () => {
+  useEffect(() => {
+    if (status === "loading" || !isSuperAdmin) return;
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+    if (actorId && actorId !== "all") params.set("actor_id", actorId);
+    if (actionType && actionType !== "all") params.set("action_type", actionType);
+    adminFetch(`/api/admin/staff/audit-log?${params.toString()}`)
+      .then((res) => {
+        setRecords(Array.isArray(res?.items) ? res.items : []);
+        setTotal(res?.total ?? 0);
+        setOperationTypes(Array.isArray(res?.operation_types) ? res.operation_types : []);
+      })
+      .catch((err) => {
+        showError(err.message || "تعذر تحميل سجل التدقيق");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [status, isSuperAdmin, page, pageSize, actorId, actionType, showError]);
+
+  const loadAuditPage = async (requestedPage) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      params.set("page", String(page));
+      params.set("page", String(requestedPage));
       params.set("page_size", String(pageSize));
       if (actorId && actorId !== "all") params.set("actor_id", actorId);
       if (actionType && actionType !== "all") params.set("action_type", actionType);
@@ -292,15 +442,49 @@ export default function AuditLogPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, actorId, actionType, showError]);
+  };
 
-  useEffect(() => {
-    if (status !== "loading" && isSuperAdmin) fetchStaff();
-  }, [status, isSuperAdmin, fetchStaff]);
+  const openDeleteModal = (target) => {
+    setDeleteTarget(target);
+    setDeletePassword("");
+    setDeleteError("");
+  };
 
-  useEffect(() => {
-    if (status !== "loading" && isSuperAdmin) fetchAudit();
-  }, [status, isSuperAdmin, fetchAudit]);
+  const closeDeleteModal = () => {
+    if (deleteBusy) return;
+    setDeleteTarget(null);
+    setDeletePassword("");
+    setDeleteError("");
+  };
+
+  const submitDelete = async () => {
+    if (!deleteTarget || !deletePassword || deleteBusy) return;
+    setDeleteBusy(true);
+    setDeleteError("");
+    try {
+      const endpoint = deleteTarget.type === "all"
+        ? "/api/admin/staff/audit-log"
+        : `/api/admin/staff/audit-log/${encodeURIComponent(deleteTarget.record.id)}`;
+      const result = await adminFetch(endpoint, {
+        method: "DELETE",
+        body: { confirm: true, password: deletePassword },
+      });
+      showSuccess(
+        deleteTarget.type === "all"
+          ? `تم حذف ${toArabicDigits(result?.deleted ?? 0)} سجل من سجل التدقيق بنجاح`
+          : "تم حذف السجل بنجاح",
+      );
+      setDeleteTarget(null);
+      setDeletePassword("");
+      setPage(1);
+      await loadAuditPage(1);
+    } catch (err) {
+      setDeleteError(err.message || "تعذر إتمام عملية الحذف");
+      showError(err.message || "تعذر إتمام عملية الحذف");
+    } finally {
+      setDeleteBusy(false);
+    }
+  };
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -327,6 +511,17 @@ export default function AuditLogPage() {
             {toArabicDigits(total)} سجل
           </span>
         }
+        actions={
+          <button
+            type="button"
+            onClick={() => openDeleteModal({ type: "all" })}
+            disabled={loading || total === 0}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 text-xs font-bold text-rose-700 shadow-2xs transition-all duration-200 hover:border-rose-300 hover:bg-rose-100 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <Trash2 className="size-4" />
+            حذف الكل
+          </button>
+        }
       />
 
       {/* ── Filters ── */}
@@ -339,7 +534,7 @@ export default function AuditLogPage() {
               placeholder="جميع الموظفين"
               options={staffOptions}
               value={actorId}
-              onChange={(v) => { setActorId(v); setPage(1); }}
+              onChange={(v) => { setLoading(true); setActorId(v); setPage(1); }}
             />
           </div>
           <div className="w-full space-y-1.5">
@@ -349,7 +544,7 @@ export default function AuditLogPage() {
               placeholder="كل العمليات"
               options={operationTypeOptions}
               value={actionType}
-              onChange={(v) => { setActionType(v); setPage(1); }}
+              onChange={(v) => { setLoading(true); setActionType(v); setPage(1); }}
             />
           </div>
         </div>
@@ -415,14 +610,25 @@ export default function AuditLogPage() {
 
                         {/* Details button */}
                         <td className="py-4 px-3">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedRecord(r)}
-                            className="inline-flex items-center gap-1.5 h-8 rounded-xl bg-gold-gradient px-3 text-[11px] font-bold text-ink shadow-btn transition-all duration-200 hover:brightness-110 hover:scale-105 active:scale-95 cursor-pointer"
-                          >
-                            <Eye className="size-3.5" />
-                            عرض التفاصيل
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRecord(r)}
+                              className="inline-flex items-center gap-1.5 h-8 rounded-xl bg-gold-gradient px-3 text-[11px] font-bold text-ink shadow-btn transition-all duration-200 hover:brightness-110 hover:scale-105 active:scale-95 cursor-pointer"
+                            >
+                              <Eye className="size-3.5" />
+                              عرض التفاصيل
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openDeleteModal({ type: "single", record: r })}
+                              title="حذف السجل"
+                              aria-label="حذف السجل"
+                              className="inline-flex size-8 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs transition-all duration-200 hover:border-rose-300 hover:bg-rose-100 hover:scale-105 active:scale-95 cursor-pointer"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </button>
+                          </div>
                         </td>
 
                         {/* Time */}
@@ -471,14 +677,25 @@ export default function AuditLogPage() {
                           </div>
                         </td>
                         <td className="py-3.5 px-3">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedRecord(r)}
-                            className="inline-flex items-center gap-1 h-7 rounded-xl bg-gold-gradient px-2.5 text-[10px] font-bold text-ink shadow-btn transition-all duration-200 hover:brightness-110 active:scale-95 cursor-pointer"
-                          >
-                            <Eye className="size-3" />
-                            التفاصيل
-                          </button>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRecord(r)}
+                              className="inline-flex items-center gap-1 h-7 rounded-xl bg-gold-gradient px-2.5 text-[10px] font-bold text-ink shadow-btn transition-all duration-200 hover:brightness-110 active:scale-95 cursor-pointer"
+                            >
+                              <Eye className="size-3" />
+                              التفاصيل
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openDeleteModal({ type: "single", record: r })}
+                              title="حذف السجل"
+                              aria-label="حذف السجل"
+                              className="inline-flex size-7 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs transition-all duration-200 hover:border-rose-300 hover:bg-rose-100 hover:scale-105 active:scale-95 cursor-pointer"
+                            >
+                              <Trash2 className="size-3" />
+                            </button>
+                          </div>
                         </td>
                         <td className="py-3.5 pr-3 pl-5">
                           <div className="flex flex-col gap-0.5">
@@ -517,14 +734,24 @@ export default function AuditLogPage() {
                     </div>
 
                     {/* Row 3: details button */}
-                    <button
-                      type="button"
-                      onClick={() => setSelectedRecord(r)}
-                      className="w-full inline-flex items-center justify-center gap-1.5 h-9 rounded-xl bg-gold-gradient text-[11px] font-bold text-ink shadow-btn transition-all duration-200 hover:brightness-110 active:scale-[0.98] cursor-pointer"
-                    >
-                      <Eye className="size-3.5" />
-                      عرض التفاصيل
-                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRecord(r)}
+                        className="w-full inline-flex items-center justify-center gap-1.5 h-9 rounded-xl bg-gold-gradient text-[11px] font-bold text-ink shadow-btn transition-all duration-200 hover:brightness-110 active:scale-[0.98] cursor-pointer"
+                      >
+                        <Eye className="size-3.5" />
+                        عرض التفاصيل
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openDeleteModal({ type: "single", record: r })}
+                        className="w-full inline-flex items-center justify-center gap-1.5 h-9 rounded-xl border border-rose-200 bg-rose-50 text-[11px] font-bold text-rose-700 shadow-2xs transition-all duration-200 hover:border-rose-300 hover:bg-rose-100 active:scale-[0.98] cursor-pointer"
+                      >
+                        <Trash2 className="size-3.5" />
+                        حذف السجل
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -540,7 +767,7 @@ export default function AuditLogPage() {
                   <button
                     type="button"
                     disabled={page === 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    onClick={() => { setLoading(true); setPage((p) => Math.max(1, p - 1)); }}
                     className="flex size-8 items-center justify-center rounded-xl border border-line bg-white text-muted transition-all duration-200 hover:border-gold hover:text-ink hover:bg-gold-tint/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     title="الصفحة السابقة"
                   >
@@ -552,7 +779,7 @@ export default function AuditLogPage() {
                   <button
                     type="button"
                     disabled={page === totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    onClick={() => { setLoading(true); setPage((p) => Math.min(totalPages, p + 1)); }}
                     className="flex size-8 items-center justify-center rounded-xl border border-line bg-white text-muted transition-all duration-200 hover:border-gold hover:text-ink hover:bg-gold-tint/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     title="الصفحة التالية"
                   >
@@ -569,6 +796,16 @@ export default function AuditLogPage() {
       {selectedRecord && (
         <DetailModal record={selectedRecord} onClose={() => setSelectedRecord(null)} />
       )}
+
+      <DeleteAuditModal
+        target={deleteTarget}
+        password={deletePassword}
+        busy={deleteBusy}
+        error={deleteError}
+        onPasswordChange={setDeletePassword}
+        onSubmit={submitDelete}
+        onClose={closeDeleteModal}
+      />
     </div>
   );
 }

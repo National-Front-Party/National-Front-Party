@@ -1584,3 +1584,16 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - الشاشة مثبتة بارتفاع نافذة العرض، وتُخفى عناصر Navbar وFooter ويُمنع تمرير الصفحة أثناء عرضها.
 - وفق دليل Next.js، app/not-found.jsx يعالج المسارات غير الموجودة ويُرجع حالة 404 قبل بدء البث.
 - التحقق: لم تُشغّل الاختبارات أو lint.
+
+## Backend + UI Phase — Archive Audit Log Records (Password Protected)
+
+- أُضيف حذف آمن لسجلات التدقيق من `/admin/audit-log`: زر `حذف الكل` في الترويسة، وزر `حذف السجل` لكل صف في عروض سطح المكتب والتابلت والجوال، ونافذة تأكيد تطلب `confirm: true` وكلمة مرور مدير النظام الحالي.
+- عقد API الجديد:
+  - `DELETE /api/admin/staff/audit-log` يحذف كل السجلات ويرجع `{ ok: true, deleted: n }`.
+  - `DELETE /api/admin/staff/audit-log/:id` يحذف سجلًا واحدًا ويرجع `{ ok: true, deleted: 1 }`.
+  - الجسم مطلوب بالشكل `{ "confirm": true, "password": "<current super_admin password>" }`.
+  - الحماية تستخدم `staff:manage` ثم في الخدمة تُعاد قراءة الموظف النشط والتحقق من دور `super_admin` وكلمة المرور بـ`scrypt`؛ لا تُسجل كلمة المرور ولا تُعرض في الاستجابات.
+  - الأخطاء: `400 INVALID_CURRENT_PASSWORD`، `400 VALIDATION`، `403 FORBIDDEN`، `404 NOT_FOUND`، `500 SERVER_ERROR`؛ دون stack trace وبـ`Cache-Control: no-store`.
+- لا توجد تغييرات على schema أو migration أو seed. عملية الحذف لا تكتب سجل تدقيق جديدًا، حتى يبقى `حذف الكل` فارغًا فعلًا. الملف المحذوف مسبقًا `public/uploads/news/news-970161c8-632e-4ec1-981c-e23ab3821ba2.jpg` لم يُلمس.
+- الملفات: `lib/validation/staff.js`، `lib/services/staff.js`، `lib/staff/handlers.js`، `app/api/admin/staff/audit-log/route.js`، `app/api/admin/staff/audit-log/[id]/route.js`، `app/admin/audit-log/page.jsx`، والاختبارات المرتبطة بها.
+- التحقق: `npm test` نجح بالكامل (338 pass / 0 fail). ESLint ناجح على جميع الملفات المعدّلة؛ الفحص الكامل يُظهر 3 أخطاء `react-hooks/set-state-in-effect` سابقة في ملفات لم تُعدّل: `StaffAuditModal.jsx`، `StaffEditorModal.jsx`، `StaffResetPasswordModal.jsx`. `npm run build` نجح في التجميع والـTypeScript لكنه فشل في prerender لصفحتين لم تُعدّلا (`/admin` و`/admin/news`) بسبب `Render in Browser` خارج Suspense مع `cacheComponents`؛ لم تُجرَ تعديلات Install/DB.
