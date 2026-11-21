@@ -84,25 +84,25 @@ export default function OrganizationPage() {
   const loadCenters = useCallback(async (governorateId) => {
     if (!governorateId) { setCenters([]); return; }
     const result = await adminFetch("/api/admin/content/organization/centers?governorate_id=" + governorateId);
-    setCenters(result?.items ?? []);
+    return result?.items ?? [];
   }, []);
 
   const loadSecretariats = useCallback(async (centerId) => {
     if (!centerId) { setSecretariats([]); return; }
     const result = await adminFetch("/api/admin/content/organization/local-secretariats?center_id=" + centerId);
-    setSecretariats(result?.items ?? []);
+    return result?.items ?? [];
   }, []);
 
   const loadUnits = useCallback(async (secretariatId) => {
     if (!secretariatId) { setUnits([]); return; }
     const result = await adminFetch("/api/admin/content/organization/party-units?secretariat_id=" + secretariatId);
-    setUnits(result?.items ?? []);
+    return result?.items ?? [];
   }, []);
 
   const loadPeople = useCallback(async (unitId) => {
     if (!unitId) { setPeople([]); return; }
     const result = await adminFetch("/api/admin/content/organization/party-units/" + unitId + "/people");
-    setPeople(result?.people ?? []);
+    return result?.people ?? [];
   }, []);
 
   useEffect(() => { loadGovernorates(); }, [loadGovernorates]);
@@ -110,27 +110,27 @@ export default function OrganizationPage() {
     let active = true;
     if (!selection.governorate) { setCenters([]); return; }
     setLoadingChildren(true);
-    loadCenters(selection.governorate).catch((e) => active && showError(e?.message || "تعذر تحميل المراكز")).finally(() => active && setLoadingChildren(false));
+    loadCenters(selection.governorate).then((items) => active && setCenters(items)).catch((e) => active && showError(e?.message || "تعذر تحميل المراكز")).finally(() => active && setLoadingChildren(false));
     return () => { active = false; };
   }, [selection.governorate, loadCenters, showError]);
   useEffect(() => {
     let active = true;
     if (!selection.center) { setSecretariats([]); return; }
     setLoadingChildren(true);
-    loadSecretariats(selection.center).catch((e) => active && showError(e?.message || "تعذر تحميل الأمانات المحلية")).finally(() => active && setLoadingChildren(false));
+    loadSecretariats(selection.center).then((items) => active && setSecretariats(items)).catch((e) => active && showError(e?.message || "تعذر تحميل الأمانات المحلية")).finally(() => active && setLoadingChildren(false));
     return () => { active = false; };
   }, [selection.center, loadSecretariats, showError]);
   useEffect(() => {
     let active = true;
     if (!selection.secretariat) { setUnits([]); return; }
     setLoadingChildren(true);
-    loadUnits(selection.secretariat).catch((e) => active && showError(e?.message || "تعذر تحميل الوحدات الحزبية")).finally(() => active && setLoadingChildren(false));
+    loadUnits(selection.secretariat).then((items) => active && setUnits(items)).catch((e) => active && showError(e?.message || "تعذر تحميل الوحدات الحزبية")).finally(() => active && setLoadingChildren(false));
     return () => { active = false; };
   }, [selection.secretariat, loadUnits, showError]);
   useEffect(() => {
     let active = true;
     if (!selection.unit) { setPeople([]); return; }
-    loadPeople(selection.unit).catch((e) => active && showError(e?.message || "تعذر تحميل مسؤولي الوحدة"));
+    loadPeople(selection.unit).then((items) => active && setPeople(items)).catch((e) => active && showError(e?.message || "تعذر تحميل مسؤولي الوحدة"));
     return () => { active = false; };
   }, [selection.unit, loadPeople, showError]);
 
@@ -164,9 +164,17 @@ export default function OrganizationPage() {
   };
 
   const refreshLevel = async (level) => {
-    if (level === "center") await loadCenters(selection.governorate);
-    if (level === "secretariat") await loadSecretariats(selection.center);
-    if (level === "unit") await loadUnits(selection.secretariat);
+    if (level === "center") setCenters(await loadCenters(selection.governorate));
+    if (level === "secretariat") setSecretariats(await loadSecretariats(selection.center));
+    if (level === "unit") setUnits(await loadUnits(selection.secretariat));
+  };
+
+  const refreshAll = async () => {
+    await loadGovernorates();
+    if (selection.governorate) setCenters(await loadCenters(selection.governorate));
+    if (selection.center) setSecretariats(await loadSecretariats(selection.center));
+    if (selection.secretariat) setUnits(await loadUnits(selection.secretariat));
+    if (selection.unit) setPeople(await loadPeople(selection.unit));
   };
 
   const saveLevel = async (event) => {
@@ -225,7 +233,7 @@ export default function OrganizationPage() {
     try {
       const endpoint = "/api/admin/content/organization/party-units/" + selection.unit + "/people" + (id ? "/" + id : "");
       const result = await adminFetch(endpoint, { method: id ? "PATCH" : "POST", body: payload });
-      await loadPeople(selection.unit);
+      setPeople(await loadPeople(selection.unit));
       showSuccess(id ? "تم تحديث بيانات المسؤول" : "تمت إضافة المسؤول");
       setPersonEditor(null);
       setMemberQuery("");
@@ -269,7 +277,7 @@ export default function OrganizationPage() {
 
   return (
     <div className="space-y-6" dir="rtl">
-      <PageHeader title="إدارة الهيكل التنظيمي" description="إدارة التسلسل التنظيمي للحزب من المحافظات والمراكز حتى الوحدات الحزبية وقياداتها." badge={<span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold-tint px-3 py-1 text-xs font-bold text-gold-dark"><ShieldCheck className="size-3.5" /> مدير النظام</span>} actions={<button type="button" onClick={() => { loadGovernorates(); if(selection.governorate) loadCenters(selection.governorate); if(selection.center) loadSecretariats(selection.center); if(selection.secretariat) loadUnits(selection.secretariat); if(selection.unit) loadPeople(selection.unit); }} className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-ink hover:bg-page"><RefreshCw className="size-4" /> تحديث البيانات</button>} />
+      <PageHeader title="إدارة الهيكل التنظيمي" description="إدارة التسلسل التنظيمي للحزب من المحافظات والمراكز حتى الوحدات الحزبية وقياداتها." badge={<span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold-tint px-3 py-1 text-xs font-bold text-gold-dark"><ShieldCheck className="size-3.5" /> مدير النظام</span>} actions={<button type="button" onClick={refreshAll} className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-ink hover:bg-page"><RefreshCw className="size-4" /> تحديث البيانات</button>} />
 
       <section className="rounded-3xl border border-line bg-white p-5 shadow-xs">
         <div className="mb-4 flex items-center gap-2"><span className="flex size-9 items-center justify-center rounded-xl bg-gold-tint text-gold-dark"><MapPin className="size-5" /></span><div><h2 className="text-sm font-black text-ink">اختيار النطاق التنظيمي</h2><p className="text-xs text-muted">اختار المحافظة ثم المركز ثم الأمانة المحلية لعرض الوحدات التابعة ليها</p></div></div>
@@ -350,7 +358,7 @@ export default function OrganizationPage() {
       {personEditor && <Modal title={personEditor.id ? "تعديل بيانات المسؤول" : "إضافة مسؤول جديد"} onClose={()=>!busy && setPersonEditor(null)}>
         <form onSubmit={savePerson} className="space-y-4">
           <div className="rounded-xl border border-gold/20 bg-gold-tint/60 p-3 text-xs leading-6 text-gold-dark">تقدر تربط المسؤول بعضو نشط موجود في قاعدة بيانات الحزب، أو تضيف بياناته يدويًا.</div>
-          {!personEditor.id && <Field label="البحث عن عضو نشط"><input className={inputClass} value={memberQuery} onChange={(e)=>{setMemberQuery(e.target.value);setPersonEditor((p)=>({...p,member_id:null,full_name:""}));}} placeholder="اكتب اسم العضو (حرفين على الأقل)" />{memberLoading && <span className="text-xs text-muted">جاري البحث...</span>}{memberResults.length>0 && <div className="max-h-36 overflow-y-auto rounded-xl border border-line">{memberResults.map((m)=><button type="button" key={m.id} onClick={()=>{setPersonEditor((p)=>({...p,member_id:m.id,full_name:m.full_name}));setMemberQuery(m.full_name);setMemberResults([]);}} className="block w-full border-b border-line px-3 py-2 text-right text-xs hover:bg-gold-tint"><span className="font-bold">{m.full_name}</span><span className="mr-2 text-muted">{m.governorate_name}</span></button>)}</div>}</Field>}
+          {!personEditor.member_id && <Field label="البحث عن عضو نشط"><input className={inputClass} value={memberQuery} onChange={(e)=>{setMemberQuery(e.target.value);setPersonEditor((p)=>({...p,member_id:null,full_name:""}));}} placeholder="اكتب اسم العضو (حرفين على الأقل)" />{memberLoading && <span className="text-xs text-muted">جاري البحث...</span>}{memberResults.length>0 && <div className="max-h-36 overflow-y-auto rounded-xl border border-line">{memberResults.map((m)=><button type="button" key={m.id} onClick={()=>{setPersonEditor((p)=>({...p,member_id:m.id,full_name:m.full_name}));setMemberQuery(m.full_name);setMemberResults([]);}} className="block w-full border-b border-line px-3 py-2 text-right text-xs hover:bg-gold-tint"><span className="font-bold">{m.full_name}</span><span className="mr-2 text-muted">{m.governorate_name}</span></button>)}</div>}</Field>}
           {(!personEditor.member_id) && <Field label="الاسم بالكامل"><input required className={inputClass} value={personEditor.full_name || ""} onChange={(e)=>setPersonEditor((p)=>({...p,full_name:e.target.value}))} placeholder="اسم المسؤول" /></Field>}
           {personEditor.member_id && <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"><span>تم اختيار العضو: <b>{personEditor.full_name}</b></span><button type="button" onClick={()=>{setPersonEditor((p)=>({...p,member_id:null,full_name:""}));setMemberQuery("");}} className="font-bold underline">فك الربط</button></div>}
           <Field label="المنصب"><input required maxLength={200} className={inputClass} value={personEditor.position_title} onChange={(e)=>setPersonEditor((p)=>({...p,position_title:e.target.value}))} placeholder="مثال: أمين الوحدة الحزبية" /></Field>
