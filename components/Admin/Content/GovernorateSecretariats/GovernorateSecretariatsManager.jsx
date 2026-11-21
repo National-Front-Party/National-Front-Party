@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import Image from "next/image";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
@@ -26,6 +26,7 @@ import {
   Eye,
   EyeOff,
   Settings,
+  ChevronDown,
 } from "lucide-react";
 
 export default function GovernorateSecretariatsManager() {
@@ -37,6 +38,8 @@ export default function GovernorateSecretariatsManager() {
   const [governorates, setGovernorates] = useState([]);
   const [selectedGovId, setSelectedGovId] = useState(null);
   const [govSearch, setGovSearch] = useState("");
+  const [isGovDropdownOpen, setIsGovDropdownOpen] = useState(false);
+  const govDropdownRef = useRef(null);
 
   const [loadingPeople, setLoadingPeople] = useState(true);
   const [peopleError, setPeopleError] = useState(null);
@@ -61,6 +64,26 @@ export default function GovernorateSecretariatsManager() {
 
   const canManage = hasPermission(user?.role, "content:manage");
   const canDelete = hasPermission(user?.role, "records:delete");
+
+  useEffect(() => {
+    if (!isGovDropdownOpen) return undefined;
+
+    const handlePointerDown = (event) => {
+      if (!govDropdownRef.current?.contains(event.target)) {
+        setIsGovDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setIsGovDropdownOpen(false);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isGovDropdownOpen]);
 
   // 1. Fetch Governorates List (Admin API with fallback)
   useEffect(() => {
@@ -352,9 +375,9 @@ export default function GovernorateSecretariatsManager() {
           <Skeleton className="h-6 w-56 rounded-xl" />
           <Skeleton className="h-10 w-36 rounded-2xl" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Skeleton className="h-96 md:col-span-1 rounded-3xl" />
-          <Skeleton className="h-96 md:col-span-3 rounded-3xl" />
+        <div className="space-y-5">
+          <Skeleton className="h-72 w-full rounded-3xl" />
+          <Skeleton className="h-96 w-full rounded-3xl" />
         </div>
       </div>
     );
@@ -381,7 +404,7 @@ export default function GovernorateSecretariatsManager() {
   return (
     <div className="space-y-6" dir="rtl">
       {/* Top Overview Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-3xl border border-slate-200 bg-white p-5 shadow-xs">
+      <div className="flex flex-col gap-3 rounded-3xl border border-line bg-white p-4 shadow-card sm:flex-row sm:items-center sm:justify-between sm:p-5">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="flex size-9 items-center justify-center rounded-xl bg-gold/15 text-gold-darker shadow-2xs">
@@ -405,7 +428,7 @@ export default function GovernorateSecretariatsManager() {
               type="button"
               onClick={() => setGovModalState({ isOpen: true, governorate: null })}
               disabled={isSubmitting}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-800 shadow-2xs transition-all disabled:opacity-50 cursor-pointer"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl border border-line bg-white px-4 text-xs font-bold text-ink shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:bg-gold-tint/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus className="size-4 text-gold-darker" aria-hidden="true" />
               <span>إضافة محافظة جديدة</span>
@@ -417,7 +440,7 @@ export default function GovernorateSecretariatsManager() {
               type="button"
               onClick={() => setPersonModalState({ isOpen: true, person: null })}
               disabled={isSubmitting}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gold-gradient text-xs font-bold text-ink shadow-sm hover:shadow-md transition-all disabled:opacity-50 cursor-pointer"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <UserPlus className="size-4" aria-hidden="true" />
               <span>إضافة عضو بأمانة {selectedGov.name_ar}</span>
@@ -426,23 +449,40 @@ export default function GovernorateSecretariatsManager() {
         </div>
       </div>
 
-      {/* Main Two-Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Right Side: Governorates Navigator & Visibility Control (4 cols on lg) */}
+      {/* Governorates list followed by the selected governorate's results */}
+      <div className="space-y-5">
+        {/* Governorates Navigator & Visibility Control */}
         <aside
-          className="lg:col-span-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-xs space-y-3.5"
+          className="space-y-4 rounded-3xl border border-line bg-white p-4 shadow-card sm:p-5"
           aria-label="قائمة المحافظات والتحكم في الظهور"
         >
           <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+            <span className="text-xs font-extrabold text-ink flex items-center gap-1.5">
               <MapPin className="size-4 text-gold-darker" aria-hidden="true" />
-              <span>المحافظات والظهور:</span>
+              <span>المحافظة المحددة</span>
             </span>
             <span className="text-[11px] font-mono text-slate-400">
               ({filteredGovs.length} / {governorates.length})
             </span>
           </div>
 
+          <div className="relative" ref={govDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsGovDropdownOpen((open) => !open)}
+              aria-expanded={isGovDropdownOpen}
+              aria-controls="governorate-options"
+              className="governorate-form-field flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-border bg-white px-4 text-right text-sm font-bold text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <MapPin className="size-4 shrink-0 text-gold-dark" aria-hidden="true" />
+                <span className="truncate">{selectedGov?.name_ar || "اختر المحافظة"}</span>
+              </span>
+              <ChevronDown className={`size-4 shrink-0 text-muted transition-transform duration-200 ${isGovDropdownOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+            </button>
+
+            {isGovDropdownOpen && (
+              <div id="governorate-options" className="absolute right-0 top-full z-40 mt-2 w-full rounded-2xl border border-line bg-white p-3 shadow-card-hover">
           {/* Search Box */}
           <div className="relative">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" aria-hidden="true" />
@@ -451,7 +491,7 @@ export default function GovernorateSecretariatsManager() {
               value={govSearch}
               onChange={(e) => setGovSearch(e.target.value)}
               placeholder="ابحث عن محافظة..."
-              className="w-full h-10 rounded-2xl border border-slate-200 bg-slate-50/50 pr-9 pl-3 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-gold/20 transition-all"
+              className="governorate-form-field h-14 w-full rounded-2xl border border-border bg-white py-3 pl-4 pr-10 text-xs font-medium text-ink shadow-none transition-all duration-300 ease-in-out placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] sm:text-sm"
             />
             {govSearch && (
               <button
@@ -465,8 +505,8 @@ export default function GovernorateSecretariatsManager() {
             )}
           </div>
 
-          {/* Governorates Scrollable List */}
-          <div className="max-h-[560px] overflow-y-auto space-y-1.5 pr-0.5 pl-1">
+          {/* Governorates Dropdown Options */}
+          <div className="mt-3 max-h-[min(22rem,50vh)] space-y-2 overflow-y-auto overscroll-contain pr-0.5 pl-1">
             {filteredGovs.length === 0 ? (
               <div className="p-4 text-center text-xs text-slate-400">
                 لا توجد محافظة تطابق «{govSearch}»
@@ -479,16 +519,15 @@ export default function GovernorateSecretariatsManager() {
                 return (
                   <div
                     key={gov.id}
-                    onClick={() => handleSelectGov(gov.id)}
-                    className={`group w-full flex items-center justify-between p-2.5 rounded-2xl text-xs font-bold transition-all text-right cursor-pointer border ${
+                    className={`group w-full flex items-center justify-between gap-2 rounded-2xl border p-2.5 text-right text-xs font-bold transition-all duration-200 ${
                       isSelected
-                        ? "bg-slate-900 text-gold-light shadow-xs border-slate-800 ring-2 ring-gold/20"
+                        ? "bg-gold-gradient text-ink shadow-btn border-gold/60 ring-1 ring-gold/20"
                         : isActive
-                        ? "bg-white text-slate-700 hover:bg-slate-50 border-slate-100"
-                        : "bg-slate-50/80 text-slate-400 hover:bg-slate-100 border-dashed border-slate-200"
+                        ? "bg-white text-slate-700 border-line hover:-translate-y-0.5 hover:border-gold/35 hover:bg-gold-tint/30 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
+                        : "bg-slate-50/80 text-slate-400 border-dashed border-slate-200 hover:border-gold/30 hover:bg-gold-tint/20 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
                     }`}
                   >
-                    <div className="flex items-center gap-2 min-w-0">
+                    <button type="button" onClick={() => { handleSelectGov(gov.id); setIsGovDropdownOpen(false); }} aria-pressed={isSelected} className="flex min-w-0 flex-1 items-center gap-2 text-right focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2">
                       {/* Active Status Dot */}
                       <span
                         className={`size-2 rounded-full shrink-0 ${
@@ -504,13 +543,13 @@ export default function GovernorateSecretariatsManager() {
                           مخفية
                         </span>
                       )}
-                    </div>
+                    </button>
 
                     <div className="flex items-center gap-1.5 shrink-0">
                       <span
                         className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md ${
                           isSelected
-                            ? "bg-white/10 text-gold-light"
+                                ? "bg-white/30 text-ink"
                             : "bg-slate-100 text-slate-500"
                         }`}
                       >
@@ -525,14 +564,15 @@ export default function GovernorateSecretariatsManager() {
                             type="button"
                             onClick={(e) => handleToggleGovStatus(gov, e)}
                             disabled={isSubmitting}
-                            className={`size-6 rounded-md flex items-center justify-center transition-colors ${
+                            className={`order-2 inline-flex size-8 items-center justify-center rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
                               isSelected
-                                ? "text-gold-light hover:bg-white/20"
+                                ? "text-ink hover:bg-white/35"
                                 : isActive
-                                ? "text-emerald-600 hover:bg-emerald-50"
-                                : "text-slate-400 hover:bg-slate-200"
+                                ? "text-emerald-700 hover:bg-emerald-50"
+                                : "text-slate-500 hover:bg-gold-tint/50 hover:text-gold-dark"
                             }`}
                             title={isActive ? "إخفاء المحافظة من الموقع" : "إظهار المحافظة في الموقع"}
+                            aria-label={isActive ? `إخفاء محافظة ${gov.name_ar}` : `إظهار محافظة ${gov.name_ar}`}
                           >
                             {isActive ? (
                               <Eye className="size-3.5" aria-hidden="true" />
@@ -546,15 +586,17 @@ export default function GovernorateSecretariatsManager() {
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
+                              setIsGovDropdownOpen(false);
                               setGovModalState({ isOpen: true, governorate: gov });
                             }}
                             disabled={isSubmitting}
-                            className={`size-6 rounded-md flex items-center justify-center transition-colors ${
+                            className={`order-1 inline-flex size-8 items-center justify-center rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
                               isSelected
-                                ? "text-gold-light hover:bg-white/20"
+                                ? "text-ink hover:bg-white/35"
                                 : "text-slate-400 hover:text-slate-700 hover:bg-slate-100"
                             }`}
                             title="تعديل بيانات المحافظة والترتيب"
+                            aria-label={`تعديل بيانات محافظة ${gov.name_ar}`}
                           >
                             <Edit3 className="size-3" aria-hidden="true" />
                           </button>
@@ -565,15 +607,17 @@ export default function GovernorateSecretariatsManager() {
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                setIsGovDropdownOpen(false);
                                 setDeletingGov(gov);
                               }}
                               disabled={isSubmitting}
-                              className={`size-6 rounded-md flex items-center justify-center transition-colors ${
+                              className={`order-3 inline-flex size-8 items-center justify-center rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
                                 isSelected
                                   ? "text-red-300 hover:bg-red-500/20"
                                   : "text-slate-400 hover:text-red-600 hover:bg-red-50"
                               }`}
                               title="حذف المحافظة"
+                              aria-label={`حذف محافظة ${gov.name_ar}`}
                             >
                               <Trash2 className="size-3" aria-hidden="true" />
                             </button>
@@ -585,12 +629,15 @@ export default function GovernorateSecretariatsManager() {
                 );
               })
             )}
+              </div>
+              </div>
+            )}
           </div>
         </aside>
 
-        {/* Left Side: Secretariat Members Management (8 cols on lg) */}
+        {/* Selected Governorate Results */}
         <section
-          className="lg:col-span-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-xs space-y-5"
+          className="space-y-5 rounded-3xl border border-line bg-white p-4 shadow-card sm:p-5"
           aria-labelledby="selected-gov-title"
         >
           {/* Header of Selected Governorate */}
@@ -636,12 +683,12 @@ export default function GovernorateSecretariatsManager() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+              <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
                 {canManage && (
                   <button
                     type="button"
                     onClick={() => setGovModalState({ isOpen: true, governorate: selectedGov })}
-                    className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                    className="inline-flex min-h-10 items-center gap-1 rounded-xl border border-line bg-white px-3 text-xs font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:bg-gold-tint/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
                     title="تعديل اسم أو كود أو ترتيب المحافظة"
                   >
                     <Settings className="size-3.5 text-slate-500" aria-hidden="true" />
@@ -654,7 +701,7 @@ export default function GovernorateSecretariatsManager() {
                     type="button"
                     onClick={() => setPersonModalState({ isOpen: true, person: null })}
                     disabled={isSubmitting || loadingPeople}
-                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gold/15 hover:bg-gold/25 text-gold-darker text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer"
+                    className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-gold-gradient px-4 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <UserPlus className="size-4" aria-hidden="true" />
                     <span>إضافة عضو</span>
@@ -689,7 +736,7 @@ export default function GovernorateSecretariatsManager() {
               </button>
             </div>
           ) : people.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center bg-slate-50/50">
+            <div className="rounded-2xl border border-dashed border-line bg-page/50 p-6 text-center sm:p-8">
               <Users className="mx-auto size-9 text-slate-300 mb-2" aria-hidden="true" />
               <h4 className="text-sm font-bold text-slate-800">
                 لا يوجد أعضاء مسجلين بأمانة {selectedGov?.name_ar || "المحافظة"} حالياً
@@ -701,7 +748,7 @@ export default function GovernorateSecretariatsManager() {
                 <button
                   type="button"
                   onClick={() => setPersonModalState({ isOpen: true, person: null })}
-                  className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 text-gold-light hover:bg-slate-800 text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                  className="mt-4 inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-gold-gradient px-4 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
                 >
                   <UserPlus className="size-3.5" aria-hidden="true" />
                   <span>إضافة أول عضو بأمانة {selectedGov?.name_ar}</span>
@@ -709,8 +756,9 @@ export default function GovernorateSecretariatsManager() {
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-slate-200">
-              <table className="w-full text-right text-xs">
+            <div className="space-y-3">
+            <div className="hidden overflow-hidden rounded-2xl border border-line xl:block">
+              <table className="w-full table-fixed text-right text-xs">
                 <thead>
                   <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-bold">
                     <th scope="col" className="py-3 px-3 w-14 text-center">
@@ -736,7 +784,7 @@ export default function GovernorateSecretariatsManager() {
                     return (
                       <tr
                         key={rowKey}
-                        className="hover:bg-slate-50/60 transition-colors group"
+                        className="group transition-colors hover:bg-gold-tint/25"
                       >
                         {/* Sort Order */}
                         <td className="py-3 px-3 text-center">
@@ -837,8 +885,9 @@ export default function GovernorateSecretariatsManager() {
                                   setPersonModalState({ isOpen: true, person })
                                 }
                                 disabled={isSubmitting}
-                                className="size-7 rounded-lg text-slate-400 hover:text-gold-darker hover:bg-gold-tint flex items-center justify-center transition-colors disabled:opacity-50 cursor-pointer"
+                                className="inline-flex size-9 items-center justify-center rounded-xl text-muted transition-all hover:-translate-y-0.5 hover:bg-gold-tint/60 hover:text-gold-dark hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 title="تعديل بيانات العضو"
+                                aria-label={`تعديل بيانات ${person.full_name}`}
                               >
                                 <Edit3 className="size-3.5" aria-hidden="true" />
                               </button>
@@ -849,8 +898,9 @@ export default function GovernorateSecretariatsManager() {
                                 type="button"
                                 onClick={() => setDeletingPerson(person)}
                                 disabled={isSubmitting}
-                                className="size-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors disabled:opacity-50 cursor-pointer"
+                                className="inline-flex size-9 items-center justify-center rounded-xl text-slate-400 transition-all hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-600 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 title="حذف العضو نهائياً"
+                                aria-label={`حذف ${person.full_name}`}
                               >
                                 <Trash2 className="size-3.5" aria-hidden="true" />
                               </button>
@@ -862,6 +912,36 @@ export default function GovernorateSecretariatsManager() {
                   })}
                 </tbody>
               </table>
+            </div>
+            <div className="grid gap-3 xl:hidden">
+              {people.map((person, index) => (
+                <article key={`${person.id}-${index}`} className="rounded-2xl border border-line bg-white p-4 shadow-2xs transition-shadow hover:border-gold/40 hover:shadow-card">
+                  <div className="flex items-start gap-3">
+                    {person.photo_url ? (
+                      <Image src={person.photo_url} alt={person.full_name || ""} width={44} height={44} className="size-11 shrink-0 rounded-xl border border-line bg-page object-cover" />
+                    ) : (
+                      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-line bg-page text-muted" aria-label="بدون صورة"><Users className="size-4" aria-hidden="true" /></span>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="break-words text-sm font-extrabold text-ink">{person.full_name}</h4>
+                        <span className="inline-flex size-6 items-center justify-center rounded-lg bg-page font-mono text-[11px] font-bold text-muted">{person.sort_order ?? 0}</span>
+                      </div>
+                      <p className="mt-1 break-words text-xs text-slate-600">{person.role_title || "عضو أمانة"}</p>
+                    </div>
+                    {canManage ? (
+                      <button type="button" onClick={() => handleToggleStatus(person)} disabled={isSubmitting} className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:opacity-50 ${person.is_published ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200"}`} title={person.is_published ? "انقر لإلغاء النشر بالموقع" : "انقر لتفعيل النشر بالموقع"}>
+                        {person.is_published ? "منشور" : "معطل"}
+                      </button>
+                    ) : <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-bold ${person.is_published ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-100 text-slate-600"}`}>{person.is_published ? "منشور" : "معطل"}</span>}
+                  </div>
+                  {(canManage || canDelete) && <div className="mt-3 flex justify-end gap-1 border-t border-line pt-2">
+                    {canManage && <button type="button" onClick={() => setPersonModalState({ isOpen: true, person })} disabled={isSubmitting} className="inline-flex size-9 items-center justify-center rounded-xl text-muted transition-all hover:-translate-y-0.5 hover:bg-gold-tint/60 hover:text-gold-dark hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50" title="تعديل بيانات العضو" aria-label={`تعديل بيانات ${person.full_name}`}><Edit3 className="size-4" aria-hidden="true" /></button>}
+                    {canDelete && <button type="button" onClick={() => setDeletingPerson(person)} disabled={isSubmitting} className="inline-flex size-9 items-center justify-center rounded-xl text-slate-400 transition-all hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-600 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2 disabled:opacity-50" title="حذف العضو نهائياً" aria-label={`حذف ${person.full_name}`}><Trash2 className="size-4" aria-hidden="true" /></button>}
+                  </div>}
+                </article>
+              ))}
+            </div>
             </div>
           )}
         </section>

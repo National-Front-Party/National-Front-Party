@@ -96,6 +96,11 @@ h3 {
   outline-offset: 2px;
 }
 
+.governorate-form-field:focus-visible,
+.governorate-form-field [role="button"]:focus-visible {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;

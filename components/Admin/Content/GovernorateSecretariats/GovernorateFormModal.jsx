@@ -186,11 +186,11 @@ export default function GovernorateFormModal({
     >
       <div
         ref={modalCardRef}
-        className="relative my-auto flex max-h-[90vh] w-full max-w-lg flex-col rounded-3xl border border-slate-200 bg-white shadow-2xl transition-all"
+        className="relative my-auto flex max-h-[calc(100dvh-1.5rem)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-card-hover transition-all sm:max-h-[90dvh]"
         dir="rtl"
       >
         {/* Pinned Header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-line px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="flex size-11 items-center justify-center rounded-2xl bg-gold/15 text-gold-darker shadow-xs">
               {isEditing ? (
@@ -213,7 +213,7 @@ export default function GovernorateFormModal({
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="inline-flex size-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors disabled:opacity-50"
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
             aria-label="إغلاق النافذة"
           >
             <X className="size-5" aria-hidden="true" />
@@ -221,7 +221,7 @@ export default function GovernorateFormModal({
         </div>
 
         {/* Scrollable Form Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6">
           {/* Validation Alert */}
           {hasErrors && (
             <div
@@ -256,7 +256,7 @@ export default function GovernorateFormModal({
             {/* Governorate Name */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="gov-name-ar" className="text-xs font-bold text-slate-800">
+                <label htmlFor="gov-name-ar" className="text-sm font-bold text-ink">
                   اسم المحافظة بالعربية <span className="text-red-500">*</span>
                 </label>
                 <span
@@ -279,10 +279,10 @@ export default function GovernorateFormModal({
                 disabled={busy}
                 maxLength={MAX_NAME}
                 placeholder="مثال: الوادي الجديد، الأقصر، القاهرة..."
-                className={`w-full h-11 rounded-2xl border px-4 text-sm font-semibold transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+                className={`governorate-form-field h-14 w-full rounded-2xl border px-4 text-xs font-medium shadow-none transition-all duration-300 ease-in-out placeholder:text-muted/60 disabled:opacity-60 focus:outline-none focus:ring-0 sm:text-sm ${
                   errors.nameAr
-                    ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    ? "border-red-400 bg-red-50/20 text-slate-900 focus:!border-red-500 focus:!shadow-[0_2px_5px_rgba(220,38,38,0.25)]"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
                 aria-invalid={Boolean(errors.nameAr)}
                 aria-describedby={errors.nameAr ? "gov-name-ar-error" : undefined}
@@ -300,7 +300,7 @@ export default function GovernorateFormModal({
               {/* Governorate Code */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="gov-code" className="text-xs font-bold text-slate-800">
+                  <label htmlFor="gov-code" className="text-sm font-bold text-ink">
                     كود المحافظة <span className="text-red-500">*</span>
                   </label>
                   <span className="text-[11px] font-mono text-slate-400">حروف إنجليزية</span>
@@ -314,10 +314,10 @@ export default function GovernorateFormModal({
                   disabled={busy}
                   maxLength={MAX_CODE}
                   placeholder="EG-WAD"
-                  className={`w-full h-11 rounded-2xl border px-4 font-mono text-sm font-bold uppercase transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+                className={`governorate-form-field h-14 w-full rounded-2xl border px-4 font-mono text-xs font-medium uppercase shadow-none transition-all duration-300 ease-in-out placeholder:text-muted/60 disabled:opacity-60 focus:outline-none focus:ring-0 sm:text-sm ${
                     errors.code
-                      ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                      : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                      ? "border-red-400 bg-red-50/20 text-slate-900 focus:!border-red-500 focus:!shadow-[0_2px_5px_rgba(220,38,38,0.25)]"
+                      : "border-border bg-white text-ink placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                   }`}
                   aria-invalid={Boolean(errors.code)}
                   aria-describedby={errors.code ? "gov-code-error" : undefined}
@@ -333,7 +333,7 @@ export default function GovernorateFormModal({
               {/* Sort Order */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="gov-sort-order" className="text-xs font-bold text-slate-800">
+                  <label htmlFor="gov-sort-order" className="text-sm font-bold text-ink">
                     ترتيب العرض <span className="text-red-500">*</span>
                   </label>
                   <span className="text-[11px] font-medium text-slate-400">أول 8 تظهر بالصفحة</span>
@@ -345,10 +345,10 @@ export default function GovernorateFormModal({
                   value={sortOrder}
                   onChange={(e) => handleFieldChange("sortOrder", setSortOrder, e.target.value)}
                   disabled={busy}
-                  className={`w-full h-11 rounded-2xl border px-4 text-center font-mono text-sm font-bold transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+                  className={`governorate-form-field h-14 w-full rounded-2xl border px-4 text-center font-mono text-xs font-medium shadow-none transition-all duration-300 ease-in-out disabled:opacity-60 focus:outline-none focus:ring-0 sm:text-sm ${
                     errors.sortOrder
-                      ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                      : "border-slate-200 bg-slate-50/50 text-slate-900 focus:border-gold focus:bg-white focus:ring-gold/20"
+                      ? "border-red-400 bg-red-50/20 text-slate-900 focus:!border-red-500 focus:!shadow-[0_2px_5px_rgba(220,38,38,0.25)]"
+                      : "border-border bg-white text-ink hover:border-gold focus:!border-transparent focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                   }`}
                   aria-invalid={Boolean(errors.sortOrder)}
                   aria-describedby={errors.sortOrder ? "gov-sort-order-error" : undefined}
@@ -370,7 +370,7 @@ export default function GovernorateFormModal({
                   checked={isActive}
                   onChange={(e) => setIsActive(e.target.checked)}
                   disabled={busy}
-                  className="size-4.5 rounded-md border-slate-300 text-gold focus:ring-gold/30 disabled:opacity-50 accent-gold"
+                  className="size-4.5 rounded-md border-border accent-gold focus:outline-2 focus:outline-gold focus:outline-offset-2 disabled:opacity-50"
                 />
                 <div className="text-xs">
                   <span className="font-bold text-slate-800 block">
@@ -386,12 +386,12 @@ export default function GovernorateFormModal({
         </div>
 
         {/* Pinned Footer */}
-        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/50 px-6 py-4 rounded-b-3xl">
+        <div className="flex shrink-0 flex-col-reverse items-stretch justify-end gap-2 border-t border-line bg-page/50 px-4 py-4 sm:flex-row sm:items-center sm:gap-3 sm:px-6">
           <button
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="h-11 px-5 rounded-2xl border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-50"
+            className="h-12 rounded-2xl border border-line bg-white px-5 text-xs font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:bg-gold-tint/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50 sm:h-11"
           >
             إلغاء
           </button>
@@ -399,7 +399,7 @@ export default function GovernorateFormModal({
             type="submit"
             form="gov-form"
             disabled={busy}
-            className="h-11 px-6 rounded-2xl bg-gold-gradient text-xs font-bold text-ink shadow-sm hover:shadow-md transition-all disabled:opacity-50 inline-flex items-center gap-2 cursor-pointer"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:h-11"
           >
             {busy ? (
               <>

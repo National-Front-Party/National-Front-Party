@@ -1439,5 +1439,16 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 
 - Follow-up: added a restrained gold-tinted hover shadow to the active Organizational Content tab without scaling or lifting it.
 
+## UI Phase — Governorate Secretariats section refinement
+
+- Replaced the two-column manager layout with a stacked governorates list and selected governorate results section. Kept search, selection, visibility, edit, delete, member status, edit, and delete actions connected to their existing handlers and permission checks.
+- Restyled the governorate and member forms to match Central Secretariats fields, actions, modal sizing, and gold hover treatment. Added responsive member cards below the wide-screen breakpoint so the member table does not require horizontal scrolling on smaller screens.
+- UI-only changes; no API requests, state flow, validation rules, permissions, or backend behavior were changed. Responsive review was source-level only; browser viewports were not tested.
+- Follow-up: aligned all visible Governorate Secretariats search and form fields with the News field treatment, and changed the governorate picker into an accessible custom dropdown that retains search and the existing per-governorate actions.
+- Follow-up: standardized focus treatment for every editable Governorate Secretariats control, including the custom governorate picker, checkboxes, and the section's image upload field; text fields now use the News page's gold focus shadow without changing validation colors.
+- Follow-up: removed the redundant top image-format hint from the member form; the upload instructions and optional field label remain. Applied pointer and keyboard focus feedback consistently across both forms' text fields, checkboxes, governorate picker, and image upload controls.
+- Follow-up: scoped the global 3px keyboard focus outline off the Governorate Secretariats text fields and image drop zone so the News-style gold focus shadow appears cleanly without a doubled outline.
+- Follow-up: hid the secondary supported-format line inside the Governorate member image drop zone only; the upload component keeps its current default everywhere else.
+
 - Follow-up: matched the active organizational tab hover lift and gold shadow to the Add New Secretariat action, while leaving the tab container styles unchanged. Organizational tabs now wrap instead of horizontally scrolling; secretariat and member tables switch to responsive cards below the wide-screen breakpoint, retaining their existing actions and status controls.
 - UI behavior and data handling remain unchanged. Responsive review was source-level only; no browser viewport was tested.
