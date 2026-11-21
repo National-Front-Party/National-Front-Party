@@ -356,6 +356,7 @@ export default function AppShell({ children }) {
                     src="/logo.png"
                     alt="شعار حزب الجبهة الوطنية"
                     fill
+                    sizes="(max-width: 768px) 176px, 176px"
                     className="object-contain object-right"
                     priority
                   />

@@ -66,7 +66,7 @@ export default function ParliamentaryUnit({ data }) {
   return (
     <>
       <SectionCard
-        title="الوحدة البرلمانية"
+        title="الهيئة البرلمانية"
         footer={
           <NextArrowFooter
             onClick={() => setActive(items[0]?.id || "senate")}

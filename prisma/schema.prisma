@@ -56,6 +56,7 @@ model staff_users {
   updated_leaders                                    leaders[]
   updated_parliamentary_unit_items                   parliamentary_unit_items[]
   updated_central_secretariat_people                 central_secretariat_people[]
+  updated_party_unit_people                           party_unit_people[]
   updated_news_articles                              news_articles[]
   created_news_articles                              news_articles[]       @relation("news_articles_created_by")
   reviewed_news_articles                             news_articles[]       @relation("news_articles_reviewed_by")
@@ -97,6 +98,7 @@ model governorates {
   members                       members[]
   membership_applications       membership_applications[]
   governorate_secretariats_info governorate_secretariats_info[]
+  centers                       centers[]
 }
 
 model membership_applications {
@@ -143,6 +145,7 @@ model members {
   joined_at               DateTime                @default(dbgenerated("CURRENT_DATE")) @db.Date
   membership_application  membership_applications @relation(fields: [application_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   governorate             governorates            @relation(fields: [governorate_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  party_unit_people        party_unit_people[]
 
   @@index([governorate_id], map: "idx_members_governorate")
 }
@@ -395,4 +398,70 @@ model party_programs {
   is_published Boolean  @default(true)
   created_at   DateTime @default(now()) @db.Timestamptz(6)
   updated_at   DateTime @default(now()) @db.Timestamptz(6)
+}
+
+
+model centers {
+  id              Int                 @id @default(autoincrement()) @db.SmallInt
+  governorate_id  Int                 @db.SmallInt
+  name_ar         String
+  sort_order      Int                 @default(0) @db.SmallInt
+  is_active       Boolean             @default(true)
+  created_at      DateTime            @default(now()) @db.Timestamptz(6)
+  governorate     governorates        @relation(fields: [governorate_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  local_secretariats local_secretariats[]
+
+  @@unique([governorate_id, name_ar], map: "centers_governorate_name_key")
+  @@index([governorate_id], map: "idx_centers_governorate")
+}
+
+model local_secretariats {
+  id          Int          @id @default(autoincrement()) @db.SmallInt
+  center_id   Int          @db.SmallInt
+  name_ar     String
+  sort_order  Int          @default(0) @db.SmallInt
+  is_active   Boolean      @default(true)
+  created_at  DateTime     @default(now()) @db.Timestamptz(6)
+  center      centers      @relation(fields: [center_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  party_units party_units[]
+
+  @@unique([center_id, name_ar], map: "local_secretariats_center_name_key")
+  @@index([center_id], map: "idx_local_secretariats_center")
+}
+
+model party_units {
+  id             Int                  @id @default(autoincrement()) @db.SmallInt
+  secretariat_id Int                  @db.SmallInt
+  name_ar        String
+  description    String?
+  sort_order     Int                  @default(0) @db.SmallInt
+  is_active      Boolean              @default(true)
+  created_at     DateTime             @default(now()) @db.Timestamptz(6)
+  secretariat    local_secretariats   @relation(fields: [secretariat_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  people         party_unit_people[]
+
+  @@unique([secretariat_id, name_ar], map: "party_units_secretariat_name_key")
+  @@index([secretariat_id], map: "idx_party_units_secretariat")
+}
+
+model party_unit_people {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  party_unit_id   Int          @db.SmallInt
+  member_id       String?      @db.Uuid
+  full_name       String?
+  position_title  String
+  details         String?
+  sort_order      Int          @default(0) @db.SmallInt
+  is_published    Boolean      @default(false)
+  updated_by      String?      @db.Uuid
+  created_at      DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime     @default(now()) @db.Timestamptz(6)
+  party_unit      party_units  @relation(fields: [party_unit_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  member          members?     @relation(fields: [member_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  updated_by_user staff_users? @relation(fields: [updated_by], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@unique([party_unit_id, member_id], map: "party_unit_people_unit_member_key")
+  @@index([party_unit_id, is_published, sort_order], map: "idx_party_unit_people_listing")
+  @@index([member_id], map: "idx_party_unit_people_member")
+  @@index([updated_by], map: "idx_party_unit_people_updated_by")
 }
