@@ -104,6 +104,7 @@
 | 14.1 | الأخبار والمقالات: طبقة التحقق والخدمات الأساسية (Validation + Services) | مكتمل — خدمات وتحقق واختبارات فقط؛ لا مسارات API أو واجهة أمامية |
 | 14.2 | الأخبار والمقالات: مسارات الإدارة (News Admin APIs) | مكتمل — 14 مسارًا إداريًا للمقالات والمصادر ومصانع Handlers واختبارات كاملة |
 | 14.3 | الأخبار والمقالات: مسارات العرض العامة (News Public APIs) | مكتمل — مسارا القائمة والتفاصيل بالـ slug، وتنسيق التواريخ والفقرات، وتحديد المعدل والكاش، واختبارات كاملة |
+| 18 | الهيكل التنظيمي والبحث الجغرافي للوحدات الحزبية | تنفيذ Backend APIs وValidation وServices وPermission على Branch مستقل؛ Migration غير مطبقة، والاختبارات لم تُشغّل بعد |
 | 17 | برنامج الحزب: جدول وميجريشن مستقلة (`party_programs`) ومسار عام | مكتمل — إنشاء جدول `party_programs` مع تريجر التحديث، ميجريشن مطبقة، مسار عام `/api/content/party-program`، وربط المكون |
 
 ## 5. سجل التحديثات
@@ -1520,6 +1521,152 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 
 | 2026-11-20 | Staff Visual Refinement | تحسين بصري شامل لصفحة إدارة الموظفين: مطابقة زر الإغلاق الذهبي الدوار مع نمط Catalog في جميع النوافذ المنبثقة الخمس، وتوحيد أنماط hover للأزرار، وتعميق تطابق حقول الإدخال مع نظام التصميم المشترك (focus shadow + error states + duration-300)، وتحسين dropdown الفلترة مع focus shadow ذهبي، وتعزيز أزرار الإجراءات بـscale وduration متناسقة. | `app/admin/staff/page.jsx`؛ `components/Admin/Staff/StaffEditorModal.jsx`؛ `components/Admin/Staff/StaffAuditModal.jsx`؛ `components/Admin/Staff/StaffResetPasswordModal.jsx`؛ `components/Admin/Staff/StaffStatusModal.jsx`؛ `components/Admin/Staff/StaffSuccessPasswordModal.jsx` | لا تغييرات على الباك إند أو API أو الصلاحيات أو المنطق التجاري. `npm test`: 283 ناجحاً. ESLint: 3 أخطاء pre-existing (setState في useEffect) موجودة قبل هذه التعديلات؛ لا أخطاء جديدة. |
 
+## UI Phase — Audit Logs operation descriptions
+
+- Removed the affected filter and target displays from the Audit Logs page; the frontend request now keeps only executor and pagination filters.
+- Added Arabic operation descriptions for every current database audit action, the existing news action aliases, and an unknown-action fallback. Removed the modal changes list and affected card.
+- API and backend behavior were not changed. Operation descriptions and desktop/tablet/mobile source layouts were checked. A browser session and local server were unavailable; ESLint reports two issues in the page effects, which were not changed.
+
+## Backend Phase — Dynamic Audit Log Operation Type Filter
+
+- Added a database-backed distinct `action_type` query for the Audit Logs operation dropdown. Known values receive Arabic labels; unknown values receive a generic Arabic label without exposing the raw key.
+- Added optional `action_type` query validation and runtime support validation against the database-backed action list. Unsupported values return HTTP 400.
+- Applied executor and action type filters together to both the audit record query and total count. Pagination ordering and permissions are unchanged.
+- Added the searchable Operation Type selector to the Audit Logs page; options come from the API response, include an All Operations choice, and filter changes reset pagination to page 1.
+- No database schema, migration, audit writer, or unrelated page changes.
+- Verification: 18 focused tests passed. ESLint passed for backend and test files. The Audit Logs page lint command reports two pre-existing `react-hooks/set-state-in-effect` errors in its data-fetching effects.
+## مرحلة D5.10: تبسيط وتحديث فورم إضافة وتعديل الكتالوجات وضمان التجاوب الكامل للنافذة المنبثقة
+- **الحالة:** مكتملة بنجاح (Form Simplification, Auto-Generated Keys & Fully Responsive Modal).
+- **الأهداف المنجزة دون المساس بالباك إند:**
+  1. **إزالة حقلي `slug` و `code` من الواجهة المرئية للمودال (`components/Admin/Catalogs/CatalogEditorModal.jsx`):**
+     - تم إزالة حقل إدخال الـ `slug` الخاص بالوزارات وحقل الـ `code` الخاص بالقطاعات بالكامل من واجهة المستخدم المرئية، بما في ذلك رسائل التحقق والنصوص الإرشادية.
+     - الفورم أصبح مقتصراً فقط على الحقول الجوهرية: اسم الجهة بالعربية (إلزامي)، ترتيب العرض (اختياري)، وحالة الاعتماد في النظام (نشط / معطل).
+  2. **توليد الـ `slug` والـ `code` تلقائياً في الخلفية عند الإضافة (`POST`):**
+     - بناء أداة مساعدة معيارية `generateCatalogIdentifier(name, type)` في `lib/admin/catalog-utils.js` تقوم بالتعريب الصوتي (Transliteration) للأحرف العربية إلى نص لاتيني صالح وودود للرابط، متبوعاً بمقطع إنتروبيا عشوائي فريد `crypto.randomUUID().slice(0, 8)` يمنع أي احتمالية للتصادم أو التكرار.
+     - في حال كان الاسم فارغاً أو رموزاً فقط، يتم استخدام بادئة بديلة آمنة (`min-` أو `sec-`).
+     - إرسال المعرف المولد تلقائياً في طلب الـ `POST` لإرضاء شروط الباك إند والـ Schema الإلزامية (`slugSchema`).
+  3. **الحفاظ على المعرفات الحالية عند التعديل (`PATCH`):**
+     - في طلبات التعديل (`PATCH`)، يتم إسقاط الـ `slug` والـ `code` تماماً من كائن التعديل، مما يضمن احتفاظ قاعدة البيانات بالمعرفات الأصلية دون مساس أو تغيير.
+  4. **إعادة هيكلة المودال ليكون متجاوباً بالكامل بنمط 3-Tier Flexbox Shell:**
+     - تحديد الحد الأقصى للارتفاع بـ `max-h-[90vh] sm:max-h-[85vh]` لمنع تجاوز النافذة لارتفاع الشاشة.
+     - ترويسة ثابتة في الأعلى (`shrink-0`) مع زر الإغلاق الدوار الذهبي.
+     - جسم فورم داخلي مستقل التمرير (`flex-1 min-h-0 overflow-y-auto overscroll-contain`) لحماية الشاشات القصيرة ومود الـ Landscape.
+     - شريط أزرار ثابت دائماً في الأسفل (`shrink-0 border-t border-line bg-page/50`) يضمن بقاء زري "حفظ" و "إلغاء" في متناول يد المستخدم على كافة الأجهزة.
+- **الملفات المضافة والمعدلة:**
+  - `app/admin/staff/page.jsx`
+  - `lib/admin/staff-utils.js`
+  - `components/Admin/Staff/StaffEditorModal.jsx`
+  - `components/Admin/Staff/StaffResetPasswordModal.jsx`
+  - `components/Admin/Staff/StaffStatusModal.jsx`
+  - `components/Admin/Staff/StaffSuccessPasswordModal.jsx`
+  - `components/Admin/Staff/StaffAuditModal.jsx`
+  - `app/admin/catalogs/page.jsx`
+  - `docs/BACKEND_PROGRESS.md`
+- **التحقق والاختبارات:**
+  - `npx eslint app/admin/catalogs/page.jsx app/admin/staff/page.jsx`: نجاح تام (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).
+
+| 2026-11-20 | Staff Visual Refinement | تحسين بصري شامل لصفحة إدارة الموظفين: مطابقة زر الإغلاق الذهبي الدوار مع نمط Catalog في جميع النوافذ المنبثقة الخمس، وتوحيد أنماط hover للأزرار، وتعميق تطابق حقول الإدخال مع نظام التصميم المشترك (focus shadow + error states + duration-300)، وتحسين dropdown الفلترة مع focus shadow ذهبي، وتعزيز أزرار الإجراءات بـscale وduration متناسقة. | `app/admin/staff/page.jsx`؛ `components/Admin/Staff/StaffEditorModal.jsx`؛ `components/Admin/Staff/StaffAuditModal.jsx`؛ `components/Admin/Staff/StaffResetPasswordModal.jsx`؛ `components/Admin/Staff/StaffStatusModal.jsx`؛ `components/Admin/Staff/StaffSuccessPasswordModal.jsx` | لا تغييرات على الباك إند أو API أو الصلاحيات أو المنطق التجاري. `npm test`: 283 ناجحاً. ESLint: 3 أخطاء pre-existing (setState في useEffect) موجودة قبل هذه التعديلات؛ لا أخطاء جديدة. |
+
 ## 2026-11-22 - Content page merge conflict resolution
 
 - Resolved the unmerged Admin Content page by retaining the tabbed content managers and URL-selected tabs already documented in the P06.2 UI work. Kept the page wrapped in Suspense for useSearchParams. No API or schema behavior changed.
+  - `npx eslint`: خالي تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 284 ناجحة بنسبة 100% (284 pass, 0 fail).
+
+## تحديث عناوين الأعمدة الرئيسية في الصفحة الرئيسية
+- تحديث العنوان الظاهر لبطاقة الأمانات المركزية إلى «الأمانات المركزية لحزب الجبهة الوطنية».
+- تحديث عنوان بطاقة الوحدة البرلمانية إلى «الهيئة البرلمانية».
+- إزالة كلمة «مع» من عنوان الحكومة والوزارات في بيانات الصفحة الافتراضية وبيانات قاعدة البيانات.
+- التحقق النصي: تأكدت من أن العناوين القديمة غير موجودة في مكونات الصفحة الرئيسية ومصدر البيانات. تعذر التحقق البصري لأن أداة المتصفح لم تتمكن من تحديد عنوان التبويب.
+
+## واجهة معالجة UNAUTHENTICATED
+- أُضيفت صفحة واجهة /unauthorized بهوية الموقع (الكحلي والذهبي) لتوضيح أن الجلسة غير موثقة، مع مسار لتسجيل الدخول والعودة للموقع.
+- الصفحة مخصصة لعرض واجهة المستخدم؛ استجابات /api/* تظل JSON بعقدها الحالي ولا تُحوّل إلى HTML.
+- التحقق: لم تُشغّل الاختبارات أو lint بناءً على تعليمات العمل الحالية.
+
+## معالجة عرض صفحة الإدارة عند غياب الجلسة
+- عُدّل proxy.js لتوجيه طلبات صفحات /admin/* غير الموثقة إلى /unauthorized، مع تمرير المسار المطلوب في next للعودة إليه بعد تسجيل الدخول.
+- بقيت طلبات /api/admin/* غير الموثقة تُرجع استجابة JSON بحالة 401، حفاظًا على عقد API.
+- التحقق: لم تُشغّل الاختبارات أو lint.
+
+## إخفاء غلاف الموقع العام عن شاشة عدم تسجيل الدخول
+- عُدّل PublicShell ليستثني /unauthorized من Navbar وFooter مثل صفحات لوحة التحكم، فتظهر شاشة المعالجة مستقلة.
+- التحقق: لم تُشغّل الاختبارات أو lint.
+
+## منع التمرير في شاشة عدم تسجيل الدخول
+- جعلت شاشة /unauthorized بارتفاع نافذة العرض (`h-dvh`) مع إخفاء تجاوز المحتوى وتقليل المسافات لتناسب الشاشة دون تمرير.
+- التحقق: لم تُشغّل الاختبارات أو lint.
+
+## صفحة 404 بهوية الموقع
+- أُضيف app/not-found.jsx برسالة عربية واضحة ورابط عودة للرئيسية، مستخدمًا ألوان وهوية الموقع.
+- الشاشة مثبتة بارتفاع نافذة العرض، وتُخفى عناصر Navbar وFooter ويُمنع تمرير الصفحة أثناء عرضها.
+- وفق دليل Next.js، app/not-found.jsx يعالج المسارات غير الموجودة ويُرجع حالة 404 قبل بدء البث.
+- التحقق: لم تُشغّل الاختبارات أو lint.
+
+## Backend + UI Phase — Archive Audit Log Records (Password Protected)
+
+- أُضيف حذف آمن لسجلات التدقيق من `/admin/audit-log`: زر `حذف الكل` في الترويسة، وزر `حذف السجل` لكل صف في عروض سطح المكتب والتابلت والجوال، ونافذة تأكيد تطلب `confirm: true` وكلمة مرور مدير النظام الحالي.
+- عقد API الجديد:
+  - `DELETE /api/admin/staff/audit-log` يحذف كل السجلات ويرجع `{ ok: true, deleted: n }`.
+  - `DELETE /api/admin/staff/audit-log/:id` يحذف سجلًا واحدًا ويرجع `{ ok: true, deleted: 1 }`.
+  - الجسم مطلوب بالشكل `{ "confirm": true, "password": "<current super_admin password>" }`.
+  - الحماية تستخدم `staff:manage` ثم في الخدمة تُعاد قراءة الموظف النشط والتحقق من دور `super_admin` وكلمة المرور بـ`scrypt`؛ لا تُسجل كلمة المرور ولا تُعرض في الاستجابات.
+  - الأخطاء: `400 INVALID_CURRENT_PASSWORD`، `400 VALIDATION`، `403 FORBIDDEN`، `404 NOT_FOUND`، `500 SERVER_ERROR`؛ دون stack trace وبـ`Cache-Control: no-store`.
+- لا توجد تغييرات على schema أو migration أو seed. عملية الحذف لا تكتب سجل تدقيق جديدًا، حتى يبقى `حذف الكل` فارغًا فعلًا. الملف المحذوف مسبقًا `public/uploads/news/news-970161c8-632e-4ec1-981c-e23ab3821ba2.jpg` لم يُلمس.
+- الملفات: `lib/validation/staff.js`، `lib/services/staff.js`، `lib/staff/handlers.js`، `app/api/admin/staff/audit-log/route.js`، `app/api/admin/staff/audit-log/[id]/route.js`، `app/admin/audit-log/page.jsx`، والاختبارات المرتبطة بها.
+- التحقق: `npm test` نجح بالكامل (338 pass / 0 fail). ESLint ناجح على جميع الملفات المعدّلة؛ الفحص الكامل يُظهر 3 أخطاء `react-hooks/set-state-in-effect` سابقة في ملفات لم تُعدّل: `StaffAuditModal.jsx`، `StaffEditorModal.jsx`، `StaffResetPasswordModal.jsx`. `npm run build` نجح في التجميع والـTypeScript لكنه فشل في prerender لصفحتين لم تُعدّلا (`/admin` و`/admin/news`) بسبب `Render in Browser` خارج Suspense مع `cacheComponents`؛ لم تُجرَ تعديلات Install/DB.
+
+## Phase 18.1 — قاعدة بيانات الهيكل التنظيمي للوحدات الحزبية (قيد المراجعة)
+- أُضيفت نماذج Prisma: `centers`, `local_secretariats`, `party_units`, `party_unit_people` على Branch مستقل.
+- المحافظات تستخدم جدول `governorates` الحالي دون إنشاء جدول بديل.
+- قيود uniqueness مرتبطة بالأب: اسم المركز داخل المحافظة، واسم الأمانة داخل المركز، واسم الوحدة داخل الأمانة؛ لذلك يمكن تكرار اسم الوحدة في أمانتين مختلفتين.
+- الأشخاص يدعمون عضوًا مرتبطًا من `members` أو إدخالًا يدويًا بالاسم، مع منصب حر وتفاصيل وترتيب ونشر، دون صور في هذه المرحلة.
+- أُنشئت Migration إضافية وفهارس وعلاقات FK مع منع الحذف المتسلسل، وتريجر `set_updated_at()` الموجود مسبقًا.
+- التدقيق سيعيد استخدام قيم `staff_audit_action` الحالية ومفاتيح JSONB المسموح بها في Phase 13؛ لا تعديل على enum أو CHECK constraint.
+- **مهم:** Migration أُنشئت للمراجعة فقط ولم تُطبّق على قاعدة البيانات. لم يتم تنفيذ أي كتابة على قاعدة البيانات.
+- **التحقق المتبقي:** تشغيل Prisma format/validate/generate والاختبارات في بيئة المشروع قبل الانتقال لخدمات وواجهات API.
+
+
+### 2026-11-21 — Phase 18.2 (قيد المراجعة)
+- إضافة صلاحية مستقلة `organization:manage` ومنحها لـ`super_admin` فقط، مع اختبار تغطية الصلاحيات.
+- إضافة Validation لإنشاء وتعديل المراكز والأمانات المحلية والوحدات الحزبية والأشخاص.
+- إضافة Services لإدارة التسلسل: المحافظة ← المركز ← الأمانة المحلية ← الوحدة الحزبية، مع رفض إنشاء أبناء تحت أب غير نشط، ومنع حذف الأب الذي لديه أبناء.
+- إضافة إدارة الأشخاص المرتبطين بعضو نشط من `members` أو شخص يدوي، والاسم العام للعضو يُقرأ من `membership_application.full_name`.
+- إضافة سجل تدقيق باستخدام أحداث `content_*` ومفاتيح JSON المسموح بها في Phase 13 فقط: `entity_type`, `entity_id`, `changed_fields`.
+- إضافة Admin APIs لإدارة المراكز والأمانات المحلية والوحدات والأشخاص، وبحث آمن عن الأعضاء النشطين لاختيارهم، وPublic APIs لقوائم المحافظات والمراكز والوحدات وتفاصيل الوحدة.
+- Public responses لا تعرض بيانات اتصال أو رقم قومي أو تاريخ ميلاد أو أي حقول خاصة بالعضو، كما تخفي فروع البحث الفارغة وتتحقق من معاملات الاستعلام المكررة.
+- توثيق عقود المسارات العامة والإدارية في `docs/API_INTEGRATION_GUIDE.md`، وإضافة اختبارات صلاحيات وValidation دون تشغيلها.
+- لم تُشغّل اختبارات أو أوامر Prisma، ولم تُطبّق Migration على قاعدة البيانات. يلزم تشغيل `npx prisma generate` لتحديث Prisma Client المولّد بعد تغيير الـSchema قبل اختبار التشغيل والبناء.
+
+
+### 2026-11-21 — Phase 18.3 (واجهة لوحة التحكم)
+- إضافة صفحة إدارة الهيكل التنظيمي: `/admin/organization`.
+- إضافة مدخل مستقل في القائمة الجانبية تحت مجموعة الإدارة، يظهر لمدير النظام فقط.
+- توحيد المظهر مع هوية لوحة التحكم الحالية: ألوان الذهبي والرمادي، البطاقات البيضاء، الحواف الدائرية، الخطوط، RTL، وحالات التحميل والفراغ والأخطاء.
+- تنفيذ واجهة اختيار المحافظة والمركز والأمانة المحلية، وإدارة المراكز والأمانات والوحدات الحزبية.
+- تنفيذ واجهة إدارة الأشخاص: البحث عن عضو نشط وربطه، أو إدخال شخص يدوي، مع تعديل البيانات والترتيب والنشر والإخفاء والحذف.
+- لم يتم تشغيل lint أو build أو الاختبارات حتى الآن؛ يلزم التحقق من تكامل الواجهة مع APIs وتشغيل Prisma Client generation في بيئة المشروع.
+
+
+### 2026-11-21 — Phase 18.4 (تكامل البحث العام والتحقق)
+- استبدال واجهة البحث الجغرافي التجريبية في `components/Home/sections/GeographicSearch.jsx` بالـPublic APIs الفعلية.
+- أصبح البحث بثلاثة اختيارات فقط: المحافظة، المركز، الوحدة الحزبية. اختيارات الأب تعيد ضبط الاختيارات التابعة، وقائمة الوحدات تعرض اسم الأمانة المحلية للتفريق بين الأسماء المتكررة.
+- نتيجة البحث تعرض بيانات الوحدة والمحافظة والمركز والأمانة المحلية والقيادات المنشورة فقط، مع رسالة واضحة عند عدم وجود قيادات منشورة.
+- إزالة الاعتماد على `geoSearchMock` وحقول القرية والعزبة وبيانات قيادات المحافظة القديمة من مكون البحث.
+- منع تخزين استجابات البحث العامة مؤقتًا حتى يظهر تعطيل أو نشر الوحدات والقيادات دون نتائج قديمة من Cache.
+- إصلاح البحث عن الأعضاء النشطين في لوحة الإدارة، وإتاحة ربط عضو موجود حتى عند تعديل شخص أُضيف يدويًا.
+- إصلاح إرسال التفاصيل الاختيارية الفارغة لتتوافق مع Zod validation، وتحديث قائمة الأشخاص بعد النشر والحذف، وتحسين معالجة أخطاء التحديث.
+- إضافة اختبارات وحدات للـOrganization handlers والـServices وValidation، مع حقن الاعتماديات في handlers لتسهيل اختبار الصلاحيات وعقود الاستجابات.
+- مراجعة Phase 13 audit JSON CHECK: المفاتيح المستخدمة (`entity_type`, `entity_id`, `changed_fields`) مسموح بها وأنواعها متوافقة؛ لم يتم توسيع القيود أو الـenum.
+- لا تزال اختبارات Node وESLint وNext build وPrisma generate غير مشغّلة في بيئة محلية ضمن هذه الجلسة؛ لا تعتبر نتائجها ناجحة قبل تشغيلها.
+
+## إصلاحات lint وbuild والتحقق العام (فرع test)
+- أعيد تنظيم Effects في صفحة إدارة الهيكل التنظيمي والبحث الجغرافي: أصبحت حالات مسح القوائم التابعة تتغير مع أحداث الاختيار، وأُضيف إلغاء الطلبات القديمة مع إبقاء حواجز منع النتائج المتأخرة.
+- حُذفت متغيرات المحافظة والمركز غير المستخدمة في GeographicSearch.
+- استُبدل تحميل IBM Plex Sans Arabic من Google Fonts بملفات WOFF2 محلية للأوزان 400/500/600/700 من حزمة IBM الرسمية، وأُدرج ملف ترخيص OFL.
+- أُضيفت حدود مسار موحدة لمجلد public/uploads/org، مع تعليمات Turbopack لتجاوز التتبع الديناميكي لملفات الرفع وقت التشغيل. اختفى تحذير تتبع المشروع من build.
+- أُحيط غلاف لوحة الإدارة بحد Suspense مع شاشة انتظار من نفس الهوية لمعالجة CSR bailout في prerender.
+- نتائج التحقق: lint ناجح بلا تحذيرات؛ build ناجح؛ Prisma validate ناجح؛ Prisma generate ناجح إلى مجلد مؤقت للحفاظ على تغييرات generated/prisma الموجودة؛ npm test ناجح (338/338).
+- سجّل build استثناءات Prisma P2021 أثناء توليد صفحات، لأن بعض الجداول غير متاحة في قاعدة البيانات الحالية؛ استخدمت الصفحة بيانات fallback وأكمل البناء. لم تُجرَ أي عملية كتابة أو migration لقاعدة البيانات.
+- ظهرت تحذيرات Node MODULE_TYPELESS_PACKAGE_JSON أثناء الاختبارات، ولم تؤثر على النتائج.

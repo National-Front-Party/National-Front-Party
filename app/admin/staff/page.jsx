@@ -480,9 +480,9 @@ export default function StaffPage() {
       </div>
 
       {/* 3. Toolbar: Search, Role Filter, & Status Filter */}
-      <div className="flex flex-col gap-3.5 animate-elem-fade-up">
-        {/* Row 1: Status Filter Tabs */}
-        <div className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs overflow-x-auto">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3.5 animate-elem-fade-up">
+        {/* Status Filter Tabs */}
+        <div className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full lg:w-auto">
           {[
             { id: "all", label: "جميع الموظفين", shortLabel: "الكل", count: statistics.total },
             { id: "active", label: "النشطون فقط", shortLabel: "النشطون", count: statistics.active },
@@ -494,7 +494,7 @@ export default function StaffPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => handleStatusChange(tab.id)}
-                className={`group relative flex-1 flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap active:scale-[0.98] min-w-[80px] ${
+                className={`group relative flex-1 lg:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-2 sm:px-4 py-2 text-xs font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap active:scale-[0.98] ${
                   isActive
                     ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.3)] border border-gold/60"
                     : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50"
@@ -516,10 +516,10 @@ export default function StaffPage() {
           })}
         </div>
 
-        {/* Row 2: Search + Role Filter */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+        {/* Right Search and Role Dropdown */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
           {/* Role Filter — CustomSelect matching site design */}
-          <div className="min-w-0 w-full sm:w-56 shrink-0">
+            <div className="min-w-0 w-full sm:min-w-[200px] sm:w-auto">
             <CustomSelect
               id="staff-role-filter"
               placeholder="جميع الأدوار"
@@ -530,7 +530,7 @@ export default function StaffPage() {
           </div>
 
           {/* Search Input — h-14, border-border, gold focus shadow */}
-          <div className="relative flex-1">
+          <div className="relative w-full sm:w-72">
             <input
               type="text"
               value={searchInput}
@@ -593,24 +593,16 @@ export default function StaffPage() {
         ) : (
           <>
             {/* Desktop Table View */}
-            <div className="hidden lg:block">
-              <table className="w-full text-right text-xs">
-                <colgroup>
-                  <col className="w-[24%]" />
-                  <col className="w-[26%]" />
-                  <col className="w-[20%]" />
-                  <col className="w-[12%]" />
-                  <col className="w-[12%]" />
-                  <col className="w-[6%]" />
-                </colgroup>
+            <div className="hidden lg:block w-full">
+              <table className="w-full text-right text-xs table-fixed">
                 <thead>
                   <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
-                    <th className="py-4 pr-6 pl-3 text-right">الموظف</th>
-                    <th className="py-4 px-3 text-right">البريد الإلكتروني</th>
-                    <th className="py-4 px-3 text-right">الدور الوظيفي</th>
-                    <th className="py-4 px-3 text-center">الحالة</th>
-                    <th className="py-4 px-3 text-right">آخر دخول</th>
-                    <th className="py-4 pr-3 pl-6 text-center">إجراء</th>
+                    <th className="py-4 pr-6 pl-3 w-[24%]">الموظف</th>
+                    <th className="py-4 px-3 w-[26%]">البريد الإلكتروني</th>
+                    <th className="py-4 px-3 w-[16%]">الدور الوظيفي</th>
+                    <th className="py-4 px-3 w-[12%] text-center">حالة الحساب</th>
+                    <th className="py-4 px-3 w-[14%]">آخر تسجيل دخول</th>
+                    <th className="py-4 pr-3 pl-6 w-[8%] text-center">الإجراءات</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line/60">
@@ -624,19 +616,19 @@ export default function StaffPage() {
                         className="group transition-colors hover:bg-gold-tint/25"
                       >
                         {/* Name + Initials */}
-                        <td className="py-4 pr-6 pl-3 max-w-0">
-                          <div className="flex items-center gap-2.5 overflow-hidden">
+                        <td className="py-4 pr-6 pl-3">
+                          <div className="flex items-center gap-3">
                             <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-ink font-bold text-gold text-xs shadow-2xs">
                               {getInitials(staff.full_name)}
                             </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5 overflow-hidden">
-                                <span className="font-bold text-ink text-sm truncate block">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-ink text-sm truncate">
                                   {staff.full_name}
                                 </span>
                                 {isSelf && (
-                                  <span className="shrink-0 rounded-full bg-gold-tint border border-gold/40 px-1.5 py-0.5 text-[9px] font-bold text-gold-dark">
-                                    أنت
+                                  <span className="shrink-0 rounded-full bg-gold-tint border border-gold/40 px-2 py-0.5 text-[10px] font-bold text-gold-dark">
+                                    حسابك
                                   </span>
                                 )}
                               </div>
@@ -645,11 +637,9 @@ export default function StaffPage() {
                         </td>
 
                         {/* Email */}
-                        <td className="py-4 px-3 max-w-0">
-                          <div className="flex items-center gap-1 overflow-hidden">
-                            <span className="font-mono text-[11px] text-muted group-hover:text-ink transition-colors truncate block dir-ltr flex-1">
-                              {staff.email}
-                            </span>
+                        <td className="py-4 px-3">
+                          <div className="flex items-center gap-1.5 font-mono text-muted group-hover:text-ink transition-colors">
+                            <span className="truncate dir-ltr">{staff.email}</span>
                             <button
                               type="button"
                               onClick={() => handleCopyEmail(staff.email)}
@@ -673,24 +663,24 @@ export default function StaffPage() {
                         {/* Active Status */}
                         <td className="py-4 px-3 text-center">
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-bold border select-none whitespace-nowrap ${
+                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border select-none whitespace-nowrap ${
                               staff.is_active
                                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                                 : "bg-rose-50 text-rose-800 border-rose-200"
                             }`}
                           >
                             <span
-                              className={`size-1.5 rounded-full shrink-0 ${
+                              className={`size-1.5 rounded-full ${
                                 staff.is_active ? "bg-emerald-600" : "bg-rose-600"
                               }`}
                             />
-                            <span>{staff.is_active ? "نشط" : "معطل"}</span>
+                            <span>{staff.is_active ? "نشط ومفعل" : "معطل مؤقتاً"}</span>
                           </span>
                         </td>
 
                         {/* Last Login Date */}
-                        <td className="py-4 px-3 text-muted text-[11px]">
-                          <span className="block truncate">{formatStaffDate(staff.last_login_at)}</span>
+                        <td className="py-4 px-3 text-muted text-[11px] truncate">
+                          {formatStaffDate(staff.last_login_at)}
                         </td>
 
                         {/* Action Menu */}
@@ -711,15 +701,14 @@ export default function StaffPage() {
                 const menuItems = getActionMenuItems(staff);
 
                 return (
-                  <div key={staff.id} className="p-4 sm:p-5 space-y-3 hover:bg-gold-tint/20 transition-colors">
-                    {/* Row 1: Avatar + Name + Action Menu */}
+                  <div key={staff.id} className="p-4 space-y-3 hover:bg-gold-tint/20">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-ink font-bold text-gold text-xs shadow-2xs">
                           {getInitials(staff.full_name)}
                         </div>
                         <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-1.5">
+                          <div className="flex items-center gap-2">
                             <span className="font-bold text-ink text-sm truncate">
                               {staff.full_name}
                             </span>
@@ -729,43 +718,27 @@ export default function StaffPage() {
                               </span>
                             )}
                           </div>
-                          {/* Email row with copy button */}
-                          <div className="flex items-center gap-1 mt-0.5">
-                            <span className="font-mono text-xs text-muted truncate dir-ltr">
-                              {staff.email}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopyEmail(staff.email)}
-                              className="shrink-0 flex size-5 items-center justify-center rounded-md text-muted/60 hover:text-gold-dark hover:bg-gold-tint/50 transition-all cursor-pointer"
-                              title="نسخ البريد الإلكتروني"
-                            >
-                              {copiedEmail === staff.email ? (
-                                <Check className="size-3 text-emerald-600" />
-                              ) : (
-                                <Copy className="size-3" />
-                              )}
-                            </button>
-                          </div>
+                          <span className="font-mono text-xs text-muted block truncate dir-ltr">
+                            {staff.email}
+                          </span>
                         </div>
                       </div>
 
                       <ActionDropdown items={menuItems} label={`إجراءات ${staff.full_name}`} />
                     </div>
 
-                    {/* Row 2: Role + Status */}
-                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-line/40">
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-line/40 text-xs">
                       <RoleBadge role={staff.role} />
 
                       <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                           staff.is_active
                             ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                             : "bg-rose-50 text-rose-800 border-rose-200"
                         }`}
                       >
                         <span
-                          className={`size-1.5 rounded-full shrink-0 ${
+                          className={`size-1.5 rounded-full ${
                             staff.is_active ? "bg-emerald-600" : "bg-rose-600"
                           }`}
                         />
@@ -773,10 +746,9 @@ export default function StaffPage() {
                       </span>
                     </div>
 
-                    {/* Row 3: Last Login */}
                     <div className="text-[11px] text-muted flex items-center justify-between">
                       <span>آخر تسجيل دخول:</span>
-                      <span className="font-mono font-bold">{formatStaffDate(staff.last_login_at)}</span>
+                      <span className="font-mono">{formatStaffDate(staff.last_login_at)}</span>
                     </div>
                   </div>
                 );
