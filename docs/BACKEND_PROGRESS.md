@@ -1814,3 +1814,13 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Made the source editor modal height-aware with an internally scrollable form body, smaller mobile padding, and wrapping title/help text.
 - Kept sort order and active status controls in a responsive grid; action buttons stack at full width on phones and return to inline sizing on larger screens. Existing delete confirmation already used a responsive layout and was left as-is.
 - Targeted ESLint and git diff --check passed. Browser viewport testing was unavailable. Form fields and submission behavior are unchanged; no backend or database files were modified.
+
+### 2026-11-23 - Match organization scope dropdown styling
+- Replaced the three native governorate, center, and local-secretariat selectors with the shared CustomSelect used on the Membership Applications page, matching its rounded controls, chevron, and gold focus treatment.
+- Preserved blank/reset options and existing cascading selection handlers. Targeted ESLint and git diff --check passed; browser visual review was unavailable.
+- No backend, API, or database files were modified.
+
+### 2026-11-23 - Responsive organization person form
+- Added an opt-in responsive mode to the organization page modal and enabled it for the add/edit responsible-person form: viewport-bounded dialog, internal scrolling, mobile padding, wrapping selected-member text, single-column small-screen fields, and stacked full-width actions.
+- Other organization modals and all form behavior remain unchanged. Targeted ESLint and git diff --check passed; browser viewport testing was unavailable.
+- No backend or database code was modified.

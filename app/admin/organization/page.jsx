@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Building2, MapPin, Network, Users, Plus, Pencil, Trash2, RefreshCw,
-  Search, ChevronDown, Power, X, Save, UserRound, ShieldCheck, Landmark,
+  Search, Power, X, Save, UserRound, ShieldCheck, Landmark,
 } from "lucide-react";
 import PageHeader from "@/components/Admin/ui/PageHeader";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import EmptyState from "@/components/Admin/ui/EmptyState";
+import CustomSelect from "@/components/Home/ui/CustomSelect";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import { useAdminAuth } from "@/lib/admin/auth-context";
@@ -21,15 +22,15 @@ const LEVELS = [
 
 const emptyForm = { name_ar: "", sort_order: "0", is_active: true };
 
-function Modal({ title, children, onClose }) {
+function Modal({ title, children, onClose, responsive = false }) {
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px]" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <section role="dialog" aria-modal="true" className="w-full max-w-lg overflow-hidden rounded-3xl border border-line bg-white shadow-card-hover" dir="rtl">
-        <header className="flex items-center justify-between border-b border-line px-5 py-4">
-          <h2 className="font-black text-ink">{title}</h2>
+    <div className={`fixed inset-0 z-[70] flex justify-center bg-black/50 backdrop-blur-[2px] ${responsive ? "items-start overflow-y-auto p-3 sm:items-center sm:p-4" : "items-center p-4"}`} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <section role="dialog" aria-modal="true" className={`w-full max-w-lg overflow-hidden rounded-3xl border border-line bg-white shadow-card-hover ${responsive ? "my-0 flex max-h-[calc(100dvh-1.5rem)] min-w-0 flex-col sm:my-auto sm:max-h-[calc(100dvh-2rem)]" : ""}`} dir="rtl">
+        <header className={`flex shrink-0 items-center justify-between gap-3 border-b border-line ${responsive ? "px-4 py-3.5 sm:px-5 sm:py-4" : "px-5 py-4"}`}>
+          <h2 className={`min-w-0 break-words font-black text-ink ${responsive ? "text-base sm:text-lg" : ""}`}>{title}</h2>
           <button type="button" onClick={onClose} className="rounded-xl p-2 text-muted hover:bg-page" aria-label="إغلاق"><X className="size-5" /></button>
         </header>
-        <div className="p-5">{children}</div>
+        <div className={responsive ? "min-h-0 flex-1 overflow-y-auto p-4 sm:p-5" : "p-5"}>{children}</div>
       </section>
     </div>
   );
@@ -332,7 +333,20 @@ export default function OrganizationPage() {
             { key: "secretariat", label: "الأمانة المحلية", list: secretariats },
           ].map(({ key, label, list }) => (
             <Field key={key} label={label}>
-              <div className="relative"><select className={inputClass + " appearance-none pl-9"} value={selection[key]} onChange={(e) => selectLevel(key, e.target.value)}><option value="">اختار {label}</option>{list.map((item) => <option key={item.id} value={item.id}>{item.name_ar}</option>)}</select><ChevronDown className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" /></div>
+              <CustomSelect
+                id={`organization-scope-${key}`}
+                fitContent
+                placeholder={`اختار ${label}`}
+                options={[
+                  { value: "", label: `اختار ${label}` },
+                  ...list.map((item) => ({
+                    value: String(item.id),
+                    label: item.name_ar,
+                  })),
+                ]}
+                value={selection[key]}
+                onChange={(value) => selectLevel(key, value)}
+              />
             </Field>
           ))}
         </div>
@@ -399,16 +413,16 @@ export default function OrganizationPage() {
         </form>
       </Modal>}
 
-      {personEditor && <Modal title={personEditor.id ? "تعديل بيانات المسؤول" : "إضافة مسؤول جديد"} onClose={()=>!busy && setPersonEditor(null)}>
-        <form onSubmit={savePerson} className="space-y-4">
+      {personEditor && <Modal responsive title={personEditor.id ? "تعديل بيانات المسؤول" : "إضافة مسؤول جديد"} onClose={()=>!busy && setPersonEditor(null)}>
+        <form onSubmit={savePerson} className="min-w-0 space-y-3 sm:space-y-4">
           <div className="rounded-xl border border-gold/20 bg-gold-tint/60 p-3 text-xs leading-6 text-gold-dark">تقدر تربط المسؤول بعضو نشط موجود في قاعدة بيانات الحزب، أو تضيف بياناته يدويًا.</div>
           {!personEditor.member_id && <Field label="البحث عن عضو نشط"><input className={inputClass} value={memberQuery} onChange={(e)=>{const query=e.target.value;setMemberQuery(query);setMemberResults([]);setMemberLoading(query.trim().length >= 2);setPersonEditor((p)=>({...p,member_id:null,full_name:""}));}} placeholder="اكتب اسم العضو (حرفين على الأقل)" />{memberLoading && <span className="text-xs text-muted">جاري البحث...</span>}{memberQuery.trim().length >= 2 && memberResults.length>0 && <div className="max-h-36 overflow-y-auto rounded-xl border border-line">{memberResults.map((m)=><button type="button" key={m.id} onClick={()=>{setPersonEditor((p)=>({...p,member_id:m.id,full_name:m.full_name}));setMemberQuery(m.full_name);setMemberResults([]);setMemberLoading(false);}} className="block w-full border-b border-line px-3 py-2 text-right text-xs hover:bg-gold-tint"><span className="font-bold">{m.full_name}</span><span className="mr-2 text-muted">{m.governorate_name}</span></button>)}</div>}</Field>}
           {(!personEditor.member_id) && <Field label="الاسم بالكامل"><input required className={inputClass} value={personEditor.full_name || ""} onChange={(e)=>setPersonEditor((p)=>({...p,full_name:e.target.value}))} placeholder="اسم المسؤول" /></Field>}
-          {personEditor.member_id && <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"><span>تم اختيار العضو: <b>{personEditor.full_name}</b></span><button type="button" onClick={()=>{setPersonEditor((p)=>({...p,member_id:null,full_name:""}));setMemberQuery("");}} className="font-bold underline">فك الربط</button></div>}
+          {personEditor.member_id && <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"><span className="min-w-0 break-words">تم اختيار العضو: <b>{personEditor.full_name}</b></span><button type="button" onClick={()=>{setPersonEditor((p)=>({...p,member_id:null,full_name:""}));setMemberQuery("");}} className="shrink-0 font-bold underline">فك الربط</button></div>}
           <Field label="المنصب"><input required maxLength={200} className={inputClass} value={personEditor.position_title} onChange={(e)=>setPersonEditor((p)=>({...p,position_title:e.target.value}))} placeholder="مثال: أمين الوحدة الحزبية" /></Field>
           <Field label="تفاصيل إضافية"><textarea rows={3} maxLength={2000} className={inputClass+" resize-y"} value={personEditor.details || ""} onChange={(e)=>setPersonEditor((p)=>({...p,details:e.target.value}))} placeholder="نبذة أو تفاصيل عن المسؤول (اختياري)" /></Field>
-          <div className="grid grid-cols-2 gap-3"><Field label="ترتيب الظهور"><input type="number" className={inputClass} value={personEditor.sort_order} onChange={(e)=>setPersonEditor((p)=>({...p,sort_order:e.target.value}))} /></Field><label className="flex items-end gap-2 pb-3 text-xs font-bold text-slate-700"><input type="checkbox" checked={personEditor.is_published} onChange={(e)=>setPersonEditor((p)=>({...p,is_published:e.target.checked}))} /> نشر على الموقع العام</label></div>
-          <div className="flex justify-end gap-2 border-t border-line pt-4"><button type="button" onClick={()=>setPersonEditor(null)} className="rounded-xl border border-line px-4 py-2 text-xs font-bold text-muted">إلغاء</button><button disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-gold-gradient px-5 py-2 text-xs font-black text-ink disabled:opacity-50"><Save className="size-4" />{busy?"جارٍ الحفظ...":"حفظ المسؤول"}</button></div>
+          <div className="grid min-w-0 grid-cols-1 items-center gap-3 sm:grid-cols-2"><Field label="ترتيب الظهور"><input type="number" className={inputClass} value={personEditor.sort_order} onChange={(e)=>setPersonEditor((p)=>({...p,sort_order:e.target.value}))} /></Field><label className="flex min-h-10 items-center gap-2 text-xs font-bold text-slate-700"><input type="checkbox" checked={personEditor.is_published} onChange={(e)=>setPersonEditor((p)=>({...p,is_published:e.target.checked}))} /> نشر على الموقع العام</label></div>
+          <div className="flex flex-col-reverse gap-2 border-t border-line pt-4 sm:flex-row sm:justify-end"><button type="button" onClick={()=>setPersonEditor(null)} className="w-full rounded-xl border border-line px-4 py-2 text-xs font-bold text-muted sm:w-auto">إلغاء</button><button disabled={busy} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 py-2 text-xs font-black text-ink disabled:opacity-50 sm:w-auto"><Save className="size-4" />{busy?"جارٍ الحفظ...":"حفظ المسؤول"}</button></div>
         </form>
       </Modal>}
 
