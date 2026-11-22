@@ -1769,3 +1769,14 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Added opt-in wrapping for long selected values and dropdown options in CustomSelect and enabled it only for these pages; reduced field and action padding/font sizes at narrower widths.
 - ESLint passed for each modified JSX file when run individually with an explicit Node heap. Live viewport testing was unavailable because no browser surface was available; breakpoint behavior was checked from the responsive classes.
 - No backend, API, database, Prisma, or migration files were changed.
+
+### 2026-11-22 - Dashboard quick access text wrapping
+- Replaced truncation in Quick Access tile labels with natural wrapping and safe overflow wrapping; constrained tile sizing and reduced padding/gaps at narrower widths while retaining the two-column layout, icons, and links.
+- Targeted ESLint and git diff --check passed. Browser viewport rendering was unavailable; the requested widths were checked against the responsive class rules and dashboard container sizing.
+- No backend or database files were modified.
+
+### 2026-11-22 - Responsive dashboard statistics and sparklines
+- Changed the statistics grid to one column on phones, two columns through typical laptop widths, and four columns on very wide screens. Stat-card titles and long values now wrap within constrained flex items; font sizes and padding scale down at smaller widths.
+- Resized each existing SVG sparkline to its card width while retaining its original path data and count values.
+- Targeted ESLint and git diff --check passed. Browser viewport rendering was unavailable; requested widths were checked against the responsive breakpoints and dashboard content width.
+- Existing Quick Access changes were preserved. No backend or database files were modified.
