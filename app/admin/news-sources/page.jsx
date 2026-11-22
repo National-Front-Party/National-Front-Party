@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import {
   Globe,
@@ -17,6 +17,8 @@ import {
   ChevronLeft,
   Copy,
   Check,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
@@ -74,6 +76,11 @@ export default function NewsSourcesPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
   const [copiedSlug, setCopiedSlug] = useState(null);
+  const [knownHasSources, setKnownHasSources] = useState(null);
+  const [deleteRequest, setDeleteRequest] = useState(null);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const deleteInFlightRef = useRef(false);
 
   // Fetch sources from API
   const fetchSources = useCallback(
@@ -99,6 +106,11 @@ export default function NewsSourcesPage() {
           setSources(data.sources);
           if (data.pagination) {
             setPagination(data.pagination);
+            if (statusTab === "all") {
+              setKnownHasSources(data.pagination.total > 0);
+            } else if (data.pagination.total > 0) {
+              setKnownHasSources(true);
+            }
           }
         }
       } catch (err) {
@@ -131,7 +143,14 @@ export default function NewsSourcesPage() {
         if (!mounted) return;
         if (data?.sources) {
           setSources(data.sources);
-          if (data.pagination) setPagination(data.pagination);
+          if (data.pagination) {
+            setPagination(data.pagination);
+            if (statusTab === "all") {
+              setKnownHasSources(data.pagination.total > 0);
+            } else if (data.pagination.total > 0) {
+              setKnownHasSources(true);
+            }
+          }
         }
       })
       .catch((err) => {
@@ -208,6 +227,86 @@ export default function NewsSourcesPage() {
     setTimeout(() => setCopiedSlug(null), 2500);
   };
 
+  const openDeleteConfirmation = (request) => {
+    setDeleteError("");
+    setDeleteRequest(request);
+  };
+
+  const closeDeleteConfirmation = () => {
+    if (deleteInFlightRef.current) return;
+    setDeleteError("");
+    setDeleteRequest(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteRequest || deleteInFlightRef.current) return;
+
+    deleteInFlightRef.current = true;
+    setDeleteSubmitting(true);
+    setDeleteError("");
+
+    const isBulk = deleteRequest.type === "all";
+    try {
+      const result = await adminFetch(
+        isBulk
+          ? "/api/admin/news/sources"
+          : `/api/admin/news/sources/${deleteRequest.source.id}`,
+        {
+          method: "DELETE",
+          body: { confirm: true },
+        },
+      );
+
+      if (isBulk) {
+        const deletedCount = Number(result?.deleted_count) || 0;
+        showSuccess(`تم حذف ${toArabicDigits(deletedCount)} مصدر صحفي بنجاح`);
+        setKnownHasSources(false);
+        setDeleteRequest(null);
+        fetchSources(1, false);
+      } else {
+        showSuccess(`تم حذف المصدر «${deleteRequest.source.name_ar}» بنجاح`);
+        const nextPage =
+          sources.length === 1 && pagination.page > 1
+            ? pagination.page - 1
+            : pagination.page;
+        if (statusTab === "all" && pagination.total <= 1) {
+          setKnownHasSources(false);
+        }
+        setDeleteRequest(null);
+        fetchSources(nextPage, false);
+      }
+    } catch (error) {
+      const message =
+        error?.code === "SOURCE_IN_USE"
+          ? isBulk
+            ? "لم يتم حذف أي مصدر؛ بعض المصادر مرتبطة بمقالات."
+            : `لا يمكن حذف المصدر «${deleteRequest.source.name_ar}» لارتباط مقالات به.`
+          : error?.message ||
+            (isBulk
+              ? "تعذر حذف مصادر الأخبار. يرجى المحاولة مرة أخرى."
+              : "تعذر حذف المصدر الصحفي. يرجى المحاولة مرة أخرى.");
+      setDeleteError(message);
+      showError(message);
+    } finally {
+      deleteInFlightRef.current = false;
+      setDeleteSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!deleteRequest) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape" && !deleteInFlightRef.current) {
+        event.preventDefault();
+        closeDeleteConfirmation();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [deleteRequest]);
+
   // Get dropdown items for a source
   const getSourceMenuItems = (source) => [
     {
@@ -236,6 +335,14 @@ export default function NewsSourcesPage() {
       label: "نسخ المعرف اللطيف (Slug)",
       icon: <Copy className="size-4 text-muted" />,
       onClick: () => handleCopySlug(source.slug),
+    },
+    { divider: true },
+    {
+      id: "delete",
+      label: "حذف المصدر نهائياً",
+      tone: "danger",
+      icon: <Trash2 className="size-4 text-rose-600" />,
+      onClick: () => openDeleteConfirmation({ type: "single", source }),
     },
   ];
 
@@ -294,7 +401,7 @@ export default function NewsSourcesPage() {
         </div>
 
         {/* Primary Action Buttons */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex w-full flex-wrap items-center gap-2.5 shrink-0 sm:w-auto sm:flex-nowrap">
           <button
             type="button"
             onClick={() => fetchSources(pagination.page, false)}
@@ -307,11 +414,22 @@ export default function NewsSourcesPage() {
 
           <button
             type="button"
+            onClick={() => openDeleteConfirmation({ type: "all" })}
+            disabled={loading || deleteSubmitting || knownHasSources === false}
+            className="inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-xs sm:text-sm font-black text-rose-700 shadow-2xs transition-all hover:border-rose-400 hover:bg-rose-100 hover:text-rose-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45 sm:flex-none"
+            title="Delete All News Sources"
+          >
+            <Trash2 className="size-4 shrink-0" />
+            <span>حذف الكل</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => {
               setEditingSource(null);
               setIsEditorOpen(true);
             }}
-            className="inline-flex items-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs sm:text-sm font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)] hover:scale-[1.02] active:scale-95 cursor-pointer"
+            className="inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs sm:text-sm font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)] hover:scale-[1.02] active:scale-95 cursor-pointer sm:flex-none"
           >
             <Plus className="size-4 stroke-[2.5]" />
             <span>إضافة مصدر جديد</span>
@@ -726,6 +844,126 @@ export default function NewsSourcesPage() {
           fetchSources(pagination.page, false);
         }}
       />
+
+      {deleteRequest && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-3 backdrop-blur-xs sm:items-center sm:p-5"
+          dir="rtl"
+          role="presentation"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) closeDeleteConfirmation();
+          }}
+        >
+          <section
+            className="my-auto w-full max-w-lg max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-3xl border border-line bg-white p-4 shadow-card-hover animate-elem-fade-up sm:max-h-[calc(100dvh-2.5rem)] sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="news-source-delete-title"
+            aria-describedby="news-source-delete-description"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-700">
+                  <Trash2 className="size-5" />
+                </span>
+                <div className="min-w-0">
+                  <h2 id="news-source-delete-title" className="text-base font-black text-ink sm:text-lg">
+                    {deleteRequest.type === "all" ? "تأكيد حذف جميع المصادر" : "تأكيد حذف المصدر"}
+                  </h2>
+                  <p className="mt-1 text-xs leading-relaxed text-muted">
+                    حذف نهائي لا يمكن التراجع عنه.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={closeDeleteConfirmation}
+                disabled={deleteSubmitting}
+                aria-label="إغلاق نافذة التأكيد"
+                className="group relative flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 disabled:opacity-50 cursor-pointer"
+                title="إغلاق"
+              >
+                <svg
+                  className="size-5 transition-transform duration-300 group-hover:rotate-90"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div
+              id="news-source-delete-description"
+              className="mt-5 space-y-3 rounded-2xl border border-rose-100 bg-rose-50/70 p-4 text-sm leading-relaxed text-rose-950"
+            >
+              {deleteRequest.type === "all" ? (
+                <>
+                  <p className="font-black">
+                    سيتم محاولة حذف جميع مصادر الأخبار في قاعدة البيانات، وليس المصادر الظاهرة في الصفحة أو نتائج الفلترة فقط.
+                  </p>
+                  <p className="text-xs text-rose-800">
+                    إذا كان أي مصدر مستخدماً في مقال، فلن يتم حذف أي مصدر.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>هل تريد حذف هذا المصدر نهائياً؟</p>
+                  <p className="break-words rounded-xl border border-rose-200 bg-white p-3 font-black">
+                    {deleteRequest.source.name_ar}
+                  </p>
+                  <p className="text-xs text-rose-800">
+                    لا يمكن حذف مصدر مرتبط بمقال. لن يتم حذف المقالات أو تعديلها.
+                  </p>
+                </>
+              )}
+            </div>
+
+            {deleteError && (
+              <div
+                role="alert"
+                className="mt-4 flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 p-3 text-xs font-bold leading-relaxed text-red-800"
+              >
+                <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+                <span className="min-w-0 break-words">{deleteError}</span>
+              </div>
+            )}
+
+            <div className="mt-5 flex flex-col-reverse gap-2 border-t border-line/70 pt-4 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={closeDeleteConfirmation}
+                disabled={deleteSubmitting}
+                className="rounded-xl border border-line bg-white px-5 py-3 text-xs font-bold text-muted transition hover:border-gold hover:text-ink disabled:cursor-not-allowed disabled:opacity-50 sm:py-2.5"
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={deleteSubmitting}
+                aria-busy={deleteSubmitting}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-xs font-black text-white shadow-btn transition hover:bg-rose-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 sm:py-2.5"
+              >
+                {deleteSubmitting ? <Spinner size="xs" color="white" /> : <Trash2 className="size-4" />}
+                <span>
+                  {deleteSubmitting
+                    ? "جارٍ الحذف..."
+                    : deleteRequest.type === "all"
+                      ? "تأكيد حذف الكل"
+                      : "تأكيد الحذف"}
+                </span>
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
