@@ -1735,3 +1735,7 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Deletion is rejected with `SOURCE_IN_USE` (409) when articles reference a source. Bulk deletion checks the complete collection and rejects atomically if any source is referenced; it never deletes or changes articles.
 - Source row locks serialize individual deletion with article creation. Bulk deletion locks the source table against concurrent inserts, locks all source rows, checks references, deletes all unused sources, and writes one `content_deleted` audit record per source in the same transaction.
 - Focused service and handler tests cover permissions, confirmations, missing IDs, reference conflicts, empty/all-unused collections, audits, rollback, route exports, and lock calls. Tests were run directly with Node because the Node test runner subprocess launch is blocked (`spawn EPERM`); no PostgreSQL concurrency integration was run.
+
+### 2026-11-22 - Staff role UI cleanup
+- Removed unsupported legacy roles from the shared Staff role options; the role filter, role counts, and create/edit selector now expose only `super_admin`, `news_editor`, and `news_reviewer`.
+- Corrected the permissions test to reflect that legacy roles have no current permission grants and added a focused check for the three role options and labels. Existing validation rejection tests remain unchanged.
