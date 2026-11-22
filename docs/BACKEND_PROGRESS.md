@@ -1834,3 +1834,8 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Gave the role dropdown a stable responsive width beside the search field so its Arabic label no longer wraps into a narrow vertical stack; it remains full-width when the toolbar stacks.
 - ESLint and git diff --check could not be rerun because the PowerShell command runner failed to start (CLR thread/assembly error).
 - Frontend-only change; no backend, API, database, Prisma, or migration files were touched.
+
+### 2026-11-23 - Responsive admin login page
+- Constrained the login page wrapper to the viewport, clipped horizontal overflow from decorative/background content, used the small viewport height where supported, and reduced card/fallback padding on mobile while preserving desktop sizing.
+- Targeted ESLint and git diff --check passed. Browser viewport testing was unavailable.
+- Only app/admin/login/page.jsx was changed for the page; no backend, API, database, Prisma, or migration files were modified.

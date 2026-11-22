@@ -147,7 +147,7 @@ function LoginForm() {
 
   return (
     <div
-      className={`relative w-full max-w-lg rounded-3xl border border-line border-t-[6px] border-t-gold bg-white p-7 sm:p-10 shadow-card transition-all duration-300 ${
+      className={`relative w-full min-w-0 max-w-lg rounded-3xl border border-line border-t-[6px] border-t-gold bg-white p-5 sm:p-10 shadow-card transition-all duration-300 ${
         shake ? "animate-[shake_0.45s_ease-in-out] motion-reduce:animate-none" : ""
       }`}
     >
@@ -310,7 +310,7 @@ function LoginForm() {
 export default function AdminLoginPage() {
   return (
     <div
-      className="relative flex min-h-screen w-full items-center justify-center bg-[#15171C] px-4 py-12"
+      className="relative isolate flex min-h-screen min-h-svh w-full min-w-0 max-w-full items-center justify-center overflow-x-clip bg-[#15171C] px-4 py-6 sm:px-6 sm:py-12"
       dir="rtl"
     >
       {/* Ambient background glows */}
@@ -325,7 +325,7 @@ export default function AdminLoginPage() {
 
       <Suspense
         fallback={
-          <div className="w-full max-w-lg rounded-3xl border border-line border-t-[6px] border-t-gold bg-white p-8 text-center shadow-card">
+          <div className="w-full min-w-0 max-w-lg rounded-3xl border border-line border-t-[6px] border-t-gold bg-white p-5 sm:p-8 text-center shadow-card">
             <div className="mx-auto size-8 animate-spin rounded-full border-2 border-gold/30 border-t-gold" />
             <p className="mt-3 text-xs text-muted">جارٍ تحميل النموذج...</p>
           </div>
