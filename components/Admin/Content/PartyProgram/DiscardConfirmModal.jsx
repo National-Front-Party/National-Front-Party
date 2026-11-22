@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Spinner from "@/components/Admin/ui/Spinner";
-import { Trash2, AlertCircle } from "lucide-react";
+import { Trash2, AlertCircle, X } from "lucide-react";
 
 export default function DiscardConfirmModal({
   isOpen,
@@ -78,27 +78,30 @@ export default function DiscardConfirmModal({
       aria-labelledby="discard-modal-title"
       aria-describedby="discard-modal-desc"
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs transition-opacity duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-3 backdrop-blur-sm transition-opacity duration-200 sm:p-6"
       dir="rtl"
     >
       <div
         ref={modalCardRef}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-lg rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl transition-all duration-200 sm:p-7"
+        className="relative my-auto w-full max-w-lg space-y-5 overflow-y-auto rounded-3xl border border-line bg-white p-4 shadow-card-hover transition-all duration-200 sm:p-7"
       >
         {/* Header Icon */}
-        <div className="mb-4 flex items-center gap-3">
+        <div className="flex items-start gap-3">
           <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600">
             <Trash2 className="size-6" aria-hidden="true" />
           </div>
-          <div>
-            <h3 id="discard-modal-title" className="text-lg font-bold text-slate-900">
+          <div className="min-w-0 flex-1">
+            <h3 id="discard-modal-title" className="text-lg font-bold text-ink">
               إهمال وحذف المسودة
             </h3>
             <p className="text-xs text-slate-500">
               حذف مسودة العمل غير المنشورة نهائياً
             </p>
           </div>
+          <button type="button" onClick={onClose} disabled={submitting} aria-label="إغلاق نافذة التأكيد" className="group flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
+            <X className="size-5" aria-hidden="true" />
+          </button>
         </div>
 
         {/* Info Banner */}
@@ -122,13 +125,13 @@ export default function DiscardConfirmModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+        <div className="flex flex-col-reverse gap-2 border-t border-line pt-4 sm:flex-row sm:justify-end sm:gap-3">
           <button
             ref={cancelButtonRef}
             type="button"
             disabled={submitting}
             onClick={onClose}
-            className="h-11 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-slate-400 disabled:opacity-50"
+            className="h-11 w-full rounded-2xl border border-border bg-white px-5 text-sm font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint/40 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             تراجع
           </button>
@@ -136,7 +139,7 @@ export default function DiscardConfirmModal({
             type="button"
             disabled={submitting}
             onClick={onConfirm}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-red-600 px-6 text-sm font-bold text-white shadow-sm hover:bg-red-700 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-red-600 disabled:opacity-60"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-6 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-md active:translate-y-0 focus-visible:outline-2 focus-visible:outline-red-600 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             {submitting ? (
               <>

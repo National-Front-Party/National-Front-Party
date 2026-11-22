@@ -29,7 +29,7 @@ export default function PresidentCard({
             <button
               type="button"
               onClick={onCreate}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 text-xs font-bold text-ink shadow-btn hover:brightness-105 active:scale-[0.99] transition-all"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
             >
               <Plus className="size-4" aria-hidden="true" />
               <span>إضافة وتحديد رئيس الحزب</span>
@@ -43,7 +43,7 @@ export default function PresidentCard({
   const hasPhoto = Boolean(president.photo_url) && !imgError;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-linear-to-br from-slate-900 via-slate-850 to-slate-900 text-white p-6 sm:p-8 shadow-card">
+    <div className="group relative overflow-hidden rounded-3xl border border-slate-200/90 bg-linear-to-br from-slate-900 via-slate-850 to-slate-900 p-5 text-white shadow-card transition-all duration-300 hover:border-gold/50 hover:shadow-[0_16px_36px_rgba(15,23,42,0.2)] sm:p-8">
       {/* Background Decorative Accent */}
       <div
         className="pointer-events-none absolute -left-12 -top-12 size-48 rounded-full bg-gold/10 blur-3xl"
@@ -86,7 +86,7 @@ export default function PresidentCard({
           </div>
 
           {/* Info Details */}
-          <div className="space-y-1.5">
+            <div className="min-w-0 space-y-1.5">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 border border-gold/40 px-3 py-0.5 text-[11px] font-bold text-gold">
                 <Shield className="size-3" aria-hidden="true" />
@@ -127,7 +127,7 @@ export default function PresidentCard({
             <button
               type="button"
               onClick={onEdit}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-bold text-ink shadow-btn hover:brightness-105 active:scale-[0.99] transition-all"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 sm:w-auto"
             >
               <Edit3 className="size-4" aria-hidden="true" />
               <span>تعديل بيانات رئيس الحزب</span>

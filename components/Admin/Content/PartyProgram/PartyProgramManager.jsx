@@ -171,7 +171,7 @@ export default function PartyProgramManager() {
 
   if (loading) {
     return (
-      <div className="space-y-4 rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-card" dir="rtl">
+      <div className="space-y-4 rounded-3xl border border-line bg-white p-5 shadow-card sm:p-7" dir="rtl">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <Skeleton className="h-7 w-48 rounded-xl" />
           <Skeleton className="h-6 w-24 rounded-full" />
@@ -217,25 +217,26 @@ export default function PartyProgramManager() {
   }
 
   return (
-    <div className="space-y-6" dir="rtl">
+    <div className="party-program-section space-y-6" dir="rtl">
       {/* Container Card */}
-      <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-card">
-        {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+      <div className="overflow-hidden rounded-3xl border border-line border-t-[7px] border-t-gold-deep bg-white shadow-card">
+        <div className="space-y-6 p-4 sm:p-6 lg:p-8">
+          {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-6">
           <div className="flex items-center gap-3.5">
             <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-ink text-gold shadow-xs">
               <BookOpen className="size-6" aria-hidden="true" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 id="party-program-section-title" className="text-xl font-extrabold text-slate-900">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 id="party-program-section-title" className="text-xl font-extrabold leading-tight text-ink sm:text-2xl">
                   إدارة برنامج الحزب (الصفحة الرئيسية)
                 </h2>
                 <span className="rounded-full bg-gold/15 border border-gold/30 px-2.5 py-0.5 text-[10px] font-extrabold text-gold-darker">
                   محتوى تفاعلي
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">
                 إدارة نصوص ومحاور بطاقة برنامج الحزب المنشورة للجمهور عبر نظام المسودات والاعتماد الذري
               </p>
             </div>
@@ -268,16 +269,16 @@ export default function PartyProgramManager() {
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex items-center gap-2 pt-6 pb-2" role="tablist" aria-label="تبويبات برنامج الحزب">
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-page p-1.5" role="tablist" aria-label="تبويبات برنامج الحزب">
           <button
             type="button"
             role="tab"
             aria-selected={activeView === "editor"}
             onClick={() => setActiveView("editor")}
-            className={`inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-bold transition-all ${
+              className={`inline-flex min-h-11 max-w-full items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 sm:px-5 sm:text-sm ${
               activeView === "editor"
-                ? "bg-slate-900 text-white shadow-xs"
-                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+              ? "bg-gold-gradient text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.22)] hover:brightness-105"
+              : "border border-transparent bg-transparent text-muted hover:border-line hover:bg-white hover:text-ink"
             }`}
           >
             <FileEdit className="size-4" aria-hidden="true" />
@@ -292,10 +293,10 @@ export default function PartyProgramManager() {
             role="tab"
             aria-selected={activeView === "published"}
             onClick={() => setActiveView("published")}
-            className={`inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-bold transition-all ${
+              className={`inline-flex min-h-11 max-w-full items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 sm:px-5 sm:text-sm ${
               activeView === "published"
-                ? "bg-slate-900 text-white shadow-xs"
-                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+              ? "bg-gold-gradient text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.22)] hover:brightness-105"
+              : "border border-transparent bg-transparent text-muted hover:border-line hover:bg-white hover:text-ink"
             }`}
           >
             <CheckCircle2 className="size-4" aria-hidden="true" />
@@ -309,7 +310,7 @@ export default function PartyProgramManager() {
         </div>
 
         {/* Sub-view Content */}
-        <div className="pt-4">
+        <div className="pt-1">
           {activeView === "editor" ? (
             <DraftEditor
               key={data.draft ? `draft-${data.draft.id}-${data.draft.updated_at}` : "new-draft"}
@@ -332,6 +333,7 @@ export default function PartyProgramManager() {
               onStartDraftFromPublished={() => setActiveView("editor")}
             />
           )}
+        </div>
         </div>
       </div>
 

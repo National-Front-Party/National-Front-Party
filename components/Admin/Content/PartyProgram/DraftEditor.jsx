@@ -97,9 +97,9 @@ export default function DraftEditor({
   const canPublish = Boolean(draft) && !hasUnsavedChanges && !isBusy && canManage;
 
   return (
-    <form onSubmit={handleSave} className="space-y-6" dir="rtl">
+    <form onSubmit={handleSave} className="mx-auto w-full max-w-6xl space-y-5 sm:space-y-6" dir="rtl">
       {/* Draft Status Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-5 py-3.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-line bg-white px-4 py-4 shadow-sm sm:px-5">
         <div className="flex items-center gap-2.5">
           <span
             className={`flex size-3 rounded-full ${
@@ -110,7 +110,7 @@ export default function DraftEditor({
                 : "bg-slate-400"
             }`}
           />
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-800">
                 {hasUnsavedChanges
@@ -125,7 +125,7 @@ export default function DraftEditor({
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-slate-500">
+            <p className="mt-1 max-w-3xl text-xs leading-relaxed text-muted">
               {draft
                 ? "الحفظ يحدّث المسودة دون التأثير على الصفحة الرئيسية، والنشر يعتمد المسودة مباشرة."
                 : "يمكنك كتابة نص جديد أو نسخ محتوى النسخة المنشورة والبدء في تعديلها."}
@@ -139,7 +139,7 @@ export default function DraftEditor({
             type="button"
             onClick={handleCopyFromPublished}
             disabled={isBusy}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors self-end sm:self-auto disabled:opacity-50"
+            className="inline-flex min-h-10 items-center justify-center gap-2 self-stretch rounded-xl border border-border bg-white px-4 py-2 text-xs font-bold text-ink shadow-sm transition-all hover:-translate-y-0.5 hover:border-gold hover:bg-gold-tint/40 hover:shadow-md active:translate-y-0 sm:self-auto disabled:opacity-50"
             title="استيراد النص المنشور حالياً إلى المحرر"
           >
             <Copy className="size-3.5 text-gold-darker" aria-hidden="true" />
@@ -149,11 +149,15 @@ export default function DraftEditor({
       </div>
 
       {/* Editor Fields Card */}
-      <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-card space-y-6">
+      <div className="space-y-6 rounded-3xl border border-line bg-white p-4 shadow-card sm:p-6 lg:p-8">
+        <div className="border-b border-line pb-4">
+          <p className="text-xs font-bold uppercase tracking-wide text-gold-dark">برنامج الحزب</p>
+          <p className="mt-1 text-sm text-muted">حرّر العنوان والنص، ثم احفظ التغييرات كمسودة قبل النشر.</p>
+        </div>
         {/* Title Field */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="party-program-title" className="text-xs font-bold text-slate-800">
+            <label htmlFor="party-program-title" className="block text-xs font-bold text-ink">
               عنوان بطاقة البرنامج <span className="text-red-500">*</span>
             </label>
             <span
@@ -172,7 +176,7 @@ export default function DraftEditor({
             disabled={isBusy || !canManage}
             maxLength={MAX_TITLE_LENGTH}
             placeholder="مثال: برنامج الحزب"
-            className="w-full h-11 rounded-2xl border border-slate-200 bg-slate-50/50 px-4 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-gold/20 transition-all disabled:opacity-60"
+            className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-xs font-medium text-ink transition-all duration-300 ease-in-out placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] disabled:cursor-not-allowed disabled:opacity-60"
           />
           {errors.title && (
             <p className="text-xs text-red-600 flex items-center gap-1 mt-1">
@@ -185,7 +189,7 @@ export default function DraftEditor({
         {/* Body Field */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <label htmlFor="party-program-body" className="text-xs font-bold text-slate-800">
+            <label htmlFor="party-program-body" className="block text-xs font-bold text-ink">
               نص ومحاور برنامج الحزب <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium">
@@ -203,12 +207,12 @@ export default function DraftEditor({
           <div className="relative">
             <textarea
               id="party-program-body"
-              rows={14}
+              rows={10}
               value={body}
               onChange={(e) => setBody(e.target.value)}
               disabled={isBusy || !canManage}
               placeholder="اكتب نص برنامج الحزب هنا... يتم حفظ الفواصل والفقرات بدقة كما تُكتب."
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-4 text-sm leading-relaxed sm:leading-loose text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-gold/20 transition-all resize-y disabled:opacity-60"
+              className="min-h-[160px] max-h-[65vh] w-full resize-y rounded-2xl border border-border bg-white p-4 text-xs font-medium leading-relaxed text-ink transition-all duration-300 ease-in-out placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] sm:text-sm disabled:cursor-not-allowed disabled:opacity-60"
             />
           </div>
           <p className="text-[11px] text-slate-500 flex items-center gap-1">
@@ -224,9 +228,9 @@ export default function DraftEditor({
         </div>
 
         {/* Source Note Field */}
-        <div className="space-y-1.5 pt-2 border-t border-slate-100">
+        <div className="space-y-2 border-t border-line pt-5">
           <div className="flex items-center justify-between">
-            <label htmlFor="party-program-source" className="text-xs font-bold text-slate-800">
+            <label htmlFor="party-program-source" className="block text-xs font-bold text-ink">
               ملاحظة المصدر
             </label>
             <span
@@ -245,7 +249,7 @@ export default function DraftEditor({
             disabled={isBusy || !canManage}
             maxLength={MAX_SOURCE_NOTE_LENGTH}
             placeholder="مثال: الموقع الرسمي للحزب"
-            className="w-full h-11 rounded-2xl border border-slate-200 bg-slate-50/50 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-gold/20 transition-all disabled:opacity-60"
+            className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-xs font-medium text-ink transition-all duration-300 ease-in-out placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
           />
           {errors.source_note && (
             <p className="text-xs text-red-600 flex items-center gap-1 mt-1">
@@ -266,7 +270,7 @@ export default function DraftEditor({
         )}
 
         {/* Actions Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
+        <div className="flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
           {/* Left Actions (Discard) */}
           <div>
             {draft && canManage && (
@@ -274,7 +278,7 @@ export default function DraftEditor({
                 type="button"
                 onClick={onOpenDiscardModal}
                 disabled={isBusy}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white px-4 text-xs font-bold text-red-600 hover:bg-red-50 active:scale-[0.99] transition-all disabled:opacity-50"
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white px-4 text-sm font-bold text-red-700 transition-all hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-50 hover:shadow-sm active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 <Trash2 className="size-4" aria-hidden="true" />
                 <span>إهمال المسودة</span>
@@ -283,12 +287,12 @@ export default function DraftEditor({
           </div>
 
           {/* Right Actions (Preview, Save, Publish) */}
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-2.5">
             {/* Preview Button */}
             <button
               type="button"
               onClick={() => onOpenPreview({ title, body, source_note: sourceNote })}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-border bg-white px-4 text-sm font-bold text-ink transition-all hover:-translate-y-0.5 hover:border-gold hover:bg-gold-tint/40 hover:shadow-md active:translate-y-0 sm:w-auto"
             >
               <Eye className="size-4 text-slate-500" aria-hidden="true" />
               <span>معاينة البطاقة</span>
@@ -300,13 +304,13 @@ export default function DraftEditor({
               disabled={isBusy || !canManage}
               className={`inline-flex h-11 items-center justify-center gap-2 rounded-2xl px-5 text-xs font-bold shadow-xs transition-all active:scale-[0.99] ${
                 hasUnsavedChanges
-                  ? "bg-slate-900 text-white hover:bg-slate-800"
-                  : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  ? "bg-gold-gradient text-ink shadow-btn hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_10px_24px_rgba(201,162,74,0.3)]"
+                  : "border border-border bg-white text-muted hover:border-gold hover:bg-gold-tint/40"
               }`}
             >
               {isSaving ? (
                 <>
-                  <Spinner size="sm" color="white" />
+                  <Spinner size="sm" color="ink" />
                   <span>جاري الحفظ...</span>
                 </>
               ) : (
@@ -330,7 +334,7 @@ export default function DraftEditor({
                     ? "احفظ التعديلات كمسودة أولاً قبل النشر"
                     : "اعتماد ونشر المسودة على الصفحة الرئيسية"
                 }
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-bold text-ink shadow-btn hover:brightness-105 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-gold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 text-sm font-bold text-ink shadow-btn transition-all hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_10px_24px_rgba(201,162,74,0.3)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 {isPublishing ? (
                   <>

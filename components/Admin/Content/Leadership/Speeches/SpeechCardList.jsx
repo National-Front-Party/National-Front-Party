@@ -17,7 +17,7 @@ export default function SpeechCardList({
 }) {
   if (!speeches.length) {
     return (
-      <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50/70 p-10 text-center" dir="rtl">
+      <div className="rounded-3xl border border-dashed border-line bg-page/50 p-7 text-center sm:p-10" dir="rtl">
         <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-gold/15 text-gold-darker shadow-xs">
           <Layers className="size-7" aria-hidden="true" />
         </div>
@@ -33,7 +33,7 @@ export default function SpeechCardList({
             <button
               type="button"
               onClick={() => onQuickCreate?.("speech-president")}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-gold/40 bg-white hover:bg-gold-tint text-xs font-bold text-slate-800 transition-colors shadow-2xs"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-gold/40 bg-white px-3.5 py-2 text-xs font-bold text-ink shadow-2xs transition-all hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold-tint/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
             >
               <Sparkles className="size-3.5 text-gold-darker" aria-hidden="true" />
               <span>+ كلمة رئيس الحزب</span>
@@ -41,7 +41,7 @@ export default function SpeechCardList({
             <button
               type="button"
               onClick={() => onQuickCreate?.("speech-vice-president")}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-gold/40 bg-white hover:bg-gold-tint text-xs font-bold text-slate-800 transition-colors shadow-2xs"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-gold/40 bg-white px-3.5 py-2 text-xs font-bold text-ink shadow-2xs transition-all hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold-tint/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
             >
               <Sparkles className="size-3.5 text-gold-darker" aria-hidden="true" />
               <span>+ كلمة النائب الأول</span>
@@ -49,7 +49,7 @@ export default function SpeechCardList({
             <button
               type="button"
               onClick={() => onQuickCreate?.("speech-secretary-general")}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-gold/40 bg-white hover:bg-gold-tint text-xs font-bold text-slate-800 transition-colors shadow-2xs"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-gold/40 bg-white px-3.5 py-2 text-xs font-bold text-ink shadow-2xs transition-all hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold-tint/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
             >
               <Sparkles className="size-3.5 text-gold-darker" aria-hidden="true" />
               <span>+ كلمة نائب رئيس الحزب</span>
@@ -57,7 +57,7 @@ export default function SpeechCardList({
             <button
               type="button"
               onClick={() => onQuickCreate?.("central-secretariats")}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-gold/40 bg-white hover:bg-gold-tint text-xs font-bold text-slate-800 transition-colors shadow-2xs"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-gold/40 bg-white px-3.5 py-2 text-xs font-bold text-ink shadow-2xs transition-all hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold-tint/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
             >
               <Sparkles className="size-3.5 text-gold-darker" aria-hidden="true" />
               <span>+ زر الأمانات المركزية</span>
@@ -86,7 +86,7 @@ export default function SpeechCardList({
           return (
             <div
               key={`${sp.id ?? "sp"}-${index}`}
-              className="group relative flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-xs transition-all hover:border-gold/60 hover:shadow-md"
+              className="group relative flex min-w-0 flex-col justify-between rounded-3xl border border-line bg-white p-4 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-[0_12px_28px_rgba(30,41,59,0.1)] sm:p-5"
             >
               <div className="space-y-3">
                 {/* Header: Order Badge & Status */}
@@ -159,13 +159,13 @@ export default function SpeechCardList({
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
                       {isSecretariat ? "نافذة الأمانات المركزية" : "نافذة كلمة القيادة"}
                     </span>
-                    <span className="text-xs font-bold text-slate-900 line-clamp-1">
+                    <span className="min-w-0 text-xs font-bold text-slate-900 line-clamp-2 [overflow-wrap:anywhere]">
                       {sp.title || "بدون عنوان"}
                     </span>
                   </div>
 
                   {!isSecretariat && (
-                    <div className="flex items-center gap-2 text-xs text-slate-600">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-600 [overflow-wrap:anywhere]">
                       <span className="font-bold text-gold-darker">{sp.person_name || "المتحدث"}</span>
                       {sp.person_role_title && (
                         <>
@@ -182,25 +182,25 @@ export default function SpeechCardList({
                   <p className="line-clamp-2 text-slate-600 leading-relaxed font-normal">
                     {paragraphs[0] || sp.body || "لا يوجد نص متاح."}
                   </p>
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-200/60 font-sans">
-                    <span className="truncate max-w-[200px]">{sp.source_note || "الموقع الرسمي للحزب"}</span>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/60 pt-1.5 font-sans text-[11px] text-slate-400">
+                    <span className="min-w-0 max-w-full truncate">{sp.source_note || "الموقع الرسمي للحزب"}</span>
                     <span>{paragraphs.length} فقرة</span>
                   </div>
                 </div>
               </div>
 
               {/* Bottom Actions */}
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-1">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3">
                 <button
                   type="button"
                   onClick={() => onPreview(sp)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-line bg-page px-3 py-1.5 text-xs font-bold text-muted transition-all hover:border-gold/50 hover:bg-gold-tint/40 hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
                 >
                   <Eye className="size-3.5" aria-hidden="true" />
                   <span>معاينة النافذة</span>
                 </button>
 
-                <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center gap-1">
                   {/* Reorder Buttons */}
                   {canManage && (
                     <div className="flex items-center gap-0.5 border border-slate-200 rounded-xl p-0.5 bg-slate-50">
@@ -208,7 +208,7 @@ export default function SpeechCardList({
                         type="button"
                         onClick={() => onMoveUp(sp, index)}
                         disabled={busy || index === 0}
-                        className="inline-flex size-7 items-center justify-center rounded-lg text-slate-600 hover:bg-white hover:text-slate-900 disabled:opacity-30 transition-colors"
+                        className="inline-flex size-9 items-center justify-center rounded-xl text-muted transition-all hover:bg-white hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-30"
                         title="تحريك لأعلى"
                         aria-label="تحريك الزر لأعلى"
                       >
@@ -218,7 +218,7 @@ export default function SpeechCardList({
                         type="button"
                         onClick={() => onMoveDown(sp, index)}
                         disabled={busy || index === speeches.length - 1}
-                        className="inline-flex size-7 items-center justify-center rounded-lg text-slate-600 hover:bg-white hover:text-slate-900 disabled:opacity-30 transition-colors"
+                        className="inline-flex size-9 items-center justify-center rounded-xl text-muted transition-all hover:bg-white hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-30"
                         title="تحريك لأسفل"
                         aria-label="تحريك الزر لأسفل"
                       >
@@ -232,7 +232,7 @@ export default function SpeechCardList({
                       type="button"
                       onClick={() => onEdit(sp)}
                       disabled={busy}
-                      className="inline-flex h-8 items-center gap-1.5 px-3 rounded-xl text-xs font-bold text-gold-darker bg-gold/10 hover:bg-gold/20 transition-colors disabled:opacity-50"
+                      className="inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-gold/10 px-3 text-xs font-bold text-gold-darker transition-all hover:bg-gold/20 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
                       title="تعديل بيانات الزر"
                     >
                       <Edit3 className="size-3.5" aria-hidden="true" />
@@ -245,7 +245,7 @@ export default function SpeechCardList({
                       type="button"
                       onClick={() => onDelete(sp)}
                       disabled={busy}
-                      className="inline-flex size-8 items-center justify-center rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
+                      className="inline-flex size-9 items-center justify-center rounded-xl text-muted transition-all hover:bg-red-50 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2 disabled:opacity-50"
                       title="حذف هذا الزر"
                       aria-label={`حذف ${sp.button_label}`}
                     >

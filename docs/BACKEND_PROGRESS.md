@@ -1408,6 +1408,65 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
   - `npx eslint`: خالي تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
   - `npm test`: جميع الاختبارات الـ 276 ناجحة بنسبة 100% (276 pass, 0 fail).
 
+## UI Phase — Admin Organizational Content visual refinement
+
+- Applied page-scoped presentation styles to /admin/content using existing ink, gold, gold-gradient, page, and border tokens.
+- Standardized field focus/hover treatment, modal sizing and close-button hover, card borders, upload drop-zone hover, and small-screen modal constraints.
+- No API, database, validation, CRUD, authentication, authorization, routing, or business logic changes.
+- Browser visual verification was not available; viewport checks remain unverified.
+
+## UI Phase — Party Program section redesign
+
+- Updated only the Party Program manager, editor, published content card, preview modal, and publish/discard confirmation dialogs.
+- Used the existing dashboard gold gradient, card, field, button, and close-button conventions; changes are presentation-only.
+- Responsive verification was source-level only because no browser session is available.
+
+- Follow-up UI refinement: changed the Party Program accent to a solid gold top border and matched title/source/body field heights, borders, typography, and focus shadows to the News article editor.
+
+## UI Phase — Central Secretariats section polish
+
+- Updated organizational content tab active and inactive visual states, and refined Central Secretariats search, forms, tables, actions, and modal presentation.
+- Matched text, number, search, and textarea controls to the News editor field dimensions, border, typography, and gold focus treatment while preserving validation styling.
+- Responsive review was source-level only; no browser viewport was tested.
+- No API, data flow, validation rules, permissions, CRUD behavior, or backend logic changed.
+
+- Follow-up: Central Secretariat form focus styling now stays aligned with the resting field border, retaining keyboard-visible focus; both publication checkboxes use the gold accent.
+
+- Follow-up: removed the elevated shadow and scale from the active organizational tab so its gold gradient sits cleanly within the tab container.
+
+- Follow-up: aligned Central Secretariat form field grouping with the News editor by arranging the name/head and sort/source pairs in responsive two-column rows that stack on narrow screens.
+
+- Follow-up: restored the News editor's gold focus shadow on Central Secretariat inputs and textarea, and equalized sort/source label row height for aligned controls.
+
+- Follow-up: added a restrained gold-tinted hover shadow to the active Organizational Content tab without scaling or lifting it.
+
+## UI Phase — Governorate Secretariats section refinement
+
+- Replaced the two-column manager layout with a stacked governorates list and selected governorate results section. Kept search, selection, visibility, edit, delete, member status, edit, and delete actions connected to their existing handlers and permission checks.
+- Restyled the governorate and member forms to match Central Secretariats fields, actions, modal sizing, and gold hover treatment. Added responsive member cards below the wide-screen breakpoint so the member table does not require horizontal scrolling on smaller screens.
+- UI-only changes; no API requests, state flow, validation rules, permissions, or backend behavior were changed. Responsive review was source-level only; browser viewports were not tested.
+- Follow-up: aligned all visible Governorate Secretariats search and form fields with the News field treatment, and changed the governorate picker into an accessible custom dropdown that retains search and the existing per-governorate actions.
+- Follow-up: standardized focus treatment for every editable Governorate Secretariats control, including the custom governorate picker, checkboxes, and the section's image upload field; text fields now use the News page's gold focus shadow without changing validation colors.
+- Follow-up: removed the redundant top image-format hint from the member form; the upload instructions and optional field label remain. Applied pointer and keyboard focus feedback consistently across both forms' text fields, checkboxes, governorate picker, and image upload controls.
+- Follow-up: scoped the global 3px keyboard focus outline off the Governorate Secretariats text fields and image drop zone so the News-style gold focus shadow appears cleanly without a doubled outline.
+- Follow-up: hid the secondary supported-format line inside the Governorate member image drop zone only; the upload component keeps its current default everywhere else.
+
+- Follow-up: matched the active organizational tab hover lift and gold shadow to the Add New Secretariat action, while leaving the tab container styles unchanged. Organizational tabs now wrap instead of horizontally scrolling; secretariat and member tables switch to responsive cards below the wide-screen breakpoint, retaining their existing actions and status controls.
+- UI behavior and data handling remain unchanged. Responsive review was source-level only; no browser viewport was tested.
+
+## UI Phase — Parliamentary Unit polish
+
+- Refined Parliamentary Unit cards, responsive layouts, form fields, actions, and modal presentation using the existing News field treatment and project gold-gradient button styles.
+- Added an opt-in neutral-to-gold hover close-button style for the Admin Parliamentary preview; other shared modal users retain their default styling.
+- UI-only changes. API calls, data flow, validation, permissions, CRUD behavior, and backend logic were not changed. Responsive review was source-level only; no browser viewport was tested.
+- Follow-up: added a restrained lift, slight brightness increase, and stronger shadow on hover for the selected Parliamentary Unit icon card, matching the existing hover treatment of the unselected cards.
+
+## UI Phase — Party Leadership polish
+
+- Refined the Party Leadership president card, leader table and mobile rows, speech cards, management tabs, form fields, modal layouts, action controls, and preview close control using the existing News field and project gold button styles.
+- Responsive checks were source-level only; browser viewport testing was not performed.
+- UI-only changes. API calls, data flow, validation, permissions, CRUD behavior, upload behavior, and backend logic were not changed.
+- Follow-up: removed the president form's helper text beneath the name, role, and badge fields, plus the upload-field format hint at the top of the photo section. Validation errors and the upload drop-zone's own guidance remain intact.
 ---
 
 ## مرحلة D5.8: تطوير واجهة إدارة الكتالوجات المرجعية - الوزارات والقطاعات (Admin Catalogs Management Page)

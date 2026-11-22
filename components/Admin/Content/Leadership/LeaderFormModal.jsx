@@ -203,14 +203,14 @@ export default function LeaderFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-xs overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-xs sm:items-center sm:p-5"
       role="dialog"
       aria-modal="true"
       aria-labelledby="leader-form-modal-title"
     >
       <div
         ref={modalCardRef}
-        className="relative my-8 w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-2xl transition-all"
+        className="relative my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-lg overflow-y-auto rounded-3xl border border-line bg-white p-5 shadow-card sm:max-h-[90vh] sm:p-7"
         dir="rtl"
       >
         {/* Close Button */}
@@ -218,7 +218,7 @@ export default function LeaderFormModal({
           type="button"
           onClick={onClose}
           disabled={busy}
-          className="absolute left-5 top-5 inline-flex size-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors disabled:opacity-50"
+          className="absolute left-4 top-4 inline-flex size-11 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-105 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50 sm:left-5 sm:top-5"
           aria-label="إغلاق النافذة"
         >
           <X className="size-5" aria-hidden="true" />
@@ -282,7 +282,7 @@ export default function LeaderFormModal({
           {/* Full Name */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor="leader-fullname" className="text-xs font-bold text-slate-800">
+              <label htmlFor="leader-fullname" className="text-sm font-bold text-ink">
                 الاسم بالكامل <span className="text-red-500">*</span>
               </label>
               <span
@@ -303,10 +303,10 @@ export default function LeaderFormModal({
               disabled={busy}
               maxLength={200}
               placeholder="مثال: د. أحمد محمد..."
-              className={`w-full h-11 rounded-2xl border px-4 text-sm font-semibold transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+              className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm font-semibold transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
                 errors.fullName
                   ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                  : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                  : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
               }`}
               aria-invalid={Boolean(errors.fullName)}
               aria-describedby={errors.fullName ? "leader-fullname-error" : undefined}
@@ -322,7 +322,7 @@ export default function LeaderFormModal({
           {/* Role Title */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor="leader-role" className="text-xs font-bold text-slate-800">
+              <label htmlFor="leader-role" className="text-sm font-bold text-ink">
                 الصفة الحزبية / المنصب
               </label>
               <span
@@ -342,10 +342,10 @@ export default function LeaderFormModal({
               disabled={busy}
               maxLength={200}
               placeholder="مثال: نائب رئيس الحزب للشؤون السياسية"
-              className={`w-full h-11 rounded-2xl border px-4 text-sm transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+              className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
                 errors.roleTitle
                   ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                  : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                  : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
               }`}
               aria-invalid={Boolean(errors.roleTitle)}
               aria-describedby={errors.roleTitle ? "leader-role-error" : undefined}
@@ -363,7 +363,7 @@ export default function LeaderFormModal({
             {/* Badge Label */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="leader-badge" className="text-xs font-bold text-slate-800">
+                <label htmlFor="leader-badge" className="text-sm font-bold text-ink">
                   الشارة (اختياري)
                 </label>
                 <span
@@ -383,10 +383,10 @@ export default function LeaderFormModal({
                 disabled={busy}
                 maxLength={50}
                 placeholder="مثال: عضو مؤسس"
-                className={`w-full h-11 rounded-2xl border px-4 text-sm transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+                className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
                   errors.badgeLabel
                     ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
                 aria-invalid={Boolean(errors.badgeLabel)}
                 aria-describedby={errors.badgeLabel ? "leader-badge-error" : undefined}
@@ -402,7 +402,7 @@ export default function LeaderFormModal({
             {/* Sort Order */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="leader-sort-order" className="text-xs font-bold text-slate-800">
+                <label htmlFor="leader-sort-order" className="text-sm font-bold text-ink">
                   ترتيب الظهور <span className="text-red-500">*</span>
                 </label>
                 <span className="text-[11px] text-slate-400 font-medium">
@@ -418,10 +418,10 @@ export default function LeaderFormModal({
                 min={-32768}
                 max={32767}
                 placeholder="مثال: 1"
-                className={`w-full h-11 rounded-2xl border px-4 text-sm font-semibold transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
+                className={`w-full h-14 rounded-2xl border px-4 text-xs sm:text-sm font-semibold transition-all disabled:opacity-60 focus:outline-hidden focus:ring-2 ${
                   errors.sortOrder
                     ? "border-red-400 bg-red-50/20 text-slate-900 focus:border-red-500 focus:ring-red-200"
-                    : "border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:border-gold focus:bg-white focus:ring-gold/20"
+                    : "border-border bg-white text-ink placeholder:text-muted/60 shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
                 }`}
                 aria-invalid={Boolean(errors.sortOrder)}
                 aria-describedby={errors.sortOrder ? "leader-sort-order-error" : undefined}
@@ -443,21 +443,21 @@ export default function LeaderFormModal({
                 checked={isPublished}
                 onChange={(e) => setIsPublished(e.target.checked)}
                 disabled={busy}
-                className="size-4.5 rounded-lg border-slate-300 text-gold focus:ring-gold/20"
+                className="size-4.5 rounded-lg border-slate-300 accent-gold focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
               />
-              <span className="text-xs font-bold text-slate-800">
+              <span className="text-sm font-bold text-ink">
                 نشر القيادي مباشرة في قائمة الموقع العام
               </span>
             </label>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex flex-col-reverse items-stretch justify-end gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={busy}
-              className="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-xs font-bold text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all disabled:opacity-50"
+              className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-line bg-white px-5 text-xs font-bold text-muted transition-all hover:border-gold/50 hover:bg-gold-tint/30 hover:text-ink focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
             >
               إلغاء
             </button>
@@ -465,7 +465,7 @@ export default function LeaderFormModal({
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-bold text-ink shadow-btn hover:brightness-105 active:scale-[0.99] transition-all disabled:opacity-50"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {busy ? (
                 <>

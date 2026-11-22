@@ -35,6 +35,7 @@ export default function ParliamentaryPreviewModal({
           : ["لم يتم إدخال نص للمحتوى أو الكلمة بعد."]
       }
       source={displaySource.trim() ? displaySource : null}
+      closeButtonVariant="neutral-gold-hover"
     />
   );
 }

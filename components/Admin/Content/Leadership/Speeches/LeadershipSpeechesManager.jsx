@@ -298,7 +298,7 @@ export default function LeadershipSpeechesManager() {
                 defaultPersonRole: "",
               })
             }
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-4 text-xs font-extrabold text-ink shadow-sm hover:brightness-105 active:scale-95 transition-all self-start sm:self-auto"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-4 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 self-start sm:self-auto"
           >
             <Plus className="size-4" aria-hidden="true" />
             <span>إضافة زر جديد</span>
@@ -318,7 +318,7 @@ export default function LeadershipSpeechesManager() {
               key={tmpl.id}
               type="button"
               onClick={() => handleQuickCreate(tmpl.id)}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-xl border border-slate-200 bg-white hover:bg-gold-tint hover:border-gold/50 text-xs font-semibold text-slate-700 transition-colors"
+              className="inline-flex min-h-9 items-center gap-1 rounded-xl border border-line bg-white px-3 text-xs font-semibold text-ink transition-all hover:-translate-y-0.5 hover:border-gold/50 hover:bg-gold-tint/40 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
             >
               <Plus className="size-3 text-gold-darker" aria-hidden="true" />
               <span>{tmpl.label}</span>

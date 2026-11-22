@@ -36,9 +36,9 @@ export default function SecretariatList({
   });
 
   return (
-    <div className="space-y-4" dir="rtl">
+    <div className="space-y-5" dir="rtl">
       {/* Search and Quick Counter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="flex flex-col items-stretch justify-between gap-3 rounded-3xl border border-line bg-page/45 p-4 sm:flex-row sm:items-center sm:p-5">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" aria-hidden="true" />
           <input
@@ -46,7 +46,7 @@ export default function SecretariatList({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="بحث في الأمانات المركزية أو أسماء الأمناء..."
-            className="w-full h-10 pr-10 pl-4 rounded-2xl border border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-hidden transition-all shadow-2xs"
+            className="h-14 w-full rounded-2xl border border-border bg-white py-3 pl-4 pr-10 text-xs font-medium text-ink transition-all duration-300 ease-in-out placeholder:text-muted/60 hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] sm:text-sm"
           />
         </div>
 
@@ -58,7 +58,7 @@ export default function SecretariatList({
             <button
               type="button"
               onClick={onAddNew}
-              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-2xl bg-gold-gradient px-4 text-xs font-extrabold text-ink shadow-sm hover:brightness-105 active:scale-95 transition-all"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-gold-gradient px-4 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
             >
               <Plus className="size-4" aria-hidden="true" />
               <span>إضافة أمانة جديدة</span>
@@ -83,9 +83,9 @@ export default function SecretariatList({
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-right text-sm">
+        <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-card">
+          <div className="hidden xl:block">
+            <table className="w-full table-fixed text-right text-sm">
               <thead className="bg-slate-50/80 text-[11px] font-bold text-slate-500 border-b border-slate-200">
                 <tr>
                   <th className="py-3.5 pr-5 pl-3 w-16 text-center">الترتيب</th>
@@ -103,7 +103,7 @@ export default function SecretariatList({
                   return (
                     <tr
                       key={sec.id}
-                      className="hover:bg-slate-50/60 transition-colors group"
+                      className="group transition-colors hover:bg-gold-tint/25"
                     >
                       {/* Sort Order */}
                       <td className="py-3 pr-5 pl-3 text-center">
@@ -138,7 +138,7 @@ export default function SecretariatList({
                         <button
                           type="button"
                           onClick={() => onSelectSecretariat(sec)}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-gold/30 bg-gold-tint/40 hover:bg-gold-tint px-3 py-1 text-xs font-bold text-gold-darker transition-colors shadow-2xs"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-gold/30 bg-gold-tint/50 px-3 py-1.5 text-xs font-bold text-gold-dark shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/60 hover:bg-gold-tint hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
                           title="عرض وإدارة أعضاء هذه الأمانة"
                         >
                           <Users className="size-3.5" aria-hidden="true" />
@@ -190,7 +190,7 @@ export default function SecretariatList({
                           <button
                             type="button"
                             onClick={() => onSelectSecretariat(sec)}
-                            className="inline-flex h-8 items-center gap-1 rounded-xl bg-slate-100 hover:bg-slate-200 px-2.5 text-[11px] font-bold text-slate-700 transition-colors"
+                            className="inline-flex h-9 items-center gap-1 rounded-xl border border-line bg-white px-3 text-xs font-bold text-ink shadow-2xs transition-all hover:-translate-y-0.5 hover:border-gold hover:bg-gold-tint/50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
                           >
                             <span>الأعضاء</span>
                           </button>
@@ -200,7 +200,7 @@ export default function SecretariatList({
                               type="button"
                               onClick={() => onEdit(sec)}
                               disabled={busy}
-                              className="inline-flex size-8 items-center justify-center rounded-xl text-slate-500 hover:bg-gold/10 hover:text-gold-darker transition-colors disabled:opacity-50"
+                              className="inline-flex size-9 items-center justify-center rounded-xl border border-transparent text-muted transition-all hover:-translate-y-0.5 hover:border-gold/30 hover:bg-gold-tint/60 hover:text-gold-dark focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50"
                               aria-label={`تعديل ${sec.name_ar}`}
                               title="تعديل الأمانة"
                             >
@@ -213,7 +213,7 @@ export default function SecretariatList({
                               type="button"
                               onClick={() => onDelete(sec)}
                               disabled={busy}
-                              className="inline-flex size-8 items-center justify-center rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
+                              className="inline-flex size-9 items-center justify-center rounded-xl border border-transparent text-slate-400 transition-all hover:-translate-y-0.5 hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2 disabled:opacity-50"
                               aria-label={`حذف ${sec.name_ar}`}
                               title="حذف الأمانة"
                             >
@@ -227,6 +227,37 @@ export default function SecretariatList({
                 })}
               </tbody>
             </table>
+          </div>
+          <div className="grid gap-3 p-3 xl:hidden">
+            {filtered.map((sec) => {
+              const peopleCount = Array.isArray(sec.people) ? sec.people.length : 0;
+              return (
+                <article key={sec.id} className="rounded-2xl border border-line bg-white p-4 shadow-2xs transition-shadow hover:border-gold/40 hover:shadow-card">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="mb-1 flex items-center gap-2">
+                        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-lg bg-slate-100 font-mono text-[11px] font-bold text-slate-600">{sec.sort_order ?? "-"}</span>
+                        <h3 className="break-words text-sm font-extrabold text-slate-900">{sec.name_ar}</h3>
+                      </div>
+                      <p className="text-xs text-slate-600">أمين الأمانة: {sec.head_name || <span className="text-slate-400 italic">غير محدد</span>}</p>
+                      {sec.source_note && <p className="mt-1 break-words text-xs text-slate-400">المصدر: {sec.source_note}</p>}
+                    </div>
+                    {canManage ? (
+                      <button type="button" onClick={() => onToggleStatus(sec)} disabled={busy} className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-bold transition-colors disabled:opacity-50 ${sec.is_published ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+                        {sec.is_published ? "منشور" : "معطل"}
+                      </button>
+                    ) : <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-bold ${sec.is_published ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-100 text-slate-600"}`}>{sec.is_published ? "منشور" : "معطل"}</span>}
+                  </div>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
+                    <button type="button" onClick={() => onSelectSecretariat(sec)} className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-gold/30 bg-gold-tint/50 px-3 text-xs font-bold text-gold-dark transition-all hover:-translate-y-0.5 hover:border-gold/60 hover:bg-gold-tint hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"><Users className="size-3.5" aria-hidden="true" />{peopleCount} عضو / كادر</button>
+                    <div className="flex items-center gap-1">
+                      {canManage && <button type="button" onClick={() => onEdit(sec)} disabled={busy} className="inline-flex size-9 items-center justify-center rounded-xl border border-transparent text-muted transition-all hover:-translate-y-0.5 hover:border-gold/30 hover:bg-gold-tint/60 hover:text-gold-dark focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:opacity-50" aria-label={`تعديل ${sec.name_ar}`} title="تعديل الأمانة"><Edit3 className="size-4" aria-hidden="true" /></button>}
+                      {canDelete && <button type="button" onClick={() => onDelete(sec)} disabled={busy} className="inline-flex size-9 items-center justify-center rounded-xl border border-transparent text-slate-400 transition-all hover:-translate-y-0.5 hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2 disabled:opacity-50" aria-label={`حذف ${sec.name_ar}`} title="حذف الأمانة"><Trash2 className="size-4" aria-hidden="true" /></button>}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       )}

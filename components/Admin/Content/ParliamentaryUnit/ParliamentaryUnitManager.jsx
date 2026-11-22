@@ -174,21 +174,21 @@ export default function ParliamentaryUnitManager() {
   return (
     <div className="space-y-6" dir="rtl">
       {/* Top Header Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 rounded-3xl bg-white border border-slate-200/80 shadow-xs">
-        <div className="flex items-center gap-3">
-          <span className="flex size-12 items-center justify-center rounded-2xl bg-gold/15 text-gold-dark border border-gold/30 shadow-2xs">
+      <div className="flex flex-col gap-4 rounded-3xl border border-line bg-white p-4 shadow-card sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-gold/30 bg-gold/15 text-gold-dark shadow-2xs">
             <Landmark className="size-6" aria-hidden="true" />
           </span>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-base font-black text-slate-900">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-base font-black text-ink">
                 عناصر الوحدة البرلمانية (الصفحة الرئيسية)
               </h3>
-              <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-700">
+              <span className="inline-flex items-center rounded-full border border-line bg-page px-2.5 py-0.5 text-xs font-bold text-muted">
                 {items.length} عناصر
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="mt-1 text-xs leading-5 text-muted">
               إدارة بطاقات العمود الرابع والنوافذ المنبثقة التابعة لمجالس الشيوخ والنواب والمجالس المحلية ({publishedCount} مفعلة بالموقع)
             </p>
           </div>
@@ -198,7 +198,7 @@ export default function ParliamentaryUnitManager() {
           <button
             type="button"
             onClick={() => setFormModal({ isOpen: true, item: null })}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gold hover:bg-gold-dark text-ink text-xs font-black transition-all shadow-xs shrink-0 cursor-pointer"
+            className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             <Plus className="size-4" aria-hidden="true" />
             <span>إضافة عنصر برلماني جديد</span>
@@ -208,7 +208,7 @@ export default function ParliamentaryUnitManager() {
 
       {/* Loading State */}
       {loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3 md:gap-5">
           {[1, 2, 3].map((idx) => (
             <Skeleton key={idx} className="h-64 rounded-3xl w-full" />
           ))}
@@ -217,7 +217,7 @@ export default function ParliamentaryUnitManager() {
 
       {/* Error State */}
       {!loading && error && (
-        <div className="flex flex-col items-center justify-center gap-3 p-8 rounded-3xl bg-white border border-rose-200 text-center shadow-xs">
+        <div className="flex flex-col items-center justify-center gap-3 rounded-3xl border border-rose-200 bg-white p-6 text-center shadow-card sm:p-8">
           <AlertCircle className="size-10 text-rose-500" aria-hidden="true" />
           <h4 className="text-sm font-bold text-slate-900">فشل تحميل البيانات</h4>
           <p className="text-xs text-slate-500 max-w-md">{error}</p>
@@ -228,7 +228,7 @@ export default function ParliamentaryUnitManager() {
               setError(null);
               setRefreshKey((k) => k + 1);
             }}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
+            className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-line bg-white px-4 text-xs font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:bg-gold-tint/40 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
           >
             <RotateCcw className="size-3.5" aria-hidden="true" />
             <span>إعادة المحاولة</span>
@@ -247,7 +247,7 @@ export default function ParliamentaryUnitManager() {
               <button
                 type="button"
                 onClick={() => setFormModal({ isOpen: true, item: null })}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gold hover:bg-gold-dark text-ink text-xs font-black transition-all shadow-xs cursor-pointer"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 text-xs font-extrabold text-ink shadow-btn transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
               >
                 <Plus className="size-4" aria-hidden="true" />
                 <span>إضافة أول عنصر</span>
@@ -259,7 +259,7 @@ export default function ParliamentaryUnitManager() {
 
       {/* Items Grid */}
       {!loading && !error && items.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3 md:gap-5">
           {items.map((item, index) => {
             const IconComponent = ICON_MAP[item.icon] ?? Landmark;
             const isBusy = busyId === item.id;
@@ -267,11 +267,11 @@ export default function ParliamentaryUnitManager() {
             return (
               <div
                 key={`parl-card-${item.id}`}
-                className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all hover:border-gold/60 hover:shadow-md"
+                className="group relative flex min-w-0 flex-col justify-between rounded-3xl border border-line bg-white p-4 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/45 hover:shadow-card-hover sm:p-5"
               >
                 <div className="space-y-4">
                   {/* Top Bar: Order & Status */}
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span className="inline-flex size-6 items-center justify-center rounded-full bg-slate-900 text-xs font-black text-gold-light">
                         {index + 1}
@@ -286,7 +286,7 @@ export default function ParliamentaryUnitManager() {
                         type="button"
                         onClick={() => handleToggleStatus(item)}
                         disabled={isBusy}
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold transition-colors cursor-pointer disabled:opacity-50 ${
+                        className={`inline-flex min-h-7 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 ${
                           item.is_published
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
                             : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
@@ -324,24 +324,24 @@ export default function ParliamentaryUnitManager() {
                       <IconComponent className="size-6" aria-hidden="true" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-base font-black text-slate-900 group-hover:text-gold-dark transition-colors truncate">
+                      <h4 className="break-words text-base font-black text-ink transition-colors group-hover:text-gold-dark">
                         {item.title}
                       </h4>
-                      <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
+                      <p className="mt-0.5 break-words text-xs font-medium text-muted">
                         {item.subtitle || "الهيئة البرلمانية"}
                       </p>
                     </div>
                   </div>
 
                   {/* Popup Data Summary Preview Box */}
-                  <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 space-y-2 text-xs">
-                    <div className="flex items-center gap-1.5 text-slate-700 font-bold">
+                  <div className="space-y-2 rounded-2xl border border-line bg-page/50 p-3.5 text-xs">
+                    <div className="flex min-w-0 flex-wrap items-start gap-1.5 font-bold text-slate-700">
                       <User className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />
-                      <span className="truncate">
+                      <span className="break-words">
                         {item.head_name || "لم يُحدد مسؤول بعد"}
                       </span>
                       {item.head_role && (
-                        <span className="text-[11px] text-slate-400 font-normal truncate">
+                        <span className="break-words text-[11px] font-normal text-slate-400">
                           ({item.head_role})
                         </span>
                       )}
@@ -350,7 +350,7 @@ export default function ParliamentaryUnitManager() {
                     {item.body ? (
                       <div className="flex items-start gap-1.5 text-slate-600 text-[11px] leading-relaxed">
                         <Quote className="size-3 text-gold-dark/60 shrink-0 mt-0.5" aria-hidden="true" />
-                        <p className="line-clamp-2">
+                        <p className="min-w-0 break-words line-clamp-3">
                           {item.body.replace(/\r?\n+/g, " ")}
                         </p>
                       </div>
@@ -361,7 +361,7 @@ export default function ParliamentaryUnitManager() {
                     )}
 
                     {item.source_note && (
-                      <div className="text-[10px] text-slate-400 border-t border-slate-200/50 pt-1.5 truncate">
+                      <div className="break-words border-t border-line pt-1.5 text-[10px] text-muted">
                         المصدر: {item.source_note}
                       </div>
                     )}
@@ -369,23 +369,23 @@ export default function ParliamentaryUnitManager() {
                 </div>
 
                 {/* Card Actions Footer */}
-                <div className="flex items-center justify-between gap-2 pt-4 mt-4 border-t border-slate-100">
+                <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-between">
                   <button
                     type="button"
                     onClick={() => setPreviewItem(item)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-gold-tint hover:border-gold/40 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
+                    className="inline-flex min-h-10 w-full items-center justify-center gap-1 rounded-xl border border-line bg-white px-3 text-xs font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/50 hover:bg-gold-tint/35 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 sm:w-auto"
                     title="معاينة النافذة المنبثقة كما تظهر للزائر"
                   >
                     <Eye className="size-3.5 text-slate-500" aria-hidden="true" />
                     <span>معاينة النافذة</span>
                   </button>
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex w-full items-center gap-1.5 sm:w-auto">
                     {canManage && (
                       <button
                         type="button"
                         onClick={() => setFormModal({ isOpen: true, item })}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
+                        className="inline-flex min-h-10 flex-1 items-center justify-center gap-1 rounded-xl border border-line bg-white px-3 text-xs font-bold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-gold hover:bg-gold-tint/40 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 sm:flex-none"
                       >
                         <Edit3 className="size-3.5 text-slate-500" aria-hidden="true" />
                         <span>تعديل</span>
@@ -396,8 +396,9 @@ export default function ParliamentaryUnitManager() {
                       <button
                         type="button"
                         onClick={() => setDeletingItem(item)}
-                        className="flex size-8 items-center justify-center rounded-xl border border-rose-100 text-rose-500 hover:bg-rose-50 hover:border-rose-200 transition-colors cursor-pointer"
+                        className="inline-flex size-10 items-center justify-center rounded-xl border border-rose-200 text-rose-600 transition-all hover:-translate-y-0.5 hover:bg-rose-50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-rose-500 focus-visible:outline-offset-2"
                         title="حذف هذا العنصر"
+                        aria-label={`حذف ${item.title}`}
                       >
                         <Trash2 className="size-3.5" aria-hidden="true" />
                       </button>

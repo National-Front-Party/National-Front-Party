@@ -79,6 +79,7 @@ export default function ImageUploadField({
   id = "image-upload",
   onUploadStart,
   onUploadEnd,
+  showFormatHint = true,
 }) {
   const fileInputRef = useRef(null);
   const activeBlobUrlRef = useRef(null);
@@ -380,9 +381,11 @@ export default function ImageUploadField({
               <p className="text-xs font-bold text-ink group-hover:text-gold-dark transition-colors">
                 اسحب الصورة وأفلتها هنا، أو <span className="text-gold-dark underline underline-offset-4">تصفح جهازك</span>
               </p>
-              <p className="mt-1 text-[11px] text-muted">
-                JPG، PNG، WebP بحد أقصى 5 ميجابايت (لا يقبل SVG)
-              </p>
+              {showFormatHint && (
+                <p className="mt-1 text-[11px] text-muted">
+                  JPG، PNG، WebP بحد أقصى 5 ميجابايت (لا يقبل SVG)
+                </p>
+              )}
             </>
           )}
         </div>

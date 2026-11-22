@@ -335,14 +335,14 @@ export default function CentralSecretariatsManager() {
 
   if (error) {
     return (
-      <div className="rounded-3xl border border-red-200 bg-red-50/70 p-6 text-center" dir="rtl">
+      <div className="rounded-3xl border border-red-200 bg-red-50/70 p-6 text-center shadow-sm sm:p-8" dir="rtl">
         <AlertCircle className="mx-auto size-8 text-red-600 mb-2" aria-hidden="true" />
         <h3 className="text-sm font-bold text-red-900">تعذر تحميل الأمانات المركزية</h3>
         <p className="text-xs text-red-700 mt-1">{error}</p>
         <button
           type="button"
           onClick={handleRetry}
-          className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white border border-red-200 text-xs font-bold text-red-800 hover:bg-red-50 transition-colors"
+          className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white px-5 text-sm font-bold text-red-800 transition-all duration-200 hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-50 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-red-500 focus-visible:outline-offset-2"
         >
           <RotateCcw className="size-3.5" aria-hidden="true" />
           <span>إعادة المحاولة</span>

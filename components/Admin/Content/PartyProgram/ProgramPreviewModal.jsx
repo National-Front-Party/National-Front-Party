@@ -77,16 +77,16 @@ export default function ProgramPreviewModal({
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs transition-opacity duration-200"
+        className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-3 backdrop-blur-sm transition-opacity duration-200 sm:p-6"
       dir="rtl"
     >
       <div
         ref={modalCardRef}
         onClick={(e) => e.stopPropagation()}
-        className="relative flex flex-col w-full max-w-2xl max-h-[90vh] rounded-3xl border border-slate-200/90 bg-white shadow-2xl overflow-hidden"
+        className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-card-hover sm:max-h-[90dvh]"
       >
         {/* Header Banner */}
-        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4">
+        <div className="flex items-start justify-between gap-3 border-b border-line bg-white px-4 py-4 sm:items-center sm:px-6">
           <div className="flex items-center gap-2">
             <span className="flex size-8 items-center justify-center rounded-xl bg-gold/15 text-gold-dark">
               <Sparkles className="size-4" aria-hidden="true" />
@@ -105,7 +105,7 @@ export default function ProgramPreviewModal({
             type="button"
             onClick={onClose}
             aria-label="إغلاق المعاينة"
-            className="flex size-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+            className="group flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95"
           >
             <X className="size-5" aria-hidden="true" />
           </button>
@@ -120,11 +120,11 @@ export default function ProgramPreviewModal({
         )}
 
         {/* Modal Body / ModalShell simulation */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:space-y-6 sm:p-7">
           {/* Card Simulation Header */}
-          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl bg-ink px-4 py-8 text-center text-white shadow-card">
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl bg-ink px-4 py-7 text-center text-white shadow-card sm:py-9">
             <BookOpen size={48} strokeWidth={1.5} className="text-gold-light" aria-hidden="true" />
-            <h2 className="text-2xl font-extrabold text-white">
+            <h2 className="break-words text-xl font-extrabold text-white sm:text-2xl">
               {title || "برنامج الحزب"}
             </h2>
             <div className="flex items-center gap-1.5 text-xs text-slate-300">
@@ -134,7 +134,7 @@ export default function ProgramPreviewModal({
           </div>
 
           {/* Paragraphs */}
-          <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-6 space-y-4 text-right text-base leading-loose text-ink font-medium">
+          <div className="space-y-4 rounded-2xl border border-line bg-page/70 p-4 text-right text-sm font-medium leading-8 text-ink sm:p-6 sm:text-base">
             {paragraphs.map((paragraph, index) => (
               <p key={index} className="text-justify leading-relaxed sm:leading-loose">
                 {paragraph}
@@ -150,11 +150,11 @@ export default function ProgramPreviewModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end border-t border-slate-100 bg-slate-50 px-6 py-3.5">
+        <div className="flex items-center justify-end border-t border-line bg-white px-4 py-3.5 sm:px-6">
           <button
             type="button"
             onClick={onClose}
-            className="h-10 rounded-xl bg-slate-900 px-6 text-xs font-bold text-white hover:bg-slate-800 transition-colors"
+            className="h-11 rounded-xl border border-border bg-white px-6 text-sm font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint/40 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
           >
             إغلاق المعاينة
           </button>

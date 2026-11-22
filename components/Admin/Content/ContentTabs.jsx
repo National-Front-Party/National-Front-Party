@@ -173,31 +173,15 @@ export default function ContentTabs({
     }
   };
 
-  // Scroll active tab into view smoothly on mount or tab change (useful for mobile horizontal scroll)
-  useEffect(() => {
-    const activeBtn = tabListRef.current?.querySelector('[aria-selected="true"]');
-    if (activeBtn && tabListRef.current) {
-      const container = tabListRef.current;
-      const btnLeft = activeBtn.offsetLeft;
-      const btnWidth = activeBtn.offsetWidth;
-      const containerWidth = container.offsetWidth;
-
-      container.scrollTo({
-        left: btnLeft - containerWidth / 2 + btnWidth / 2,
-        behavior: "smooth",
-      });
-    }
-  }, [activeTabId]);
-
   return (
     <div className={`w-full ${className}`} dir="rtl">
-      {/* Tab Navigation Container with horizontal scroll on mobile */}
+      {/* Tab Navigation Container */}
       <div className="rounded-3xl border border-line bg-white p-2 shadow-card">
         <div
           ref={tabListRef}
           role="tablist"
           aria-label="أقسام المحتوى التنظيمي"
-          className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-0.5 px-0.5"
+          className="flex flex-wrap items-center justify-center gap-1.5 py-0.5 px-0.5"
         >
           {CONTENT_TABS.map((tab, idx) => {
             const isActive = tab.id === activeTabId;
@@ -214,16 +198,16 @@ export default function ContentTabs({
                 onClick={() => handleSelectTab(tab.id)}
                 onKeyDown={(e) => handleKeyDown(e, idx)}
                 title={tab.description}
-                className={`group relative flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 text-xs sm:text-sm font-bold transition-all duration-300 ease-out select-none focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 ${
+                className={`group relative flex min-w-0 max-w-full items-center gap-2 rounded-2xl px-2.5 py-3 text-xs font-bold transition-all duration-200 ease-out select-none focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2 sm:px-4 sm:text-sm ${
                   isActive
-                    ? "bg-gold text-white shadow-[0_4px_14px_rgba(201,162,74,0.35)] scale-[1.02]"
-                    : "text-muted hover:bg-page hover:text-ink active:scale-95"
+                    ? "bg-gold-gradient text-ink shadow-btn hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_8px_18px_rgba(201,162,74,0.28)] active:translate-y-0"
+                    : "border border-transparent bg-white text-muted hover:border-gold/25 hover:bg-gold-tint/70 hover:text-gold-dark active:scale-[0.98]"
                 }`}
               >
                 {/* Tab Icon */}
                 <span
                   className={`transition-colors duration-200 ${
-                    isActive ? "text-white" : "text-muted/70 group-hover:text-gold-dark"
+                    isActive ? "text-ink" : "text-muted/70 group-hover:text-gold-dark"
                   }`}
                   aria-hidden="true"
                 >
