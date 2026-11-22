@@ -1809,3 +1809,8 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Added an opt-in fixed-height mode to CustomSelect and enabled it for the News author, source, and featured filters so all controls match the 56px search/action fields. Selected values can use two lines and expose their full text through the control title.
 - Vertically centered the filter grid items. Targeted ESLint and git diff --check passed; no browser session was available for live visual verification.
 - No filter logic or options changed; no backend or database files were modified.
+
+### 2026-11-23 - Responsive news source forms
+- Made the source editor modal height-aware with an internally scrollable form body, smaller mobile padding, and wrapping title/help text.
+- Kept sort order and active status controls in a responsive grid; action buttons stack at full width on phones and return to inline sizing on larger screens. Existing delete confirmation already used a responsive layout and was left as-is.
+- Targeted ESLint and git diff --check passed. Browser viewport testing was unavailable. Form fields and submission behavior are unchanged; no backend or database files were modified.
