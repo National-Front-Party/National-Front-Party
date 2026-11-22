@@ -1748,3 +1748,12 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 ### 2026-11-22 - Individual employee deletion frontend
 - Added a per-employee delete action to the Staff page. Active accounts show a deactivation requirement; the current account action is disabled. Inactive accounts require a named confirmation dialog before sending the existing DELETE request.
 - Success removes the account from the local list and updates counts; errors remain in the dialog, and a missing account triggers a list refresh. No bulk action or database request was run.
+
+### 2026-11-22 - Home navigation links frontend
+- Replaced the separate village and ezba entries in the shared Navbar/Footer link data with one "الوحدة الحزبية" link targeting the existing "#geo" section.
+- Navbar and Footer retain their in-page smooth scrolling and active link behavior on `/`; on other routes, the links point to `/#geo` and the existing section anchor receives focus on load.
+- No backend, API, service, authentication, Prisma, migration, or database files were changed; no database command was run.
+
+### 2026-11-22 - Navbar pathname reference fix
+- Fixed a runtime ReferenceError in NavigationLinks by passing the current pathname from NavbarContent to both the desktop and mobile link lists.
+- Verified with targeted ESLint and git diff whitespace checks.

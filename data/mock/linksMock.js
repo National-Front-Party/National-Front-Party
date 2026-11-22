@@ -5,8 +5,7 @@ export const NAV_LINKS = [
   { label: "الوحدة البرلمانية", href: "#c-parl" },
   { label: "مع الحكومة والوزارات", href: "#c-gov" },
   { label: "رؤية مصر 2030", href: "#c-2030" },
-  { label: "القرية", href: "#geo", focus: "geo-village" },
-  { label: "العزبة", href: "#geo", focus: "geo-ezba" },
+  { label: "الوحدة الحزبية", href: "#geo" },
 ];
 
 export const FOOTER_LINKS = [
@@ -16,8 +15,7 @@ export const FOOTER_LINKS = [
   { label: "الوحدة البرلمانية", href: "#c-parl" },
   { label: "مع الحكومة والوزارات", href: "#c-gov" },
   { label: "رؤية مصر 2030", href: "#c-2030" },
-  { label: "القرية", href: "#geo", focus: "geo-village" },
-  { label: "العزبة", href: "#geo", focus: "geo-ezba" },
+  { label: "الوحدة الحزبية", href: "#geo" },
 ];
 
 export const SOCIAL_LINKS = [

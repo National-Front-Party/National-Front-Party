@@ -8,6 +8,7 @@ import JoinButton from "@/components/JoinButton";
 import { NAV_LINKS, SOCIAL_LINKS } from "@/data/mock/linksMock";
 
 function NavigationLinks({
+    pathname,
     activeKey,
     onLinkClick,
     linkRefs,
@@ -58,7 +59,7 @@ function NavigationLinks({
                                     }
                                 }
                             }}
-                            href={href}
+                            href={href.startsWith("#") && pathname !== "/" ? `/${href}` : href}
                             onClick={(e) => onLinkClick(e, link)}
                             aria-current={isActive ? "location" : undefined}
                             data-active={isActive ? "true" : undefined}
@@ -116,7 +117,6 @@ function NavbarContent({ pathname }) {
     const linkRefs = useRef(new Map());
     const isClickScrollingRef = useRef(false);
     const lastClickedHrefRef = useRef(null);
-    const lastClickedGeoFieldRef = useRef(null);
 
     if (menuState.pathname !== pathname) {
         setMenuState({ pathname, isMenuOpen: false });
@@ -145,7 +145,6 @@ function NavbarContent({ pathname }) {
             // At the very top of the page (scrollY within 80px of 0), "الرئيسية" is active.
             if (scrollY <= 80) {
                 setActiveKey("الرئيسية");
-                lastClickedGeoFieldRef.current = null;
                 return;
             }
 
@@ -196,15 +195,8 @@ function NavbarContent({ pathname }) {
             }
 
             if (targetHref === "#geo") {
-                // Both point to geo section: clicking "القرية" -> القرية, clicking "العزبة" -> العزبة.
-                // If reached by scrolling without click, "القرية" is active.
-                if (lastClickedGeoFieldRef.current === "geo-ezba") {
-                    setActiveKey("العزبة");
-                } else {
-                    setActiveKey("القرية");
-                }
+                setActiveKey("الوحدة الحزبية");
             } else {
-                lastClickedGeoFieldRef.current = null;
                 const match = NAV_LINKS.find((l) => l.href === targetHref);
                 if (match) {
                     setActiveKey(match.label);
@@ -234,9 +226,6 @@ function NavbarContent({ pathname }) {
             const match = NAV_LINKS.find((l) => l.href === hash);
             if (match) {
                 lastClickedHrefRef.current = match.href;
-                if (match.focus) {
-                    lastClickedGeoFieldRef.current = match.focus;
-                }
                 window.requestAnimationFrame(() => {
                     setActiveKey(match.label);
                 });
@@ -274,6 +263,7 @@ function NavbarContent({ pathname }) {
         setIsMenuOpen(false);
 
         if (!link.href.startsWith("#")) return;
+        if (pathname !== "/") return;
         e.preventDefault();
 
         const targetId = link.href.slice(1);
@@ -283,12 +273,6 @@ function NavbarContent({ pathname }) {
         // Immediately highlight the clicked link without flicker
         setActiveKey(link.label);
         lastClickedHrefRef.current = link.href;
-        if (link.href === "#geo") {
-            lastClickedGeoFieldRef.current = link.focus || "geo-village";
-        } else {
-            lastClickedGeoFieldRef.current = null;
-        }
-
         window.history.replaceState(null, "", link.href);
 
         const prefersReduced =
@@ -370,7 +354,6 @@ function NavbarContent({ pathname }) {
             window.history.replaceState(null, "", window.location.pathname);
             setActiveKey("الرئيسية");
             lastClickedHrefRef.current = "#c-home";
-            lastClickedGeoFieldRef.current = null;
 
             if (logoRef.current) {
                 logoRef.current.focus({ preventScroll: true });
@@ -457,6 +440,7 @@ function NavbarContent({ pathname }) {
             >
                 <div className="mx-auto max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <NavigationLinks
+                        pathname={pathname}
                         activeKey={activeKey}
                         onLinkClick={handleLinkClick}
                         linkRefs={linkRefs}
@@ -480,6 +464,7 @@ function NavbarContent({ pathname }) {
                     <nav aria-label="القائمة الرئيسية">
                         <div className="mx-auto max-w-[1320px] min-[1536px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-5 py-2">
                             <NavigationLinks
+                                pathname={pathname}
                                 activeKey={activeKey}
                                 onLinkClick={handleLinkClick}
                                 linkRefs={linkRefs}
