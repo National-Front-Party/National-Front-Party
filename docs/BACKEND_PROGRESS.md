@@ -1757,3 +1757,15 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 ### 2026-11-22 - Navbar pathname reference fix
 - Fixed a runtime ReferenceError in NavigationLinks by passing the current pathname from NavbarContent to both the desktop and mobile link lists.
 - Verified with targeted ESLint and git diff whitespace checks.
+
+### 2026-11-22 - Admin toast responsiveness and header search removal
+- Updated the shared admin toast placement and card sizing to stay within viewport gutters, wrap long messages, and align decorative status icons to multiline Arabic text on mobile while retaining desktop styling, colors, and timer dismissal.
+- Removed the unused dashboard header search input and its Ctrl+K focus shortcut; the mobile drawer and Escape handling remain.
+- Targeted ESLint and git diff whitespace checks passed. Interactive browser checks were not available in this environment.
+- No backend or database files or records were changed.
+
+### 2026-11-22 - Responsive admin request filters
+- Made the Service Requests and Membership Applications filter grids use two columns through laptop widths, a single column on phones, and four columns only at wide desktop sizes.
+- Added opt-in wrapping for long selected values and dropdown options in CustomSelect and enabled it only for these pages; reduced field and action padding/font sizes at narrower widths.
+- ESLint passed for each modified JSX file when run individually with an explicit Node heap. Live viewport testing was unavailable because no browser surface was available; breakpoint behavior was checked from the responsive classes.
+- No backend, API, database, Prisma, or migration files were changed.

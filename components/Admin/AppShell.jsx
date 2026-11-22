@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, useSyncExternalStore } from "react";
+import { useEffect, useState, useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -92,8 +92,6 @@ export default function AppShell({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchInputRef = useRef(null);
 
   // Badge counts for requests
   const [badgeCounts, setBadgeCounts] = useState({
@@ -164,15 +162,11 @@ export default function AppShell({ children }) {
     setMobileOpen(false);
   }
 
-  // Handle escape key and Ctrl+K search shortcut
+  // Close the mobile drawer with Escape
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         setMobileOpen(false);
-      }
-      if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
-        e.preventDefault();
-        searchInputRef.current?.focus();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -557,9 +551,9 @@ export default function AppShell({ children }) {
 
       {/* Main Content Area */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Top Header: Breadcrumb + Search Only (NO user card, NO notifications) */}
+        {/* Top Header */}
         <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-line bg-white/95 px-6 sm:px-10 shadow-xs backdrop-blur-xs">
-          {/* Right: Breadcrumb + Page Title */}
+          {/* Page title and mobile navigation toggle */}
           <div className="flex items-center gap-3.5">
             {/* Mobile Hamburger Drawer Trigger (Mobile Only) */}
             <button
@@ -585,30 +579,6 @@ export default function AppShell({ children }) {
             </div>
           </div>
 
-          {/* Left: Search Input Only with Cmd/Ctrl+K shortcut */}
-          <div className="relative w-48 sm:w-72">
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث في اللوحة…"
-              aria-label="ابحث في اللوحة"
-              className="h-11 w-full rounded-full border border-line bg-white pr-10 pl-16 text-xs font-medium text-ink placeholder:text-muted/60 shadow-2xs transition-all duration-200 hover:border-gold/60 focus:border-gold focus:bg-white focus:outline-none focus:ring-2 focus:ring-gold/30"
-            />
-            <span
-              className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted"
-              aria-hidden="true"
-            >
-              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </span>
-            <kbd className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 rounded-md border border-line bg-white px-1.5 py-0.5 text-[10px] font-bold text-muted/80 shadow-2xs">
-              Ctrl+K
-            </kbd>
-          </div>
         </header>
 
         {/* Content Body */}
