@@ -112,6 +112,15 @@ h3 {
   }
 }
 
+body:has(.not-found-screen) {
+  overflow: hidden;
+}
+
+body:has(.not-found-screen) > header,
+body:has(.not-found-screen) > footer {
+  display: none;
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;

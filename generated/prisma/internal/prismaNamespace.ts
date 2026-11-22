@@ -415,7 +415,11 @@ export const ModelName = {
   service_requests: 'service_requests',
   news_sources: 'news_sources',
   news_articles: 'news_articles',
-  party_programs: 'party_programs'
+  party_programs: 'party_programs',
+  centers: 'centers',
+  local_secretariats: 'local_secretariats',
+  party_units: 'party_units',
+  party_unit_people: 'party_unit_people'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -431,7 +435,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "staff_users" | "staff_audit_log" | "governorates" | "membership_applications" | "members" | "application_status_history" | "panels" | "leaders" | "info_items" | "central_secretariats" | "central_secretariat_people" | "governorate_secretariats_info" | "parliamentary_unit_items" | "ministries" | "request_sectors" | "service_requests" | "news_sources" | "news_articles" | "party_programs"
+    modelProps: "staff_users" | "staff_audit_log" | "governorates" | "membership_applications" | "members" | "application_status_history" | "panels" | "leaders" | "info_items" | "central_secretariats" | "central_secretariat_people" | "governorate_secretariats_info" | "parliamentary_unit_items" | "ministries" | "request_sectors" | "service_requests" | "news_sources" | "news_articles" | "party_programs" | "centers" | "local_secretariats" | "party_units" | "party_unit_people"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1841,6 +1845,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    centers: {
+      payload: Prisma.$centersPayload<ExtArgs>
+      fields: Prisma.centersFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.centersFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.centersFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>
+        }
+        findFirst: {
+          args: Prisma.centersFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.centersFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>
+        }
+        findMany: {
+          args: Prisma.centersFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>[]
+        }
+        create: {
+          args: Prisma.centersCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>
+        }
+        createMany: {
+          args: Prisma.centersCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.centersCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>[]
+        }
+        delete: {
+          args: Prisma.centersDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>
+        }
+        update: {
+          args: Prisma.centersUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>
+        }
+        deleteMany: {
+          args: Prisma.centersDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.centersUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.centersUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>[]
+        }
+        upsert: {
+          args: Prisma.centersUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$centersPayload>
+        }
+        aggregate: {
+          args: Prisma.CentersAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCenters>
+        }
+        groupBy: {
+          args: Prisma.centersGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CentersGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.centersCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CentersCountAggregateOutputType> | number
+        }
+      }
+    }
+    local_secretariats: {
+      payload: Prisma.$local_secretariatsPayload<ExtArgs>
+      fields: Prisma.local_secretariatsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.local_secretariatsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.local_secretariatsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>
+        }
+        findFirst: {
+          args: Prisma.local_secretariatsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.local_secretariatsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>
+        }
+        findMany: {
+          args: Prisma.local_secretariatsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>[]
+        }
+        create: {
+          args: Prisma.local_secretariatsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>
+        }
+        createMany: {
+          args: Prisma.local_secretariatsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.local_secretariatsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>[]
+        }
+        delete: {
+          args: Prisma.local_secretariatsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>
+        }
+        update: {
+          args: Prisma.local_secretariatsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>
+        }
+        deleteMany: {
+          args: Prisma.local_secretariatsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.local_secretariatsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.local_secretariatsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>[]
+        }
+        upsert: {
+          args: Prisma.local_secretariatsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$local_secretariatsPayload>
+        }
+        aggregate: {
+          args: Prisma.Local_secretariatsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLocal_secretariats>
+        }
+        groupBy: {
+          args: Prisma.local_secretariatsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Local_secretariatsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.local_secretariatsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Local_secretariatsCountAggregateOutputType> | number
+        }
+      }
+    }
+    party_units: {
+      payload: Prisma.$party_unitsPayload<ExtArgs>
+      fields: Prisma.party_unitsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.party_unitsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.party_unitsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>
+        }
+        findFirst: {
+          args: Prisma.party_unitsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.party_unitsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>
+        }
+        findMany: {
+          args: Prisma.party_unitsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>[]
+        }
+        create: {
+          args: Prisma.party_unitsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>
+        }
+        createMany: {
+          args: Prisma.party_unitsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.party_unitsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>[]
+        }
+        delete: {
+          args: Prisma.party_unitsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>
+        }
+        update: {
+          args: Prisma.party_unitsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>
+        }
+        deleteMany: {
+          args: Prisma.party_unitsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.party_unitsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.party_unitsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>[]
+        }
+        upsert: {
+          args: Prisma.party_unitsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unitsPayload>
+        }
+        aggregate: {
+          args: Prisma.Party_unitsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParty_units>
+        }
+        groupBy: {
+          args: Prisma.party_unitsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Party_unitsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.party_unitsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Party_unitsCountAggregateOutputType> | number
+        }
+      }
+    }
+    party_unit_people: {
+      payload: Prisma.$party_unit_peoplePayload<ExtArgs>
+      fields: Prisma.party_unit_peopleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.party_unit_peopleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.party_unit_peopleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>
+        }
+        findFirst: {
+          args: Prisma.party_unit_peopleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.party_unit_peopleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>
+        }
+        findMany: {
+          args: Prisma.party_unit_peopleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>[]
+        }
+        create: {
+          args: Prisma.party_unit_peopleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>
+        }
+        createMany: {
+          args: Prisma.party_unit_peopleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.party_unit_peopleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>[]
+        }
+        delete: {
+          args: Prisma.party_unit_peopleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>
+        }
+        update: {
+          args: Prisma.party_unit_peopleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>
+        }
+        deleteMany: {
+          args: Prisma.party_unit_peopleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.party_unit_peopleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.party_unit_peopleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>[]
+        }
+        upsert: {
+          args: Prisma.party_unit_peopleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$party_unit_peoplePayload>
+        }
+        aggregate: {
+          args: Prisma.Party_unit_peopleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParty_unit_people>
+        }
+        groupBy: {
+          args: Prisma.party_unit_peopleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Party_unit_peopleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.party_unit_peopleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Party_unit_peopleCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2202,6 +2502,60 @@ export const Party_programsScalarFieldEnum = {
 export type Party_programsScalarFieldEnum = (typeof Party_programsScalarFieldEnum)[keyof typeof Party_programsScalarFieldEnum]
 
 
+export const CentersScalarFieldEnum = {
+  id: 'id',
+  governorate_id: 'governorate_id',
+  name_ar: 'name_ar',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at'
+} as const
+
+export type CentersScalarFieldEnum = (typeof CentersScalarFieldEnum)[keyof typeof CentersScalarFieldEnum]
+
+
+export const Local_secretariatsScalarFieldEnum = {
+  id: 'id',
+  center_id: 'center_id',
+  name_ar: 'name_ar',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at'
+} as const
+
+export type Local_secretariatsScalarFieldEnum = (typeof Local_secretariatsScalarFieldEnum)[keyof typeof Local_secretariatsScalarFieldEnum]
+
+
+export const Party_unitsScalarFieldEnum = {
+  id: 'id',
+  secretariat_id: 'secretariat_id',
+  name_ar: 'name_ar',
+  description: 'description',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at'
+} as const
+
+export type Party_unitsScalarFieldEnum = (typeof Party_unitsScalarFieldEnum)[keyof typeof Party_unitsScalarFieldEnum]
+
+
+export const Party_unit_peopleScalarFieldEnum = {
+  id: 'id',
+  party_unit_id: 'party_unit_id',
+  member_id: 'member_id',
+  full_name: 'full_name',
+  position_title: 'position_title',
+  details: 'details',
+  sort_order: 'sort_order',
+  is_published: 'is_published',
+  updated_by: 'updated_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Party_unit_peopleScalarFieldEnum = (typeof Party_unit_peopleScalarFieldEnum)[keyof typeof Party_unit_peopleScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2551,6 +2905,10 @@ export type GlobalOmitConfig = {
   news_sources?: Prisma.news_sourcesOmit
   news_articles?: Prisma.news_articlesOmit
   party_programs?: Prisma.party_programsOmit
+  centers?: Prisma.centersOmit
+  local_secretariats?: Prisma.local_secretariatsOmit
+  party_units?: Prisma.party_unitsOmit
+  party_unit_people?: Prisma.party_unit_peopleOmit
 }
 
 /* Types for Logging */

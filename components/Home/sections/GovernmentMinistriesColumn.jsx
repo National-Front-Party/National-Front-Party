@@ -7,7 +7,7 @@ import { SectionCardHeader } from "@/components/Home/ui/SectionCard";
 import Reveal from "@/components/Home/ui/Reveal";
 
 const defaultRequests = {
-  ministriesTitle: "مع الحكومة والوزارات",
+  ministriesTitle: "الحكومة والوزارات",
   requestTitle: "تقديم طلب",
   fields: {
     name: "الاسم",

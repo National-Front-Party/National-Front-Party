@@ -234,7 +234,7 @@ export default function CentralSecretariats({ data }) {
   return (
     <>
       <SectionCard
-        title={secData.secretariats.buttonLabel}
+        title="حزب الجبهة الوطنية"
         footer={
           <NextArrowFooter
             onClick={() => setIsSecretariatsOpen(true)}

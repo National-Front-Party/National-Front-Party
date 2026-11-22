@@ -7,8 +7,9 @@ import Footer from "@/components/Layouts/Footer";
 export default function PublicShell({ children }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
+  const isUnauthorized = pathname === "/unauthorized";
 
-  if (isAdmin) {
+  if (isAdmin || isUnauthorized) {
     return <>{children}</>;
   }
 

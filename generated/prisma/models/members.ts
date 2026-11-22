@@ -230,6 +230,7 @@ export type membersWhereInput = {
   joined_at?: Prisma.DateTimeFilter<"members"> | Date | string
   membership_application?: Prisma.XOR<Prisma.Membership_applicationsScalarRelationFilter, Prisma.membership_applicationsWhereInput>
   governorate?: Prisma.XOR<Prisma.GovernoratesScalarRelationFilter, Prisma.governoratesWhereInput>
+  party_unit_people?: Prisma.Party_unit_peopleListRelationFilter
 }
 
 export type membersOrderByWithRelationInput = {
@@ -241,6 +242,7 @@ export type membersOrderByWithRelationInput = {
   joined_at?: Prisma.SortOrder
   membership_application?: Prisma.membership_applicationsOrderByWithRelationInput
   governorate?: Prisma.governoratesOrderByWithRelationInput
+  party_unit_people?: Prisma.party_unit_peopleOrderByRelationAggregateInput
 }
 
 export type membersWhereUniqueInput = Prisma.AtLeast<{
@@ -255,6 +257,7 @@ export type membersWhereUniqueInput = Prisma.AtLeast<{
   joined_at?: Prisma.DateTimeFilter<"members"> | Date | string
   membership_application?: Prisma.XOR<Prisma.Membership_applicationsScalarRelationFilter, Prisma.membership_applicationsWhereInput>
   governorate?: Prisma.XOR<Prisma.GovernoratesScalarRelationFilter, Prisma.governoratesWhereInput>
+  party_unit_people?: Prisma.Party_unit_peopleListRelationFilter
 }, "id" | "application_id" | "membership_no">
 
 export type membersOrderByWithAggregationInput = {
@@ -290,6 +293,7 @@ export type membersCreateInput = {
   joined_at?: Date | string
   membership_application: Prisma.membership_applicationsCreateNestedOneWithoutMembersInput
   governorate: Prisma.governoratesCreateNestedOneWithoutMembersInput
+  party_unit_people?: Prisma.party_unit_peopleCreateNestedManyWithoutMemberInput
 }
 
 export type membersUncheckedCreateInput = {
@@ -299,6 +303,7 @@ export type membersUncheckedCreateInput = {
   governorate_id: number
   status?: string
   joined_at?: Date | string
+  party_unit_people?: Prisma.party_unit_peopleUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type membersUpdateInput = {
@@ -308,6 +313,7 @@ export type membersUpdateInput = {
   joined_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   membership_application?: Prisma.membership_applicationsUpdateOneRequiredWithoutMembersNestedInput
   governorate?: Prisma.governoratesUpdateOneRequiredWithoutMembersNestedInput
+  party_unit_people?: Prisma.party_unit_peopleUpdateManyWithoutMemberNestedInput
 }
 
 export type membersUncheckedUpdateInput = {
@@ -317,6 +323,7 @@ export type membersUncheckedUpdateInput = {
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   joined_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  party_unit_people?: Prisma.party_unit_peopleUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type membersCreateManyInput = {
@@ -470,12 +477,29 @@ export type membersUncheckedUpdateOneWithoutMembership_applicationNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.membersUpdateToOneWithWhereWithoutMembership_applicationInput, Prisma.membersUpdateWithoutMembership_applicationInput>, Prisma.membersUncheckedUpdateWithoutMembership_applicationInput>
 }
 
+export type membersCreateNestedOneWithoutParty_unit_peopleInput = {
+  create?: Prisma.XOR<Prisma.membersCreateWithoutParty_unit_peopleInput, Prisma.membersUncheckedCreateWithoutParty_unit_peopleInput>
+  connectOrCreate?: Prisma.membersCreateOrConnectWithoutParty_unit_peopleInput
+  connect?: Prisma.membersWhereUniqueInput
+}
+
+export type membersUpdateOneWithoutParty_unit_peopleNestedInput = {
+  create?: Prisma.XOR<Prisma.membersCreateWithoutParty_unit_peopleInput, Prisma.membersUncheckedCreateWithoutParty_unit_peopleInput>
+  connectOrCreate?: Prisma.membersCreateOrConnectWithoutParty_unit_peopleInput
+  upsert?: Prisma.membersUpsertWithoutParty_unit_peopleInput
+  disconnect?: Prisma.membersWhereInput | boolean
+  delete?: Prisma.membersWhereInput | boolean
+  connect?: Prisma.membersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.membersUpdateToOneWithWhereWithoutParty_unit_peopleInput, Prisma.membersUpdateWithoutParty_unit_peopleInput>, Prisma.membersUncheckedUpdateWithoutParty_unit_peopleInput>
+}
+
 export type membersCreateWithoutGovernorateInput = {
   id?: string
   membership_no?: bigint | number
   status?: string
   joined_at?: Date | string
   membership_application: Prisma.membership_applicationsCreateNestedOneWithoutMembersInput
+  party_unit_people?: Prisma.party_unit_peopleCreateNestedManyWithoutMemberInput
 }
 
 export type membersUncheckedCreateWithoutGovernorateInput = {
@@ -484,6 +508,7 @@ export type membersUncheckedCreateWithoutGovernorateInput = {
   membership_no?: bigint | number
   status?: string
   joined_at?: Date | string
+  party_unit_people?: Prisma.party_unit_peopleUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type membersCreateOrConnectWithoutGovernorateInput = {
@@ -530,6 +555,7 @@ export type membersCreateWithoutMembership_applicationInput = {
   status?: string
   joined_at?: Date | string
   governorate: Prisma.governoratesCreateNestedOneWithoutMembersInput
+  party_unit_people?: Prisma.party_unit_peopleCreateNestedManyWithoutMemberInput
 }
 
 export type membersUncheckedCreateWithoutMembership_applicationInput = {
@@ -538,6 +564,7 @@ export type membersUncheckedCreateWithoutMembership_applicationInput = {
   governorate_id: number
   status?: string
   joined_at?: Date | string
+  party_unit_people?: Prisma.party_unit_peopleUncheckedCreateNestedManyWithoutMemberInput
 }
 
 export type membersCreateOrConnectWithoutMembership_applicationInput = {
@@ -562,10 +589,64 @@ export type membersUpdateWithoutMembership_applicationInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   joined_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   governorate?: Prisma.governoratesUpdateOneRequiredWithoutMembersNestedInput
+  party_unit_people?: Prisma.party_unit_peopleUpdateManyWithoutMemberNestedInput
 }
 
 export type membersUncheckedUpdateWithoutMembership_applicationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  membership_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  joined_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  party_unit_people?: Prisma.party_unit_peopleUncheckedUpdateManyWithoutMemberNestedInput
+}
+
+export type membersCreateWithoutParty_unit_peopleInput = {
+  id?: string
+  membership_no?: bigint | number
+  status?: string
+  joined_at?: Date | string
+  membership_application: Prisma.membership_applicationsCreateNestedOneWithoutMembersInput
+  governorate: Prisma.governoratesCreateNestedOneWithoutMembersInput
+}
+
+export type membersUncheckedCreateWithoutParty_unit_peopleInput = {
+  id?: string
+  application_id: string
+  membership_no?: bigint | number
+  governorate_id: number
+  status?: string
+  joined_at?: Date | string
+}
+
+export type membersCreateOrConnectWithoutParty_unit_peopleInput = {
+  where: Prisma.membersWhereUniqueInput
+  create: Prisma.XOR<Prisma.membersCreateWithoutParty_unit_peopleInput, Prisma.membersUncheckedCreateWithoutParty_unit_peopleInput>
+}
+
+export type membersUpsertWithoutParty_unit_peopleInput = {
+  update: Prisma.XOR<Prisma.membersUpdateWithoutParty_unit_peopleInput, Prisma.membersUncheckedUpdateWithoutParty_unit_peopleInput>
+  create: Prisma.XOR<Prisma.membersCreateWithoutParty_unit_peopleInput, Prisma.membersUncheckedCreateWithoutParty_unit_peopleInput>
+  where?: Prisma.membersWhereInput
+}
+
+export type membersUpdateToOneWithWhereWithoutParty_unit_peopleInput = {
+  where?: Prisma.membersWhereInput
+  data: Prisma.XOR<Prisma.membersUpdateWithoutParty_unit_peopleInput, Prisma.membersUncheckedUpdateWithoutParty_unit_peopleInput>
+}
+
+export type membersUpdateWithoutParty_unit_peopleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  membership_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  joined_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  membership_application?: Prisma.membership_applicationsUpdateOneRequiredWithoutMembersNestedInput
+  governorate?: Prisma.governoratesUpdateOneRequiredWithoutMembersNestedInput
+}
+
+export type membersUncheckedUpdateWithoutParty_unit_peopleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  application_id?: Prisma.StringFieldUpdateOperationsInput | string
   membership_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   governorate_id?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -586,6 +667,7 @@ export type membersUpdateWithoutGovernorateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   joined_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   membership_application?: Prisma.membership_applicationsUpdateOneRequiredWithoutMembersNestedInput
+  party_unit_people?: Prisma.party_unit_peopleUpdateManyWithoutMemberNestedInput
 }
 
 export type membersUncheckedUpdateWithoutGovernorateInput = {
@@ -594,6 +676,7 @@ export type membersUncheckedUpdateWithoutGovernorateInput = {
   membership_no?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   joined_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  party_unit_people?: Prisma.party_unit_peopleUncheckedUpdateManyWithoutMemberNestedInput
 }
 
 export type membersUncheckedUpdateManyWithoutGovernorateInput = {
@@ -605,6 +688,35 @@ export type membersUncheckedUpdateManyWithoutGovernorateInput = {
 }
 
 
+/**
+ * Count Type MembersCountOutputType
+ */
+
+export type MembersCountOutputType = {
+  party_unit_people: number
+}
+
+export type MembersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  party_unit_people?: boolean | MembersCountOutputTypeCountParty_unit_peopleArgs
+}
+
+/**
+ * MembersCountOutputType without action
+ */
+export type MembersCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MembersCountOutputType
+   */
+  select?: Prisma.MembersCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * MembersCountOutputType without action
+ */
+export type MembersCountOutputTypeCountParty_unit_peopleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.party_unit_peopleWhereInput
+}
+
 
 export type membersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -615,6 +727,8 @@ export type membersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   joined_at?: boolean
   membership_application?: boolean | Prisma.membership_applicationsDefaultArgs<ExtArgs>
   governorate?: boolean | Prisma.governoratesDefaultArgs<ExtArgs>
+  party_unit_people?: boolean | Prisma.members$party_unit_peopleArgs<ExtArgs>
+  _count?: boolean | Prisma.MembersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["members"]>
 
 export type membersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -652,6 +766,8 @@ export type membersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type membersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   membership_application?: boolean | Prisma.membership_applicationsDefaultArgs<ExtArgs>
   governorate?: boolean | Prisma.governoratesDefaultArgs<ExtArgs>
+  party_unit_people?: boolean | Prisma.members$party_unit_peopleArgs<ExtArgs>
+  _count?: boolean | Prisma.MembersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type membersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   membership_application?: boolean | Prisma.membership_applicationsDefaultArgs<ExtArgs>
@@ -667,6 +783,7 @@ export type $membersPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     membership_application: Prisma.$membership_applicationsPayload<ExtArgs>
     governorate: Prisma.$governoratesPayload<ExtArgs>
+    party_unit_people: Prisma.$party_unit_peoplePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1071,6 +1188,7 @@ export interface Prisma__membersClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   membership_application<T extends Prisma.membership_applicationsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.membership_applicationsDefaultArgs<ExtArgs>>): Prisma.Prisma__membership_applicationsClient<runtime.Types.Result.GetResult<Prisma.$membership_applicationsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   governorate<T extends Prisma.governoratesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.governoratesDefaultArgs<ExtArgs>>): Prisma.Prisma__governoratesClient<runtime.Types.Result.GetResult<Prisma.$governoratesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  party_unit_people<T extends Prisma.members$party_unit_peopleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.members$party_unit_peopleArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$party_unit_peoplePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1504,6 +1622,30 @@ export type membersDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many members to delete.
    */
   limit?: number
+}
+
+/**
+ * members.party_unit_people
+ */
+export type members$party_unit_peopleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the party_unit_people
+   */
+  select?: Prisma.party_unit_peopleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the party_unit_people
+   */
+  omit?: Prisma.party_unit_peopleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.party_unit_peopleInclude<ExtArgs> | null
+  where?: Prisma.party_unit_peopleWhereInput
+  orderBy?: Prisma.party_unit_peopleOrderByWithRelationInput | Prisma.party_unit_peopleOrderByWithRelationInput[]
+  cursor?: Prisma.party_unit_peopleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Party_unit_peopleScalarFieldEnum | Prisma.Party_unit_peopleScalarFieldEnum[]
 }
 
 /**

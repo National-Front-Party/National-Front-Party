@@ -1,0 +1,338 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { adminFetch } from "@/lib/admin/api";
+import { useToast } from "@/lib/admin/toast-context";
+import Spinner from "@/components/Admin/ui/Spinner";
+import { Building2, Layers, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { generateCatalogIdentifier } from "@/lib/admin/catalog-utils";
+
+function CatalogForm({ item, type, onClose, onSaved }) {
+  const { showSuccess, showError } = useToast();
+  const isEdit = Boolean(item?.id);
+  const isMinistry = type === "ministries";
+
+  const entityTitle = isMinistry ? "الوزارة الحكومية" : "القطاع الخدمي";
+  const endpointBase = isMinistry ? "/api/admin/ministries" : "/api/admin/request-sectors";
+
+  const [nameAr, setNameAr] = useState(item?.name_ar || "");
+  const [sortOrder, setSortOrder] = useState(item?.sort_order ?? 0);
+  const [isActive, setIsActive] = useState(item?.is_active ?? true);
+  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const nameInputRef = useRef(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && !submitting) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [submitting, onClose]);
+
+  const handleNameChange = (e) => {
+    const newName = e.target.value;
+    setNameAr(newName);
+    if (errors.nameAr) {
+      setErrors((prev) => ({ ...prev, nameAr: undefined }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const trimmedName = nameAr.trim();
+    const parsedSort = Number(sortOrder);
+    const validSortOrder = Number.isInteger(parsedSort)
+      ? Math.max(-32768, Math.min(32767, parsedSort))
+      : 0;
+
+    const newErrors = {};
+
+    if (!trimmedName) {
+      newErrors.nameAr = `اسم ${entityTitle} بالعربية مطلوب ولا يمكن تركه فارغاً`;
+    } else if (trimmedName.length < 2) {
+      newErrors.nameAr = `اسم ${entityTitle} يجب ألا يقل عن حرفين`;
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      showError("يرجى ملء الحقول المطلوبة ومراجعة التنبيهات الموضحة");
+      nameInputRef.current?.focus();
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = {
+        name_ar: trimmedName,
+        sort_order: validSortOrder,
+      };
+
+      let result;
+      if (isEdit) {
+        // PATCH does NOT send slug or code - preserves existing database value
+        result = await adminFetch(`${endpointBase}/${item.id}`, {
+          method: "PATCH",
+          body: JSON.stringify(payload),
+        });
+
+        // Update status if changed
+        if (Boolean(isActive) !== Boolean(item.is_active)) {
+          const statusResult = await adminFetch(`${endpointBase}/${item.id}/status`, {
+            method: "PATCH",
+            body: JSON.stringify({ is_active: Boolean(isActive) }),
+          });
+          result = statusResult;
+        }
+      } else {
+        // POST generates a clean, unique slug/code automatically for the backend
+        const generatedIdentifier = generateCatalogIdentifier(trimmedName, type);
+        if (isMinistry) {
+          payload.slug = generatedIdentifier;
+        } else {
+          payload.code = generatedIdentifier;
+        }
+
+        result = await adminFetch(endpointBase, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+
+        // Set status to inactive if user toggled inactive on creation
+        const createdId = result?.ministry?.id || result?.request_sector?.id;
+        if (createdId && !isActive) {
+          const statusResult = await adminFetch(`${endpointBase}/${createdId}/status`, {
+            method: "PATCH",
+            body: JSON.stringify({ is_active: false }),
+          });
+          result = statusResult;
+        }
+      }
+
+      const savedRecord = isMinistry ? result?.ministry : result?.request_sector;
+
+      showSuccess(
+        isEdit
+          ? `تم تحديث بيانات ${entityTitle} بنجاح`
+          : `تمت إضافة ${entityTitle} بنجاح إلى الكتالوج`,
+      );
+
+      if (onSaved) {
+        onSaved(savedRecord || payload, isEdit);
+      }
+      onClose();
+    } catch (err) {
+      if (err.code === "DUPLICATE_SLUG") {
+        showError("حدث تعارض في المعرف المرجعي التلقائي، يرجى المحاولة مرة أخرى.");
+      } else if (err.code === "DUPLICATE_CODE") {
+        showError("حدث تعارض في كود القطاع التلقائي، يرجى المحاولة مرة أخرى.");
+      } else if (err.code === "VALIDATION") {
+        showError("يرجى التأكد من صحة البيانات المدخلة ومطابقتها للشروط.");
+      } else {
+        showError(err.message || `حدث خطأ أثناء حفظ ${entityTitle}`);
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/60 backdrop-blur-xs animate-modal-overlay-enter"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !submitting) {
+          onClose();
+        }
+      }}
+      dir="rtl"
+    >
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        className="relative w-full max-w-lg max-h-[90vh] sm:max-h-[85vh] flex flex-col rounded-[26px] bg-white shadow-card-hover border border-line overflow-hidden animate-modal-shell-enter"
+      >
+        {/* 1. Modal Header (shrink-0) */}
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-line px-5 sm:px-7 py-4 sm:py-5 bg-white">
+          <div className="flex items-center gap-3.5">
+            <div className="flex size-11 items-center justify-center rounded-2xl bg-gold-tint border border-gold/30 text-gold-dark shadow-2xs">
+              {isMinistry ? (
+                <Building2 className="size-5" />
+              ) : (
+                <Layers className="size-5" />
+              )}
+            </div>
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-ink">
+                {isEdit ? `تعديل ${entityTitle}` : `إضافة ${entityTitle} جديدة`}
+              </h2>
+              <p className="text-xs text-muted mt-0.5">
+                {isMinistry
+                  ? "إدارة الوزارات والجهات الحكومية المعتمدة لطلبات الخدمات"
+                  : "إدارة القطاعات والملفات الخدمية المعتمدة لطلبات المواطنين"}
+              </p>
+            </div>
+          </div>
+
+          {/* Golden Rotating Close Button */}
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={onClose}
+            aria-label="إغلاق النافذة"
+            className="group relative flex size-10 shrink-0 items-center justify-center rounded-2xl border border-line bg-white text-muted shadow-2xs transition-all duration-300 ease-out hover:rotate-90 hover:scale-110 hover:border-gold hover:bg-gold-gradient hover:text-ink hover:shadow-[0_4px_14px_rgba(201,162,74,0.35)] active:scale-95 disabled:opacity-50 cursor-pointer"
+            title="إغلاق"
+          >
+            <svg
+              className="size-5 transition-transform duration-300 group-hover:rotate-90"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        {/* 2. Modal Body Form (flex-1 min-h-0 overflow-y-auto overscroll-contain) */}
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-7 space-y-4 sm:space-y-5">
+          {/* Arabic Name */}
+          <div>
+            <label className="block text-xs sm:text-sm font-bold text-ink mb-2">
+              اسم {entityTitle} بالعربية <span className="text-rose-500">*</span>
+            </label>
+            <div className="relative">
+              <input
+                ref={nameInputRef}
+                type="text"
+                value={nameAr}
+                onChange={handleNameChange}
+                placeholder={
+                  isMinistry
+                    ? "مثال: وزارة الصحة والسكان، وزارة الإسكان والمرافق..."
+                    : "مثال: العلاج على نفقة الدولة، طلبات الإسكان، التضامن..."
+                }
+                disabled={submitting}
+                className={`h-14 w-full rounded-2xl border px-4 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out placeholder:text-muted/60 disabled:opacity-50 ${
+                  errors.nameAr
+                    ? "border-rose-500 bg-rose-50/20 focus:border-rose-500 focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(244,63,94,0.35)]"
+                    : "border-border bg-white hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)]"
+                }`}
+                maxLength={200}
+              />
+            </div>
+            {errors.nameAr && (
+              <p className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-rose-600 animate-elem-fade-up">
+                <AlertCircle className="size-3.5 shrink-0" />
+                <span>{errors.nameAr}</span>
+              </p>
+            )}
+          </div>
+
+          {/* Display Order (sort_order) */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs sm:text-sm font-bold text-ink">
+                ترتيب العرض (Sort Order)
+              </label>
+              <span className="text-[11px] text-muted">الرقم الأصغر يظهر أولاً</span>
+            </div>
+            <input
+              type="number"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              disabled={submitting}
+              className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-xs sm:text-sm font-semibold text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60 disabled:opacity-50"
+              min={-32768}
+              max={32767}
+            />
+          </div>
+
+          {/* Active Status Toggle */}
+          <div className="pt-1">
+            <label className="block text-xs sm:text-sm font-bold text-ink mb-2">
+              حالة الاعتماد في النظام
+            </label>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsActive(true)}
+                disabled={submitting}
+                className={`flex-1 flex items-center justify-center gap-2 rounded-2xl p-3.5 border text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-95 ${
+                  isActive
+                    ? "border-emerald-500 bg-emerald-50/70 text-emerald-800 shadow-2xs font-black"
+                    : "border-border bg-white text-muted hover:border-gold/40 hover:text-ink hover:bg-gold-tint/20"
+                }`}
+              >
+                <CheckCircle2
+                  className={`size-4 ${isActive ? "text-emerald-600" : "text-muted"}`}
+                />
+                <span>معتمد ونشط</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsActive(false)}
+                disabled={submitting}
+                className={`flex-1 flex items-center justify-center gap-2 rounded-2xl p-3.5 border text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-95 ${
+                  !isActive
+                    ? "border-rose-400 bg-rose-50/70 text-rose-800 shadow-2xs font-black"
+                    : "border-border bg-white text-muted hover:border-gold/40 hover:text-ink hover:bg-gold-tint/20"
+                }`}
+              >
+                <XCircle
+                  className={`size-4 ${!isActive ? "text-rose-600" : "text-muted"}`}
+                />
+                <span>معطل مؤقتاً</span>
+              </button>
+            </div>
+            <p className="text-[11px] text-muted/70 mt-1.5 mr-1">
+              العناصر المعطلة لن تظهر للمواطنين في نماذج التقديم العامة.
+            </p>
+          </div>
+        </div>
+
+        {/* 3. Modal Actions Footer (shrink-0 border-t border-line bg-page/50) */}
+        <div className="flex shrink-0 items-center justify-end gap-3 px-5 sm:px-7 py-3.5 sm:py-4 border-t border-line bg-page/50">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={submitting}
+            className="h-11 px-5 rounded-2xl border border-line bg-white text-xs font-bold text-muted hover:border-gold hover:text-ink hover:bg-gold-tint/30 active:scale-95 transition-all duration-200 disabled:opacity-50 cursor-pointer"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gold-gradient px-6 text-xs font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
+          >
+            {submitting && <Spinner size="sm" color="ink" />}
+            <span>{isEdit ? "حفظ التعديلات" : `إضافة ${entityTitle}`}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default function CatalogEditorModal({ isOpen, onClose, item, type, onSaved }) {
+  if (!isOpen) return null;
+
+  return (
+    <CatalogForm
+      item={item}
+      type={type}
+      onClose={onClose}
+      onSaved={onSaved}
+    />
+  );
+}
