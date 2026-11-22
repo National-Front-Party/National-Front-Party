@@ -1729,3 +1729,9 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - نتائج التحقق: lint ناجح بلا تحذيرات؛ build ناجح؛ Prisma validate ناجح؛ Prisma generate ناجح إلى مجلد مؤقت للحفاظ على تغييرات generated/prisma الموجودة؛ npm test ناجح (338/338).
 - سجّل build استثناءات Prisma P2021 أثناء توليد صفحات، لأن بعض الجداول غير متاحة في قاعدة البيانات الحالية؛ استخدمت الصفحة بيانات fallback وأكمل البناء. لم تُجرَ أي عملية كتابة أو migration لقاعدة البيانات.
 - ظهرت تحذيرات Node MODULE_TYPELESS_PACKAGE_JSON أثناء الاختبارات، ولم تؤثر على النتائج.
+
+### 2026-11-22 — News Sources deletion backend
+- Added confirmed Super Admin DELETE handlers for one source and the full source collection; both source service operations enforce role authorization and use database transactions.
+- Deletion is rejected with `SOURCE_IN_USE` (409) when articles reference a source. Bulk deletion checks the complete collection and rejects atomically if any source is referenced; it never deletes or changes articles.
+- Source row locks serialize individual deletion with article creation. Bulk deletion locks the source table against concurrent inserts, locks all source rows, checks references, deletes all unused sources, and writes one `content_deleted` audit record per source in the same transaction.
+- Focused service and handler tests cover permissions, confirmations, missing IDs, reference conflicts, empty/all-unused collections, audits, rollback, route exports, and lock calls. Tests were run directly with Node because the Node test runner subprocess launch is blocked (`spawn EPERM`); no PostgreSQL concurrency integration was run.
