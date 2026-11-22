@@ -1824,3 +1824,13 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Added an opt-in responsive mode to the organization page modal and enabled it for the add/edit responsible-person form: viewport-bounded dialog, internal scrolling, mobile padding, wrapping selected-member text, single-column small-screen fields, and stacked full-width actions.
 - Other organization modals and all form behavior remain unchanged. Targeted ESLint and git diff --check passed; browser viewport testing was unavailable.
 - No backend or database code was modified.
+
+### 2026-11-23 - Responsive staff management page
+- Kept the existing compact staff table for very wide screens and switched to the existing staff cards below 2xl so the table no longer squeezes into the space beside the dashboard sidebar. Made the toolbar stack until wide layouts and let statistics/footer metadata wrap on narrow cards; long names/emails wrap safely in cards.
+- Targeted ESLint and git diff --check passed. Browser viewport testing was unavailable.
+- Only app/admin/staff/page.jsx was modified; no backend, API, database, Prisma, or migration files were touched.
+
+### 2026-11-23 - Staff role filter width
+- Gave the role dropdown a stable responsive width beside the search field so its Arabic label no longer wraps into a narrow vertical stack; it remains full-width when the toolbar stacks.
+- ESLint and git diff --check could not be rerun because the PowerShell command runner failed to start (CLR thread/assembly error).
+- Frontend-only change; no backend, API, database, Prisma, or migration files were touched.

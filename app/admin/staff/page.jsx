@@ -390,18 +390,19 @@ export default function StaffPage() {
   }
 
   return (
-    <div className="space-y-6 min-w-0 w-full" dir="rtl">
+    <div className="w-full min-w-0 space-y-5 sm:space-y-6" dir="rtl">
       {/* 1. Header with Actions */}
       <PageHeader
         title="إدارة الموظفين"
         description="إدارة حسابات فريق العمل، الأدوار الوظيفية، الصلاحيات، وحالة الحسابات"
+        className="sm:!flex-col 2xl:!flex-row"
         badge={
           <span className="rounded-full border border-gold/40 bg-gold-tint px-3 py-0.5 text-xs font-black text-gold-dark shadow-2xs">
             {toArabicDigits(statistics.total)} موظف
           </span>
         }
         actions={
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
               type="button"
               onClick={() => fetchStaff(true)}
@@ -428,22 +429,22 @@ export default function StaffPage() {
       />
 
       {/* 2. Statistics KPIs Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 animate-elem-fade-up">
+      <div className="grid grid-cols-1 min-[520px]:grid-cols-2 2xl:grid-cols-4 gap-3 sm:gap-4 animate-elem-fade-up">
         {/* Card 1: Total Staff */}
         <div className="rounded-3xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:border-gold/50 transition-all">
           <div className="flex items-center justify-between gap-3 mb-2">
-            <span className="text-xs font-bold text-muted">إجمالي فريق العمل</span>
+            <span className="min-w-0 text-xs font-bold text-muted">إجمالي فريق العمل</span>
             <div className="flex size-9 items-center justify-center rounded-xl bg-gold-tint border border-gold/30 text-gold-dark shadow-2xs">
               <Users className="size-4" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className="text-xl sm:text-2xl font-black text-ink font-mono">
               {toArabicDigits(statistics.total)}
             </span>
             <span className="text-[11px] text-muted">حساب مسجل</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[11px] text-muted">
+          <div className="mt-2 pt-2 border-t border-line/60 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] text-muted">
             <span>الصلاحيات المعتمدة</span>
             <span className="font-bold text-ink">مفعلة</span>
           </div>
@@ -457,13 +458,13 @@ export default function StaffPage() {
               <UserCheck className="size-4" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className="text-xl sm:text-2xl font-black text-emerald-700 font-mono">
               {toArabicDigits(statistics.active)}
             </span>
             <span className="text-[11px] text-emerald-700 font-bold">نشط ومفعل</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[11px] text-muted">
+          <div className="mt-2 pt-2 border-t border-line/60 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] text-muted">
             <span>الوصول للوحة</span>
             <span className="inline-flex size-2 rounded-full bg-emerald-500 animate-pulse" />
           </div>
@@ -477,13 +478,13 @@ export default function StaffPage() {
               <UserX className="size-4" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className="text-xl sm:text-2xl font-black text-rose-700 font-mono">
               {toArabicDigits(statistics.inactive)}
             </span>
             <span className="text-[11px] text-rose-700 font-bold">محظور مؤقتاً</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[11px] text-muted">
+          <div className="mt-2 pt-2 border-t border-line/60 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] text-muted">
             <span>تسجيل الدخول</span>
             <span className="font-bold text-rose-600">ممنوع</span>
           </div>
@@ -497,13 +498,13 @@ export default function StaffPage() {
               <ShieldCheck className="size-4" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className="text-xl sm:text-2xl font-black text-ink font-mono">
               {toArabicDigits(statistics.roleCounts.super_admin || 0)}
             </span>
             <span className="text-[11px] text-muted">مدير نظام</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[11px] text-muted">
+          <div className="mt-2 pt-2 border-t border-line/60 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] text-muted">
             <span>كامل الصلاحيات</span>
             <span className="font-bold text-gold-dark">إداري كامل</span>
           </div>
@@ -511,9 +512,9 @@ export default function StaffPage() {
       </div>
 
       {/* 3. Toolbar: Search, Role Filter, & Status Filter */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3.5 animate-elem-fade-up">
+      <div className="flex min-w-0 flex-col items-stretch gap-3.5 animate-elem-fade-up 2xl:flex-row 2xl:items-center 2xl:justify-between">
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full lg:w-auto">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-2xl bg-page/80 border border-line shadow-2xs w-full 2xl:w-auto">
           {[
             { id: "all", label: "جميع الموظفين", shortLabel: "الكل", count: statistics.total },
             { id: "active", label: "النشطون فقط", shortLabel: "النشطون", count: statistics.active },
@@ -525,7 +526,7 @@ export default function StaffPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => handleStatusChange(tab.id)}
-                className={`group relative flex-1 lg:flex-initial flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-2 sm:px-4 py-2 text-xs font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap active:scale-[0.98] ${
+                className={`group relative flex min-w-0 flex-1 2xl:flex-initial items-center justify-center gap-1 sm:gap-2 rounded-xl px-1.5 sm:px-4 py-2 text-[11px] sm:text-xs font-bold cursor-pointer transition-all duration-200 select-none whitespace-nowrap active:scale-[0.98] ${
                   isActive
                     ? "bg-gold-gradient text-ink font-black shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.3)] border border-gold/60"
                     : "bg-white text-muted border border-line shadow-2xs hover:border-gold/60 hover:text-gold-dark hover:bg-gold-tint/50"
@@ -548,9 +549,9 @@ export default function StaffPage() {
         </div>
 
         {/* Right Search and Role Dropdown */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
+        <div className="flex min-w-0 w-full flex-col items-stretch gap-2.5 xl:flex-row xl:items-center 2xl:w-auto">
           {/* Role Filter — CustomSelect matching site design */}
-            <div className="min-w-0 w-full sm:min-w-[200px] sm:w-auto">
+            <div className="min-w-0 w-full xl:w-64 xl:flex-none 2xl:w-56">
             <CustomSelect
               id="staff-role-filter"
               placeholder="جميع الأدوار"
@@ -561,7 +562,7 @@ export default function StaffPage() {
           </div>
 
           {/* Search Input — h-14, border-border, gold focus shadow */}
-          <div className="relative w-full sm:w-72">
+          <div className="relative w-full min-w-0 xl:flex-1 2xl:w-72 2xl:flex-none">
             <input
               type="text"
               value={searchInput}
@@ -624,7 +625,7 @@ export default function StaffPage() {
         ) : (
           <>
             {/* Desktop Table View */}
-            <div className="hidden lg:block w-full">
+            <div className="hidden 2xl:block w-full">
               <table className="w-full text-right text-xs table-fixed">
                 <thead>
                   <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
@@ -726,7 +727,7 @@ export default function StaffPage() {
             </div>
 
             {/* Mobile Cards View */}
-            <div className="block lg:hidden divide-y divide-line/60">
+            <div className="block 2xl:hidden divide-y divide-line/60">
               {paginatedRecords.map((staff) => {
                 const isSelf = staff.id === user?.id;
                 const menuItems = getActionMenuItems(staff);
@@ -734,13 +735,13 @@ export default function StaffPage() {
                 return (
                   <div key={staff.id} className="p-4 space-y-3 hover:bg-gold-tint/20">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex min-w-0 flex-1 items-center gap-2.5">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-ink font-bold text-gold text-xs shadow-2xs">
                           {getInitials(staff.full_name)}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-ink text-sm truncate">
+                            <span className="font-bold text-ink text-sm break-words">
                               {staff.full_name}
                             </span>
                             {isSelf && (
@@ -749,7 +750,7 @@ export default function StaffPage() {
                               </span>
                             )}
                           </div>
-                          <span className="font-mono text-xs text-muted block truncate dir-ltr">
+                          <span className="font-mono text-xs text-muted block break-all dir-ltr">
                             {staff.email}
                           </span>
                         </div>
@@ -777,7 +778,7 @@ export default function StaffPage() {
                       </span>
                     </div>
 
-                    <div className="text-[11px] text-muted flex items-center justify-between">
+                    <div className="text-[11px] text-muted flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
                       <span>آخر تسجيل دخول:</span>
                       <span className="font-mono">{formatStaffDate(staff.last_login_at)}</span>
                     </div>
@@ -788,7 +789,7 @@ export default function StaffPage() {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between gap-4 p-4 sm:p-5 border-t border-line bg-page/30 text-xs">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5 border-t border-line bg-page/30 text-xs">
                 <span className="text-muted">
                   عرض {toArabicDigits(paginatedRecords.length)} من أصل{" "}
                   {toArabicDigits(filteredStaff.length)} موظف
