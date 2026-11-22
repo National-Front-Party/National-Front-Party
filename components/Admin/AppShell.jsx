@@ -250,10 +250,10 @@ export default function AppShell({ children }) {
   // 3. Forced password change focused shell
   if (user?.mustChangePassword || pathname === "/admin/change-password") {
     return (
-      <div className="flex min-h-screen flex-col bg-page text-ink" dir="rtl">
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-line bg-white px-8 shadow-xs">
-          <div className="flex items-center gap-4">
-            <div className="relative h-12 w-44">
+      <div className="flex min-h-screen min-h-svh min-w-0 flex-col overflow-x-clip bg-page text-ink" dir="rtl">
+        <header className="sticky top-0 z-30 flex shrink-0 flex-col gap-3 border-b border-line bg-white px-4 py-3 shadow-xs sm:min-h-20 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-0 lg:px-8">
+          <div className="flex min-w-0 items-center justify-between gap-3 sm:justify-start sm:gap-4">
+            <div className="relative h-10 w-36 shrink-0 sm:h-12 sm:w-44">
               <Image
                 src="/logo.png"
                 alt="حزب الجبهة الوطنية"
@@ -262,13 +262,13 @@ export default function AppShell({ children }) {
                 priority
               />
             </div>
-            <span className="rounded-lg bg-gold-tint px-3 py-1 text-xs font-bold text-gold-dark border border-gold/30">
+            <span className="rounded-lg border border-gold/30 bg-gold-tint px-2.5 py-1 text-center text-[11px] font-bold text-gold-dark sm:px-3 sm:text-xs">
               تغيير كلمة المرور
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-xs font-bold text-ink">{user?.fullName}</span>
+          <div className="flex min-w-0 items-center justify-between gap-3 sm:justify-start sm:gap-4">
+            <span className="min-w-0 flex-1 truncate text-xs font-bold text-ink sm:flex-none" title={user?.fullName}>{user?.fullName}</span>
             <button
               type="button"
               disabled={isLoggingOut}
@@ -293,7 +293,7 @@ export default function AppShell({ children }) {
           </div>
         </header>
 
-        <main className="flex-1 p-6 sm:p-10">{children}</main>
+        <main className="min-w-0 w-full flex-1 px-4 py-5 sm:p-8 lg:p-10">{children}</main>
       </div>
     );
   }

@@ -1839,3 +1839,8 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Constrained the login page wrapper to the viewport, clipped horizontal overflow from decorative/background content, used the small viewport height where supported, and reduced card/fallback padding on mobile while preserving desktop sizing.
 - Targeted ESLint and git diff --check passed. Browser viewport testing was unavailable.
 - Only app/admin/login/page.jsx was changed for the page; no backend, API, database, Prisma, or migration files were modified.
+
+### 2026-11-23 - Responsive forced password change page
+- Reworked the forced-change header into two compact rows on mobile while retaining its desktop row, constrained the shell and main area to the viewport, and reduced mobile page/card spacing. Password guidance and card heading now fit narrow widths more comfortably.
+- Targeted ESLint for AppShell and the change-password page, plus git diff --check, passed. Browser viewport testing was unavailable.
+- Only frontend shell/page styling changed; no backend, API, authentication logic, database, Prisma, or migration code was modified.
