@@ -13,6 +13,7 @@ import {
   UserX,
   UserCheck,
   Edit3,
+  Trash2,
   ChevronLeft,
   ChevronRight,
   AlertTriangle,
@@ -34,6 +35,7 @@ import StaffResetPasswordModal from "@/components/Admin/Staff/StaffResetPassword
 import StaffSuccessPasswordModal from "@/components/Admin/Staff/StaffSuccessPasswordModal";
 import StaffStatusModal from "@/components/Admin/Staff/StaffStatusModal";
 import StaffAuditModal from "@/components/Admin/Staff/StaffAuditModal";
+import StaffDeleteModal from "@/components/Admin/Staff/StaffDeleteModal";
 import CustomSelect from "@/components/Home/ui/CustomSelect";
 
 function getInitials(name) {
@@ -78,6 +80,9 @@ export default function StaffPage() {
 
   const [auditModalOpen, setAuditModalOpen] = useState(false);
   const [targetAuditStaff, setTargetAuditStaff] = useState(null);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [targetDeleteStaff, setTargetDeleteStaff] = useState(null);
 
   // Success Password Modal (stores password temporarily in memory only)
   const [successPasswordModalOpen, setSuccessPasswordModalOpen] = useState(false);
@@ -282,6 +287,16 @@ export default function StaffPage() {
     );
   };
 
+  const handleDeleteSuccess = (deletedStaff) => {
+    setStaffList((prev) => prev.filter((staff) => staff.id !== deletedStaff.id));
+    setTotalCount((prev) => Math.max(0, prev - 1));
+    const remainingFilteredCount = filteredStaff.filter(
+      (staff) => staff.id !== deletedStaff.id,
+    ).length;
+    const remainingPages = Math.max(1, Math.ceil(remainingFilteredCount / pageSize));
+    setCurrentPage((page) => Math.min(page, remainingPages));
+  };
+
   // Row Action Menu Items
   const getActionMenuItems = (staff) => {
     const isSelf = staff.id === user?.id;
@@ -328,6 +343,22 @@ export default function StaffPage() {
         onClick: () => {
           setTargetAuditStaff(staff);
           setAuditModalOpen(true);
+        },
+      },
+      { divider: true },
+      {
+        id: "delete",
+        label: isSelf ? "لا يمكن حذف حسابك الحالي" : "حذف الموظف نهائيًا",
+        icon: <Trash2 className="size-4 text-rose-600" />,
+        tone: "danger",
+        disabled: isSelf,
+        onClick: () => {
+          if (staff.is_active) {
+            showError("يجب تعطيل حساب الموظف أولًا قبل حذفه.");
+            return;
+          }
+          setTargetDeleteStaff(staff);
+          setDeleteModalOpen(true);
         },
       },
     ];
@@ -827,7 +858,19 @@ export default function StaffPage() {
         staffMember={targetAuditStaff}
       />
 
-      {/* E. Temporary Password Success Display Modal */}
+      {/* E. Individual Staff Deletion Confirmation */}
+      <StaffDeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setTargetDeleteStaff(null);
+        }}
+        staffMember={targetDeleteStaff}
+        onSuccess={handleDeleteSuccess}
+        onNotFound={() => fetchStaff(true)}
+      />
+
+      {/* F. Temporary Password Success Display Modal */}
       <StaffSuccessPasswordModal
         isOpen={successPasswordModalOpen}
         onClose={() => {

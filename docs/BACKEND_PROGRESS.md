@@ -1744,3 +1744,7 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Added a Super Admin-only confirmed individual DELETE endpoint for inactive staff accounts. The service revalidates the actor, serializes against role/status changes with the existing advisory lock, locks the target row, writes a `staff_deleted` audit snapshot, then deletes only the staff row in one transaction.
 - Added an additive audit enum migration and regenerated the Prisma client. The migration was not applied. Existing staff foreign-key relations remain SetNull.
 - Service and handler tests cover authorization, confirmation, active/missing/self rejection, audit rollback/snapshots, and mock lock ordering. PostgreSQL concurrency and foreign-key behavior were not integration-tested.
+
+### 2026-11-22 - Individual employee deletion frontend
+- Added a per-employee delete action to the Staff page. Active accounts show a deactivation requirement; the current account action is disabled. Inactive accounts require a named confirmation dialog before sending the existing DELETE request.
+- Success removes the account from the local list and updates counts; errors remain in the dialog, and a missing account triggers a list refresh. No bulk action or database request was run.
