@@ -128,26 +128,26 @@ export default function ArticleReviewModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs transition-opacity overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 transition-opacity sm:items-center sm:p-5 bg-black/60 backdrop-blur-xs"
       dir="rtl"
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="relative w-full max-w-3xl overflow-hidden rounded-[26px] border border-line bg-white shadow-card-hover animate-elem-fade-up my-auto"
+        className="relative my-0 max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl min-w-0 overflow-hidden rounded-[26px] border border-line bg-white shadow-card-hover animate-elem-fade-up sm:my-auto sm:max-h-[calc(100dvh-2.5rem)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-line bg-page/40 px-6 py-5">
-          <div className="flex items-center gap-3.5">
+        <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-line bg-page/40 px-4 py-4 sm:gap-3.5 sm:px-6 sm:py-5">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3.5">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-sky-300 bg-sky-50 text-sky-700 shadow-2xs">
               <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M9 11l3 3L22 4" />
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
               </svg>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <span className="text-xs font-bold text-muted">مراجعة وتدقيق النشر</span>
                 <span className="rounded-full bg-gold-tint border border-gold/40 px-2.5 py-0.5 text-[11px] font-bold text-gold-dark">
                   {article.status === "pending_review"
@@ -157,7 +157,7 @@ export default function ArticleReviewModal({
                     : article.status}
                 </span>
               </div>
-              <h2 className="text-lg font-black text-ink tracking-tight mt-0.5">
+              <h2 className="break-words text-base font-black text-ink tracking-tight mt-0.5 sm:text-lg [overflow-wrap:anywhere]">
                 تدقيق مقال: «{article.title}»
               </h2>
             </div>
@@ -188,7 +188,7 @@ export default function ArticleReviewModal({
         </div>
 
         {/* Modal Content */}
-        <div className="p-6 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto">
+        <div className="max-h-[calc(100dvh-8rem)] space-y-5 overflow-y-auto p-4 sm:max-h-[75vh] sm:space-y-6 sm:p-6 lg:p-8">
           {/* Self-Publishing Prohibition Warning Banner */}
           {cannotSelfReview && (
             <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-xs font-bold text-amber-900 flex items-start gap-3">
@@ -201,22 +201,22 @@ export default function ArticleReviewModal({
           )}
 
           {/* Article Meta Badges */}
-          <div className="flex flex-wrap items-center gap-3 text-xs bg-page/50 p-4 rounded-2xl border border-line">
-            <div className="flex items-center gap-1.5 text-muted">
+          <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-2xl border border-line bg-page/50 p-3 text-xs sm:p-4">
+            <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-muted">
               <span className="font-bold text-ink">المصدر:</span>
-              <span className="rounded-lg bg-white border border-line px-2.5 py-1 text-ink font-bold">
+              <span className="min-w-0 whitespace-normal break-words rounded-lg bg-white border border-line px-2.5 py-1 text-ink font-bold [overflow-wrap:anywhere]">
                 📰 {article.source?.name_ar || "—"}
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-muted">
+            <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-muted">
               <span className="font-bold text-ink">الكاتب:</span>
-              <span className="rounded-lg bg-white border border-line px-2.5 py-1 text-ink font-bold">
+              <span className="min-w-0 whitespace-normal break-words rounded-lg bg-white border border-line px-2.5 py-1 text-ink font-bold [overflow-wrap:anywhere]">
                 ✍️ {article.created_by_user?.full_name || "محرر غير معروف"}
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-muted">
+            <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-muted">
               <span className="font-bold text-ink">تاريخ النشر:</span>
               <span className="rounded-lg bg-white border border-line px-2.5 py-1 font-mono text-ink">
                 📅 {article.published_on ? new Date(article.published_on).toISOString().substring(0, 10) : "—"}
@@ -267,18 +267,18 @@ export default function ArticleReviewModal({
 
           {/* Existing Review Note if article has changes_requested */}
           {article.review_note && (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-xs space-y-1">
+            <div className="min-w-0 rounded-2xl border border-rose-200 bg-rose-50/80 p-3 text-xs space-y-1 sm:p-4">
               <span className="font-bold text-rose-800 block">آخر ملاحظة مراجعة مسجلة:</span>
-              <p className="text-rose-950 leading-relaxed font-medium">{article.review_note}</p>
+              <p className="break-words text-rose-950 leading-relaxed font-medium whitespace-pre-wrap [overflow-wrap:anywhere]">{article.review_note}</p>
             </div>
           )}
 
           {/* Article Full Body */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold text-muted">نص المقال الصحفي الكامل:</h3>
-            <div className="rounded-2xl border border-line bg-page/20 p-5 space-y-3.5 text-xs sm:text-sm text-ink leading-relaxed">
+            <div className="min-w-0 rounded-2xl border border-line bg-page/20 p-3 space-y-3.5 text-xs text-ink leading-relaxed sm:p-5 sm:text-sm">
               {paragraphs.map((p, idx) => (
-                <p key={idx}>{p}</p>
+                <p key={idx} className="break-words [overflow-wrap:anywhere]">{p}</p>
               ))}
             </div>
           </div>
@@ -322,7 +322,7 @@ export default function ArticleReviewModal({
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleRequestChanges} className="space-y-3 p-4 rounded-2xl border border-rose-200 bg-rose-50/50">
+                <form onSubmit={handleRequestChanges} className="min-w-0 space-y-3 rounded-2xl border border-rose-200 bg-rose-50/50 p-3 sm:p-4">
                   <div className="space-y-1">
                     <label htmlFor="review-note-input" className="block text-xs font-bold text-rose-900">
                       بيان الملاحظات والتعديلات المطلوبة من الكاتب <span className="text-rose-600">*</span>
@@ -335,23 +335,23 @@ export default function ArticleReviewModal({
                       value={reviewNote}
                       onChange={(e) => setReviewNote(e.target.value)}
                       placeholder="مثال: يرجى إعادة صياغة الفقرة الثانية لتكون أكثر دقة وتوثيق مصدر الأرقام..."
-                      className="w-full rounded-2xl border border-border bg-white p-3.5 text-right text-xs font-medium text-ink transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60 resize-none"
+                      className="min-h-28 w-full min-w-0 resize-y rounded-2xl border border-border bg-white p-3 text-right text-xs font-medium text-ink transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60 sm:p-3.5"
                     />
                   </div>
 
-                  <div className="flex items-center justify-end gap-2.5">
+                  <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-2.5">
                     <button
                       type="button"
                       disabled={actionLoading}
                       onClick={() => setShowChangesInput(false)}
-                      className="rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs"
+                      className="w-full rounded-xl border border-line bg-white px-4 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink transition-all shadow-2xs sm:w-auto"
                     >
                       تراجع
                     </button>
                     <button
                       type="submit"
                       disabled={actionLoading || !reviewNote.trim()}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 transition-all shadow-btn disabled:opacity-50"
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-700 transition-all shadow-btn disabled:opacity-50 sm:w-auto sm:px-5"
                     >
                       {actionLoading ? <Spinner size="xs" color="white" /> : null}
                       <span>إرسال طلب التعديلات للكاتب</span>
@@ -365,8 +365,8 @@ export default function ArticleReviewModal({
           {/* Unpublish action if already published */}
           {article.status === "published" && (
             <div className="space-y-3 pt-4 border-t border-line">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
                   <h4 className="text-xs font-bold text-ink">سحب المقال من النشر</h4>
                   <p className="text-[11px] text-muted">
                     سيتم سحب المقال فوراً من العرض العام وإعادته كمسودة قابلة للتعديل.
@@ -376,7 +376,7 @@ export default function ArticleReviewModal({
                   type="button"
                   disabled={actionLoading}
                   onClick={handleUnpublish}
-                  className="inline-flex items-center gap-2 rounded-xl border border-rose-300 bg-white px-4 py-2 text-xs font-bold text-rose-700 hover:bg-rose-50 hover:scale-105 active:scale-95 transition-all shadow-2xs disabled:opacity-50"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-rose-300 bg-white px-4 py-2 text-xs font-bold text-rose-700 hover:bg-rose-50 hover:scale-105 active:scale-95 transition-all shadow-2xs disabled:opacity-50 sm:w-auto"
                 >
                   {actionLoading ? <Spinner size="xs" color="ink" /> : null}
                   <span>إلغاء النشر وإعادة للمسودات</span>

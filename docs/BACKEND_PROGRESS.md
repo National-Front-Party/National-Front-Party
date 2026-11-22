@@ -1780,3 +1780,32 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Resized each existing SVG sparkline to its card width while retaining its original path data and count values.
 - Targeted ESLint and git diff --check passed. Browser viewport rendering was unavailable; requested widths were checked against the responsive breakpoints and dashboard content width.
 - Existing Quick Access changes were preserved. No backend or database files were modified.
+
+### 2026-11-23 - Responsive news filters
+- Updated the News filters to use one column on phones, two columns through laptop widths, and the existing role-dependent four or five controls across only on very wide screens.
+- Added constrained grid items, narrower search padding/font sizing, and enabled the existing opt-in CustomSelect wrapping for author, source, and featured values. Filter logic, options, and role visibility are unchanged.
+- Targeted ESLint and git diff --check passed. No browser viewport session was available for live rendering.
+- No backend or database files were modified.
+
+### 2026-11-23 - Responsive news article list cards
+- Kept the fixed-column article table for very wide viewports only and displayed the existing responsive article cards through constrained laptop widths.
+- Reduced card padding and added safe wrapping for article titles, slugs, source/author metadata, review notes, and action rows. Existing article actions and destinations are unchanged.
+- Targeted ESLint and git diff --check passed. No browser session was available for live viewport testing.
+- No backend or database files were modified.
+
+### 2026-11-23 - Responsive news page forms
+- Made the existing News filters, article editor form, and review-change form fit narrow screens with responsive dialog heights, single-column mobile fields, wrapping content, and full-width mobile actions.
+- Kept field names, values, options, submission handlers, validation, and destinations unchanged.
+- Targeted ESLint passed for the News page and both form modals; git diff --check passed. Browser-based visual testing was unavailable.
+- Preserved the existing uncommitted News page changes and untracked upload images. No backend or database files were modified.
+
+### 2026-11-23 - Responsive article details modal
+- Made the News article details modal fit viewport height with a scrollable body and persistent header/footer, responsive metadata cards, and safe wrapping for article titles, metadata, review notes, URLs, and body text.
+- Existing article content, external link, and close behavior are unchanged.
+- Targeted ESLint and git diff --check passed. Live browser rendering was unavailable.
+- Existing uncommitted News changes and the untracked upload were preserved; no backend or database files were modified.
+
+### 2026-11-23 - Align News filter controls
+- Added an opt-in fixed-height mode to CustomSelect and enabled it for the News author, source, and featured filters so all controls match the 56px search/action fields. Selected values can use two lines and expose their full text through the control title.
+- Vertically centered the filter grid items. Targeted ESLint and git diff --check passed; no browser session was available for live visual verification.
+- No filter logic or options changed; no backend or database files were modified.

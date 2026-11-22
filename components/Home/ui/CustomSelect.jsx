@@ -31,6 +31,7 @@ const CustomSelect = forwardRef(function CustomSelect(
     disabled,
     required,
     fitContent = false,
+    fixedHeight = false,
   },
   forwardedRef,
 ) {
@@ -490,15 +491,16 @@ const CustomSelect = forwardRef(function CustomSelect(
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
         aria-required={required}
+        title={fitContent && fixedHeight ? selectedOption?.label ?? placeholder : undefined}
         disabled={disabled}
         onClick={() =>
           openRef.current ? closeDropdown() : openDropdown()
         }
         onKeyDown={handleMenuKeyDown}
         onBlur={handleBlur}
-        className={`${inputBase} ${fitContent ? "!h-auto min-h-14 py-3 text-xs leading-5 2xl:text-sm" : ""} ${openClassName} flex min-w-0 items-center justify-between gap-2 disabled:hover:shadow-none motion-reduce:transition-none`}
+        className={`${inputBase} ${fitContent ? fixedHeight ? "!h-14 min-h-14 py-1.5 text-xs leading-5" : "!h-auto min-h-14 py-3 text-xs leading-5 2xl:text-sm" : ""} ${openClassName} flex min-w-0 items-center justify-between gap-2 disabled:hover:shadow-none motion-reduce:transition-none`}
       >
-        <span className={`${selectedOption ? "text-ink" : "text-muted"} ${fitContent ? "min-w-0 flex-1 break-words [overflow-wrap:anywhere]" : ""}`}>
+        <span className={`${selectedOption ? "text-ink" : "text-muted"} ${fitContent ? fixedHeight ? "min-w-0 flex-1 line-clamp-2 break-words leading-5 [overflow-wrap:anywhere]" : "min-w-0 flex-1 break-words [overflow-wrap:anywhere]" : ""}`}>
           {selectedOption?.label ?? placeholder}
         </span>
 
