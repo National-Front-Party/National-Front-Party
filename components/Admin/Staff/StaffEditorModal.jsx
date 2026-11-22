@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { UserPlus, UserCog, Eye, EyeOff, RefreshCw, AlertCircle } from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
@@ -10,39 +10,34 @@ import { generateTemporaryPassword, STAFF_ROLES } from "@/lib/admin/staff-utils"
 import CustomSelect from "@/components/Home/ui/CustomSelect";
 
 export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
+  if (!isOpen) return null;
+
+  return (
+    <StaffEditorForm
+      key={item?.id ?? "create"}
+      item={item}
+      onClose={onClose}
+      onSaved={onSaved}
+    />
+  );
+}
+
+function StaffEditorForm({ item, onClose, onSaved }) {
   const { showSuccess, showError } = useToast();
   const isEdit = Boolean(item?.id);
 
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("news_editor");
-  const [tempPassword, setTempPassword] = useState("");
+  const [fullName, setFullName] = useState(item?.full_name || "");
+  const [email, setEmail] = useState(item?.email || "");
+  const [role, setRole] = useState(item?.role || "news_editor");
+  const [tempPassword, setTempPassword] = useState(() =>
+    item ? "" : generateTemporaryPassword(),
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
   const nameInputRef = useRef(null);
   const emailInputRef = useRef(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      if (item) {
-        setFullName(item.full_name || "");
-        setEmail(item.email || "");
-        setRole(item.role || "news_editor");
-        setTempPassword("");
-      } else {
-        setFullName("");
-        setEmail("");
-        setRole("news_editor");
-        setTempPassword(generateTemporaryPassword());
-      }
-      setShowPassword(false);
-      setErrors({});
-    }
-  }, [isOpen, item]);
-
-  if (!isOpen) return null;
 
   const handleRegeneratePassword = () => {
     setTempPassword(generateTemporaryPassword());
