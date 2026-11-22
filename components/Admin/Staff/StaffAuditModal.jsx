@@ -9,6 +9,10 @@ import { formatStaffDate } from "@/lib/admin/staff-utils";
 import { getRoleLabel } from "@/lib/admin/permissions";
 
 const ACTION_CONFIG = {
+  staff_deleted: {
+    label: "حذف حساب الموظف",
+    color: "bg-rose-50 text-rose-800 border-rose-200",
+  },
   staff_created: {
     label: "إنشاء حساب الموظف",
     color: "bg-emerald-50 text-emerald-800 border-emerald-200",

@@ -39,7 +39,8 @@ export const staff_audit_action = {
   content_updated: 'content_updated',
   content_published: 'content_published',
   content_unpublished: 'content_unpublished',
-  content_deleted: 'content_deleted'
+  content_deleted: 'content_deleted',
+  staff_deleted: 'staff_deleted'
 } as const
 
 export type staff_audit_action = (typeof staff_audit_action)[keyof typeof staff_audit_action]

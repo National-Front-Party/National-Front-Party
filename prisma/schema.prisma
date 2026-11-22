@@ -33,6 +33,7 @@ enum staff_audit_action {
   content_published
   content_unpublished
   content_deleted
+  staff_deleted
 }
 
 model staff_users {

@@ -1739,3 +1739,8 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 ### 2026-11-22 - Staff role UI cleanup
 - Removed unsupported legacy roles from the shared Staff role options; the role filter, role counts, and create/edit selector now expose only `super_admin`, `news_editor`, and `news_reviewer`.
 - Corrected the permissions test to reflect that legacy roles have no current permission grants and added a focused check for the three role options and labels. Existing validation rejection tests remain unchanged.
+
+### 2026-11-22 - Individual employee deletion backend
+- Added a Super Admin-only confirmed individual DELETE endpoint for inactive staff accounts. The service revalidates the actor, serializes against role/status changes with the existing advisory lock, locks the target row, writes a `staff_deleted` audit snapshot, then deletes only the staff row in one transaction.
+- Added an additive audit enum migration and regenerated the Prisma client. The migration was not applied. Existing staff foreign-key relations remain SetNull.
+- Service and handler tests cover authorization, confirmation, active/missing/self rejection, audit rollback/snapshots, and mock lock ordering. PostgreSQL concurrency and foreign-key behavior were not integration-tested.
