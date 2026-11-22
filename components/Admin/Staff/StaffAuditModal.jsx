@@ -36,41 +36,38 @@ const ACTION_CONFIG = {
 };
 
 export default function StaffAuditModal({ isOpen, onClose, staffMember }) {
-  if (!isOpen || !staffMember) return null;
-
-  return (
-    <StaffAuditLog key={staffMember.id} staffMember={staffMember} onClose={onClose} />
-  );
-}
-
-function StaffAuditLog({ staffMember, onClose }) {
-  const [audit, setAudit] = useState({ loading: true, error: null, events: [] });
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    let active = true;
+    if (!isOpen || !staffMember) return;
+
+    let mounted = true;
+    setLoading(true);
+    setError(null);
 
     adminFetch(`/api/admin/staff/audit-log?target_id=${staffMember.id}&page=1&page_size=50`)
       .then((res) => {
-        if (active) {
-          setAudit({ loading: false, error: null, events: res?.items || [] });
+        if (mounted) {
+          setEvents(res?.items || []);
         }
       })
       .catch((err) => {
-        if (active) {
-          setAudit({
-            loading: false,
-            error: err.message || "تعذر جلب سجل تدقيق الموظف",
-            events: [],
-          });
+        if (mounted) {
+          setError(err.message || "تعذر جلب سجل تدقيق الموظف");
         }
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
       });
 
     return () => {
-      active = false;
+      mounted = false;
     };
-  }, [staffMember.id]);
+  }, [isOpen, staffMember]);
 
-  const { loading, error, events } = audit;
+  if (!isOpen || !staffMember) return null;
 
   return (
     <div

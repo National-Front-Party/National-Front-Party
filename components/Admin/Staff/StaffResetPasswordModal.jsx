@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { KeyRound, RefreshCw, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
@@ -14,24 +14,21 @@ export default function StaffResetPasswordModal({
   staffMember,
   onSuccess,
 }) {
-  if (!isOpen || !staffMember) return null;
-
-  return (
-    <StaffResetPasswordForm
-      key={staffMember.id}
-      staffMember={staffMember}
-      onClose={onClose}
-      onSuccess={onSuccess}
-    />
-  );
-}
-
-function StaffResetPasswordForm({ staffMember, onClose, onSuccess }) {
   const { showError } = useToast();
-  const [password, setPassword] = useState(() => generateTemporaryPassword());
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setPassword(generateTemporaryPassword());
+      setShowPassword(false);
+      setError("");
+    }
+  }, [isOpen]);
+
+  if (!isOpen || !staffMember) return null;
 
   const handleRegenerate = () => {
     setPassword(generateTemporaryPassword());
