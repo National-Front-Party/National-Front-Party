@@ -282,7 +282,7 @@ export default function StaffEditorModal({ isOpen, onClose, item, onSaved }) {
               options={STAFF_ROLES.map((roleId) => ({
                 value: roleId,
                 label: `${ROLE_LABELS[roleId]} (${roleId})`,
-              }))}
+              }))}  
               value={role}
               onChange={(val) => setRole(val)}
               disabled={submitting}

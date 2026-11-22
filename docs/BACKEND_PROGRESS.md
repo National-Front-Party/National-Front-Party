@@ -1612,11 +1612,24 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
      - جسم فورم داخلي مستقل التمرير (`flex-1 min-h-0 overflow-y-auto overscroll-contain`) لحماية الشاشات القصيرة ومود الـ Landscape.
      - شريط أزرار ثابت دائماً في الأسفل (`shrink-0 border-t border-line bg-page/50`) يضمن بقاء زري "حفظ" و "إلغاء" في متناول يد المستخدم على كافة الأجهزة.
 - **الملفات المضافة والمعدلة:**
-  - `lib/admin/catalog-utils.js` (توليد المعرفات الفريدة والتعريب الصوتي).
-  - `components/Admin/Catalogs/CatalogEditorModal.jsx` (تحديث الفورم، إزالة الحقول، وتطبيق الهيكل المتجاوب).
-  - `components/Admin/Catalogs/catalogs-verification.test.js` (إضافة 8 اختبارات شاملة لتوليد المعرفات والـ payload).
-  - `docs/BACKEND_PROGRESS.md` (توثيق المرحلة).
+  - `app/admin/staff/page.jsx`
+  - `lib/admin/staff-utils.js`
+  - `components/Admin/Staff/StaffEditorModal.jsx`
+  - `components/Admin/Staff/StaffResetPasswordModal.jsx`
+  - `components/Admin/Staff/StaffStatusModal.jsx`
+  - `components/Admin/Staff/StaffSuccessPasswordModal.jsx`
+  - `components/Admin/Staff/StaffAuditModal.jsx`
+  - `app/admin/catalogs/page.jsx`
+  - `docs/BACKEND_PROGRESS.md`
 - **التحقق والاختبارات:**
+  - `npx eslint app/admin/catalogs/page.jsx app/admin/staff/page.jsx`: نجاح تام (0 errors, 0 warnings).
+  - `npm test`: جميع الاختبارات الـ 283 ناجحة بنسبة 100% (283 pass, 0 fail).
+
+| 2026-11-20 | Staff Visual Refinement | تحسين بصري شامل لصفحة إدارة الموظفين: مطابقة زر الإغلاق الذهبي الدوار مع نمط Catalog في جميع النوافذ المنبثقة الخمس، وتوحيد أنماط hover للأزرار، وتعميق تطابق حقول الإدخال مع نظام التصميم المشترك (focus shadow + error states + duration-300)، وتحسين dropdown الفلترة مع focus shadow ذهبي، وتعزيز أزرار الإجراءات بـscale وduration متناسقة. | `app/admin/staff/page.jsx`؛ `components/Admin/Staff/StaffEditorModal.jsx`؛ `components/Admin/Staff/StaffAuditModal.jsx`؛ `components/Admin/Staff/StaffResetPasswordModal.jsx`؛ `components/Admin/Staff/StaffStatusModal.jsx`؛ `components/Admin/Staff/StaffSuccessPasswordModal.jsx` | لا تغييرات على الباك إند أو API أو الصلاحيات أو المنطق التجاري. `npm test`: 283 ناجحاً. ESLint: 3 أخطاء pre-existing (setState في useEffect) موجودة قبل هذه التعديلات؛ لا أخطاء جديدة. |
+
+## 2026-11-22 - Content page merge conflict resolution
+
+- Resolved the unmerged Admin Content page by retaining the tabbed content managers and URL-selected tabs already documented in the P06.2 UI work. Kept the page wrapped in Suspense for useSearchParams. No API or schema behavior changed.
   - `npx eslint`: خالي تماماً من الأخطاء والتحذيرات (0 errors, 0 warnings).
   - `npm test`: جميع الاختبارات الـ 284 ناجحة بنسبة 100% (284 pass, 0 fail).
 

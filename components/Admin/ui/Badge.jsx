@@ -47,9 +47,6 @@ export default function Badge({
 export function RoleBadge({ role, className = "" }) {
   const roleTones = {
     super_admin: "ink",
-    membership_officer: "blue",
-    service_officer: "green",
-    content_editor: "purple",
     news_editor: "gold",
     news_reviewer: "blue",
   };

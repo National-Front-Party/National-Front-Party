@@ -26,15 +26,13 @@ function ContentPageBody() {
 
   return (
     <div className="space-y-10">
-      {/* Homepage Content Section: Party Program Manager */}
       <section aria-labelledby="party-program-section-title">
         <PartyProgramManager />
       </section>
 
-      {/* Organizational Content Tabs Navigation & Panels */}
       <section
         aria-labelledby="organizational-tabs-title"
-        className="space-y-6 pt-6 border-t border-slate-200/80"
+        className="space-y-6 border-t border-slate-200/80 pt-6"
       >
         <div className="flex flex-col gap-1">
           <h2
@@ -48,10 +46,8 @@ function ContentPageBody() {
           </p>
         </div>
 
-        {/* Shared Tabs Navigation */}
         <ContentTabs />
 
-        {/* Render all six tabpanels so every tab's aria-controls references an existing element */}
         {CONTENT_TABS.map((tab) => {
           const isActive = tab.id === activeTabId;
 

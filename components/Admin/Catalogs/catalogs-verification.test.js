@@ -77,17 +77,13 @@ test("List query parameters: strictly allows only page and page_size up to 100",
   assert.equal(catalogListQuerySchema.safeParse({ page: 1, page_size: 101 }).success, false);
 });
 
-test("Permissions: super_admin and service_officer have catalogs access, others do not", () => {
+test("Permissions: only super_admin has catalogs access", () => {
   assert.equal(canAccess("super_admin", "catalogs"), true);
-  assert.equal(canAccess("service_officer", "catalogs"), true);
 
-  assert.equal(canAccess("membership_officer", "catalogs"), false);
-  assert.equal(canAccess("content_editor", "catalogs"), false);
   assert.equal(canAccess("news_editor", "catalogs"), false);
   assert.equal(canAccess("news_reviewer", "catalogs"), false);
 
   assert.equal(ROLE_PERMISSIONS.super_admin.includes("services:manage"), true);
-  assert.equal(ROLE_PERMISSIONS.service_officer.includes("services:manage"), true);
 });
 
 test("Local search and filtering simulation for Ministries and Request Sectors", () => {
@@ -155,13 +151,13 @@ test("Service Catalog DELETE handler enforces permissions, confirmation, and con
     "../../../lib/service-catalogs/handlers.js"
   );
 
-  // 1. Unauthorized staff guard check (service_officer lacks records:delete)
+  // 1. Unauthorized staff guard check (news_editor lacks records:delete)
   const handlers = createServiceCatalogItemHandlers("ministries", {
     guard: async (_req, opts) => {
       if (opts?.permission === "records:delete") {
         return new Response(JSON.stringify({ error: "FORBIDDEN" }), { status: 403 });
       }
-      return { id: "user-1", role: "service_officer" };
+      return { id: "user-1", role: "news_editor" };
     },
     deleteFn: async () => ({ ok: true }),
   });

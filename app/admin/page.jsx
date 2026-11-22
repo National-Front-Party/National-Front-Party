@@ -9,6 +9,7 @@ import {
   SECTIONS,
 } from "@/lib/admin/permissions";
 import { adminFetch } from "@/lib/admin/api";
+import { loadAdminOverviewData } from "@/lib/admin/overview-data";
 import { NavIcon } from "@/components/Admin/AdminIcons";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 
@@ -189,192 +190,27 @@ export default function AdminOverviewPage() {
     let mounted = true;
     const loadDashboardData = async () => {
       setLoading(true);
-
-      const nextStats = {
-        applicationsTotal: null,
-        serviceRequestsTotal: null,
-        publishedNewsTotal: null,
-        staffTotal: null,
-      };
-
-      const requestsList = [];
-      let acceptedApps = 0;
-      let completedSrv = 0;
-
-      // 1. Applications API
-      if (canAccess(user.role, "applications")) {
-        try {
-          const appRes = await adminFetch(
-            "/api/admin/applications?page=1&page_size=6",
-            { skipAuthRedirect: true },
-          );
-          const totalApps = appRes?.pagination?.total ?? appRes?.total;
-          if (typeof totalApps === "number") {
-            nextStats.applicationsTotal = totalApps;
-          }
-          if (Array.isArray(appRes?.applications)) {
-            appRes.applications.forEach((app) => {
-              requestsList.push({
-                id: `app-${app.id}`,
-                name: app.full_name,
-                type: APP_KIND_LABELS[app.type] || "طلب انضمام",
-                status: STATUS_CONFIG_MAP[app.status]?.label || "قيد المراجعة",
-                rawStatus: app.status,
-                createdAt: app.created_at,
-                href: "/admin/applications",
-              });
-            });
-          }
-
-          // Fetch accepted applications count dynamically for completion rate
-          if ((nextStats.applicationsTotal || 0) > 0) {
-            try {
-              const accRes = await adminFetch(
-                "/api/admin/applications?status=accepted&page=1&page_size=1",
-                { skipAuthRedirect: true },
-              );
-              const accTotal = accRes?.pagination?.total ?? accRes?.total;
-              if (typeof accTotal === "number") {
-                acceptedApps = accTotal;
-              }
-            } catch {
-              // Ignore
-            }
-          }
-        } catch {
-          // Graceful fallback
-        }
-      }
-
-      // 2. Service Requests API
-      if (canAccess(user.role, "service-requests")) {
-        try {
-          const srvRes = await adminFetch(
-            "/api/admin/service-requests?page=1&page_size=6",
-            { skipAuthRedirect: true },
-          );
-          const totalSrv = srvRes?.pagination?.total ?? srvRes?.total;
-          if (typeof totalSrv === "number") {
-            nextStats.serviceRequestsTotal = totalSrv;
-          }
-          if (Array.isArray(srvRes?.service_requests)) {
-            srvRes.service_requests.forEach((req) => {
-              requestsList.push({
-                id: `srv-${req.id}`,
-                name: req.full_name,
-                type: req.sector?.name_ar || req.ministry?.name_ar || "طلب خدمة مواطن",
-                status: STATUS_CONFIG_MAP[req.status]?.label || "قيد المراجعة",
-                rawStatus: req.status,
-                createdAt: req.created_at,
-                href: "/admin/service-requests",
-              });
-            });
-          }
-
-          // Fetch completed service requests count dynamically for completion rate
-          if ((nextStats.serviceRequestsTotal || 0) > 0) {
-            try {
-              const compRes = await adminFetch(
-                "/api/admin/service-requests?status=completed&page=1&page_size=1",
-                { skipAuthRedirect: true },
-              );
-              const compTotal = compRes?.pagination?.total ?? compRes?.total;
-              if (typeof compTotal === "number") {
-                completedSrv = compTotal;
-              }
-            } catch {
-              // Ignore
-            }
-          }
-        } catch {
-          // Graceful fallback
-        }
-      }
-
-      // 3. News Articles API (or public news count)
-      if (canAccess(user.role, "news")) {
-        try {
-          const newsRes = await adminFetch(
-            "/api/admin/news/articles?status=published&page=1&page_size=1",
-            { skipAuthRedirect: true },
-          );
-          const totalNews = newsRes?.pagination?.total ?? newsRes?.total;
-          if (typeof totalNews === "number") {
-            nextStats.publishedNewsTotal = totalNews;
-          }
-        } catch {
-          // Try public content news count if admin news filtered
-          try {
-            const pubNews = await fetch("/api/content/news?page=1&page_size=1");
-            const data = await pubNews.json();
-            const pubTotal = data?.pagination?.total ?? data?.total;
-            if (typeof pubTotal === "number") {
-              nextStats.publishedNewsTotal = pubTotal;
-            }
-          } catch {
-            // Ignore
-          }
-        }
-      }
-
-      // 4. Staff API
-      if (canAccess(user.role, "staff")) {
-        try {
-          const staffRes = await adminFetch(
-            "/api/admin/staff?page=1&page_size=1",
-            { skipAuthRedirect: true },
-          );
-          const totalStaff = staffRes?.total ?? staffRes?.pagination?.total;
-          if (typeof totalStaff === "number") {
-            nextStats.staffTotal = totalStaff;
-          }
-        } catch {
-          // Graceful fallback
-        }
-      }
-
-      if (mounted) {
-        // Sort requests: prioritize pending requests needing review (new, under_review, in_progress),
-        // then newest created_at first, and take top 4
-        requestsList.sort((a, b) => {
-          const isPendingA =
-            a.rawStatus === "new" ||
-            a.rawStatus === "under_review" ||
-            a.rawStatus === "in_progress";
-          const isPendingB =
-            b.rawStatus === "new" ||
-            b.rawStatus === "under_review" ||
-            b.rawStatus === "in_progress";
-          if (isPendingA && !isPendingB) return -1;
-          if (!isPendingA && isPendingB) return 1;
-          return new Date(b.createdAt) - new Date(a.createdAt);
+      const { stats: nextStats, recentRequests: nextRequests, completionRate: nextRate } =
+        await loadAdminOverviewData(user.role, {
+          adminFetch,
+          publicFetch: (...args) => fetch(...args),
+          statusConfigMap: STATUS_CONFIG_MAP,
+          appKindLabels: APP_KIND_LABELS,
+          fallbackLabels: {
+            applicationType: "طلب انضمام",
+            reviewStatus: "قيد المراجعة",
+            serviceType: "طلب خدمة مواطن",
+          },
         });
-        setRecentRequests(requestsList.slice(0, 4));
-        setStats(nextStats);
-
-        // Real dynamic completion rate calculated from database: (accepted + completed) / total
-        const totalCount =
-          (nextStats.applicationsTotal || 0) +
-          (nextStats.serviceRequestsTotal || 0);
-        if (totalCount > 0) {
-          const completedCount = acceptedApps + completedSrv;
-          const rate = Math.min(
-            100,
-            Math.max(0, Math.round((completedCount / totalCount) * 100)),
-          );
-          setCompletionRate(rate);
-        } else {
-          setCompletionRate(0);
-        }
-
-        setLoading(false);
-      }
+      if (!mounted) return;
+      setStats(nextStats);
+      setRecentRequests(nextRequests);
+      setCompletionRate(nextRate);
+      setLoading(false);
     };
-
     loadDashboardData();
-    return () => {
-      mounted = false;
-    };
+
+    return () => { mounted = false; };
   }, [user?.role]);
 
   // Quick Access Tiles filtered by role permissions

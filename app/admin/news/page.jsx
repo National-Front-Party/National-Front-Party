@@ -25,6 +25,7 @@ import { adminFetch } from "@/lib/admin/api";
 import { useToast } from "@/lib/admin/toast-context";
 import { useAdminAuth } from "@/lib/admin/auth-context";
 import { canAccess } from "@/lib/admin/permissions";
+import { canEditNewsArticle, canReviewNewsArticle, canSubmitNewsArticle, isNewsArticleAuthor } from "@/lib/news/ui-permissions.js";
 import Spinner from "@/components/Admin/ui/Spinner";
 import Skeleton from "@/components/Admin/ui/Skeleton";
 import CustomSelect from "@/components/Home/ui/CustomSelect";
@@ -433,17 +434,12 @@ export default function NewsPage() {
   const getRowMenuItems = useCallback(
     (art) => {
       const items = [];
-      const isAuthor = Boolean(user?.id && art.created_by === user.id);
-      const canEdit =
-        isSuperAdmin ||
-        (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
-      const canSubmit =
-        isSuperAdmin ||
-        (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
-      const canReview =
-        (isSuperAdmin || isReviewer) && art.status === "pending_review";
+      const isAuthor = isNewsArticleAuthor(art, user);
+      const canEdit = canEditNewsArticle(role, isAuthor, art.status);
+      const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
+      const canReview = canReviewNewsArticle(role, isAuthor, art.status);
       const canUnpublish =
-        (isSuperAdmin || isReviewer) && art.status === "published";
+        isSuperAdmin && art.status === "published";
 
       // 1. Details
       items.push({
@@ -534,7 +530,7 @@ export default function NewsPage() {
 
       return items;
     },
-    [user, isSuperAdmin, isReviewer, handleSubmitForReview, handleUnpublish],
+    [user, role, isSuperAdmin, handleSubmitForReview, handleUnpublish],
   );
 
   // Unauthorized view
@@ -838,15 +834,10 @@ export default function NewsPage() {
                       tone: "bg-page text-muted border-line",
                       dot: "bg-muted",
                     };
-                    const isAuthor = Boolean(user?.id && art.created_by === user.id);
-                    const canEdit =
-                      isSuperAdmin ||
-                      (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
-                    const canSubmit =
-                      isSuperAdmin ||
-                      (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
-                    const canReview =
-                      (isSuperAdmin || isReviewer) && art.status === "pending_review";
+                    const isAuthor = isNewsArticleAuthor(art, user);
+                    const canEdit = canEditNewsArticle(role, isAuthor, art.status);
+                    const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
+                    const canReview = canReviewNewsArticle(role, isAuthor, art.status);
                     const menuItems = getRowMenuItems(art);
 
                     return (
@@ -956,7 +947,7 @@ export default function NewsPage() {
                         <td className="py-4 pr-3 pl-6 sm:pl-8">
                           <div className="flex items-center justify-center gap-2">
                             {/* Primary Action Button based on status & role */}
-                            {art.status === "changes_requested" ? (
+                            {art.status === "changes_requested" && !canReview ? (
                               <button
                                 type="button"
                                 onClick={() => {
@@ -982,7 +973,7 @@ export default function NewsPage() {
                                 <CheckCircle2 className="size-3.5" />
                                 <span>مراجعة</span>
                               </button>
-                            ) : canSubmit && art.status === "draft" ? (
+                            ) : canSubmit && (art.status === "draft" || art.status === "changes_requested") ? (
                               <button
                                 type="button"
                                 disabled={actionInProgressId === art.id}
@@ -998,15 +989,13 @@ export default function NewsPage() {
                                 <span>إرسال للمراجعة</span>
                               </button>
                             ) : art.status === "pending_review" ? (
-                              <button
-                                type="button"
-                                onClick={() => handleSubmitForReview(art)}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 hover:bg-sky-100 transition-all shadow-2xs cursor-pointer"
-                                title="هذا المقال قيد المراجعة حالياً"
+                              <span
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 shadow-2xs"
+                                role="status"
                               >
                                 <Clock className="size-3.5 text-sky-600" />
                                 <span>قيد المراجعة</span>
-                              </button>
+                              </span>
                             ) : canEdit ? (
                               <button
                                 type="button"
@@ -1055,15 +1044,10 @@ export default function NewsPage() {
                     tone: "bg-page text-muted border-line",
                     dot: "bg-muted",
                   };
-                  const isAuthor = Boolean(user?.id && art.created_by === user.id);
-                  const canEdit =
-                    isSuperAdmin ||
-                    (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
-                  const canSubmit =
-                    isSuperAdmin ||
-                    (isAuthor && (art.status === "draft" || art.status === "changes_requested"));
-                  const canReview =
-                    (isSuperAdmin || isReviewer) && art.status === "pending_review";
+                  const isAuthor = isNewsArticleAuthor(art, user);
+                  const canEdit = canEditNewsArticle(role, isAuthor, art.status);
+                  const canSubmit = canSubmitNewsArticle(role, isAuthor, art.status);
+                  const canReview = canReviewNewsArticle(role, isAuthor, art.status);
                   const menuItems = getRowMenuItems(art);
 
                   return (
@@ -1166,7 +1150,7 @@ export default function NewsPage() {
                       {/* Card Footer: Primary Action & Dropdown */}
                       <div className="flex items-center justify-end gap-2 border-t border-line/60 pt-3 mt-1">
                         {/* Primary Action Button based on status & role */}
-                        {art.status === "changes_requested" ? (
+                        {art.status === "changes_requested" && !canReview ? (
                           <button
                             type="button"
                             onClick={() => {
@@ -1190,7 +1174,7 @@ export default function NewsPage() {
                             <CheckCircle2 className="size-3.5" />
                             <span>مراجعة</span>
                           </button>
-                        ) : canSubmit && art.status === "draft" ? (
+                        ) : canSubmit && (art.status === "draft" || art.status === "changes_requested") ? (
                           <button
                             type="button"
                             disabled={actionInProgressId === art.id}
@@ -1205,14 +1189,13 @@ export default function NewsPage() {
                             <span>إرسال للمراجعة</span>
                           </button>
                         ) : art.status === "pending_review" ? (
-                          <button
-                            type="button"
-                            onClick={() => handleSubmitForReview(art)}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 transition-all shadow-2xs cursor-pointer"
+                          <span
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-800 shadow-2xs"
+                            role="status"
                           >
                             <Clock className="size-3.5 text-sky-600" />
                             <span>قيد المراجعة</span>
-                          </button>
+                          </span>
                         ) : canEdit ? (
                           <button
                             type="button"
