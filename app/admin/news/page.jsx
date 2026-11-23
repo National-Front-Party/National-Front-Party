@@ -78,12 +78,6 @@ const STATUS_CONFIG = {
   },
 };
 
-// Fallback seed sources if API is restricted or database has no loaded sources yet
-const FALLBACK_SOURCES = [
-  { id: 1, name_ar: "اليوم السابع", slug: "youm7", is_active: true },
-  { id: 2, name_ar: "صفحة الحزب الرسمية", slug: "party-fb", is_active: true },
-];
-
 export default function NewsPage() {
   const { user } = useAdminAuth();
   const { showSuccess, showError } = useToast();
@@ -112,7 +106,7 @@ export default function NewsPage() {
   const [featuredFilter, setFeaturedFilter] = useState("");
 
   // Catalogs
-  const [sourcesList, setSourcesList] = useState(FALLBACK_SOURCES);
+  const [sourcesList, setSourcesList] = useState([]);
   const [staffList, setStaffList] = useState([]);
 
   // Modals state
@@ -136,17 +130,13 @@ export default function NewsPage() {
   // Load News Sources from DB (strictly active sources only)
   useEffect(() => {
     let mounted = true;
-    adminFetch("/api/admin/news/sources?is_active=true&page_size=100")
+    adminFetch("/api/admin/news/article-sources")
       .then((data) => {
         if (mounted && Array.isArray(data?.sources)) {
           setSourcesList(data.sources.filter((s) => s && s.is_active === true));
         }
       })
-      .catch(() => {
-        if (mounted) {
-          setSourcesList(FALLBACK_SOURCES.filter((s) => s && s.is_active === true));
-        }
-      });
+      .catch(() => {});
 
     return () => {
       mounted = false;
@@ -1307,7 +1297,7 @@ export default function NewsPage() {
         key={editingArticle?.id || "new-article-modal"}
         isOpen={isEditorModalOpen}
         article={editingArticle}
-        sources={sourcesList}
+        sources={sourcesList.filter((source) => source?.is_active === true)}
         onClose={() => {
           setIsEditorModalOpen(false);
           setEditingArticle(null);

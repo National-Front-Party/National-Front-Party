@@ -94,7 +94,7 @@ export default function ArticleEditorModal({
     if (!isOpen) return;
     if (sources && sources.length > 0) return;
     let mounted = true;
-    adminFetch("/api/admin/news/sources?is_active=true&page_size=100")
+    adminFetch("/api/admin/news/article-sources")
       .then((data) => {
         if (mounted && Array.isArray(data?.sources)) {
           const activeOnly = data.sources.filter((s) => s && s.is_active === true);

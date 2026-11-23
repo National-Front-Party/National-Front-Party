@@ -1844,3 +1844,8 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 - Reworked the forced-change header into two compact rows on mobile while retaining its desktop row, constrained the shell and main area to the viewport, and reduced mobile page/card spacing. Password guidance and card heading now fit narrow widths more comfortably.
 - Targeted ESLint for AppShell and the change-password page, plus git diff --check, passed. Browser viewport testing was unavailable.
 - Only frontend shell/page styling changed; no backend, API, authentication logic, database, Prisma, or migration code was modified.
+
+### 2026-11-23 - Active news sources in Writer article creation
+- Root cause: Writers were forbidden from the Admin-only source-management GET endpoint, so NewsPage silently kept static fallback source IDs. Added an author-scoped read endpoint backed by the existing active-source query and switched Admin and Writer article creation to use it; removed stale fallback IDs. Article source creation already rejects inactive/missing IDs in the service layer. The schema has no soft-delete field; hard-deleted sources are absent from the active query.
+- Added coverage for Admin/Writer access, Reviewer/anonymous denial, empty lists, active-only service filtering, and unavailable source IDs on article creation. 46 targeted tests passed; ESLint and git diff --check passed. No DB commands were run and no source records were changed.
+- Changes are limited to the News article source-list flow, its API/service handler and tests, and this progress log. No schema or migration changes.
