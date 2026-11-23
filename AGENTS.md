@@ -1,7 +1,3 @@
-## تعليمات إلزامية للعمل على المشروع
-
-اقرأ docs/BACKEND_PROGRESS.md أولا قبل أي شغل، وحدّثه بعد كل فيز.
-
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
