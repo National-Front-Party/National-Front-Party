@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import Reveal from "@/components/Home/ui/Reveal";
 import { CONTACT, FOOTER_LINKS, SOCIAL_LINKS } from "@/data/mock/linksMock";
@@ -117,6 +118,7 @@ function LinkUnderline() {
 }
 
 function Footer() {
+    const pathname = usePathname();
     const currentYear = useSyncExternalStore(
         subscribeToYear,
         getCurrentYear,
@@ -125,6 +127,7 @@ function Footer() {
 
     const handleAnchorClick = (e, link) => {
         if (link.href.startsWith("#")) {
+            if (pathname !== "/") return;
             e.preventDefault();
             const id = link.href.slice(1);
             const target = document.getElementById(id);
@@ -226,7 +229,7 @@ function Footer() {
                                     style={{ animationDelay: `${index * 35 + 150}ms` }}
                                 >
                                     <a
-                                        href={link.href}
+                                        href={link.href.startsWith("#") && pathname !== "/" ? `/${link.href}` : link.href}
                                         onClick={(e) => handleAnchorClick(e, link)}
                                         className="group relative inline-block py-1 text-on-dark/80 transition-colors duration-300 hover:text-white focus-visible:text-white motion-reduce:transition-none"
                                     >

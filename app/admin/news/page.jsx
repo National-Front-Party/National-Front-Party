@@ -78,12 +78,6 @@ const STATUS_CONFIG = {
   },
 };
 
-// Fallback seed sources if API is restricted or database has no loaded sources yet
-const FALLBACK_SOURCES = [
-  { id: 1, name_ar: "اليوم السابع", slug: "youm7", is_active: true },
-  { id: 2, name_ar: "صفحة الحزب الرسمية", slug: "party-fb", is_active: true },
-];
-
 export default function NewsPage() {
   const { user } = useAdminAuth();
   const { showSuccess, showError } = useToast();
@@ -112,7 +106,7 @@ export default function NewsPage() {
   const [featuredFilter, setFeaturedFilter] = useState("");
 
   // Catalogs
-  const [sourcesList, setSourcesList] = useState(FALLBACK_SOURCES);
+  const [sourcesList, setSourcesList] = useState([]);
   const [staffList, setStaffList] = useState([]);
 
   // Modals state
@@ -136,17 +130,13 @@ export default function NewsPage() {
   // Load News Sources from DB (strictly active sources only)
   useEffect(() => {
     let mounted = true;
-    adminFetch("/api/admin/news/sources?is_active=true&page_size=100")
+    adminFetch("/api/admin/news/article-sources")
       .then((data) => {
         if (mounted && Array.isArray(data?.sources)) {
           setSourcesList(data.sources.filter((s) => s && s.is_active === true));
         }
       })
-      .catch(() => {
-        if (mounted) {
-          setSourcesList(FALLBACK_SOURCES.filter((s) => s && s.is_active === true));
-        }
-      });
+      .catch(() => {});
 
     return () => {
       mounted = false;
@@ -673,18 +663,18 @@ export default function NewsPage() {
       <div className="rounded-3xl border border-line bg-white p-5 sm:p-6 shadow-card animate-elem-fade-up">
         <form onSubmit={handleSearchSubmit} className="space-y-4">
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 ${
-              isSuperAdmin || isReviewer ? "lg:grid-cols-5" : "lg:grid-cols-4"
-            } gap-3.5 items-center`}
+            className={`grid min-w-0 grid-cols-1 items-center gap-3 sm:grid-cols-2 2xl:gap-3.5 ${
+              isSuperAdmin || isReviewer ? "2xl:grid-cols-5" : "2xl:grid-cols-4"
+            }`}
           >
             {/* Search Input: h-14, rounded-2xl, border-border, gold focus shadow */}
-            <div className="relative">
+            <div className="relative min-w-0">
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="ابحث في عنوان أو نص المقال..."
-                className="h-14 w-full rounded-2xl border border-border bg-white pr-4 pl-12 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
+                className="h-14 w-full min-w-0 rounded-2xl border border-border bg-white pr-3 pl-10 text-right text-[11px] 2xl:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
               />
               <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
                 <Search className="size-5" />
@@ -693,9 +683,11 @@ export default function NewsPage() {
 
             {/* Author Filter: Visible only for super_admin and news_reviewer */}
             {(isSuperAdmin || isReviewer) && (
-              <div>
+              <div className="min-w-0">
                 <CustomSelect
                   id="filter-author"
+                  fitContent
+                  fixedHeight
                   placeholder="جميع المحررين والكتّاب"
                   options={authorOptions}
                   value={authorFilter}
@@ -708,9 +700,11 @@ export default function NewsPage() {
             )}
 
             {/* Source Filter: Website CustomSelect */}
-            <div>
+            <div className="min-w-0">
               <CustomSelect
                 id="filter-source"
+                fitContent
+                fixedHeight
                 placeholder="جميع المصادر الإعلامية"
                 options={sourceOptions}
                 value={sourceFilter}
@@ -722,9 +716,11 @@ export default function NewsPage() {
             </div>
 
             {/* Featured Filter: Website CustomSelect */}
-            <div>
+            <div className="min-w-0">
               <CustomSelect
                 id="filter-featured"
+                fitContent
+                fixedHeight
                 placeholder="حالة التمييز"
                 options={featuredOptions}
                 value={featuredFilter}
@@ -736,10 +732,10 @@ export default function NewsPage() {
             </div>
 
             {/* Submit / Reset Actions matching field height h-14 */}
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 items-center gap-2">
               <button
                 type="submit"
-                className="flex-1 h-14 rounded-2xl bg-gold-gradient px-4 text-xs sm:text-sm font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                className="h-14 min-w-0 flex-1 rounded-2xl bg-gold-gradient px-3 2xl:px-4 text-xs 2xl:text-sm font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all cursor-pointer"
               >
                 تطبيق البحث
               </button>
@@ -748,7 +744,7 @@ export default function NewsPage() {
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="h-14 rounded-2xl border border-border bg-white px-4 text-xs font-bold text-muted hover:border-rose-300 hover:text-rose-600 transition-colors shadow-none cursor-pointer"
+                  className="h-14 shrink-0 rounded-2xl border border-border bg-white px-3 2xl:px-4 text-xs font-bold text-muted hover:border-rose-300 hover:text-rose-600 transition-colors shadow-none cursor-pointer"
                   title="إلغاء جميع الفلاتر"
                 >
                   إعادة ضبط
@@ -814,8 +810,8 @@ export default function NewsPage() {
           </div>
         ) : (
           <>
-            {/* Desktop Table View (hidden lg:block) - Proportional, clean, no horizontal scrolling */}
-            <div className="hidden lg:block w-full">
+            {/* Wide Desktop Table View; use cards while the dashboard content column is constrained */}
+            <div className="hidden min-[1728px]:block w-full">
               <table className="w-full text-right text-xs table-fixed">
                 <thead>
                   <tr className="border-b border-line bg-page/60 text-muted font-bold select-none">
@@ -1035,8 +1031,8 @@ export default function NewsPage() {
               </table>
             </div>
 
-            {/* Mobile & Tablet Card Layout (block lg:hidden) - Zero horizontal scrolling */}
-            <div className="block lg:hidden p-4 sm:p-5 bg-page/30">
+            {/* Responsive Card Layout for mobile, tablet, and laptop content widths */}
+            <div className="block min-[1728px]:hidden min-w-0 p-3 sm:p-4 lg:p-5 bg-page/30">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {articles.map((art) => {
                   const statusCfg = STATUS_CONFIG[art.status] || {
@@ -1053,11 +1049,11 @@ export default function NewsPage() {
                   return (
                     <div
                       key={art.id}
-                      className="group relative flex flex-col justify-between rounded-2xl border border-line bg-white p-4 sm:p-5 shadow-2xs hover:shadow-card hover:border-gold/50 transition-all duration-300"
+                      className="group relative flex min-w-0 flex-col justify-between rounded-2xl border border-line bg-white p-3 sm:p-4 shadow-2xs hover:shadow-card hover:border-gold/50 transition-all duration-300"
                     >
                       {/* Card Top: Badges & Date */}
-                      <div className="flex items-center justify-between gap-2 border-b border-line/60 pb-3">
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
+                        <div className="flex min-w-0 flex-wrap items-center gap-2">
                           <span
                             className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${statusCfg.tone}`}
                           >
@@ -1071,15 +1067,15 @@ export default function NewsPage() {
                           )}
                         </div>
 
-                        <span className="flex items-center gap-1 text-[11px] text-muted font-mono">
+                        <span className="flex shrink-0 items-center gap-1 text-[11px] text-muted font-mono">
                           <Calendar className="size-3" />
                           <span>{formatDate(art.published_on || art.created_at)}</span>
                         </span>
                       </div>
 
                       {/* Card Body: Thumbnail, Title, Source, Author */}
-                      <div className="my-3 space-y-3">
-                        <div className="flex gap-3 items-start">
+                      <div className="my-3 min-w-0 space-y-3">
+                        <div className="flex min-w-0 items-start gap-3">
                           <div className="relative size-14 shrink-0 rounded-xl overflow-hidden border border-line bg-page flex items-center justify-center">
                             {art.image_url ? (
                               <Image
@@ -1102,25 +1098,25 @@ export default function NewsPage() {
                                 setDetailsArticle(art);
                                 setIsDetailsModalOpen(true);
                               }}
-                              className="text-right font-black text-sm text-ink group-hover:text-gold-dark transition-colors line-clamp-2 cursor-pointer"
+                              className="w-full min-w-0 whitespace-normal break-words text-right font-black text-sm text-ink group-hover:text-gold-dark transition-colors [overflow-wrap:anywhere] cursor-pointer"
                             >
                               {art.title}
                             </button>
-                            <span className="block text-[11px] font-mono text-muted truncate" dir="ltr">
+                            <span className="block whitespace-normal break-all text-[11px] font-mono text-muted" dir="ltr">
                               {art.slug}
                             </span>
                           </div>
                         </div>
 
                         {/* Source and Author tags */}
-                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted pt-1 border-t border-line/40">
-                          <span className="rounded-md bg-page border border-line px-2 py-0.5 font-bold text-ink truncate max-w-[150px]">
+                        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 text-[11px] text-muted pt-1 border-t border-line/40">
+                          <span className="inline-block min-w-0 max-w-full whitespace-normal break-words rounded-md bg-page border border-line px-2 py-0.5 font-bold text-ink [overflow-wrap:anywhere]">
                             {art.source_name || art.source?.name_ar || "—"}
                           </span>
 
-                          <span className="flex items-center gap-1">
+                          <span className="flex min-w-0 max-w-full items-start gap-1">
                             <User className="size-3 text-gold-dark" />
-                            <span className="font-bold text-ink">
+                            <span className="min-w-0 whitespace-normal break-words font-bold text-ink [overflow-wrap:anywhere]">
                               {art.created_by_user?.full_name || "—"}
                             </span>
                           </span>
@@ -1134,13 +1130,13 @@ export default function NewsPage() {
                               setReviewNotesArticle(art);
                               setIsReviewNotesModalOpen(true);
                             }}
-                            className="w-full flex items-center justify-between gap-2 rounded-xl border border-amber-300 bg-amber-50/90 p-2.5 text-xs font-bold text-amber-900 hover:bg-amber-100 hover:scale-[1.02] active:scale-95 transition-all shadow-2xs cursor-pointer"
+                            className="flex w-full min-w-0 flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-300 bg-amber-50/90 p-2.5 text-xs font-bold text-amber-900 hover:bg-amber-100 hover:scale-[1.02] active:scale-95 transition-all shadow-2xs cursor-pointer"
                           >
-                            <span className="flex items-center gap-1.5">
+                            <span className="flex min-w-0 items-center gap-1.5">
                               <MessageSquareText className="size-4 text-amber-700" />
-                              <span>ملاحظات وتعديلات المراجع</span>
+                              <span className="min-w-0 break-words [overflow-wrap:anywhere]">ملاحظات وتعديلات المراجع</span>
                             </span>
-                            <span className="text-[10px] bg-white border border-amber-300 rounded-md px-2 py-0.5 font-black">
+                            <span className="text-[10px] whitespace-normal break-words bg-white border border-amber-300 rounded-md px-2 py-0.5 font-black">
                               عرض التعديلات ←
                             </span>
                           </button>
@@ -1148,7 +1144,7 @@ export default function NewsPage() {
                       </div>
 
                       {/* Card Footer: Primary Action & Dropdown */}
-                      <div className="flex items-center justify-end gap-2 border-t border-line/60 pt-3 mt-1">
+                      <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 border-t border-line/60 pt-3 mt-1">
                         {/* Primary Action Button based on status & role */}
                         {art.status === "changes_requested" && !canReview ? (
                           <button
@@ -1301,7 +1297,7 @@ export default function NewsPage() {
         key={editingArticle?.id || "new-article-modal"}
         isOpen={isEditorModalOpen}
         article={editingArticle}
-        sources={sourcesList}
+        sources={sourcesList.filter((source) => source?.is_active === true)}
         onClose={() => {
           setIsEditorModalOpen(false);
           setEditingArticle(null);

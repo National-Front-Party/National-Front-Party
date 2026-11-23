@@ -1748,3 +1748,104 @@ Implemented minimal, focused fixes for four independently confirmed backend bugs
 ### 2026-11-22 - Individual employee deletion frontend
 - Added a per-employee delete action to the Staff page. Active accounts show a deactivation requirement; the current account action is disabled. Inactive accounts require a named confirmation dialog before sending the existing DELETE request.
 - Success removes the account from the local list and updates counts; errors remain in the dialog, and a missing account triggers a list refresh. No bulk action or database request was run.
+
+### 2026-11-22 - Home navigation links frontend
+- Replaced the separate village and ezba entries in the shared Navbar/Footer link data with one "الوحدة الحزبية" link targeting the existing "#geo" section.
+- Navbar and Footer retain their in-page smooth scrolling and active link behavior on `/`; on other routes, the links point to `/#geo` and the existing section anchor receives focus on load.
+- No backend, API, service, authentication, Prisma, migration, or database files were changed; no database command was run.
+
+### 2026-11-22 - Navbar pathname reference fix
+- Fixed a runtime ReferenceError in NavigationLinks by passing the current pathname from NavbarContent to both the desktop and mobile link lists.
+- Verified with targeted ESLint and git diff whitespace checks.
+
+### 2026-11-22 - Admin toast responsiveness and header search removal
+- Updated the shared admin toast placement and card sizing to stay within viewport gutters, wrap long messages, and align decorative status icons to multiline Arabic text on mobile while retaining desktop styling, colors, and timer dismissal.
+- Removed the unused dashboard header search input and its Ctrl+K focus shortcut; the mobile drawer and Escape handling remain.
+- Targeted ESLint and git diff whitespace checks passed. Interactive browser checks were not available in this environment.
+- No backend or database files or records were changed.
+
+### 2026-11-22 - Responsive admin request filters
+- Made the Service Requests and Membership Applications filter grids use two columns through laptop widths, a single column on phones, and four columns only at wide desktop sizes.
+- Added opt-in wrapping for long selected values and dropdown options in CustomSelect and enabled it only for these pages; reduced field and action padding/font sizes at narrower widths.
+- ESLint passed for each modified JSX file when run individually with an explicit Node heap. Live viewport testing was unavailable because no browser surface was available; breakpoint behavior was checked from the responsive classes.
+- No backend, API, database, Prisma, or migration files were changed.
+
+### 2026-11-22 - Dashboard quick access text wrapping
+- Replaced truncation in Quick Access tile labels with natural wrapping and safe overflow wrapping; constrained tile sizing and reduced padding/gaps at narrower widths while retaining the two-column layout, icons, and links.
+- Targeted ESLint and git diff --check passed. Browser viewport rendering was unavailable; the requested widths were checked against the responsive class rules and dashboard container sizing.
+- No backend or database files were modified.
+
+### 2026-11-22 - Responsive dashboard statistics and sparklines
+- Changed the statistics grid to one column on phones, two columns through typical laptop widths, and four columns on very wide screens. Stat-card titles and long values now wrap within constrained flex items; font sizes and padding scale down at smaller widths.
+- Resized each existing SVG sparkline to its card width while retaining its original path data and count values.
+- Targeted ESLint and git diff --check passed. Browser viewport rendering was unavailable; requested widths were checked against the responsive breakpoints and dashboard content width.
+- Existing Quick Access changes were preserved. No backend or database files were modified.
+
+### 2026-11-23 - Responsive news filters
+- Updated the News filters to use one column on phones, two columns through laptop widths, and the existing role-dependent four or five controls across only on very wide screens.
+- Added constrained grid items, narrower search padding/font sizing, and enabled the existing opt-in CustomSelect wrapping for author, source, and featured values. Filter logic, options, and role visibility are unchanged.
+- Targeted ESLint and git diff --check passed. No browser viewport session was available for live rendering.
+- No backend or database files were modified.
+
+### 2026-11-23 - Responsive news article list cards
+- Kept the fixed-column article table for very wide viewports only and displayed the existing responsive article cards through constrained laptop widths.
+- Reduced card padding and added safe wrapping for article titles, slugs, source/author metadata, review notes, and action rows. Existing article actions and destinations are unchanged.
+- Targeted ESLint and git diff --check passed. No browser session was available for live viewport testing.
+- No backend or database files were modified.
+
+### 2026-11-23 - Responsive news page forms
+- Made the existing News filters, article editor form, and review-change form fit narrow screens with responsive dialog heights, single-column mobile fields, wrapping content, and full-width mobile actions.
+- Kept field names, values, options, submission handlers, validation, and destinations unchanged.
+- Targeted ESLint passed for the News page and both form modals; git diff --check passed. Browser-based visual testing was unavailable.
+- Preserved the existing uncommitted News page changes and untracked upload images. No backend or database files were modified.
+
+### 2026-11-23 - Responsive article details modal
+- Made the News article details modal fit viewport height with a scrollable body and persistent header/footer, responsive metadata cards, and safe wrapping for article titles, metadata, review notes, URLs, and body text.
+- Existing article content, external link, and close behavior are unchanged.
+- Targeted ESLint and git diff --check passed. Live browser rendering was unavailable.
+- Existing uncommitted News changes and the untracked upload were preserved; no backend or database files were modified.
+
+### 2026-11-23 - Align News filter controls
+- Added an opt-in fixed-height mode to CustomSelect and enabled it for the News author, source, and featured filters so all controls match the 56px search/action fields. Selected values can use two lines and expose their full text through the control title.
+- Vertically centered the filter grid items. Targeted ESLint and git diff --check passed; no browser session was available for live visual verification.
+- No filter logic or options changed; no backend or database files were modified.
+
+### 2026-11-23 - Responsive news source forms
+- Made the source editor modal height-aware with an internally scrollable form body, smaller mobile padding, and wrapping title/help text.
+- Kept sort order and active status controls in a responsive grid; action buttons stack at full width on phones and return to inline sizing on larger screens. Existing delete confirmation already used a responsive layout and was left as-is.
+- Targeted ESLint and git diff --check passed. Browser viewport testing was unavailable. Form fields and submission behavior are unchanged; no backend or database files were modified.
+
+### 2026-11-23 - Match organization scope dropdown styling
+- Replaced the three native governorate, center, and local-secretariat selectors with the shared CustomSelect used on the Membership Applications page, matching its rounded controls, chevron, and gold focus treatment.
+- Preserved blank/reset options and existing cascading selection handlers. Targeted ESLint and git diff --check passed; browser visual review was unavailable.
+- No backend, API, or database files were modified.
+
+### 2026-11-23 - Responsive organization person form
+- Added an opt-in responsive mode to the organization page modal and enabled it for the add/edit responsible-person form: viewport-bounded dialog, internal scrolling, mobile padding, wrapping selected-member text, single-column small-screen fields, and stacked full-width actions.
+- Other organization modals and all form behavior remain unchanged. Targeted ESLint and git diff --check passed; browser viewport testing was unavailable.
+- No backend or database code was modified.
+
+### 2026-11-23 - Responsive staff management page
+- Kept the existing compact staff table for very wide screens and switched to the existing staff cards below 2xl so the table no longer squeezes into the space beside the dashboard sidebar. Made the toolbar stack until wide layouts and let statistics/footer metadata wrap on narrow cards; long names/emails wrap safely in cards.
+- Targeted ESLint and git diff --check passed. Browser viewport testing was unavailable.
+- Only app/admin/staff/page.jsx was modified; no backend, API, database, Prisma, or migration files were touched.
+
+### 2026-11-23 - Staff role filter width
+- Gave the role dropdown a stable responsive width beside the search field so its Arabic label no longer wraps into a narrow vertical stack; it remains full-width when the toolbar stacks.
+- ESLint and git diff --check could not be rerun because the PowerShell command runner failed to start (CLR thread/assembly error).
+- Frontend-only change; no backend, API, database, Prisma, or migration files were touched.
+
+### 2026-11-23 - Responsive admin login page
+- Constrained the login page wrapper to the viewport, clipped horizontal overflow from decorative/background content, used the small viewport height where supported, and reduced card/fallback padding on mobile while preserving desktop sizing.
+- Targeted ESLint and git diff --check passed. Browser viewport testing was unavailable.
+- Only app/admin/login/page.jsx was changed for the page; no backend, API, database, Prisma, or migration files were modified.
+
+### 2026-11-23 - Responsive forced password change page
+- Reworked the forced-change header into two compact rows on mobile while retaining its desktop row, constrained the shell and main area to the viewport, and reduced mobile page/card spacing. Password guidance and card heading now fit narrow widths more comfortably.
+- Targeted ESLint for AppShell and the change-password page, plus git diff --check, passed. Browser viewport testing was unavailable.
+- Only frontend shell/page styling changed; no backend, API, authentication logic, database, Prisma, or migration code was modified.
+
+### 2026-11-23 - Active news sources in Writer article creation
+- Root cause: Writers were forbidden from the Admin-only source-management GET endpoint, so NewsPage silently kept static fallback source IDs. Added an author-scoped read endpoint backed by the existing active-source query and switched Admin and Writer article creation to use it; removed stale fallback IDs. Article source creation already rejects inactive/missing IDs in the service layer. The schema has no soft-delete field; hard-deleted sources are absent from the active query.
+- Added coverage for Admin/Writer access, Reviewer/anonymous denial, empty lists, active-only service filtering, and unavailable source IDs on article creation. 46 targeted tests passed; ESLint and git diff --check passed. No DB commands were run and no source records were changed.
+- Changes are limited to the News article source-list flow, its API/service handler and tests, and this progress log. No schema or migration changes.

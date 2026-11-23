@@ -40,26 +40,26 @@ export default function ArticleDetailsModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs transition-opacity overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 transition-opacity sm:items-center sm:p-5 bg-black/60 backdrop-blur-xs"
       dir="rtl"
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="relative w-full max-w-3xl overflow-hidden rounded-[26px] border border-line bg-white shadow-card-hover animate-elem-fade-up my-auto"
+        className="relative my-0 flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl min-w-0 flex-col overflow-hidden rounded-[26px] border border-line bg-white shadow-card-hover animate-elem-fade-up sm:my-auto sm:max-h-[calc(100dvh-2.5rem)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-line bg-page/40 px-6 py-5">
-          <div className="flex items-center gap-3.5">
+        <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-line bg-page/40 px-4 py-4 sm:gap-3.5 sm:px-6 sm:py-5">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3.5">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
               <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
               </svg>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <span className="text-xs font-bold text-muted">تفاصيل المقال الإخباري</span>
                 <span
                   className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${statusInfo.tone}`}
@@ -72,7 +72,7 @@ export default function ArticleDetailsModal({
                   </span>
                 )}
               </div>
-              <h2 className="text-lg font-black text-ink tracking-tight mt-0.5">
+              <h2 className="break-words text-base font-black text-ink tracking-tight mt-0.5 sm:text-lg [overflow-wrap:anywhere]">
                 {article.title}
               </h2>
             </div>
@@ -102,33 +102,33 @@ export default function ArticleDetailsModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto">
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:space-y-6 sm:p-6 lg:p-8">
           {/* Metadata Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="rounded-2xl border border-line bg-page/30 p-3.5 space-y-1">
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="min-w-0 rounded-2xl border border-line bg-page/30 p-3 space-y-1 sm:p-3.5">
               <span className="text-[11px] text-muted block font-bold">مصدر الخبر:</span>
-              <span className="text-xs font-bold text-ink block truncate">
+              <span className="block whitespace-normal break-words text-xs font-bold text-ink [overflow-wrap:anywhere]">
                 📰 {article.source_name || article.source?.name_ar || "—"}
               </span>
             </div>
 
-            <div className="rounded-2xl border border-line bg-page/30 p-3.5 space-y-1">
+            <div className="min-w-0 rounded-2xl border border-line bg-page/30 p-3 space-y-1 sm:p-3.5">
               <span className="text-[11px] text-muted block font-bold">الكاتب / المحرر:</span>
-              <span className="text-xs font-bold text-ink block truncate">
+              <span className="block whitespace-normal break-words text-xs font-bold text-ink [overflow-wrap:anywhere]">
                 ✍️ {article.created_by_user?.full_name || "غير محدد"}
               </span>
             </div>
 
-            <div className="rounded-2xl border border-line bg-page/30 p-3.5 space-y-1">
+            <div className="min-w-0 rounded-2xl border border-line bg-page/30 p-3 space-y-1 sm:p-3.5">
               <span className="text-[11px] text-muted block font-bold">تاريخ النشر:</span>
               <span className="text-xs font-mono font-bold text-ink block">
                 📅 {article.published_on ? new Date(article.published_on).toISOString().substring(0, 10) : "—"}
               </span>
             </div>
 
-            <div className="rounded-2xl border border-line bg-page/30 p-3.5 space-y-1">
+            <div className="min-w-0 rounded-2xl border border-line bg-page/30 p-3 space-y-1 sm:p-3.5">
               <span className="text-[11px] text-muted block font-bold">المعرف اللطيف (Slug):</span>
-              <span className="text-xs font-mono text-muted block truncate" dir="ltr">
+              <span className="block whitespace-normal break-all text-xs font-mono text-muted [overflow-wrap:anywhere]" dir="ltr">
                 {article.slug}
               </span>
             </div>
@@ -136,13 +136,13 @@ export default function ArticleDetailsModal({
 
           {/* Audit / Reviewer details if reviewed */}
           {(article.reviewed_by_user || article.review_note) && (
-            <div className="rounded-2xl border border-line bg-page/40 p-4 space-y-2 text-xs">
+            <div className="min-w-0 rounded-2xl border border-line bg-page/40 p-3 space-y-2 text-xs sm:p-4">
               {article.reviewed_by_user && (
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
                   <span className="font-bold text-muted">تمت المراجعة بواسطة:</span>
-                  <span className="font-bold text-ink">{article.reviewed_by_user.full_name}</span>
+                  <span className="min-w-0 break-words font-bold text-ink [overflow-wrap:anywhere]">{article.reviewed_by_user.full_name}</span>
                   {article.reviewed_at && (
-                    <span className="text-muted font-mono">
+                    <span className="break-words text-muted font-mono [overflow-wrap:anywhere]">
                       (في {new Date(article.reviewed_at).toLocaleString("ar-EG")})
                     </span>
                   )}
@@ -151,7 +151,7 @@ export default function ArticleDetailsModal({
               {article.review_note && (
                 <div className="pt-1">
                   <span className="font-bold text-rose-800 block">ملاحظة المراجعة:</span>
-                  <p className="mt-1 text-ink bg-white p-3 rounded-xl border border-line font-medium leading-relaxed">
+                  <p className="mt-1 whitespace-pre-wrap break-words text-ink bg-white p-3 rounded-xl border border-line font-medium leading-relaxed [overflow-wrap:anywhere]">
                     {article.review_note}
                   </p>
                 </div>
@@ -171,7 +171,7 @@ export default function ArticleDetailsModal({
                 unoptimized
               />
               {article.image_alt && (
-                <div className="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-xs p-2 text-center text-[11px] text-white">
+                <div className="absolute bottom-0 inset-x-0 break-words bg-black/60 backdrop-blur-xs p-2 text-center text-[11px] text-white [overflow-wrap:anywhere]">
                   {article.image_alt}
                 </div>
               )}
@@ -180,7 +180,7 @@ export default function ArticleDetailsModal({
 
           {/* Source URL External Link */}
           {article.source_url && (
-            <div className="flex items-center justify-between p-3.5 rounded-2xl border border-line bg-page/20 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-line bg-page/20 p-3 text-xs sm:p-3.5">
               <span className="font-bold text-muted">رابط المقال على المصدر الخارجي:</span>
               <a
                 href={article.source_url}
@@ -199,22 +199,22 @@ export default function ArticleDetailsModal({
           )}
 
           {/* Body Paragraphs */}
-          <div className="space-y-3">
+          <div className="min-w-0 space-y-3">
             <h3 className="text-xs font-bold text-muted">نص المقال:</h3>
-            <div className="rounded-2xl border border-line bg-white p-5 space-y-3.5 text-xs sm:text-sm text-ink leading-relaxed shadow-xs">
+            <div className="min-w-0 rounded-2xl border border-line bg-white p-3 space-y-3.5 text-xs text-ink leading-relaxed shadow-xs sm:p-5 sm:text-sm">
               {paragraphs.map((p, idx) => (
-                <p key={idx}>{p}</p>
+                <p key={idx} className="break-words [overflow-wrap:anywhere]">{p}</p>
               ))}
             </div>
           </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end p-5 border-t border-line bg-page/30">
+        <div className="flex shrink-0 justify-end border-t border-line bg-page/30 p-3 sm:p-5">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-line bg-white px-5 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink hover:scale-105 active:scale-95 transition-all shadow-2xs"
+            className="w-full rounded-xl border border-line bg-white px-5 py-2 text-xs font-bold text-muted hover:border-gold hover:text-ink hover:scale-105 active:scale-95 transition-all shadow-2xs sm:w-auto"
           >
             إغلاق
           </button>

@@ -130,18 +130,18 @@ function SourceForm({ source, onClose, onSaved }) {
 
   return (
     <div
-      className="relative w-full max-w-lg overflow-hidden rounded-[26px] border border-line bg-white shadow-card-hover animate-elem-fade-up my-auto"
+      className="relative my-0 flex max-h-[calc(100dvh-1.5rem)] w-full max-w-lg min-w-0 flex-col overflow-hidden rounded-[26px] border border-line bg-white shadow-card-hover animate-elem-fade-up sm:my-auto sm:max-h-[calc(100dvh-2.5rem)]"
       onClick={(e) => e.stopPropagation()}
     >
       {/* Top Header */}
-      <div className="flex shrink-0 items-center justify-between border-b border-line bg-page/40 px-6 py-5">
-        <div className="flex items-center gap-3.5">
+      <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-line bg-page/40 px-4 py-4 sm:gap-3.5 sm:px-6 sm:py-5">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3.5">
           <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
             <Globe className="size-5" />
           </div>
-          <div>
+          <div className="min-w-0">
             <span className="text-xs font-bold text-muted">إدارة مصادر وتغطيات الأخبار</span>
-            <h2 className="text-lg font-black text-ink tracking-tight mt-0.5">
+            <h2 className="break-words text-base font-black text-ink tracking-tight mt-0.5 sm:text-lg [overflow-wrap:anywhere]">
               {isEdit ? "تعديل بيانات المصدر الإعلامي" : "إضافة مصدر إخباري جديد"}
             </h2>
           </div>
@@ -172,7 +172,7 @@ function SourceForm({ source, onClose, onSaved }) {
       </div>
 
       {/* Modal Form Body */}
-      <form onSubmit={handleSubmit} className="p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 sm:space-y-5 sm:p-6">
         {/* 1. Source Arabic Name (name_ar) */}
         <div>
           <label className="mb-2 block text-xs sm:text-sm font-bold text-ink">
@@ -190,7 +190,7 @@ function SourceForm({ source, onClose, onSaved }) {
               className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60 disabled:opacity-50"
             />
           </div>
-          <span className="mt-1 block text-[11px] text-muted">
+          <span className="mt-1 block break-words text-[11px] text-muted [overflow-wrap:anywhere]">
             الاسم الرسمي للصحيفة أو الموقع الإخباري كما سيظهر في تقارير الأخبار بالموقع.
           </span>
         </div>
@@ -213,15 +213,15 @@ function SourceForm({ source, onClose, onSaved }) {
               className="h-14 w-full rounded-2xl border border-border bg-white px-4 text-left font-mono text-xs sm:text-sm font-semibold text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60 disabled:opacity-50"
             />
           </div>
-          <span className="mt-1 block text-[11px] text-muted">
+          <span className="mt-1 block break-words text-[11px] text-muted [overflow-wrap:anywhere]">
             معرف إنجليزي فريد يُستخدم في الروابط وفلترة المقالات (أحرف صغيرة، أرقام، وشرطات فقط).
           </span>
         </div>
 
         {/* 3. Sort Order & Status Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
           {/* Sort Order */}
-          <div>
+          <div className="min-w-0">
             <label className="mb-2 block text-xs sm:text-sm font-bold text-ink">
               ترتيب العرض (Sort Order)
             </label>
@@ -245,16 +245,16 @@ function SourceForm({ source, onClose, onSaved }) {
           </div>
 
           {/* Active Status Radio/Toggle */}
-          <div>
+          <div className="min-w-0">
             <label className="mb-2 block text-xs sm:text-sm font-bold text-ink">
               حالة الاعتماد
             </label>
-            <div className="flex h-14 items-center justify-between gap-2 rounded-2xl border border-border bg-page/40 p-1.5">
+            <div className="flex h-14 min-w-0 items-center justify-between gap-1 rounded-2xl border border-border bg-page/40 p-1 sm:gap-2 sm:p-1.5">
               <button
                 type="button"
                 onClick={() => setIsActive(true)}
                 disabled={submitting}
-                className={`flex flex-1 items-center justify-center gap-1.5 h-full rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`flex min-w-0 flex-1 items-center justify-center gap-1 h-full rounded-xl text-[11px] font-bold transition-all cursor-pointer sm:gap-1.5 sm:text-xs ${
                   isActive
                     ? "bg-emerald-600 text-white shadow-2xs"
                     : "text-muted hover:text-ink hover:bg-white"
@@ -267,7 +267,7 @@ function SourceForm({ source, onClose, onSaved }) {
                 type="button"
                 onClick={() => setIsActive(false)}
                 disabled={submitting}
-                className={`flex flex-1 items-center justify-center gap-1.5 h-full rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`flex min-w-0 flex-1 items-center justify-center gap-1 h-full rounded-xl text-[11px] font-bold transition-all cursor-pointer sm:gap-1.5 sm:text-xs ${
                   !isActive
                     ? "bg-rose-600 text-white shadow-2xs"
                     : "text-muted hover:text-ink hover:bg-white"
@@ -277,19 +277,19 @@ function SourceForm({ source, onClose, onSaved }) {
                 <span>معطل مؤقتاً</span>
               </button>
             </div>
-            <span className="mt-1 block text-[10px] text-muted">
+            <span className="mt-1 block break-words text-[10px] text-muted [overflow-wrap:anywhere]">
               المصادر المعطلة لا تظهر للمحررين عند إضافة مقالات جديدة.
             </span>
           </div>
         </div>
 
         {/* Modal Actions Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-line/60 pt-5 mt-2">
+        <div className="flex flex-col-reverse gap-2 border-t border-line/60 pt-4 mt-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3 sm:pt-5">
           <button
             type="button"
             disabled={submitting}
             onClick={onClose}
-            className="rounded-2xl border border-line bg-white px-5 py-3 text-xs sm:text-sm font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint/40 hover:text-gold-dark active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="w-full rounded-2xl border border-line bg-white px-5 py-3 text-xs font-bold text-ink transition-all hover:border-gold hover:bg-gold-tint/40 hover:text-gold-dark active:scale-95 disabled:opacity-50 cursor-pointer sm:w-auto sm:text-sm"
           >
             إلغاء
           </button>
@@ -297,7 +297,7 @@ function SourceForm({ source, onClose, onSaved }) {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-6 py-3 text-xs sm:text-sm font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)] hover:scale-[1.02] active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gold-gradient px-5 py-3 text-xs font-black text-ink shadow-btn shadow-[0_4px_14px_rgba(201,162,74,0.35)] transition-all duration-300 hover:brightness-110 hover:shadow-[0_6px_18px_rgba(201,162,74,0.45)] hover:scale-[1.02] active:scale-95 disabled:opacity-50 cursor-pointer sm:w-auto sm:px-6 sm:text-sm"
           >
             {submitting ? (
               <>
@@ -324,7 +324,7 @@ export default function SourceEditorModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs transition-opacity overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 transition-opacity sm:items-center sm:p-5 bg-black/60 backdrop-blur-xs"
       dir="rtl"
       role="dialog"
       aria-modal="true"

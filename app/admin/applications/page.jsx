@@ -725,15 +725,15 @@ export default function ApplicationsPage() {
       {/* 3. Search and Filters Bar with website form field style */}
       <div className="rounded-3xl border border-line bg-white p-5 sm:p-6 shadow-card animate-elem-fade-up">
         <form onSubmit={handleSearchSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 items-center">
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-4 2xl:gap-3.5">
             {/* Search Input: h-14, rounded-2xl, border-border, gold focus shadow */}
-            <div className="relative">
+            <div className="relative min-w-0">
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="بحث بالاسم، الرقم القومي أو الهاتف..."
-                className="h-14 w-full rounded-2xl border border-border bg-white pr-4 pl-12 text-right text-xs sm:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
+                className="h-14 w-full min-w-0 rounded-2xl border border-border bg-white pr-3 pl-10 text-right text-[11px] 2xl:text-sm font-medium text-ink shadow-none transition-all duration-300 ease-in-out hover:border-gold focus:!border-transparent focus:!outline-none focus:!ring-0 focus:!shadow-[0_2px_5px_rgba(201,162,74,0.45)] placeholder:text-muted/60"
               />
               <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
                 <Search className="size-5" />
@@ -741,9 +741,10 @@ export default function ApplicationsPage() {
             </div>
 
             {/* Type Filter: Website CustomSelect */}
-            <div>
+            <div className="min-w-0">
               <CustomSelect
                 id="filter-type"
+                fitContent
                 placeholder="جميع أنواع الانضمام"
                 options={typeOptions}
                 value={typeFilter}
@@ -755,9 +756,10 @@ export default function ApplicationsPage() {
             </div>
 
             {/* Governorate Filter: Website CustomSelect with search & portal listbox */}
-            <div>
+            <div className="min-w-0">
               <CustomSelect
                 id="filter-governorate"
+                fitContent
                 placeholder="جميع المحافظات"
                 options={governorateOptions}
                 value={governorateFilter}
@@ -769,10 +771,10 @@ export default function ApplicationsPage() {
             </div>
 
             {/* Submit / Reset Actions matching field height h-14 */}
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 items-center gap-2">
               <button
                 type="submit"
-                className="flex-1 h-14 rounded-2xl bg-gold-gradient px-4 text-xs sm:text-sm font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                className="h-14 min-w-0 flex-1 rounded-2xl bg-gold-gradient px-3 2xl:px-4 text-xs 2xl:text-sm font-bold text-ink shadow-btn hover:brightness-110 active:scale-95 transition-all cursor-pointer"
               >
                 تطبيق البحث
               </button>
@@ -781,7 +783,7 @@ export default function ApplicationsPage() {
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="h-14 rounded-2xl border border-border bg-white px-4 text-xs font-bold text-muted hover:border-rose-300 hover:text-rose-600 transition-colors shadow-none cursor-pointer"
+                  className="h-14 shrink-0 rounded-2xl border border-border bg-white px-3 2xl:px-4 text-xs font-bold text-muted hover:border-rose-300 hover:text-rose-600 transition-colors shadow-none cursor-pointer"
                   title="إلغاء جميع الفلاتر"
                 >
                   إعادة ضبط

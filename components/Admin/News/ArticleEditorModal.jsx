@@ -94,7 +94,7 @@ export default function ArticleEditorModal({
     if (!isOpen) return;
     if (sources && sources.length > 0) return;
     let mounted = true;
-    adminFetch("/api/admin/news/sources?is_active=true&page_size=100")
+    adminFetch("/api/admin/news/article-sources")
       .then((data) => {
         if (mounted && Array.isArray(data?.sources)) {
           const activeOnly = data.sources.filter((s) => s && s.is_active === true);
@@ -350,26 +350,26 @@ export default function ArticleEditorModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs transition-opacity overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 transition-opacity sm:items-center sm:p-5 bg-black/60 backdrop-blur-xs"
       dir="rtl"
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="relative w-full max-w-3xl overflow-hidden rounded-[26px] border border-line bg-white shadow-card-hover animate-elem-fade-up my-auto"
+        className="relative my-0 max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl min-w-0 overflow-hidden rounded-[26px] border border-line bg-white shadow-card-hover animate-elem-fade-up sm:my-auto sm:max-h-[calc(100dvh-2.5rem)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-line bg-page/40 px-6 py-5">
-          <div className="flex items-center gap-3.5">
+        <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-line bg-page/40 px-4 py-4 sm:gap-3.5 sm:px-6 sm:py-5">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3.5">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark shadow-2xs">
               <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
             </div>
-            <div>
+            <div className="min-w-0">
               <span className="text-xs font-bold text-muted">إدارة المحتوى الصحفي والإعلامي</span>
-              <h2 className="text-lg font-black text-ink tracking-tight mt-0.5">
+              <h2 className="break-words text-base font-black text-ink tracking-tight mt-0.5 sm:text-lg [overflow-wrap:anywhere]">
                 {isEdit ? "تعديل بيانات المقال الصحفي" : "إنشاء مقال إخباري جديد"}
               </h2>
             </div>
@@ -400,10 +400,10 @@ export default function ArticleEditorModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5 max-h-[80vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="max-h-[calc(100dvh-8rem)] space-y-4 overflow-y-auto p-4 sm:max-h-[75vh] sm:space-y-5 sm:p-6 lg:p-8">
           {/* Title */}
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <label htmlFor="article-title" className="block text-xs font-bold text-ink">
                 عنوان المقال الصحفي <span className="text-rose-600">*</span>
               </label>
@@ -422,14 +422,15 @@ export default function ArticleEditorModal({
           </div>
 
           {/* Grid: Source (CustomSelect from DB) & Publication Date */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
             {/* Source - CustomSelect Dropdown */}
-            <div className="space-y-1.5">
+            <div className="min-w-0 space-y-1.5">
               <label htmlFor="article-source-id" className="block text-xs font-bold text-ink">
                 مصدر الخبر المعتمد <span className="text-rose-600">*</span>
               </label>
               <CustomSelect
                 id="article-source-id"
+                fitContent
                 options={sourceOptions}
                 value={sourceId}
                 onChange={handleSourceChange}
@@ -443,7 +444,7 @@ export default function ArticleEditorModal({
             </div>
 
             {/* Publication Date */}
-            <div className="space-y-1.5">
+            <div className="min-w-0 space-y-1.5">
               <label htmlFor="article-pub-date" className="block text-xs font-bold text-ink">
                 تاريخ النشر <span className="text-rose-600">*</span>
               </label>
@@ -459,9 +460,9 @@ export default function ArticleEditorModal({
           </div>
 
           {/* Grid: External Source URL & Slug */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
             {/* External URL */}
-            <div className="space-y-1.5">
+            <div className="min-w-0 space-y-1.5">
               <label htmlFor="article-source-url" className="block text-xs font-bold text-ink">
                 رابط المصدر الخارجي <span className="text-muted font-normal">(اختياري)</span>
               </label>
@@ -478,7 +479,7 @@ export default function ArticleEditorModal({
             </div>
 
             {/* Custom Slug */}
-            <div className="space-y-1.5">
+            <div className="min-w-0 space-y-1.5">
               <label htmlFor="article-slug" className="block text-xs font-bold text-ink">
                 المعرف اللطيف (Slug) <span className="text-muted font-normal">(اختياري / يُولّد آلياً)</span>
               </label>
@@ -531,7 +532,7 @@ export default function ArticleEditorModal({
                   {/* Info and Actions */}
                   <div className="flex flex-1 flex-col justify-between w-full space-y-3">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex min-w-0 flex-wrap items-center gap-2">
                         <span className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
                           {selectedFile ? "✓ صورة جديدة محددة" : "✓ صورة الغلاف الحالية"}
                         </span>
@@ -541,12 +542,12 @@ export default function ArticleEditorModal({
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-muted truncate max-w-sm" dir="ltr">
+                      <p className="max-w-sm break-all text-xs text-muted [overflow-wrap:anywhere]" dir="ltr">
                         {selectedFile ? selectedFile.name : existingImageUrl}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2.5 pt-1">
+                    <div className="flex flex-wrap items-center gap-2.5 pt-1">
                       {/* Replace Button */}
                       <button
                         type="button"
@@ -625,7 +626,7 @@ export default function ArticleEditorModal({
 
           {/* Body */}
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <label htmlFor="article-body" className="block text-xs font-bold text-ink">
                 نص المقال والتقرير الصحفي <span className="text-rose-600">*</span>
               </label>
@@ -647,12 +648,13 @@ export default function ArticleEditorModal({
           </div>
 
           {/* Settings Grid: Precision, Sort Order, Featured */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center pt-1 border-t border-line">
+          <div className="grid min-w-0 grid-cols-1 items-center gap-3 border-t border-line pt-1 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {/* Date Precision */}
-            <div className="space-y-1.5">
+            <div className="min-w-0 space-y-1.5">
               <label className="block text-xs font-bold text-ink">دقة التاريخ</label>
               <CustomSelect
                 id="article-precision-select"
+                fitContent
                 placeholder="دقة التاريخ"
                 options={precisionOptions}
                 value={datePrecision}
@@ -661,7 +663,7 @@ export default function ArticleEditorModal({
             </div>
 
             {/* Sort Order */}
-            <div className="space-y-1.5">
+            <div className="min-w-0 space-y-1.5">
               <label htmlFor="article-sort-order" className="block text-xs font-bold text-ink">
                 ترتيب العرض
               </label>
@@ -677,10 +679,10 @@ export default function ArticleEditorModal({
             </div>
 
             {/* Featured Checkbox */}
-            <div className="flex items-center gap-3 pt-5">
+            <div className="flex min-w-0 items-center gap-3 pt-2 sm:pt-5">
               <label
                 htmlFor="article-is-featured"
-                className="relative flex items-center gap-2.5 cursor-pointer select-none text-xs font-bold text-ink"
+                className="relative flex min-w-0 items-center gap-2.5 cursor-pointer select-none text-xs font-bold text-ink"
               >
                 <input
                   id="article-is-featured"
@@ -689,18 +691,18 @@ export default function ArticleEditorModal({
                   onChange={(e) => setIsFeatured(e.target.checked)}
                   className="size-5 rounded-lg border-border text-gold accent-gold focus:ring-0 cursor-pointer"
                 />
-                <span>تمييز كمقال رئيسي (Featured) ★</span>
+                <span className="min-w-0 break-words [overflow-wrap:anywhere]">تمييز كمقال رئيسي (Featured) ★</span>
               </label>
             </div>
           </div>
 
           {/* Bottom Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-line">
+          <div className="flex flex-col-reverse gap-2 border-t border-line pt-4 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             <button
               type="button"
               disabled={submitting || uploadingImage}
               onClick={onClose}
-              className="h-12 px-6 rounded-2xl border border-line bg-white text-xs sm:text-sm font-bold text-muted transition-all duration-200 hover:bg-page hover:text-ink active:scale-95 disabled:opacity-50"
+              className="h-12 w-full rounded-2xl border border-line bg-white px-4 text-xs font-bold text-muted transition-all duration-200 hover:bg-page hover:text-ink active:scale-95 disabled:opacity-50 sm:w-auto sm:px-6 sm:text-sm"
             >
               إلغاء
             </button>
@@ -708,7 +710,7 @@ export default function ArticleEditorModal({
             <button
               type="submit"
               disabled={submitting || uploadingImage}
-              className="h-12 px-7 rounded-2xl bg-gold text-white text-xs sm:text-sm font-bold shadow-md transition-all duration-200 hover:bg-gold-dark hover:shadow-lg active:scale-95 disabled:opacity-50 flex items-center gap-2"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gold px-4 text-xs font-bold text-white shadow-md transition-all duration-200 hover:bg-gold-dark hover:shadow-lg active:scale-95 disabled:opacity-50 sm:w-auto sm:px-7 sm:text-sm"
             >
               {(submitting || uploadingImage) && <Spinner size="sm" />}
               <span>

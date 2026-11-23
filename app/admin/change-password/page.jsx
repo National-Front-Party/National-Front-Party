@@ -8,11 +8,11 @@ export default function AdminChangePasswordPage() {
   const { user } = useAdminAuth();
 
   return (
-    <div className="mx-auto max-w-xl py-6" dir="rtl">
+    <div className="mx-auto w-full min-w-0 max-w-xl py-4 sm:py-6" dir="rtl">
       {user?.mustChangePassword && (
         <div
           role="alert"
-          className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-xs font-medium text-amber-900 shadow-xs"
+          className="mb-5 flex min-w-0 items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-3.5 text-xs font-medium text-amber-900 shadow-xs sm:mb-6 sm:p-4"
         >
           <svg
             className="mt-0.5 size-5 shrink-0 text-amber-600"
@@ -26,7 +26,7 @@ export default function AdminChangePasswordPage() {
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
-          <div>
+          <div className="min-w-0 flex-1">
             <h2 className="font-bold text-amber-950">
               تغيير كلمة المرور المؤقتة إلزامي
             </h2>
@@ -39,7 +39,7 @@ export default function AdminChangePasswordPage() {
 
       <Card className="border-t-[6px] border-t-gold shadow-card">
         <CardHeader>
-          <CardTitle className="text-2xl font-extrabold text-ink md:text-3xl">
+          <CardTitle className="text-xl font-extrabold text-ink sm:text-2xl md:text-3xl">
             تعيين كلمة مرور جديدة
           </CardTitle>
           <CardDescription className="text-sm font-medium text-muted">

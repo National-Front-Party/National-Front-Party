@@ -30,6 +30,8 @@ const CustomSelect = forwardRef(function CustomSelect(
     error,
     disabled,
     required,
+    fitContent = false,
+    fixedHeight = false,
   },
   forwardedRef,
 ) {
@@ -417,7 +419,9 @@ const CustomSelect = forwardRef(function CustomSelect(
                       onMouseDown={(event) => event.preventDefault()}
                       onMouseEnter={() => setHighlightedIndex(index)}
                       onClick={() => selectOption(option)}
-                      className={`flex cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-right text-ink transition-all duration-200 hover:-translate-x-1 ${
+                      className={`flex cursor-pointer justify-between rounded-xl px-4 py-3 text-right text-ink transition-all duration-200 hover:-translate-x-1 ${
+                        fitContent ? "items-start px-3" : "items-center"
+                      } ${
                         isSelected
                           ? "bg-gold/15 font-bold"
                           : isHighlighted
@@ -425,7 +429,7 @@ const CustomSelect = forwardRef(function CustomSelect(
                             : "hover:bg-gold-tint"
                       }`}
                     >
-                      <span>{option.label}</span>
+                      <span className={fitContent ? "min-w-0 flex-1 break-words [overflow-wrap:anywhere]" : ""}>{option.label}</span>
 
                       {isSelected ? (
                         <Check
@@ -487,15 +491,16 @@ const CustomSelect = forwardRef(function CustomSelect(
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
         aria-required={required}
+        title={fitContent && fixedHeight ? selectedOption?.label ?? placeholder : undefined}
         disabled={disabled}
         onClick={() =>
           openRef.current ? closeDropdown() : openDropdown()
         }
         onKeyDown={handleMenuKeyDown}
         onBlur={handleBlur}
-        className={`${inputBase} ${openClassName} flex items-center justify-between gap-3 disabled:hover:shadow-none motion-reduce:transition-none`}
+        className={`${inputBase} ${fitContent ? fixedHeight ? "!h-14 min-h-14 py-1.5 text-xs leading-5" : "!h-auto min-h-14 py-3 text-xs leading-5 2xl:text-sm" : ""} ${openClassName} flex min-w-0 items-center justify-between gap-2 disabled:hover:shadow-none motion-reduce:transition-none`}
       >
-        <span className={selectedOption ? "text-ink" : "text-muted"}>
+        <span className={`${selectedOption ? "text-ink" : "text-muted"} ${fitContent ? fixedHeight ? "min-w-0 flex-1 line-clamp-2 break-words leading-5 [overflow-wrap:anywhere]" : "min-w-0 flex-1 break-words [overflow-wrap:anywhere]" : ""}`}>
           {selectedOption?.label ?? placeholder}
         </span>
 

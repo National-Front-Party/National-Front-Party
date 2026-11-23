@@ -110,20 +110,20 @@ function StatCard({ title, value, icon, delay, loading, sparklinePath }) {
 
   return (
     <div
-      className="group relative flex flex-col justify-between rounded-3xl border border-line bg-white p-5 sm:p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-gold/60 hover:shadow-card-hover animate-elem-fade-up motion-reduce:animate-none motion-reduce:transform-none"
+      className="group relative flex min-w-0 flex-col justify-between rounded-3xl border border-line bg-white p-4 sm:p-5 2xl:p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-gold/60 hover:shadow-card-hover animate-elem-fade-up motion-reduce:animate-none motion-reduce:transform-none"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-xs sm:text-sm font-bold text-muted">{title}</span>
+      <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-3">
+        <span className="min-w-0 flex-1 break-words text-[11px] font-bold leading-5 text-muted sm:text-sm [overflow-wrap:anywhere]">{title}</span>
         <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-gold/30 bg-gold-tint text-gold-dark transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-white shadow-2xs">
           <NavIcon name={icon} className="size-5" />
         </div>
       </div>
 
-      <div className="mt-5 flex items-end justify-between gap-3">
+      <div className="mt-4 flex min-w-0 items-end justify-between gap-2 sm:mt-5 sm:gap-3">
         {/* Golden Sparkline Wave from mockup */}
-        <div className="shrink-0 pb-1 opacity-90 transition-all duration-300 group-hover:opacity-100 group-hover:scale-105">
-          <svg viewBox="0 0 130 30" className="h-6 w-24 sm:w-28 overflow-visible" fill="none">
+        <div className="w-20 min-w-0 shrink pb-1 opacity-90 transition-all duration-300 group-hover:opacity-100 group-hover:scale-105 sm:w-24 2xl:w-28">
+          <svg viewBox="0 0 130 30" preserveAspectRatio="none" className="h-6 w-full max-w-full overflow-visible" fill="none">
             <path
               d={sparklinePath}
               stroke="#C9A24B"
@@ -135,11 +135,11 @@ function StatCard({ title, value, icon, delay, loading, sparklinePath }) {
         </div>
 
         {/* Real Big Number Count */}
-        <div className="min-w-0 text-left">
+        <div className="min-w-0 flex-1 text-left">
           {loading ? (
             <Skeleton width="50px" height="34px" rounded="rounded-xl" />
           ) : (
-            <p className="text-3xl sm:text-[34px] font-black text-ink tracking-tight leading-none">
+            <p className="min-w-0 whitespace-normal break-all text-2xl sm:text-[28px] 2xl:text-[34px] font-black tabular-nums text-ink tracking-tight leading-none">
               {value === null || value === undefined ? "—" : toArabicDigits(animatedValue)}
             </p>
           )}
@@ -296,7 +296,7 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* 2. Statistics Cards Grid (4 Cards with Count-Up, Real Data and Gold Wave Sparkline) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 2xl:grid-cols-4">
         <StatCard
           title="طلبات الانضمام"
           value={stats.applicationsTotal}
@@ -459,7 +459,7 @@ export default function AdminOverviewPage() {
 
         {/* Quick Access Tiles Card (2x3 Grid) */}
         <div
-          className="rounded-3xl border border-line bg-white p-4 sm:p-6 lg:p-7 shadow-card animate-elem-fade-up motion-reduce:animate-none"
+          className="rounded-3xl border border-line bg-white p-3 sm:p-4 2xl:p-6 shadow-card animate-elem-fade-up motion-reduce:animate-none"
           style={{ animationDelay: "530ms" }}
         >
           {/* Card Header */}
@@ -471,17 +471,17 @@ export default function AdminOverviewPage() {
           </div>
 
           {/* 2x3 Grid Tiles (Centered Icon + Label matching mockup) */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid min-w-0 grid-cols-2 gap-2.5 sm:gap-3">
             {quickAccessTiles.map((tile) => (
               <Link
                 key={tile.id}
                 href={tile.route}
-                className="group flex flex-col items-center justify-center gap-2.5 rounded-2xl border border-line bg-[#FAFBFD] p-4 text-center transition-all duration-200 hover:scale-[1.04] hover:border-gold hover:bg-gold-tint/40 hover:shadow-card shadow-2xs"
+                className="group flex min-w-0 flex-col items-center justify-center gap-2 rounded-2xl border border-line bg-[#FAFBFD] p-2 text-center transition-all duration-200 hover:scale-[1.04] hover:border-gold hover:bg-gold-tint/40 hover:shadow-card shadow-2xs sm:gap-2.5 sm:p-3 2xl:p-4"
               >
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-gold/20 bg-gold-tint text-gold-dark transition-all duration-200 group-hover:scale-110 group-hover:bg-gold group-hover:text-white shadow-2xs">
                   <NavIcon name={tile.icon} className="size-5" />
                 </div>
-                <span className="truncate text-xs font-bold text-ink transition-colors group-hover:text-gold-dark">
+                <span className="min-w-0 max-w-full whitespace-normal break-words text-[11px] font-bold leading-5 text-ink [overflow-wrap:anywhere] transition-colors group-hover:text-gold-dark sm:text-xs">
                   {tile.label}
                 </span>
               </Link>
